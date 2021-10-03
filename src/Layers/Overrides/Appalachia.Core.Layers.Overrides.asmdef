@@ -1,0 +1,17 @@
+{
+    "name": "Appalachia.Core.Layers.Overrides",
+    "rootNamespace": "",
+    "references": [
+        "GUID:52c3a4fa2ed74f14faae11aff711e57d",
+        "GUID:06d89ef463696534486384c7cc9fab96"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

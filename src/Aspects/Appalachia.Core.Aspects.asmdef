@@ -1,0 +1,19 @@
+{
+    "name": "Appalachia.Core.Aspects",
+    "rootNamespace": "",
+    "references": [
+        "GUID:195705ddaa6fe6c42a576177c5d36a5c",
+        "GUID:4a600fa6fa2ca854b8f233a23710b315",
+        "GUID:63a32ad87b517324398da8a6fcd4c2a6",
+        "GUID:6b8c99229a4703f47b9e6e696c2e8d8d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,16 @@
+{
+    "name": "Appalachia.Core.Types",
+    "rootNamespace": "",
+    "references": [
+        "GUID:aab7d97d30d7abe41b8a38190b985fb5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
