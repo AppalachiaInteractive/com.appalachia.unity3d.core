@@ -18,7 +18,9 @@ namespace Appalachia.Core.Collections.Extensions
             {
                 native = new NativeArray3D<T>(capacity0, capacity1, capacity2, allocator);
             }
-            else if ((native.Capacity0 < capacity0) || (native.Capacity1 < capacity1) || (native.Capacity2 < capacity2))
+            else if ((native.Capacity0 < capacity0) ||
+                     (native.Capacity1 < capacity1) ||
+                     (native.Capacity2 < capacity2))
             {
                 native.Dispose();
                 native = new NativeArray3D<T>(
@@ -56,7 +58,16 @@ namespace Appalachia.Core.Collections.Extensions
             Allocator allocator = Allocator.Persistent)
             where T : struct
         {
-            EnsureCapacityAndLength(ref native, capacity0, capacity1, capacity2, capacity0, capacity1, capacity2, allocator);
+            EnsureCapacityAndLength(
+                ref native,
+                capacity0,
+                capacity1,
+                capacity2,
+                capacity0,
+                capacity1,
+                capacity2,
+                allocator
+            );
         }
     }
 }

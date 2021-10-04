@@ -15,7 +15,7 @@ namespace Appalachia.Core.Execution
         private const string _PRF_PFX = nameof(HookAttributeSubscriberManager) + ".";
 
         private static readonly ProfilerMarker _PRF_HookAttributeSubscriberManager =
-            new ProfilerMarker(_PRF_PFX + nameof(HookAttributeSubscriberManager));
+            new(_PRF_PFX + nameof(HookAttributeSubscriberManager));
 
         static HookAttributeSubscriberManager()
         {
@@ -39,44 +39,53 @@ namespace Appalachia.Core.Execution
                             {
                                 var attributeType = attribute.GetType();
 
-                                if (attributeType.InheritsFrom<ExecuteEventBaseAttribute>() && !method.IsStatic())
+                                if (attributeType.InheritsFrom<ExecuteEventBaseAttribute>() &&
+                                    !method.IsStatic())
                                 {
                                     throw new NotSupportedException(
                                         $"Cannot use attribute [{attribute.GetType().GetReadableFullName()}] on class [{type.GetReadableFullName()}] non-static method [{method.Name}]."
                                     );
                                 }
-                                
+
                                 if (attribute is ExecuteOnAwakeAttribute)
                                 {
-                                    FrameStart.EventDelegates.awake += StaticRoutine.CreateDelegate(method).Invoke;
+                                    FrameStart.EventDelegates.awake +=
+                                        StaticRoutine.CreateDelegate(method).Invoke;
                                 }
                                 else if (attribute is ExecuteOnStartAttribute)
                                 {
-                                    FrameStart.EventDelegates.start += StaticRoutine.CreateDelegate(method).Invoke;
+                                    FrameStart.EventDelegates.start +=
+                                        StaticRoutine.CreateDelegate(method).Invoke;
                                 }
                                 else if (attribute is ExecuteOnEnableAttribute)
                                 {
-                                    FrameStart.EventDelegates.onEnable += StaticRoutine.CreateDelegate(method).Invoke;
+                                    FrameStart.EventDelegates.onEnable +=
+                                        StaticRoutine.CreateDelegate(method).Invoke;
                                 }
                                 else if (attribute is ExecuteOnUpdateAttribute)
                                 {
-                                    FrameStart.EventDelegates.update += StaticRoutine.CreateDelegate(method).Invoke;
+                                    FrameStart.EventDelegates.update +=
+                                        StaticRoutine.CreateDelegate(method).Invoke;
                                 }
                                 else if (attribute is ExecuteOnFixedUpdateAttribute)
                                 {
-                                    FrameStart.EventDelegates.fixedUpdate += StaticRoutine.CreateDelegate(method).Invoke;
+                                    FrameStart.EventDelegates.fixedUpdate +=
+                                        StaticRoutine.CreateDelegate(method).Invoke;
                                 }
                                 else if (attribute is ExecuteOnDisableAttribute)
                                 {
-                                    FrameStart.EventDelegates.onDisable += StaticRoutine.CreateDelegate(method).Invoke;
+                                    FrameStart.EventDelegates.onDisable +=
+                                        StaticRoutine.CreateDelegate(method).Invoke;
                                 }
                                 else if (attribute is ExecuteOnDestroyAttribute)
                                 {
-                                    FrameStart.EventDelegates.onDestroy += StaticRoutine.CreateDelegate(method).Invoke;
+                                    FrameStart.EventDelegates.onDestroy +=
+                                        StaticRoutine.CreateDelegate(method).Invoke;
                                 }
                                 else if (attribute is ExecuteOnApplicationQuitAttribute)
                                 {
-                                    FrameStart.EventDelegates.onApplicationQuit += StaticRoutine.CreateDelegate(method).Invoke;
+                                    FrameStart.EventDelegates.onApplicationQuit +=
+                                        StaticRoutine.CreateDelegate(method).Invoke;
                                 }
                             }
                         }
@@ -89,7 +98,10 @@ namespace Appalachia.Core.Execution
                     var monoScript = scripts[i];
                     if (monoScript.GetClass() != null)
                     {
-                        var @as = Attribute.GetCustomAttributes(monoScript.GetClass(), typeof(ExecutionOrderAttribute));
+                        var @as = Attribute.GetCustomAttributes(
+                            monoScript.GetClass(),
+                            typeof(ExecutionOrderAttribute)
+                        );
                         for (var index = 0; index < @as.Length; index++)
                         {
                             var a = @as[index];

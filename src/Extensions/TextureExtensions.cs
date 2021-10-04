@@ -13,13 +13,24 @@ namespace Appalachia.Core.Extensions
     {
         private static Type type;
 
-        private static Type spriteType => type == null ? type = Type.GetType("UnityEditor.Sprites.SpriteUtility, UnityEditor") : type;
+        private static Type spriteType =>
+            type == null
+                ? type = Type.GetType("UnityEditor.Sprites.SpriteUtility, UnityEditor")
+                : type;
 
-        public static Vector2[][] GenerateOutline(this Texture texture, Rect rect, float detail, byte alphaTolerance, bool holeDetection)
+        public static Vector2[][] GenerateOutline(
+            this Texture texture,
+            Rect rect,
+            float detail,
+            byte alphaTolerance,
+            bool holeDetection)
         {
             var opaths = new Vector2[0][];
             object[] parameters = {texture, rect, detail, alphaTolerance, holeDetection, opaths};
-            var method = spriteType.GetMethod("GenerateOutline", BindingFlags.Static | BindingFlags.NonPublic);
+            var method = spriteType.GetMethod(
+                "GenerateOutline",
+                BindingFlags.Static | BindingFlags.NonPublic
+            );
             method.Invoke(null, parameters);
             var paths = (Vector2[][]) parameters[5];
 

@@ -15,25 +15,38 @@ namespace Appalachia.Core.Extensions
 {
     public static class GameObjectExtensions
     {
-        private static readonly ProfilerMarker _PRF_GameObjectExtensions_DestroySafely = new ProfilerMarker("GameObjectExtensions.DestroySafely");
-        private static readonly ProfilerMarker _PRF_GameObjectExtensions_InstantiatePrefab = new ProfilerMarker("GameObjectExtensions.InstantiatePrefab");
+        private static readonly ProfilerMarker _PRF_GameObjectExtensions_DestroySafely =
+            new("GameObjectExtensions.DestroySafely");
+
+        private static readonly ProfilerMarker _PRF_GameObjectExtensions_InstantiatePrefab =
+            new("GameObjectExtensions.InstantiatePrefab");
+
         private static readonly ProfilerMarker _PRF_GameObjectExtensions_MoveToLayerRecursive =
-            new ProfilerMarker("GameObjectExtensions.MoveToLayerRecursive");
-        private static readonly ProfilerMarker _PRF_GameObjectExtensions_GetAsset = new ProfilerMarker("GameObjectExtensions.GetAsset");
-        private static readonly ProfilerMarker _PRF_GameObjectExtensions_GetComponentInImmediateChildren =
-            new ProfilerMarker("GameObjectExtensions.GetComponentInImmediateChildren");
-        private static readonly ProfilerMarker _PRF_GameObjectExtensions_MoveToLayerRecursiveRecoverable =
-            new ProfilerMarker("GameObjectExtensions.MoveToLayerRecursiveRecoverable");
+            new("GameObjectExtensions.MoveToLayerRecursive");
+
+        private static readonly ProfilerMarker _PRF_GameObjectExtensions_GetAsset =
+            new("GameObjectExtensions.GetAsset");
+
+        private static readonly ProfilerMarker
+            _PRF_GameObjectExtensions_GetComponentInImmediateChildren =
+                new("GameObjectExtensions.GetComponentInImmediateChildren");
+
+        private static readonly ProfilerMarker
+            _PRF_GameObjectExtensions_MoveToLayerRecursiveRecoverable =
+                new("GameObjectExtensions.MoveToLayerRecursiveRecoverable");
+
         private static readonly ProfilerMarker _PRF_GameObjectExtensions_RecoverLayersRecursive =
-            new ProfilerMarker("GameObjectExtensions.RecoverLayersRecursive");
+            new("GameObjectExtensions.RecoverLayersRecursive");
 
-        private static Dictionary<int, string> _assetGUIDLookup = new Dictionary<int, string>();
+        private static Dictionary<int, string> _assetGUIDLookup = new();
 
-        public static GameObject InstantiatePrefab(this GameObject prefab, Transform parent = null, Matrix4x4 worldPosition = default)
+        public static GameObject InstantiatePrefab(
+            this GameObject prefab,
+            Transform parent = null,
+            Matrix4x4 worldPosition = default)
         {
             using (_PRF_GameObjectExtensions_InstantiatePrefab.Auto())
             {
-
 #if UNITY_EDITOR
                 var go = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
 #else
@@ -55,7 +68,11 @@ namespace Appalachia.Core.Extensions
                 if (worldPosition != default)
                 {
                     transform.position = column3;
-                    transform.localScale = new Vector3(column0.magnitude, column1.magnitude, column2.magnitude);
+                    transform.localScale = new Vector3(
+                        column0.magnitude,
+                        column1.magnitude,
+                        column2.magnitude
+                    );
                     transform.rotation = Quaternion.LookRotation(column2, column1);
                 }
 
@@ -96,7 +113,9 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static Dictionary<Transform, int> MoveToLayerRecursiveRecoverable(this GameObject go, int layer)
+        public static Dictionary<Transform, int> MoveToLayerRecursiveRecoverable(
+            this GameObject go,
+            int layer)
         {
             using (_PRF_GameObjectExtensions_MoveToLayerRecursiveRecoverable.Auto())
             {
@@ -119,7 +138,9 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static void RecoverLayersRecursive(this GameObject go, Dictionary<Transform, int> originalLayers)
+        public static void RecoverLayersRecursive(
+            this GameObject go,
+            Dictionary<Transform, int> originalLayers)
         {
             using (_PRF_GameObjectExtensions_RecoverLayersRecursive.Auto())
             {
@@ -194,7 +215,9 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    ex.LogException($"Not able to dispose of [{typeof(T).GetReadableName()} before destroying.");
+                    ex.LogException(
+                        $"Not able to dispose of [{typeof(T).GetReadableName()} before destroying."
+                    );
                 }
                 finally
                 {
@@ -259,7 +282,7 @@ namespace Appalachia.Core.Extensions
                     {
                         if (o != null)
                         {
-                            Object.DestroyImmediate(o.gameObject);                            
+                            Object.DestroyImmediate(o.gameObject);
                         }
                     }
                 }
@@ -312,7 +335,9 @@ namespace Appalachia.Core.Extensions
                     return prefab;
                 }
 
-                return AssetDatabase.LoadAssetAtPath<GameObject>(PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefab));
+                return AssetDatabase.LoadAssetAtPath<GameObject>(
+                    PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefab)
+                );
             }
         }
 #endif

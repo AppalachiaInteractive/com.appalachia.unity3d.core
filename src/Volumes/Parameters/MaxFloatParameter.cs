@@ -10,7 +10,10 @@ namespace Appalachia.Core.Volumes.Parameters
     {
         public float max;
 
-        public MaxFloatParameter(float value, float max, bool overrideState = false) : base(value, overrideState)
+        public MaxFloatParameter(float value, float max, bool overrideState = false) : base(
+            value,
+            overrideState
+        )
         {
             this.max = max;
         }

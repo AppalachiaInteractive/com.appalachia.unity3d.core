@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace Appalachia.Core.Collections.Interfaces
 {
     public interface IAppaLookupReadOnly<TKey, TValue, TValueList>
-    where TValueList : AppaList<TValue>
+        where TValueList : AppaList<TValue>
     {
         IReadOnlyDictionary<TKey, TValue> Lookup { get; }
         TValue this[TKey key] { get; }

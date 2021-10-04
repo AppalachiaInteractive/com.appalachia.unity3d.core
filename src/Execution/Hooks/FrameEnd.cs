@@ -1,4 +1,3 @@
-
 using Appalachia.Core.Attributes;
 
 namespace Appalachia.Core.Execution.Hooks

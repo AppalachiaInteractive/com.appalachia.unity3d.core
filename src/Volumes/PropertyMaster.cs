@@ -13,7 +13,9 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Core.Volumes
 {
     [ExecuteAlways]
-    public class PropertyMaster : MonoBehaviour, IExposedPropertyTable, ISerializationCallbackReceiver
+    public class PropertyMaster : MonoBehaviour,
+                                  IExposedPropertyTable,
+                                  ISerializationCallbackReceiver
     {
         public enum UpdateMode
         {
@@ -23,31 +25,31 @@ namespace Appalachia.Core.Volumes
 
         private const string _PRF_PFX = nameof(PropertyMaster) + ".";
 
-        internal static readonly HashSet<Type> componentTypes = new HashSet<Type>();
+        internal static readonly HashSet<Type> componentTypes = new();
 
         private static readonly ProfilerMarker _PRF_ClearReferenceValue =
-            new ProfilerMarker(_PRF_PFX + nameof(ClearReferenceValue));
+            new(_PRF_PFX + nameof(ClearReferenceValue));
 
         private static readonly ProfilerMarker _PRF_GetReferenceValue =
-            new ProfilerMarker(_PRF_PFX + nameof(GetReferenceValue));
+            new(_PRF_PFX + nameof(GetReferenceValue));
 
         private static readonly ProfilerMarker _PRF_SetReferenceValue =
-            new ProfilerMarker(_PRF_PFX + nameof(SetReferenceValue));
+            new(_PRF_PFX + nameof(SetReferenceValue));
 
         private static readonly ProfilerMarker _PRF_OnBeforeSerialize =
-            new ProfilerMarker(_PRF_PFX + nameof(OnBeforeSerialize));
+            new(_PRF_PFX + nameof(OnBeforeSerialize));
 
         private static readonly ProfilerMarker _PRF_OnAfterDeserialize =
-            new ProfilerMarker(_PRF_PFX + nameof(OnAfterDeserialize));
+            new(_PRF_PFX + nameof(OnAfterDeserialize));
 
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
 
-        private static readonly ProfilerMarker _PRF_OnDisable = new ProfilerMarker(_PRF_PFX + nameof(OnDisable));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
 
-        private static readonly ProfilerMarker _PRF_OnPreCull = new ProfilerMarker(_PRF_PFX + nameof(OnPreCull));
+        private static readonly ProfilerMarker _PRF_OnPreCull = new(_PRF_PFX + nameof(OnPreCull));
 
         private static readonly ProfilerMarker _PRF_UpdateProperties =
-            new ProfilerMarker(_PRF_PFX + nameof(UpdateProperties));
+            new(_PRF_PFX + nameof(UpdateProperties));
 
         public UpdateMode updateMode;
 
@@ -57,63 +59,11 @@ namespace Appalachia.Core.Volumes
 
         [SerializeField]
         [HideInInspector]
-        private List<ExposedReferenceData> _exposedReferenceList = new List<ExposedReferenceData>();
+        private List<ExposedReferenceData> _exposedReferenceList = new();
 
-        private Dictionary<PropertyName, Object> _exposedReferenceTable = new Dictionary<PropertyName, Object>();
+        private Dictionary<PropertyName, Object> _exposedReferenceTable = new();
 
         private Camera _propCamera;
-
-        public void ClearReferenceValue(PropertyName n)
-        {
-            using (_PRF_ClearReferenceValue.Auto())
-            {
-                _exposedReferenceTable.Remove(n);
-            }
-        }
-
-        public Object GetReferenceValue(PropertyName n, out bool valid)
-        {
-            using (_PRF_GetReferenceValue.Auto())
-            {
-                Object value;
-                valid = _exposedReferenceTable.TryGetValue(n, out value);
-                return value;
-            }
-        }
-
-        public void SetReferenceValue(PropertyName n, Object value)
-        {
-            using (_PRF_SetReferenceValue.Auto())
-            {
-                _exposedReferenceTable[n] = value;
-            }
-        }
-
-        public void OnBeforeSerialize()
-        {
-            using (_PRF_OnBeforeSerialize.Auto())
-            {
-                _exposedReferenceList = new List<ExposedReferenceData>();
-
-                foreach (var i in _exposedReferenceTable)
-                {
-                    _exposedReferenceList.Add(new ExposedReferenceData {name = i.Key, value = i.Value});
-                }
-            }
-        }
-
-        public void OnAfterDeserialize()
-        {
-            using (_PRF_OnAfterDeserialize.Auto())
-            {
-                _exposedReferenceTable = new Dictionary<PropertyName, Object>();
-
-                foreach (var i in _exposedReferenceList)
-                {
-                    _exposedReferenceTable.Add(i.name, i.value);
-                }
-            }
-        }
 
         protected void OnEnable()
         {
@@ -188,6 +138,60 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+        public void ClearReferenceValue(PropertyName n)
+        {
+            using (_PRF_ClearReferenceValue.Auto())
+            {
+                _exposedReferenceTable.Remove(n);
+            }
+        }
+
+        public Object GetReferenceValue(PropertyName n, out bool valid)
+        {
+            using (_PRF_GetReferenceValue.Auto())
+            {
+                Object value;
+                valid = _exposedReferenceTable.TryGetValue(n, out value);
+                return value;
+            }
+        }
+
+        public void SetReferenceValue(PropertyName n, Object value)
+        {
+            using (_PRF_SetReferenceValue.Auto())
+            {
+                _exposedReferenceTable[n] = value;
+            }
+        }
+
+        public void OnBeforeSerialize()
+        {
+            using (_PRF_OnBeforeSerialize.Auto())
+            {
+                _exposedReferenceList = new List<ExposedReferenceData>();
+
+                foreach (var i in _exposedReferenceTable)
+                {
+                    _exposedReferenceList.Add(
+                        new ExposedReferenceData {name = i.Key, value = i.Value}
+                    );
+                }
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+            using (_PRF_OnAfterDeserialize.Auto())
+            {
+                _exposedReferenceTable = new Dictionary<PropertyName, Object>();
+
+                foreach (var i in _exposedReferenceList)
+                {
+                    _exposedReferenceTable.Add(i.name, i.value);
+                }
+            }
+        }
+
         public void UpdateProperties()
         {
             using (_PRF_UpdateProperties.Auto())
@@ -215,8 +219,8 @@ namespace Appalachia.Core.Volumes
         [Serializable]
         private struct ExposedReferenceData
         {
-            public PropertyName name;
             public Object value;
+            public PropertyName name;
         }
     }
 }

@@ -12,52 +12,65 @@ using UnityEngine;
 
 namespace Appalachia.Core.Filtering
 {
-    public sealed class ComponentFilterTask<T> : IComponentFilterTask<T>, IComponentFilterSortedTask<T>, IComponentFilterLimitedTask<T>
+    public sealed class ComponentFilterTask<T> : IComponentFilterTask<T>,
+                                                 IComponentFilterSortedTask<T>,
+                                                 IComponentFilterLimitedTask<T>
         where T : Component
     {
         private static readonly ProfilerMarker _PRF_ComponentFilterTask_ComponentFilterTask =
-            new ProfilerMarker("ComponentFilterTask.ComponentFilterTask");
+            new("ComponentFilterTask.ComponentFilterTask");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_Complete = new ProfilerMarker("ComponentFilterTask.Complete");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_Complete =
+            new("ComponentFilterTask.Complete");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_CheckValidity = new ProfilerMarker("ComponentFilterTask.CheckValidity");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_CheckValidity =
+            new("ComponentFilterTask.CheckValidity");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters = new ProfilerMarker("ComponentFilterTask.ExecuteFilters");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters =
+            new("ComponentFilterTask.ExecuteFilters");
 
         private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_Activity =
-            new ProfilerMarker("ComponentFilterTask.ExecuteFilters.Activity");
+            new("ComponentFilterTask.ExecuteFilters.Activity");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyPredicates =
-            new ProfilerMarker("ComponentFilterTask.ExecuteFilters.IncludeOnlyPredicates");
+        private static readonly ProfilerMarker
+            _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyPredicates =
+                new("ComponentFilterTask.ExecuteFilters.IncludeOnlyPredicates");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyTags =
-            new ProfilerMarker("ComponentFilterTask.ExecuteFilters.IncludeOnlyTags");
+        private static readonly ProfilerMarker
+            _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyTags =
+                new("ComponentFilterTask.ExecuteFilters.IncludeOnlyTags");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyLayers =
-            new ProfilerMarker("ComponentFilterTask.ExecuteFilters.IncludeOnlyLayers");
+        private static readonly ProfilerMarker
+            _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyLayers =
+                new("ComponentFilterTask.ExecuteFilters.IncludeOnlyLayers");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfPredicates =
-            new ProfilerMarker("ComponentFilterTask.ExecuteFilters.ExcludeIfPredicates");
+        private static readonly ProfilerMarker
+            _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfPredicates =
+                new("ComponentFilterTask.ExecuteFilters.ExcludeIfPredicates");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfTags =
-            new ProfilerMarker("ComponentFilterTask.ExecuteFilters.ExcludeIfTags");
+        private static readonly ProfilerMarker
+            _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfTags =
+                new("ComponentFilterTask.ExecuteFilters.ExcludeIfTags");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfLayers =
-            new ProfilerMarker("ComponentFilterTask.ExecuteFilters.ExcludeIfLayers");
+        private static readonly ProfilerMarker
+            _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfLayers =
+                new("ComponentFilterTask.ExecuteFilters.ExcludeIfLayers");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExcludeTags = new ProfilerMarker("ComponentFilterTask.ExcludeTags");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExcludeTags =
+            new("ComponentFilterTask.ExcludeTags");
+
+        private readonly List<Predicate<T>> _excludeIfPredicates = new();
+        private readonly HashSet<int> _excludeLayers = new();
+        private readonly HashSet<string> _excludeTags = new();
+        private readonly HashSet<int> _includeOnlyLayers = new();
+        private readonly List<Predicate<T>> _includeOnlyPredicates = new();
+        private readonly HashSet<string> _includeOnlyTags = new();
         private readonly T[] _input;
         private readonly bool[] _validity;
         private bool? _active;
-        private readonly List<Predicate<T>> _includeOnlyPredicates = new List<Predicate<T>>();
-        private readonly List<Predicate<T>> _excludeIfPredicates = new List<Predicate<T>>();
-        private readonly HashSet<string> _includeOnlyTags = new HashSet<string>();
-        private readonly HashSet<string> _excludeTags = new HashSet<string>();
-        private readonly HashSet<int> _includeOnlyLayers = new HashSet<int>();
-        private readonly HashSet<int> _excludeLayers = new HashSet<int>();
+        private int _resultLimit;
         private IComparer<T> _sortComparer;
         private Comparison<T> _sortComparison;
-        private int _resultLimit;
 
         public ComponentFilterTask(T[] input)
         {
@@ -248,7 +261,9 @@ namespace Appalachia.Core.Filtering
                     {
                         if (_includeOnlyPredicates.Count > 0)
                         {
-                            for (var predicateIndex = 0; predicateIndex < _includeOnlyPredicates.Count; predicateIndex++)
+                            for (var predicateIndex = 0;
+                                predicateIndex < _includeOnlyPredicates.Count;
+                                predicateIndex++)
                             {
                                 var predicate = _includeOnlyPredicates[predicateIndex];
                                 if (!predicate(obj))
@@ -270,7 +285,9 @@ namespace Appalachia.Core.Filtering
                     {
                         if (_excludeIfPredicates.Count > 0)
                         {
-                            for (var predicateIndex = 0; predicateIndex < _excludeIfPredicates.Count; predicateIndex++)
+                            for (var predicateIndex = 0;
+                                predicateIndex < _excludeIfPredicates.Count;
+                                predicateIndex++)
                             {
                                 var predicate = _excludeIfPredicates[predicateIndex];
                                 if (predicate(obj))

@@ -5,34 +5,11 @@ namespace Appalachia.Core.Collections.Observable
 {
     public class ObservableList<T> : IList<T>
     {
-        IList<T> m_List;
+        private readonly IList<T> m_List;
 
-        public event ListChangedEventHandler<T> ItemAdded;
-        public event ListChangedEventHandler<T> ItemRemoved;
-
-        public T this[int index]
+        public ObservableList() : this(0)
         {
-            get { return m_List[index]; }
-            set
-            {
-                OnEvent(ItemRemoved, index, m_List[index]);
-                m_List[index] = value;
-                OnEvent(ItemAdded, index, value);
-            }
         }
-
-        public int Count
-        {
-            get { return m_List.Count; }
-        }
-
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
-
-        public ObservableList()
-            : this(0) {}
 
         public ObservableList(int capacity)
         {
@@ -44,11 +21,20 @@ namespace Appalachia.Core.Collections.Observable
             m_List = new List<T>(collection);
         }
 
-        void OnEvent(ListChangedEventHandler<T> e, int index, T item)
+        public T this[int index]
         {
-            if (e != null)
-                e(this, new ListChangedEventArgs<T>(index, item));
+            get => m_List[index];
+            set
+            {
+                OnEvent(ItemRemoved, index, m_List[index]);
+                m_List[index] = value;
+                OnEvent(ItemAdded, index, value);
+            }
         }
+
+        public int Count => m_List.Count;
+
+        public bool IsReadOnly => false;
 
         public bool Contains(T item)
         {
@@ -66,15 +52,6 @@ namespace Appalachia.Core.Collections.Observable
             OnEvent(ItemAdded, m_List.IndexOf(item), item);
         }
 
-        public void Add(params T[] items)
-        {
-            for (var index = 0; index < items.Length; index++)
-            {
-                var i = items[index];
-                Add(i);
-            }
-        }
-
         public void Insert(int index, T item)
         {
             m_List.Insert(index, item);
@@ -83,27 +60,14 @@ namespace Appalachia.Core.Collections.Observable
 
         public bool Remove(T item)
         {
-            int index = m_List.IndexOf(item);
-            bool ret = m_List.Remove(item);
+            var index = m_List.IndexOf(item);
+            var ret = m_List.Remove(item);
             if (ret)
-                OnEvent(ItemRemoved, index, item);
-            return ret;
-        }
-
-        public int Remove(params T[] items)
-        {
-            if (items == null)
-                return 0;
-
-            int count = 0;
-
-            for (var index = 0; index < items.Length; index++)
             {
-                var i = items[index];
-                count += Remove(i) ? 1 : 0;
+                OnEvent(ItemRemoved, index, item);
             }
 
-            return count;
+            return ret;
         }
 
         public void RemoveAt(int index)
@@ -115,8 +79,10 @@ namespace Appalachia.Core.Collections.Observable
 
         public void Clear()
         {
-            for (int i = 0; i < Count; i++)
+            for (var i = 0; i < Count; i++)
+            {
                 RemoveAt(i);
+            }
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -132,6 +98,44 @@ namespace Appalachia.Core.Collections.Observable
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public event ListChangedEventHandler<T> ItemAdded;
+        public event ListChangedEventHandler<T> ItemRemoved;
+
+        private void OnEvent(ListChangedEventHandler<T> e, int index, T item)
+        {
+            if (e != null)
+            {
+                e(this, new ListChangedEventArgs<T>(index, item));
+            }
+        }
+
+        public void Add(params T[] items)
+        {
+            for (var index = 0; index < items.Length; index++)
+            {
+                var i = items[index];
+                Add(i);
+            }
+        }
+
+        public int Remove(params T[] items)
+        {
+            if (items == null)
+            {
+                return 0;
+            }
+
+            var count = 0;
+
+            for (var index = 0; index < items.Length; index++)
+            {
+                var i = items[index];
+                count += Remove(i) ? 1 : 0;
+            }
+
+            return count;
         }
     }
 }

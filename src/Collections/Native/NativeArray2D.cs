@@ -10,7 +10,9 @@ using Unity.Mathematics;
 
 namespace Appalachia.Core.Collections.Native
 {
-    [DebuggerDisplay("Length0 = {Length0}, Length1 = {Length1}, Capacity0 = {Capacity0}, Capacity1 = {Capacity1}")]
+    [DebuggerDisplay(
+        "Length0 = {Length0}, Length1 = {Length1}, Capacity0 = {Capacity0}, Capacity1 = {Capacity1}"
+    )]
     [DebuggerTypeProxy(typeof(NativeArray2DDebugView<>))]
     [NativeContainer]
     [NativeContainerSupportsDeallocateOnJobCompletion]
@@ -35,7 +37,11 @@ namespace Appalachia.Core.Collections.Native
 
         internal Allocator m_AllocatorLabel;
 
-        public NativeArray2D(int length0, int length1, Allocator allocator, NativeArrayOptions options = NativeArrayOptions.ClearMemory)
+        public NativeArray2D(
+            int length0,
+            int length1,
+            Allocator allocator,
+            NativeArrayOptions options = NativeArrayOptions.ClearMemory)
         {
             Allocate(length0, length1, allocator, out this);
             if ((options & NativeArrayOptions.ClearMemory) == NativeArrayOptions.ClearMemory)
@@ -57,25 +63,22 @@ namespace Appalachia.Core.Collections.Native
             Allocate(array.Capacity0, array.Capacity1, allocator, out this);
             Copy(array, this);
         }
-        
+
         public NativeArray2D(T[] array, int2 dimensions, Allocator allocator)
         {
             Allocate(dimensions.x, dimensions.y, allocator, out this);
             CopyFromFlat(array);
         }
-        
+
         public int TotalCapacity => Capacity0 * Capacity1;
 
         public int TotalLength => Length0 * Length1;
 
-        public int2 Capacity
-        {
-            get => new int2(Capacity0, Capacity1);
-        }
-        
+        public int2 Capacity => new(Capacity0, Capacity1);
+
         public int2 Length
         {
-            get => new int2(_length0, _length1);
+            get => new(_length0, _length1);
             set
             {
                 CheckWriteAccess();
@@ -85,7 +88,7 @@ namespace Appalachia.Core.Collections.Native
                 Length1 = value.y;
             }
         }
-        
+
         public int Capacity0 { get; private set; }
 
         public int Capacity1 { get; private set; }
@@ -131,20 +134,48 @@ namespace Appalachia.Core.Collections.Native
         {
             get
             {
-                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
+                SafetyUtility.RequireIndexInBounds(
+                    index0,
+                    Length0,
+                    Capacity0,
+                    index1,
+                    Length1,
+                    Capacity1
+                );
 
                 var index = GetIndex(index0, index1);
-                SafetyUtility.CheckElementReadAccess(m_Safety, index, m_MinIndex, m_MaxIndex, TotalCapacity, TotalCapacity);
+                SafetyUtility.CheckElementReadAccess(
+                    m_Safety,
+                    index,
+                    m_MinIndex,
+                    m_MaxIndex,
+                    TotalCapacity,
+                    TotalCapacity
+                );
                 return UnsafeUtility.ReadArrayElement<T>(m_Buffer, index);
             }
 
             [WriteAccessRequired]
             set
             {
-                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
+                SafetyUtility.RequireIndexInBounds(
+                    index0,
+                    Length0,
+                    Capacity0,
+                    index1,
+                    Length1,
+                    Capacity1
+                );
 
                 var index = GetIndex(index0, index1);
-                SafetyUtility.CheckElementWriteAccess(m_Safety, index, m_MinIndex, m_MaxIndex, TotalCapacity, TotalCapacity);
+                SafetyUtility.CheckElementWriteAccess(
+                    m_Safety,
+                    index,
+                    m_MinIndex,
+                    m_MaxIndex,
+                    TotalCapacity,
+                    TotalCapacity
+                );
                 UnsafeUtility.WriteArrayElement(m_Buffer, index, value);
             }
         }
@@ -195,7 +226,11 @@ namespace Appalachia.Core.Collections.Native
             Capacity1 = 0;
         }
 
-        private static void Allocate(int capacity0, int capacity1, Allocator allocator, out NativeArray2D<T> array)
+        private static void Allocate(
+            int capacity0,
+            int capacity1,
+            Allocator allocator,
+            out NativeArray2D<T> array)
         {
             SafetyUtility.RequireValidAllocator<NativeArray2D<T>>(allocator);
             SafetyUtility.IsUnmanagedAndThrow<NativeArray2D<T>, T>();
@@ -204,12 +239,19 @@ namespace Appalachia.Core.Collections.Native
 
             if (totalCapacity <= 0)
             {
-                throw new InvalidOperationException("Total number of elements must be greater than zero");
+                throw new InvalidOperationException(
+                    "Total number of elements must be greater than zero"
+                );
             }
 
             array = new NativeArray2D<T>
             {
-                m_Buffer = UnsafeUtility.Malloc(totalCapacity * UnsafeUtility.SizeOf<T>(), UnsafeUtility.AlignOf<T>(), allocator),
+                m_Buffer =
+                    UnsafeUtility.Malloc(
+                        totalCapacity * UnsafeUtility.SizeOf<T>(),
+                        UnsafeUtility.AlignOf<T>(),
+                        allocator
+                    ),
                 Capacity0 = capacity0,
                 Capacity1 = capacity1,
                 _length0 = capacity0,
@@ -369,8 +411,6 @@ namespace Appalachia.Core.Collections.Native
 
             throw new ArgumentException("Arrays must have the same size");
         }
-        
-        
 
         public T[] ToArrayFlat(out int2 dimensions)
         {
@@ -380,32 +420,34 @@ namespace Appalachia.Core.Collections.Native
 
             return result;
         }
-        
+
         public void CopyToFlat(T[] dest, out int2 dimensions)
         {
             CheckReadAccess();
 
             var destinationLength = dest.Length;
             var targetLength = TotalCapacity;
-            
+
             if (destinationLength != targetLength)
             {
-                throw new ArgumentException("Destination array length must match the TotalCapacity of the source.");
+                throw new ArgumentException(
+                    "Destination array length must match the TotalCapacity of the source."
+                );
             }
 
             dimensions = Length;
-            
+
             for (var index0 = 0; index0 < Length0; ++index0)
             {
                 for (var index1 = 0; index1 < Length1; ++index1)
                 {
                     var index = GetIndex(index0, index1);
-                    
+
                     dest[index] = this[index0, index1];
                 }
             }
         }
-        
+
         [WriteAccessRequired]
         public void CopyFromFlat(T[] src)
         {
@@ -413,10 +455,12 @@ namespace Appalachia.Core.Collections.Native
 
             var sourceLength = src.Length;
             var thisLength = TotalCapacity;
-            
+
             if (sourceLength != thisLength)
             {
-                throw new ArgumentException("Array length must match the TotalCapacity of this array.");
+                throw new ArgumentException(
+                    "Array length must match the TotalCapacity of this array."
+                );
             }
 
             for (var i = 0; i < src.Length; i++)

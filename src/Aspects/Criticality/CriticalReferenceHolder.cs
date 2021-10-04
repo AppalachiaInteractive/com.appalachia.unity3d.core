@@ -1,5 +1,3 @@
-
-
 using Appalachia.Base.Behaviours;
 
 #region
@@ -10,26 +8,27 @@ using Appalachia.Core.Attributes;
 using Unity.Profiling;
 using UnityEngine;
 #if ODIN_INSPECTOR
-
 using Sirenix.OdinInspector;
 #endif
+
 #endregion
 
 #if UNITY_EDITOR
 using UnityEditor;
+
 #endif
 
 namespace Appalachia.Core.Aspects.Criticality
 {
-    public class CriticalReferenceHolder: InternalMonoBehaviour
+    public class CriticalReferenceHolder : InternalMonoBehaviour
     {
         private const string _PRF_PFX = nameof(CriticalReferenceHolder) + ".";
-        public List<ScriptableObject> references = new List<ScriptableObject>();
+        public List<ScriptableObject> references = new();
 
 #if UNITY_EDITOR
 
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
-        
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+
         private void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
@@ -38,8 +37,8 @@ namespace Appalachia.Core.Aspects.Criticality
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Scan = new ProfilerMarker(_PRF_PFX + nameof(Scan));
-        
+        private static readonly ProfilerMarker _PRF_Scan = new(_PRF_PFX + nameof(Scan));
+
 #if ODIN_INSPECTOR
         [Button]
 #endif
@@ -72,7 +71,7 @@ namespace Appalachia.Core.Aspects.Criticality
 
                 var guids = AssetDatabase.FindAssets("t: ScriptableObject");
 
-                for(var i = 0; i < guids.Length; i++)
+                for (var i = 0; i < guids.Length; i++)
                 {
                     var guid = guids[i];
                     var path = AssetDatabase.GUIDToAssetPath(guid);

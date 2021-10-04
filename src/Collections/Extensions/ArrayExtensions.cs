@@ -1,7 +1,6 @@
 #region
 
 using System;
-using Appalachia.Core.Collections;
 
 #endregion
 
@@ -33,8 +32,5 @@ namespace Appalachia.Core.Collections.Extensions
 
             return hash;
         }
-        
-        
-        
     }
 }

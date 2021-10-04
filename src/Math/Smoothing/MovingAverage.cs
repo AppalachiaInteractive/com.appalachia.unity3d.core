@@ -7,22 +7,24 @@ using UnityEngine;
 namespace Appalachia.Core.Math.Smoothing
 {
     [Serializable]
-    public abstract class MovingAverage<T>  
+    public abstract class MovingAverage<T>
     {
-        private readonly Queue<T> _samples = new Queue<T>();
-        
-        private T _sampleAccumulator;
-        
         [SerializeField]
         [ShowInInspector]
         [PropertyRange(1, 64)]
-        [HorizontalGroup("BBB"), SmartLabel]
+        [HorizontalGroup("BBB")]
+        [SmartLabel]
         public int windowSize = 16;
-        
+
         [SerializeField]
         [ShowInInspector]
-        [HorizontalGroup("BBB"), SmartLabel]
+        [HorizontalGroup("BBB")]
+        [SmartLabel]
         private T _average;
+
+        private readonly Queue<T> _samples = new();
+
+        private T _sampleAccumulator;
 
         public T Average
         {
@@ -31,13 +33,13 @@ namespace Appalachia.Core.Math.Smoothing
         }
 
         /// <summary>
-        /// Computes a new windowed average each time a new sample arrives
+        ///     Computes a new windowed average each time a new sample arrives
         /// </summary>
         /// <param name="newSample"></param>
         public void ComputeAverage(T newSample)
         {
             _sampleAccumulator = Add(_sampleAccumulator, newSample);
-            
+
             _samples.Enqueue(newSample);
 
             if (_samples.Count > windowSize)

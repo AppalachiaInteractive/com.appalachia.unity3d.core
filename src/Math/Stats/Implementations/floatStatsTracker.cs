@@ -15,15 +15,18 @@ namespace Appalachia.Core.Math.Stats.Implementations
 
         private static readonly Comparison<float> _comparer = (v1, v2) => v1.CompareTo(v2);
 
-        private static readonly ProfilerMarker _PRF_Format = new ProfilerMarker(_PRF_PFX + nameof(Format));
-        private static readonly ProfilerMarker _PRF_Transform = new ProfilerMarker(_PRF_PFX + nameof(Transform));
-        private static readonly ProfilerMarker _PRF_Suffix = new ProfilerMarker(_PRF_PFX + nameof(Suffix));
+        private static readonly ProfilerMarker _PRF_Format = new(_PRF_PFX + nameof(Format));
+        private static readonly ProfilerMarker _PRF_Transform = new(_PRF_PFX + nameof(Transform));
+        private static readonly ProfilerMarker _PRF_Suffix = new(_PRF_PFX + nameof(Suffix));
 
         public floatStatsTracker()
         {
         }
 
-        public floatStatsTracker(bool trackMedian = false, int limit = 256) : base(trackMedian, limit)
+        public floatStatsTracker(bool trackMedian = false, int limit = 256) : base(
+            trackMedian,
+            limit
+        )
         {
         }
 

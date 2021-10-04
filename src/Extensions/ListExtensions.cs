@@ -17,24 +17,32 @@ namespace Appalachia.Core.Extensions
 {
     public static class ListExtensions
     {
-
         private const string _PRF_PFX = nameof(ListExtensions) + ".";
 
-        private static readonly ProfilerMarker _PRF_GetInternalArray = new ProfilerMarker(_PRF_PFX + nameof(GetInternalArray));
+        private static readonly ProfilerMarker _PRF_GetInternalArray =
+            new(_PRF_PFX + nameof(GetInternalArray));
+
+        private static readonly ProfilerMarker _PRF_RemoveNulls =
+            new(_PRF_PFX + nameof(RemoveNulls));
+
+        private static readonly ProfilerMarker _PRF_RemoveUnityNulls =
+            new(_PRF_PFX + nameof(RemoveUnityNulls));
+
+        private static readonly ProfilerMarker _PRF_RemoveWhere =
+            new(_PRF_PFX + nameof(RemoveWhere));
+
         public static T[] GetInternalArray<T>(this List<T> list)
         {
             using (_PRF_GetInternalArray.Auto())
             {
-
 #if ENABLE_IL2CPP || NET_STANDARD_2_0
                 return (T[]) ArrayAccessor<T>.AotGetter(list);
 #else
             return ArrayAccessor<T>.Getter(list);
 #endif
-}
+            }
         }
 
-        private static readonly ProfilerMarker _PRF_RemoveNulls = new ProfilerMarker(_PRF_PFX + nameof(RemoveNulls));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool RemoveNulls<T>(this IList<T> list)
         {
@@ -57,7 +65,6 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        private static readonly ProfilerMarker _PRF_RemoveUnityNulls = new ProfilerMarker(_PRF_PFX + nameof(RemoveUnityNulls));
         public static bool RemoveUnityNulls<T>(this IList<T> list)
             where T : Object
         {
@@ -80,7 +87,6 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        private static readonly ProfilerMarker _PRF_RemoveWhere = new ProfilerMarker(_PRF_PFX + nameof(RemoveWhere));
         public static void RemoveWhere<T>(this IList<T> list, Predicate<T> func)
         {
             using (_PRF_RemoveWhere.Auto())
@@ -103,14 +109,18 @@ namespace Appalachia.Core.Extensions
 #else
             public static readonly Func<List<T>, T[]> Getter;
 #endif
-            private static readonly ProfilerMarker _PRF_ArrayAccessor = new ProfilerMarker(_PRF_PFX + nameof(ArrayAccessor<T>));
+            private static readonly ProfilerMarker _PRF_ArrayAccessor =
+                new(_PRF_PFX + nameof(ArrayAccessor<T>));
 
             static ArrayAccessor()
             {
                 using (_PRF_ArrayAccessor.Auto())
                 {
 #if ENABLE_IL2CPP || NET_STANDARD_2_0
-                    FieldInfo = typeof(List<T>).GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance);
+                    FieldInfo = typeof(List<T>).GetField(
+                        "_items",
+                        BindingFlags.NonPublic | BindingFlags.Instance
+                    );
                     AotGetter = FieldInfo.GetValue;
 #else
                 // ReSharper disable once RedundantExplicitArrayCreation

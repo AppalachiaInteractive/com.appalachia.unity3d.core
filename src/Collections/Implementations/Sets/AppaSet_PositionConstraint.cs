@@ -9,7 +9,8 @@ using UnityEngine.Animations;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_PositionConstraint : AppaSet<PositionConstraint, AppaList_PositionConstraint>
+    public sealed class
+        AppaSet_PositionConstraint : AppaSet<PositionConstraint, AppaList_PositionConstraint>
     {
     }
 }

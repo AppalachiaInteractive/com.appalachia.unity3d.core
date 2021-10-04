@@ -16,7 +16,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue / value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -31,7 +35,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue * value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -56,7 +64,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue + value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -76,7 +88,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = math.max(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -91,7 +107,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = math.min(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -106,7 +126,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue / value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -121,7 +145,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue * value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -146,7 +174,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue + value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -166,7 +198,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = math.max(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -181,7 +217,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = math.min(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -196,7 +236,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue / value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -211,7 +255,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue * value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -236,7 +284,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = currentValue + value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -256,7 +308,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = math.max(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -271,7 +327,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 var currentValue = newCurrentValue;
                 var newValue = math.min(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                newCurrentValue = Interlocked.CompareExchange(
+                    ref location1,
+                    newValue,
+                    currentValue
+                );
                 if (newCurrentValue == currentValue)
                 {
                     return newValue;
@@ -286,8 +346,6 @@ namespace Appalachia.Core.Collections.Native
 
         public static float2 Divide(ref float2 location1, float2 value)
         {
-            
-
             for (var i = 0; i < 2; i++)
             {
                 var newCurrentValue = location1[i];
@@ -298,7 +356,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue / stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {
@@ -328,7 +390,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue * stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {
@@ -348,8 +414,6 @@ namespace Appalachia.Core.Collections.Native
 
         public static float2 Add(ref float2 location1, float2 value)
         {
-            
-
             for (var i = 0; i < 2; i++)
             {
                 var newCurrentValue = location1[i];
@@ -360,7 +424,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue + stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {
@@ -390,8 +458,6 @@ namespace Appalachia.Core.Collections.Native
 
         public static float3 Divide(ref float3 location1, float3 value)
         {
-            
-
             for (var i = 0; i < 3; i++)
             {
                 var newCurrentValue = location1[i];
@@ -402,7 +468,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue / stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {
@@ -422,8 +492,6 @@ namespace Appalachia.Core.Collections.Native
 
         public static float3 Multiply(ref float3 location1, float3 value)
         {
-            
-
             for (var i = 0; i < 3; i++)
             {
                 var newCurrentValue = location1[i];
@@ -434,7 +502,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue * stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {
@@ -454,8 +526,6 @@ namespace Appalachia.Core.Collections.Native
 
         public static float3 Add(ref float3 location1, float3 value)
         {
-            
-
             for (var i = 0; i < 3; i++)
             {
                 var newCurrentValue = location1[i];
@@ -466,7 +536,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue + stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {
@@ -496,8 +570,6 @@ namespace Appalachia.Core.Collections.Native
 
         public static float4 Divide(ref float4 location1, float4 value)
         {
-            
-
             for (var i = 0; i < 4; i++)
             {
                 var newCurrentValue = location1[i];
@@ -508,7 +580,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue / stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {
@@ -528,8 +604,6 @@ namespace Appalachia.Core.Collections.Native
 
         public static float4 Multiply(ref float4 location1, float4 value)
         {
-            
-
             for (var i = 0; i < 4; i++)
             {
                 var newCurrentValue = location1[i];
@@ -540,7 +614,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue * stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {
@@ -560,8 +638,6 @@ namespace Appalachia.Core.Collections.Native
 
         public static float4 Add(ref float4 location1, float4 value)
         {
-            
-
             for (var i = 0; i < 4; i++)
             {
                 var newCurrentValue = location1[i];
@@ -572,7 +648,11 @@ namespace Appalachia.Core.Collections.Native
                     var currentValue = newCurrentValue;
                     var newValue = currentValue + stepVal;
 
-                    newCurrentValue = Interlocked.CompareExchange(ref newCurrentValue, newValue, currentValue);
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
 
                     if (newCurrentValue == currentValue)
                     {

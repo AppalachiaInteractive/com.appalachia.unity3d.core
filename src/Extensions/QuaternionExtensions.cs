@@ -43,17 +43,22 @@ namespace Appalachia.Core.Extensions
             return quaternion * Vector3.up;
         }
 
-        public static Quaternion Anticipate(this Quaternion first, float elapsed, Quaternion second, float anticipationDuration)
+        public static Quaternion Anticipate(
+            this Quaternion first,
+            float elapsed,
+            Quaternion second,
+            float anticipationDuration)
         {
-            return new Quaternion(
-                second.x + ((anticipationDuration / elapsed) * (second.x - first.x)),
-                second.y + ((anticipationDuration / elapsed) * (second.y - first.y)),
-                second.z + ((anticipationDuration / elapsed) * (second.z - first.z)),
-                second.w + ((anticipationDuration / elapsed) * (second.w - first.w))
-            );
+            return new(second.x + ((anticipationDuration / elapsed) * (second.x - first.x)),
+                second.y + ((anticipationDuration / elapsed) * (second.y - first.y)), second.z +
+                ((anticipationDuration / elapsed) * (second.z - first.z)), second.w +
+                ((anticipationDuration / elapsed) * (second.w - first.w)));
         }
 
-        public static Vector3 GetAngularVelocity(this Quaternion older, Quaternion newer, float elapsed)
+        public static Vector3 GetAngularVelocity(
+            this Quaternion older,
+            Quaternion newer,
+            float elapsed)
         {
             var q = newer * Quaternion.Inverse(older);
 

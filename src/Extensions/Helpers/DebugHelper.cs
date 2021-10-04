@@ -96,7 +96,6 @@ namespace Appalachia.Core.Extensions.Helpers
 #endif
         }
 
-
         public static void LogException(this Exception ex, string log)
         {
 #if UNITY_EDITOR

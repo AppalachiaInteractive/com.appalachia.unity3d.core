@@ -9,7 +9,8 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_AudioReverbFilter : AppaSet<AudioReverbFilter, AppaList_AudioReverbFilter>
+    public sealed class
+        AppaSet_AudioReverbFilter : AppaSet<AudioReverbFilter, AppaList_AudioReverbFilter>
     {
     }
 }

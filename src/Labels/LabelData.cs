@@ -9,30 +9,50 @@ using UnityEngine;
 
 namespace Appalachia.Core.Labels
 {
-    [Serializable, InlineProperty, HideLabel, LabelWidth(0), HideDuplicateReferenceBox, HideReferenceObjectPicker]
+    [Serializable]
+    [InlineProperty]
+    [HideLabel]
+    [LabelWidth(0)]
+    [HideDuplicateReferenceBox]
+    [HideReferenceObjectPicker]
     public class LabelData
     {
-        [ReadOnly, SmartLabel, SuffixLabel("$" + nameof(suffixLabel))]
+        [ReadOnly]
+        [SmartLabel]
+        [SuffixLabel("$" + nameof(suffixLabel))]
         public string label;
 
-        private string suffixLabel => $"  {count} items";
-        
         [HideInInspector] public int count;
-        
-        [HorizontalGroup("B", .25f), LabelText("Delete"), SmartLabel(Postfix = true)]
-        [OnValueChanged(nameof(OnDeleteChanged)), DisableIf(nameof(_disableDelete))]
+
+        [HorizontalGroup("B", .25f)]
+        [LabelText("Delete")]
+        [SmartLabel(Postfix = true)]
+        [OnValueChanged(nameof(OnDeleteChanged))]
+        [DisableIf(nameof(_disableDelete))]
         public bool deleteLabel;
 
-        [HorizontalGroup("B", .25f), LabelText("Apply"), SmartLabel(Postfix = true)]
-        [OnValueChanged(nameof(OnApplyChanged)), DisableIf(nameof(_disableApply))]
+        [HorizontalGroup("B", .25f)]
+        [LabelText("Apply")]
+        [SmartLabel(Postfix = true)]
+        [OnValueChanged(nameof(OnApplyChanged))]
+        [DisableIf(nameof(_disableApply))]
         public bool applyLabel;
 
-
-        [HorizontalGroup("B", .5f), LabelText("Swap"), SmartLabel]
-        [OnValueChanged(nameof(OnSwitchToChanged)), DisableIf(nameof(_disableSwitchTo))]
+        [HorizontalGroup("B", .5f)]
+        [LabelText("Swap")]
+        [SmartLabel]
+        [OnValueChanged(nameof(OnSwitchToChanged))]
+        [DisableIf(nameof(_disableSwitchTo))]
         public string switchTo;
 
-        private bool _disableDelete => applyLabel || switchTo != null;
+        private string suffixLabel => $"  {count} items";
+
+        private bool _disableDelete => applyLabel || (switchTo != null);
+
+        private bool _disableApply => deleteLabel || (switchTo != null);
+
+        private bool _disableSwitchTo => deleteLabel || applyLabel;
+
         private void OnDeleteChanged()
         {
             if (deleteLabel)
@@ -41,8 +61,7 @@ namespace Appalachia.Core.Labels
                 switchTo = null;
             }
         }
-        
-        private bool _disableApply => deleteLabel || switchTo != null;
+
         private void OnApplyChanged()
         {
             if (applyLabel)
@@ -51,8 +70,7 @@ namespace Appalachia.Core.Labels
                 switchTo = null;
             }
         }
-        
-        private bool _disableSwitchTo => deleteLabel || applyLabel;
+
         private void OnSwitchToChanged()
         {
             if (switchTo != null)

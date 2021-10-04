@@ -17,8 +17,8 @@ namespace Appalachia.Core.Math.Stats
     [Serializable]
     public abstract class StatsTracker
     {
-        protected static Random ___random = new Random();
-        protected static Unity.Mathematics.Random _random = new Unity.Mathematics.Random();
+        protected static Random ___random = new();
+        protected static Unity.Mathematics.Random _random;
     }
 
     [Serializable]
@@ -39,56 +39,83 @@ namespace Appalachia.Core.Math.Stats
 
         private const string _formatted = "{0} {1}{2}";
 
-        private static readonly ProfilerMarker _PRF_StatsTracker = new ProfilerMarker(_PRF_PFX + nameof(StatsTracker));
+        protected const string _F0 = "F0";
+        protected const string _F1 = "F1";
+        protected const string _F2 = "F2";
+        protected const string _F3 = "F3";
 
-        private static readonly ProfilerMarker _PRF_Median = new ProfilerMarker(_PRF_PFX + nameof(Median));
+        protected const string suffix_fpx = "fps ({0:F1}ms)";
 
-        private static readonly ProfilerMarker _PRF_Minimum = new ProfilerMarker(_PRF_PFX + nameof(Minimum));
+        private static readonly ProfilerMarker _PRF_StatsTracker =
+            new(_PRF_PFX + nameof(StatsTracker));
 
-        private static readonly ProfilerMarker _PRF_Maximum = new ProfilerMarker(_PRF_PFX + nameof(Maximum));
+        private static readonly ProfilerMarker _PRF_Median = new(_PRF_PFX + nameof(Median));
 
-        private static readonly ProfilerMarker _PRF_Sum = new ProfilerMarker(_PRF_PFX + nameof(Sum));
+        private static readonly ProfilerMarker _PRF_Minimum = new(_PRF_PFX + nameof(Minimum));
 
-        private static readonly ProfilerMarker _PRF_Average = new ProfilerMarker(_PRF_PFX + nameof(Average));
+        private static readonly ProfilerMarker _PRF_Maximum = new(_PRF_PFX + nameof(Maximum));
 
-        private static readonly ProfilerMarker _PRF_Calculate = new ProfilerMarker(_PRF_PFX + nameof(Calculate));
+        private static readonly ProfilerMarker _PRF_Sum = new(_PRF_PFX + nameof(Sum));
 
-        private static readonly ProfilerMarker _PRF_Track = new ProfilerMarker(_PRF_PFX + nameof(Track));
+        private static readonly ProfilerMarker _PRF_Average = new(_PRF_PFX + nameof(Average));
 
-        private static readonly ProfilerMarker _PRF_Reset = new ProfilerMarker(_PRF_PFX + nameof(Reset));
+        private static readonly ProfilerMarker _PRF_Calculate = new(_PRF_PFX + nameof(Calculate));
 
-        private static readonly ProfilerMarker _PRF_ToString = new ProfilerMarker(_PRF_PFX + nameof(ToString));
+        private static readonly ProfilerMarker _PRF_Track = new(_PRF_PFX + nameof(Track));
 
-        private static readonly ProfilerMarker _PRF_GetFormattedString = new ProfilerMarker(_PRF_PFX + nameof(GetFormattedString));
+        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + nameof(Reset));
 
-        private NonSerializedList<T> _values;
+        private static readonly ProfilerMarker _PRF_ToString = new(_PRF_PFX + nameof(ToString));
 
-        [SmartLabel, HorizontalGroup("Meta"), SerializeField]
+        private static readonly ProfilerMarker _PRF_GetFormattedString =
+            new(_PRF_PFX + nameof(GetFormattedString));
+
+        [SmartLabel]
+        [HorizontalGroup("Meta")]
+        [SerializeField]
         private int _lastTrackingIndex;
 
-        [SmartLabel, HorizontalGroup("Meta"), SerializeField]
+        [SmartLabel]
+        [HorizontalGroup("Meta")]
+        [SerializeField]
         private int _limit;
 
-        [SmartLabel, HorizontalGroup("Meta"), SerializeField]
+        [SmartLabel]
+        [HorizontalGroup("Meta")]
+        [SerializeField]
         private bool _trackMedian;
 
-        [SmartLabel, HorizontalGroup("Meta"), SerializeField]
+        [SmartLabel]
+        [HorizontalGroup("Meta")]
+        [SerializeField]
         private int _calculatedAt;
 
-        [SmartLabel, HorizontalGroup("Stats"), SerializeField]
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
         private T _median;
 
-        [SmartLabel, HorizontalGroup("Stats"), SerializeField]
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
         private T _minimum;
 
-        [SmartLabel, HorizontalGroup("Stats"), SerializeField]
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
         private T _maximum;
 
-        [SmartLabel, HorizontalGroup("Stats"), SerializeField]
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
         private T _sum;
 
-        [SmartLabel, HorizontalGroup("Stats"), SerializeField]
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
         private T _average;
+
+        private NonSerializedList<T> _values;
 
         protected StatsTracker(bool trackMedian = false, int limit = 256)
         {
@@ -315,7 +342,12 @@ namespace Appalachia.Core.Math.Stats
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string GetFormattedString(T value, string prefix, SuffixType suffix, TransformationType transformation, FormatType format)
+        private string GetFormattedString(
+            T value,
+            string prefix,
+            SuffixType suffix,
+            TransformationType transformation,
+            FormatType format)
         {
             using (_PRF_GetFormattedString.Auto())
             {
@@ -327,14 +359,6 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        
-        protected const string _F0 = "F0";
-        protected const string _F1 = "F1";
-        protected const string _F2 = "F2";
-        protected const string _F3 = "F3";
-
-        protected const string suffix_fpx = "fps ({0:F1}ms)";
-        
         public abstract string Format(T value, FormatType format);
 
         protected abstract T Transform(T value, TransformationType type);

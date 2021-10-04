@@ -51,7 +51,11 @@ namespace Appalachia.Core.Extensions
         public static void Matrix4x4ToTransform(this Transform transform, Matrix4x4 matrix)
         {
             transform.position = matrix.GetColumn(3);
-            transform.localScale = new Vector3(matrix.GetColumn(0).magnitude, matrix.GetColumn(1).magnitude, matrix.GetColumn(2).magnitude);
+            transform.localScale = new Vector3(
+                matrix.GetColumn(0).magnitude,
+                matrix.GetColumn(1).magnitude,
+                matrix.GetColumn(2).magnitude
+            );
             transform.rotation = Quaternion.LookRotation(matrix.GetColumn(2), matrix.GetColumn(1));
         }
 
@@ -77,7 +81,12 @@ namespace Appalachia.Core.Extensions
             var len2 = math.length(c2);
             var len1 = math.length(c1);
 
-            if ((c1 == c2) || (c1 == Vector4.zero) || (c2 == Vector4.zero) || (len1 == 0f) || (len2 == 0f) || (c1 == -c2))
+            if ((c1 == c2) ||
+                (c1 == Vector4.zero) ||
+                (c2 == Vector4.zero) ||
+                (len1 == 0f) ||
+                (len2 == 0f) ||
+                (c1 == -c2))
             {
                 Debug.LogWarning("Bad viewing vector");
                 return Quaternion.identity;
@@ -88,7 +97,9 @@ namespace Appalachia.Core.Extensions
 
         public static Vector3 GetScaleFromMatrix(this Matrix4x4 matrix)
         {
-            return new Vector3(matrix.GetColumn(0).magnitude, matrix.GetColumn(1).magnitude, matrix.GetColumn(2).magnitude);
+            return new(matrix.GetColumn(0).magnitude, matrix.GetColumn(1).magnitude, matrix
+               .GetColumn(2)
+               .magnitude);
         }
 
         public static Matrix4x4 SetPosition(this Matrix4x4 matrix, Vector3 position)
@@ -115,7 +126,10 @@ namespace Appalachia.Core.Extensions
 
         public static Bounds MatrixToBounds(this Matrix4x4 matrix)
         {
-            var bounds = new Bounds {center = matrix.GetPositionFromMatrix(), size = matrix.GetScaleFromMatrix()};
+            var bounds = new Bounds
+            {
+                center = matrix.GetPositionFromMatrix(), size = matrix.GetScaleFromMatrix()
+            };
 
             return bounds;
         }

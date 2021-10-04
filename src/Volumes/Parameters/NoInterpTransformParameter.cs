@@ -6,7 +6,10 @@ namespace Appalachia.Core.Volumes.Parameters
     [Serializable]
     public sealed class NoInterpTransformParameter : VolumeParameter<Transform>
     {
-        public NoInterpTransformParameter(Transform value, bool overrideState = false) : base(value, overrideState)
+        public NoInterpTransformParameter(Transform value, bool overrideState = false) : base(
+            value,
+            overrideState
+        )
         {
         }
     }

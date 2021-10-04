@@ -13,7 +13,7 @@ namespace Appalachia.Core.Extensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4 xyz1(this float3 val)
         {
-            return new float4(val.x, val.y, val.z, 1f);
+            return new(val.x, val.y, val.z, 1f);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

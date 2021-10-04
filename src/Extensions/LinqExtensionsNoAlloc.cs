@@ -11,12 +11,20 @@ namespace Appalachia.Core.Extensions
 {
     public static partial class LinqExtensionsNoAlloc
     {
-        private static readonly Vector2 Vector2_min = new Vector2(float.MinValue, float.MinValue);
-        private static readonly Vector2 Vector2_max = new Vector2(float.MaxValue, float.MaxValue);
-        private static readonly Vector3 Vector3_min = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-        private static readonly Vector3 Vector3_max = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-        private static readonly Vector4 Vector4_min = new Vector4(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
-        private static readonly Vector4 Vector4_max = new Vector4(float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue);
+        private static readonly Vector2 Vector2_min = new(float.MinValue, float.MinValue);
+        private static readonly Vector2 Vector2_max = new(float.MaxValue, float.MaxValue);
+
+        private static readonly Vector3 Vector3_min =
+            new(float.MinValue, float.MinValue, float.MinValue);
+
+        private static readonly Vector3 Vector3_max =
+            new(float.MaxValue, float.MaxValue, float.MaxValue);
+
+        private static readonly Vector4 Vector4_min =
+            new(float.MinValue, float.MinValue, float.MinValue, float.MinValue);
+
+        private static readonly Vector4 Vector4_max =
+            new(float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue);
 
         public static bool All_NoAlloc<T>(this T[] array, Predicate<T> pred)
         {
@@ -155,7 +163,7 @@ namespace Appalachia.Core.Extensions
 
             return default;
         }
-        
+
         public static int Count_NoAlloc<T>(this T[] array, Predicate<T> pred)
         {
             var sum = 0;
@@ -167,7 +175,6 @@ namespace Appalachia.Core.Extensions
 
             return sum;
         }
-
 
         public static int Sum_NoAlloc<T>(this T[] array, Func<int> selector)
         {
@@ -253,7 +260,10 @@ namespace Appalachia.Core.Extensions
             return sum / array.Length;
         }
 
-        public static T Average_NoAlloc<T>(this T[] array, Func<T, T, T> addition, Func<T, int, T> division)
+        public static T Average_NoAlloc<T>(
+            this T[] array,
+            Func<T, T, T> addition,
+            Func<T, int, T> division)
         {
             T sum = default;
 
@@ -267,47 +277,53 @@ namespace Appalachia.Core.Extensions
 
         public static Vector2 Center_NoAlloc(this Vector2[] array)
         {
-            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / (float) count);
+            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / count);
         }
 
         public static Vector3 Center_NoAlloc(this Vector3[] array)
         {
-            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / (float) count);
+            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / count);
         }
 
         public static Vector4 Center_NoAlloc(this Vector4[] array)
         {
-            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / (float) count);
+            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / count);
         }
 
         private static Vector2 max(Vector2 a, Vector2 b)
         {
-            return new Vector2(math.max(a.x, b.x), math.max(a.y, b.y));
+            return new(math.max(a.x, b.x), math.max(a.y, b.y));
         }
 
         private static Vector3 max(Vector3 a, Vector3 b)
         {
-            return new Vector3(math.max(a.x, b.x), math.max(a.y, b.y), math.max(a.z, b.z));
+            return new(math.max(a.x, b.x), math.max(a.y, b.y), math.max(a.z, b.z));
         }
 
         private static Vector4 max(Vector4 a, Vector4 b)
         {
-            return new Vector4(math.max(a.x, b.x), math.max(a.y, b.y), math.max(a.z, b.z), math.max(a.w, b.w));
+            return new(math.max(a.x, b.x), math.max(a.y, b.y), math.max(a.z, b.z), math.max(
+                a.w,
+                b.w
+            ));
         }
 
         private static Vector2 min(Vector2 a, Vector2 b)
         {
-            return new Vector2(math.min(a.x, b.x), math.min(a.y, b.y));
+            return new(math.min(a.x, b.x), math.min(a.y, b.y));
         }
 
         private static Vector3 min(Vector3 a, Vector3 b)
         {
-            return new Vector3(math.min(a.x, b.x), math.min(a.y, b.y), math.min(a.z, b.z));
+            return new(math.min(a.x, b.x), math.min(a.y, b.y), math.min(a.z, b.z));
         }
 
         private static Vector4 min(Vector4 a, Vector4 b)
         {
-            return new Vector4(math.min(a.x, b.x), math.min(a.y, b.y), math.min(a.z, b.z), math.min(a.w, b.w));
+            return new(math.min(a.x, b.x), math.min(a.y, b.y), math.min(a.z, b.z), math.min(
+                a.w,
+                b.w
+            ));
         }
 
         public static int Max_NoAlloc<T>(this T[] array, Func<T, int> selector)
@@ -438,21 +454,31 @@ namespace Appalachia.Core.Extensions
 
         public static Vector3 Size_NoAlloc(this Vector3[] array)
         {
-            var bounds = new Bounds {center = array.Center_NoAlloc(), min = array.Min_NoAlloc(), max = array.Max_NoAlloc()};
+            var bounds = new Bounds
+            {
+                center = array.Center_NoAlloc(),
+                min = array.Min_NoAlloc(),
+                max = array.Max_NoAlloc()
+            };
 
             return bounds.size;
         }
 
         public static Bounds Bounds_NoAlloc(this Vector3[] array)
         {
-            var bounds = new Bounds {center = array.Center_NoAlloc(), min = array.Min_NoAlloc(), max = array.Max_NoAlloc()};
+            var bounds = new Bounds
+            {
+                center = array.Center_NoAlloc(),
+                min = array.Min_NoAlloc(),
+                max = array.Max_NoAlloc()
+            };
 
             return bounds;
         }
 
         public static Vector2 Average_NoAlloc(this Vector2[] array)
         {
-            Vector2 average = Vector2.zero;
+            var average = Vector2.zero;
 
             for (var i = 0; i < array.Length; i++)
             {
@@ -461,10 +487,10 @@ namespace Appalachia.Core.Extensions
 
             return average / array.Length;
         }
-        
+
         public static Vector3 Average_NoAlloc(this Vector3[] array)
         {
-            Vector3 average = Vector3.zero;
+            var average = Vector3.zero;
 
             for (var i = 0; i < array.Length; i++)
             {
@@ -473,10 +499,10 @@ namespace Appalachia.Core.Extensions
 
             return average / array.Length;
         }
-        
+
         public static Vector4 Average_NoAlloc(this Vector4[] array)
         {
-            Vector4 average = Vector4.zero;
+            var average = Vector4.zero;
 
             for (var i = 0; i < array.Length; i++)
             {
@@ -485,7 +511,6 @@ namespace Appalachia.Core.Extensions
 
             return average / array.Length;
         }
-
 
         public static T WithMin_NoAlloc<T>(this T[] array, Func<T, int> selector)
         {
@@ -559,7 +584,11 @@ namespace Appalachia.Core.Extensions
             return array[index];
         }
 
-        public static T WithMin_NoAlloc<T, TQ>(this T[] array, Func<T, TQ> selector, Func<TQ, TQ, bool> isFirstLower, TQ maxValue)
+        public static T WithMin_NoAlloc<T, TQ>(
+            this T[] array,
+            Func<T, TQ> selector,
+            Func<TQ, TQ, bool> isFirstLower,
+            TQ maxValue)
         {
             var m = maxValue;
             var index = -1;
@@ -655,7 +684,11 @@ namespace Appalachia.Core.Extensions
             return array[index];
         }
 
-        public static T WithMax_NoAlloc<T, TQ>(this T[] array, Func<T, TQ> selector, Func<TQ, TQ, bool> isFirstLower, TQ minValue)
+        public static T WithMax_NoAlloc<T, TQ>(
+            this T[] array,
+            Func<T, TQ> selector,
+            Func<TQ, TQ, bool> isFirstLower,
+            TQ minValue)
         {
             var m = minValue;
             var index = -1;
@@ -819,7 +852,7 @@ namespace Appalachia.Core.Extensions
 
             return default;
         }
-        
+
         public static int Count_NoAlloc<T>(this IList<T> array, Predicate<T> pred)
         {
             var sum = 0;
@@ -831,7 +864,7 @@ namespace Appalachia.Core.Extensions
 
             return sum;
         }
-        
+
         public static int Sum_NoAlloc<T>(this IList<T> array, Func<int> selector)
         {
             var sum = 0;
@@ -916,7 +949,10 @@ namespace Appalachia.Core.Extensions
             return sum / array.Count;
         }
 
-        public static T Average_NoAlloc<T>(this IList<T> array, Func<T, T, T> addition, Func<T, int, T> division)
+        public static T Average_NoAlloc<T>(
+            this IList<T> array,
+            Func<T, T, T> addition,
+            Func<T, int, T> division)
         {
             T sum = default;
 
@@ -930,17 +966,17 @@ namespace Appalachia.Core.Extensions
 
         public static Vector2 Center_NoAlloc(this IList<Vector2> array)
         {
-            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / (float) count);
+            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / count);
         }
 
         public static Vector3 Center_NoAlloc(this IList<Vector3> array)
         {
-            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / (float) count);
+            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / count);
         }
 
         public static Vector4 Center_NoAlloc(this IList<Vector4> array)
         {
-            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / (float) count);
+            return array.Average_NoAlloc((x, y) => x + y, (sum, count) => sum / count);
         }
 
         public static int Max_NoAlloc<T>(this IList<T> array, Func<T, int> selector)
@@ -1071,22 +1107,31 @@ namespace Appalachia.Core.Extensions
 
         public static Vector3 Size_NoAlloc(this IList<Vector3> array)
         {
-            var bounds = new Bounds {center = array.Center_NoAlloc(), min = array.Min_NoAlloc(), max = array.Max_NoAlloc()};
+            var bounds = new Bounds
+            {
+                center = array.Center_NoAlloc(),
+                min = array.Min_NoAlloc(),
+                max = array.Max_NoAlloc()
+            };
 
             return bounds.size;
         }
 
         public static Bounds Bounds_NoAlloc(this IList<Vector3> array)
         {
-            var bounds = new Bounds {center = array.Center_NoAlloc(), min = array.Min_NoAlloc(), max = array.Max_NoAlloc()};
+            var bounds = new Bounds
+            {
+                center = array.Center_NoAlloc(),
+                min = array.Min_NoAlloc(),
+                max = array.Max_NoAlloc()
+            };
 
             return bounds;
         }
 
-
         public static Vector2 Average_NoAlloc(this IList<Vector2> array)
         {
-            Vector2 average = Vector2.zero;
+            var average = Vector2.zero;
 
             for (var i = 0; i < array.Count; i++)
             {
@@ -1095,10 +1140,10 @@ namespace Appalachia.Core.Extensions
 
             return average / array.Count;
         }
-        
+
         public static Vector3 Average_NoAlloc(this IList<Vector3> array)
         {
-            Vector3 average = Vector3.zero;
+            var average = Vector3.zero;
 
             for (var i = 0; i < array.Count; i++)
             {
@@ -1107,10 +1152,10 @@ namespace Appalachia.Core.Extensions
 
             return average / array.Count;
         }
-        
+
         public static Vector4 Average_NoAlloc(this IList<Vector4> array)
         {
-            Vector4 average = Vector4.zero;
+            var average = Vector4.zero;
 
             for (var i = 0; i < array.Count; i++)
             {
@@ -1119,7 +1164,7 @@ namespace Appalachia.Core.Extensions
 
             return average / array.Count;
         }
-        
+
         public static T WithMin_NoAlloc<T>(this IList<T> array, Func<T, int> selector)
         {
             var m = int.MaxValue;
@@ -1192,7 +1237,11 @@ namespace Appalachia.Core.Extensions
             return array[index];
         }
 
-        public static T WithMin_NoAlloc<T, TQ>(this IList<T> array, Func<T, TQ> selector, Func<TQ, TQ, bool> isSecondMin, TQ maxValue)
+        public static T WithMin_NoAlloc<T, TQ>(
+            this IList<T> array,
+            Func<T, TQ> selector,
+            Func<TQ, TQ, bool> isSecondMin,
+            TQ maxValue)
         {
             var m = maxValue;
             var index = -1;
@@ -1288,7 +1337,11 @@ namespace Appalachia.Core.Extensions
             return array[index];
         }
 
-        public static T WithMax_NoAlloc<T, TQ>(this IList<T> array, Func<T, TQ> selector, Func<TQ, TQ, bool> isSecondMax, TQ minValue)
+        public static T WithMax_NoAlloc<T, TQ>(
+            this IList<T> array,
+            Func<T, TQ> selector,
+            Func<TQ, TQ, bool> isSecondMax,
+            TQ minValue)
         {
             var m = minValue;
             var index = -1;

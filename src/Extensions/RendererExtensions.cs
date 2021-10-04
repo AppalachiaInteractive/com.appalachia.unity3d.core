@@ -81,7 +81,10 @@ namespace Appalachia.Core.Extensions
 
             if (!contributeGI)
             {
-                GameObjectUtility.SetStaticEditorFlags(renderer.gameObject, StaticEditorFlags.ContributeGI);
+                GameObjectUtility.SetStaticEditorFlags(
+                    renderer.gameObject,
+                    StaticEditorFlags.ContributeGI
+                );
                 save = true;
             }
 

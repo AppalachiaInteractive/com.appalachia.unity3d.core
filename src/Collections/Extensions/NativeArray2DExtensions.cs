@@ -20,7 +20,11 @@ namespace Appalachia.Core.Collections.Extensions
             else if ((native.Capacity0 < capacity0) || (native.Capacity1 < capacity1))
             {
                 native.Dispose();
-                native = new NativeArray2D<T>(math.max(native.Capacity0, capacity0), math.max(native.Capacity1, capacity1), allocator);
+                native = new NativeArray2D<T>(
+                    math.max(native.Capacity0, capacity0),
+                    math.max(native.Capacity1, capacity1),
+                    allocator
+                );
             }
         }
 
@@ -46,7 +50,14 @@ namespace Appalachia.Core.Collections.Extensions
             Allocator allocator = Allocator.Persistent)
             where T : struct
         {
-            EnsureCapacityAndLength(ref native, capacity0, capacity1, capacity0, capacity1, allocator);
+            EnsureCapacityAndLength(
+                ref native,
+                capacity0,
+                capacity1,
+                capacity0,
+                capacity1,
+                allocator
+            );
         }
     }
 }

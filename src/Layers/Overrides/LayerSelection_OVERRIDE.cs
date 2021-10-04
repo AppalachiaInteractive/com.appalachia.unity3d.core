@@ -8,16 +8,22 @@ using Appalachia.Core.Overrides;
 namespace Appalachia.Core.Layers.Overrides
 {
     [Serializable]
-    public sealed class LayerSelection_OVERRIDE : Overridable<LayerSelection, LayerSelection_OVERRIDE>
-    { public LayerSelection_OVERRIDE() : base(false, default){}
-        public LayerSelection_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, LayerSelection value) : base(
-            overrideEnabled,
-            value
-        )
+    public sealed class
+        LayerSelection_OVERRIDE : Overridable<LayerSelection, LayerSelection_OVERRIDE>
+    {
+        public LayerSelection_OVERRIDE() : base(false, default)
         {
         }
 
-        public LayerSelection_OVERRIDE(Overridable<LayerSelection, LayerSelection_OVERRIDE> value) : base(value)
+        public LayerSelection_OVERRIDE(
+            bool isOverridingAllowed,
+            bool overrideEnabled,
+            LayerSelection value) : base(overrideEnabled, value)
+        {
+        }
+
+        public LayerSelection_OVERRIDE(
+            Overridable<LayerSelection, LayerSelection_OVERRIDE> value) : base(value)
         {
         }
     }

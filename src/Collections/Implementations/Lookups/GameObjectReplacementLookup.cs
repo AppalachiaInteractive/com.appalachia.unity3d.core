@@ -9,7 +9,8 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Implementations.Lookups
 {
     [Serializable]
-    public class GameObjectReplacementLookup : AppaLookup<GameObject, GameObject, AppaList_GameObject, AppaList_GameObject>
+    public class GameObjectReplacementLookup : AppaLookup<GameObject, GameObject,
+        AppaList_GameObject, AppaList_GameObject>
     {
         protected override string GetDisplayTitle(GameObject key, GameObject value)
         {

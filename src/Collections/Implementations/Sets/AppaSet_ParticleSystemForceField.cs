@@ -9,7 +9,9 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_ParticleSystemForceField : AppaSet<ParticleSystemForceField, AppaList_ParticleSystemForceField>
+    public sealed class
+        AppaSet_ParticleSystemForceField : AppaSet<ParticleSystemForceField,
+            AppaList_ParticleSystemForceField>
     {
     }
 }

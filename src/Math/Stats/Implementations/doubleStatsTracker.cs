@@ -14,9 +14,9 @@ namespace Appalachia.Core.Math.Stats.Implementations
 
         private static readonly Comparison<double> _comparison = (v1, v2) => v1.CompareTo(v2);
 
-        private static readonly ProfilerMarker _PRF_Format = new ProfilerMarker(_PRF_PFX + nameof(Format));
-        private static readonly ProfilerMarker _PRF_Transform = new ProfilerMarker(_PRF_PFX + nameof(Transform));
-        private static readonly ProfilerMarker _PRF_Suffix = new ProfilerMarker(_PRF_PFX + nameof(Suffix));
+        private static readonly ProfilerMarker _PRF_Format = new(_PRF_PFX + nameof(Format));
+        private static readonly ProfilerMarker _PRF_Transform = new(_PRF_PFX + nameof(Transform));
+        private static readonly ProfilerMarker _PRF_Suffix = new(_PRF_PFX + nameof(Suffix));
         protected override Comparison<double> Comparer => _comparison;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,8 +51,6 @@ namespace Appalachia.Core.Math.Stats.Implementations
                 }
             }
         }
-        
-        
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override double Transform(double value, TransformationType type)

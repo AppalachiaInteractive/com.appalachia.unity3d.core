@@ -4,7 +4,10 @@ namespace Appalachia.Core.Labels
 {
     public struct LabelAssignmentCollection
     {
-        public LabelAssignmentCollection(string baseTerm, Vector3 multiplier, params LabelAssignmentTerm[] terms)
+        public LabelAssignmentCollection(
+            string baseTerm,
+            Vector3 multiplier,
+            params LabelAssignmentTerm[] terms)
         {
             this.baseTerm = baseTerm;
             this.terms = terms;

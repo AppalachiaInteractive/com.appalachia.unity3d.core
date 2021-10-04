@@ -9,12 +9,15 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace Appalachia.Core.Collections.Native
 {
-    [DebuggerDisplay("Length0 = {Length0}, Length1 = {Length1}, Capacity0 = {Capacity0}, Capacity1 = {Capacity1}")]
+    [DebuggerDisplay(
+        "Length0 = {Length0}, Length1 = {Length1}, Capacity0 = {Capacity0}, Capacity1 = {Capacity1}"
+    )]
     [DebuggerTypeProxy(typeof(NativeKeyArray2DDebugView<,>))]
     [NativeContainer]
     [NativeContainerSupportsDeallocateOnJobCompletion]
     [NativeContainerSupportsMinMaxWriteRestriction]
-    public unsafe struct NativeKeyArray2D<TK, TV> : IDisposable, IEquatable<NativeKeyArray2D<TK, TV>>
+    public unsafe struct NativeKeyArray2D<TK, TV> : IDisposable,
+                                                    IEquatable<NativeKeyArray2D<TK, TV>>
         where TK : struct
         where TV : struct
     {
@@ -38,7 +41,11 @@ namespace Appalachia.Core.Collections.Native
 
         internal Allocator m_AllocatorLabel;
 
-        public NativeKeyArray2D(int length0, int length1, Allocator allocator, NativeArrayOptions options = NativeArrayOptions.ClearMemory)
+        public NativeKeyArray2D(
+            int length0,
+            int length1,
+            Allocator allocator,
+            NativeArrayOptions options = NativeArrayOptions.ClearMemory)
         {
             Allocate(length0, length1, allocator, out this);
             if ((options & NativeArrayOptions.ClearMemory) == NativeArrayOptions.ClearMemory)
@@ -110,20 +117,48 @@ namespace Appalachia.Core.Collections.Native
         {
             get
             {
-                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, 0, Length1, Capacity1);
+                SafetyUtility.RequireIndexInBounds(
+                    index0,
+                    Length0,
+                    Capacity0,
+                    0,
+                    Length1,
+                    Capacity1
+                );
 
                 var index = GetIndex(index0, 0);
-                SafetyUtility.CheckElementReadAccess(m_Safety, index, m_MinIndex, m_MaxIndex, TotalCapacity, TotalCapacity);
+                SafetyUtility.CheckElementReadAccess(
+                    m_Safety,
+                    index,
+                    m_MinIndex,
+                    m_MaxIndex,
+                    TotalCapacity,
+                    TotalCapacity
+                );
                 return UnsafeUtility.ReadArrayElement<TK>(m_BufferKeys, index);
             }
 
             [WriteAccessRequired]
             set
             {
-                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, 0, Length1, Capacity1);
+                SafetyUtility.RequireIndexInBounds(
+                    index0,
+                    Length0,
+                    Capacity0,
+                    0,
+                    Length1,
+                    Capacity1
+                );
 
                 var index = GetIndex(index0, 0);
-                SafetyUtility.CheckElementWriteAccess(m_Safety, index, m_MinIndex, m_MaxIndex, TotalCapacity, TotalCapacity);
+                SafetyUtility.CheckElementWriteAccess(
+                    m_Safety,
+                    index,
+                    m_MinIndex,
+                    m_MaxIndex,
+                    TotalCapacity,
+                    TotalCapacity
+                );
                 UnsafeUtility.WriteArrayElement(m_BufferKeys, index, value);
             }
         }
@@ -132,20 +167,48 @@ namespace Appalachia.Core.Collections.Native
         {
             get
             {
-                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
+                SafetyUtility.RequireIndexInBounds(
+                    index0,
+                    Length0,
+                    Capacity0,
+                    index1,
+                    Length1,
+                    Capacity1
+                );
 
                 var index = GetIndex(index0, index1);
-                SafetyUtility.CheckElementReadAccess(m_Safety, index, m_MinIndex, m_MaxIndex, TotalCapacity, TotalCapacity);
+                SafetyUtility.CheckElementReadAccess(
+                    m_Safety,
+                    index,
+                    m_MinIndex,
+                    m_MaxIndex,
+                    TotalCapacity,
+                    TotalCapacity
+                );
                 return UnsafeUtility.ReadArrayElement<TV>(m_Buffer, index);
             }
 
             [WriteAccessRequired]
             set
             {
-                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
+                SafetyUtility.RequireIndexInBounds(
+                    index0,
+                    Length0,
+                    Capacity0,
+                    index1,
+                    Length1,
+                    Capacity1
+                );
 
                 var index = GetIndex(index0, index1);
-                SafetyUtility.CheckElementWriteAccess(m_Safety, index, m_MinIndex, m_MaxIndex, TotalCapacity, TotalCapacity);
+                SafetyUtility.CheckElementWriteAccess(
+                    m_Safety,
+                    index,
+                    m_MinIndex,
+                    m_MaxIndex,
+                    TotalCapacity,
+                    TotalCapacity
+                );
                 UnsafeUtility.WriteArrayElement(m_Buffer, index, value);
             }
         }
@@ -198,7 +261,11 @@ namespace Appalachia.Core.Collections.Native
             Capacity1 = 0;
         }
 
-        private static void Allocate(int capacity0, int capacity1, Allocator allocator, out NativeKeyArray2D<TK, TV> array)
+        private static void Allocate(
+            int capacity0,
+            int capacity1,
+            Allocator allocator,
+            out NativeKeyArray2D<TK, TV> array)
         {
             SafetyUtility.RequireValidAllocator<NativeKeyArray2D<TK, TV>>(allocator);
             SafetyUtility.IsUnmanagedAndThrow<NativeKeyArray2D<TK, TV>, TK, TV>();
@@ -207,13 +274,25 @@ namespace Appalachia.Core.Collections.Native
 
             if (totalCapacity <= 0)
             {
-                throw new InvalidOperationException("Total number of elements must be greater than zero");
+                throw new InvalidOperationException(
+                    "Total number of elements must be greater than zero"
+                );
             }
 
             array = new NativeKeyArray2D<TK, TV>
             {
-                m_Buffer = UnsafeUtility.Malloc(totalCapacity * UnsafeUtility.SizeOf<TV>(), UnsafeUtility.AlignOf<TV>(), allocator),
-                m_BufferKeys = UnsafeUtility.Malloc(capacity0 * UnsafeUtility.SizeOf<TK>(), UnsafeUtility.AlignOf<TK>(), allocator),
+                m_Buffer =
+                    UnsafeUtility.Malloc(
+                        totalCapacity * UnsafeUtility.SizeOf<TV>(),
+                        UnsafeUtility.AlignOf<TV>(),
+                        allocator
+                    ),
+                m_BufferKeys =
+                    UnsafeUtility.Malloc(
+                        capacity0 * UnsafeUtility.SizeOf<TK>(),
+                        UnsafeUtility.AlignOf<TK>(),
+                        allocator
+                    ),
                 Capacity0 = capacity0,
                 Capacity1 = capacity1,
                 _length0 = capacity0,

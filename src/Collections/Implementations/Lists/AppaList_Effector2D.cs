@@ -14,11 +14,10 @@ namespace Appalachia.Core.Collections.Implementations.Lists
         {
         }
 
-        public AppaList_Effector2D(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) : base(
-            capacity,
-            capacityIncreaseMultiplier,
-            noTracking
-        )
+        public AppaList_Effector2D(
+            int capacity,
+            float capacityIncreaseMultiplier = 2,
+            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

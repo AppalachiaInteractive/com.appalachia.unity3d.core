@@ -89,7 +89,12 @@ namespace Appalachia.Core.Collections.Native
 	        /// <param name="endChunkIndex">
 	        ///     Index of the element in the last chunk to enumerate
 	        /// </param>
-	        internal ChunksEnumerable(NativeChunkedList<T> list, int startChunksIndex, int startChunkIndex, int endChunksIndex, int endChunkIndex)
+	        internal ChunksEnumerable(
+                NativeChunkedList<T> list,
+                int startChunksIndex,
+                int startChunkIndex,
+                int endChunksIndex,
+                int endChunkIndex)
             {
                 m_List = list;
                 m_StartChunksIndex = startChunksIndex;
@@ -113,7 +118,8 @@ namespace Appalachia.Core.Collections.Native
 	        /// </returns>
 	        public ChunksEnumerator GetEnumerator()
             {
-                return new ChunksEnumerator(m_List, m_StartChunksIndex, m_StartChunkIndex, m_EndChunksIndex, m_EndChunkIndex);
+                return new(m_List, m_StartChunksIndex, m_StartChunkIndex, m_EndChunksIndex,
+                    m_EndChunkIndex);
             }
 
 	        /// <summary>
@@ -222,7 +228,12 @@ namespace Appalachia.Core.Collections.Native
 	        /// <param name="endChunkIndex">
 	        ///     Index of the element in the last chunk to enumerate
 	        /// </param>
-	        internal ChunksEnumerator(NativeChunkedList<T> list, int startChunksIndex, int startChunkIndex, int endChunksIndex, int endChunkIndex)
+	        internal ChunksEnumerator(
+                NativeChunkedList<T> list,
+                int startChunksIndex,
+                int startChunkIndex,
+                int endChunksIndex,
+                int endChunkIndex)
             {
                 m_List = list;
                 m_Index = startChunksIndex - 1;
@@ -300,7 +311,13 @@ namespace Appalachia.Core.Collections.Native
                     // Create the enumerator
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                     var baseIndex = state->m_ChunkLength * m_Index;
-                    return new ChunkEnumerable(m_List, chunk, startChunkIndex, endChunkIndex, baseIndex);
+                    return new ChunkEnumerable(
+                        m_List,
+                        chunk,
+                        startChunkIndex,
+                        endChunkIndex,
+                        baseIndex
+                    );
 #else
 					return new ChunkEnumerable(
 						m_List,
@@ -369,7 +386,10 @@ namespace Appalachia.Core.Collections.Native
             public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(
+                    m_List.m_Safety,
+                    allowReadOrWriteAccess
+                );
 #endif
             }
         }
@@ -457,14 +477,9 @@ namespace Appalachia.Core.Collections.Native
 	        /// </returns>
 	        public ChunkEnumerator GetEnumerator()
             {
-                return new ChunkEnumerator(
-                    m_List,
-                    m_Chunk,
-                    m_StartChunkIndex,
-                    m_EndChunkIndex
+                return new(m_List, m_Chunk, m_StartChunkIndex, m_EndChunkIndex
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                    ,
-                    m_BaseIndex
+                    , m_BaseIndex
 #endif
                 );
             }
@@ -688,7 +703,9 @@ namespace Appalachia.Core.Collections.Native
 	        ///     job but set lower by ParallelFor jobs.
 	        /// </param>
 	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
+            public void TestUseOnlySetParallelForSafetyCheckRange(
+                int minIndex = -1,
+                int maxIndex = -1)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 m_List.m_MinIndex = minIndex;
@@ -709,7 +726,10 @@ namespace Appalachia.Core.Collections.Native
             public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(
+                    m_List.m_Safety,
+                    allowReadOrWriteAccess
+                );
 #endif
             }
         }
@@ -827,7 +847,9 @@ namespace Appalachia.Core.Collections.Native
 	        ///     job but set lower by ParallelFor jobs.
 	        /// </param>
 	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
+            public void TestUseOnlySetParallelForSafetyCheckRange(
+                int minIndex = -1,
+                int maxIndex = -1)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 m_List.m_MinIndex = minIndex;
@@ -848,7 +870,10 @@ namespace Appalachia.Core.Collections.Native
             public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(
+                    m_List.m_Safety,
+                    allowReadOrWriteAccess
+                );
 #endif
             }
         }
@@ -925,7 +950,10 @@ namespace Appalachia.Core.Collections.Native
             // Require a valid allocator
             if (allocator <= Allocator.None)
             {
-                throw new ArgumentException("Allocator must be Temp, TempJob or Persistent", nameof(allocator));
+                throw new ArgumentException(
+                    "Allocator must be Temp, TempJob or Persistent",
+                    nameof(allocator)
+                );
             }
 
             RequireBlittable();
@@ -1028,7 +1056,11 @@ namespace Appalachia.Core.Collections.Native
                         );
 
                         // Copy the old chunk pointers to the new chunk pointers
-                        UnsafeUtility.MemCpy(chunks, m_State->m_Chunks, sizeof(NativeChunkedListChunk) * numOldChunks);
+                        UnsafeUtility.MemCpy(
+                            chunks,
+                            m_State->m_Chunks,
+                            sizeof(NativeChunkedListChunk) * numOldChunks
+                        );
 
                         // Free the old chunk pointers
                         UnsafeUtility.Free(m_State->m_Chunks, m_State->m_AllocatorLabel);
@@ -1109,7 +1141,7 @@ namespace Appalachia.Core.Collections.Native
 	    /// </value>
 	    public Enumerator GetEnumerator()
         {
-            return new Enumerator(this);
+            return new(this);
         }
 
 	    /// <summary>
@@ -1151,7 +1183,8 @@ namespace Appalachia.Core.Collections.Native
 	    ///     An enumerator to the chunk at index -1.
 	    /// </value>
 	    public ChunksEnumerable Chunks =>
-            new ChunksEnumerable(this, 0, 0, m_State->m_ChunksLength - 1, (m_State->m_Length - 1) % m_State->m_ChunkLength);
+            new(this, 0, 0, m_State->m_ChunksLength - 1, (m_State->m_Length - 1) %
+                                                         m_State->m_ChunkLength);
 
 	    /// <summary>
 	    ///     Get an enumerator over the chunks starting at the chunk before the
@@ -1676,7 +1709,11 @@ namespace Appalachia.Core.Collections.Native
 	    ///     Either the given non-null array or a newly-allocated array with the
 	    ///     specified element values copied into it.
 	    /// </returns>
-	    public NativeArray<T> ToNativeArray(NativeArray<T> array = default, int startIndex = 0, int destIndex = 0, int length = -1)
+	    public NativeArray<T> ToNativeArray(
+            NativeArray<T> array = default,
+            int startIndex = 0,
+            int destIndex = 0,
+            int length = -1)
         {
             CheckReadAccess();
 
@@ -1698,7 +1735,11 @@ namespace Appalachia.Core.Collections.Native
             {
                 // No need to clear the array since we're about to overwrite its
                 // entire contents
-                array = new NativeArray<T>(length, m_State->m_AllocatorLabel, NativeArrayOptions.UninitializedMemory);
+                array = new NativeArray<T>(
+                    length,
+                    m_State->m_AllocatorLabel,
+                    NativeArrayOptions.UninitializedMemory
+                );
             }
 
             // If dest index is invalid, copy to the start
@@ -1873,7 +1914,8 @@ namespace Appalachia.Core.Collections.Native
                 if (m_Length != m_State->m_Length)
                 {
                     throw new IndexOutOfRangeException(
-                        "List can't be used in a ParallelFor job. Call " + "PrepareForParallelFor before executing the job."
+                        "List can't be used in a ParallelFor job. Call " +
+                        "PrepareForParallelFor before executing the job."
                     );
                 }
 
@@ -1974,18 +2016,24 @@ namespace Appalachia.Core.Collections.Native
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (length < 0)
             {
-                throw new IndexOutOfRangeException("Invalid range length specified. Range lengths must be " + "non-negative");
+                throw new IndexOutOfRangeException(
+                    "Invalid range length specified. Range lengths must be " + "non-negative"
+                );
             }
 
             if (startIndex < 0)
             {
-                throw new IndexOutOfRangeException("Invalid range start index specified. Range start " + "indices must be non-negative.");
+                throw new IndexOutOfRangeException(
+                    "Invalid range start index specified. Range start " +
+                    "indices must be non-negative."
+                );
             }
 
             if ((startIndex + length) > array.Length)
             {
                 throw new IndexOutOfRangeException(
-                    "Invalid range end index specified for array. Range end " + "indices must be less than the array length."
+                    "Invalid range end index specified for array. Range end " +
+                    "indices must be less than the array length."
                 );
             }
 #endif
@@ -2010,18 +2058,24 @@ namespace Appalachia.Core.Collections.Native
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (length < 0)
             {
-                throw new IndexOutOfRangeException("Invalid range length specified. Range lengths must be " + "non-negative");
+                throw new IndexOutOfRangeException(
+                    "Invalid range length specified. Range lengths must be " + "non-negative"
+                );
             }
 
             if (startIndex < 0)
             {
-                throw new IndexOutOfRangeException("Invalid range start index specified. Range start " + "indices must be non-negative.");
+                throw new IndexOutOfRangeException(
+                    "Invalid range start index specified. Range start " +
+                    "indices must be non-negative."
+                );
             }
 
             if ((startIndex + length) > array.Length)
             {
                 throw new IndexOutOfRangeException(
-                    "Invalid range end index specified for array. Range end " + "indices must be less than the array length."
+                    "Invalid range end index specified for array. Range end " +
+                    "indices must be less than the array length."
                 );
             }
 #endif
@@ -2049,12 +2103,16 @@ namespace Appalachia.Core.Collections.Native
 
             if (endIndex >= m_State->m_Length)
             {
-                throw new IndexOutOfRangeException("Invalid end index. It must be less than the length.");
+                throw new IndexOutOfRangeException(
+                    "Invalid end index. It must be less than the length."
+                );
             }
 
             if (startIndex > endIndex)
             {
-                throw new IndexOutOfRangeException("Invalid range. The start must be less than or equal to " + "the end.");
+                throw new IndexOutOfRangeException(
+                    "Invalid range. The start must be less than or equal to " + "the end."
+                );
             }
 #endif
         }

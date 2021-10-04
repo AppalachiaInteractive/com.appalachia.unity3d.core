@@ -8,7 +8,10 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class RenderTextureParameter : VolumeParameter<RenderTexture>
     {
-        public RenderTextureParameter(RenderTexture value, bool overrideState = false) : base(value, overrideState)
+        public RenderTextureParameter(RenderTexture value, bool overrideState = false) : base(
+            value,
+            overrideState
+        )
         {
         }
 

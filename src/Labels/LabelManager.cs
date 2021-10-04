@@ -24,8 +24,8 @@ namespace Appalachia.Core.Labels
         private static ValueDropdownList<string> _labelDropdownList;
 
         private static Dictionary<Type, Dictionary<object, string>> _enumTypeLookup;
-        
-        public static List<LabelData> labelDatas = new List<LabelData>();
+
+        public static List<LabelData> labelDatas = new();
         public static bool Initialized => labelDatas?.Count > 0;
 
         public static string[] strings
@@ -58,9 +58,16 @@ namespace Appalachia.Core.Labels
         {
             var labels = new Dictionary<string, int>();
 
-            var assetPaths = AssetDatabase.FindAssets("t:Prefab").Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            var assetPaths = AssetDatabase.FindAssets("t:Prefab")
+                                          .Select(AssetDatabase.GUIDToAssetPath)
+                                          .ToArray();
 
-            using (var progress = new EditorOnlyProgressBar("Building label list...", assetPaths.Length, true, 200))
+            using (var progress = new EditorOnlyProgressBar(
+                "Building label list...",
+                assetPaths.Length,
+                true,
+                200
+            ))
             {
                 for (var i = 0; i < assetPaths.Length; i++)
                 {
@@ -165,7 +172,8 @@ namespace Appalachia.Core.Labels
         {
             var assets = AssetDatabase.FindAssets($"l:{collection.baseTerm} t:Prefab");
 
-            var statsTracker = new StatsTrackerCollection<floatStatsTracker, float>(collection.terms.Length);
+            var statsTracker =
+                new StatsTrackerCollection<floatStatsTracker, float>(collection.terms.Length);
 
             using (new AssetEditingScope())
             {
@@ -189,9 +197,9 @@ namespace Appalachia.Core.Labels
 
                     var bounds = renderers[0].bounds;
                     var size = bounds.size;
-                    
+
                     var effectiveSize = Vector3.Scale(size, collection.multiplier);
-                    
+
                     var magnitude = effectiveSize.magnitude;
 
                     var matched = false;
@@ -201,7 +209,9 @@ namespace Appalachia.Core.Labels
                     {
                         var term = collection.terms[termIndex];
 
-                        if (!matched && ((magnitude < term.allowedMagnitude) || (termIndex == (collection.terms.Length - 1))))
+                        if (!matched &&
+                            ((magnitude < term.allowedMagnitude) ||
+                             (termIndex == (collection.terms.Length - 1))))
                         {
                             if (!labelHash.Contains(term.term))
                             {
@@ -238,7 +248,9 @@ namespace Appalachia.Core.Labels
                     //var median = statsTracker[termIndex].Median;
 
                     //Debug.Log($"[{term}]:  [ {count} ]  ||  Min: {min:F1}  Max: {max:F1}  Mean: {average:F1}  Median: {median:F1}");
-                    Debug.Log($"[{term}]:  [ {count} ]  ||  Min: {min:F1}  Max: {max:F1}  Mean: {average:F1}");
+                    Debug.Log(
+                        $"[{term}]:  [ {count} ]  ||  Min: {min:F1}  Max: {max:F1}  Mean: {average:F1}"
+                    );
                 }
             }
         }
@@ -262,7 +274,6 @@ namespace Appalachia.Core.Labels
             else
             {
                 _enumTypeLookup[typeof(T)][value] = label;
-                
             }
         }
 
@@ -283,7 +294,7 @@ namespace Appalachia.Core.Labels
             var changed = false;
 
             var lookupType = typeof(T);
-            
+
             if (!_enumTypeLookup.ContainsKey(lookupType))
             {
                 return;
@@ -298,7 +309,7 @@ namespace Appalachia.Core.Labels
 
             foreach (var possibleLabel in typeLookup)
             {
-                if (((T)possibleLabel.Key).Equals(value))
+                if (((T) possibleLabel.Key).Equals(value))
                 {
                     if (!labelHash.Contains(possibleLabel.Value))
                     {
@@ -321,7 +332,5 @@ namespace Appalachia.Core.Labels
                 AssetDatabase.SetLabels(asset, labelHash.ToArray());
             }
         }
-
-        
     }
 }

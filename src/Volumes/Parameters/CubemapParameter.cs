@@ -8,7 +8,10 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class CubemapParameter : VolumeParameter<Cubemap>
     {
-        public CubemapParameter(Cubemap value, bool overrideState = false) : base(value, overrideState)
+        public CubemapParameter(Cubemap value, bool overrideState = false) : base(
+            value,
+            overrideState
+        )
         {
         }
 

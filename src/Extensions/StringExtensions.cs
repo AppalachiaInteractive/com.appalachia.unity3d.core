@@ -45,7 +45,10 @@ namespace Appalachia.Core.Extensions
                 }
             }
 
-            if (caps == 0) return value;
+            if (caps == 0)
+            {
+                return value;
+            }
 
             var chars = new char[value.Length + caps];
 
@@ -55,7 +58,7 @@ namespace Appalachia.Core.Extensions
             {
                 var character = value[i];
 
-                if (i > 0 && char.IsUpper(character))
+                if ((i > 0) && char.IsUpper(character))
                 {
                     chars[outIndex] = ' ';
                     outIndex += 1;

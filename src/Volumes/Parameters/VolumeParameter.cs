@@ -50,7 +50,8 @@ namespace Appalachia.Core.Volumes.Parameters
 
         public static bool IsObjectParameter(Type type)
         {
-            if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(ObjectParameter<>)))
+            if (type.IsGenericType &&
+                (type.GetGenericTypeDefinition() == typeof(ObjectParameter<>)))
             {
                 return true;
             }

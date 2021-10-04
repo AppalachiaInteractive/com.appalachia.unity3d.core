@@ -10,11 +10,10 @@ namespace Appalachia.Core.Collections.Implementations.Lists
     [Serializable]
     public sealed class AppaList_HashSetOfint : AppaList<HashSet<int>>
     {
-        public AppaList_HashSetOfint(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) : base(
-            capacity,
-            capacityIncreaseMultiplier,
-            noTracking
-        )
+        public AppaList_HashSetOfint(
+            int capacity,
+            float capacityIncreaseMultiplier = 2,
+            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

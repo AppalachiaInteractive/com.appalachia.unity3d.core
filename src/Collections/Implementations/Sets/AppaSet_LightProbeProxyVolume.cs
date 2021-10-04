@@ -9,7 +9,9 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_LightProbeProxyVolume : AppaSet<LightProbeProxyVolume, AppaList_LightProbeProxyVolume>
+    public sealed class
+        AppaSet_LightProbeProxyVolume : AppaSet<LightProbeProxyVolume,
+            AppaList_LightProbeProxyVolume>
     {
     }
 }

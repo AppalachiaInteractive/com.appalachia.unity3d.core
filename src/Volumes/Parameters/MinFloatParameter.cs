@@ -10,7 +10,10 @@ namespace Appalachia.Core.Volumes.Parameters
     {
         public float min;
 
-        public MinFloatParameter(float value, float min, bool overrideState = false) : base(value, overrideState)
+        public MinFloatParameter(float value, float min, bool overrideState = false) : base(
+            value,
+            overrideState
+        )
         {
             this.min = min;
         }

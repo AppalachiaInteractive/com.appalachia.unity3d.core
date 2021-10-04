@@ -1,9 +1,10 @@
+using UnityEditor;
 
 namespace Appalachia.Core.Attributes
 {
     public class AlwaysInitializeOnLoadAttribute
 #if UNITY_EDITOR
-        : UnityEditor.InitializeOnLoadAttribute
+        : InitializeOnLoadAttribute
 #else
         : Attribute
 #endif

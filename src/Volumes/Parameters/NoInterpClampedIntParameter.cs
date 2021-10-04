@@ -11,10 +11,8 @@ namespace Appalachia.Core.Volumes.Parameters
         public int min;
         public int max;
 
-        public NoInterpClampedIntParameter(int value, int min, int max, bool overrideState = false) : base(
-            value,
-            overrideState
-        )
+        public NoInterpClampedIntParameter(int value, int min, int max, bool overrideState = false)
+            : base(value, overrideState)
         {
             this.min = min;
             this.max = max;

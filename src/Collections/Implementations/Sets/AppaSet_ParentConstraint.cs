@@ -9,7 +9,8 @@ using UnityEngine.Animations;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_ParentConstraint : AppaSet<ParentConstraint, AppaList_ParentConstraint>
+    public sealed class
+        AppaSet_ParentConstraint : AppaSet<ParentConstraint, AppaList_ParentConstraint>
     {
     }
 }

@@ -11,7 +11,10 @@ namespace Appalachia.Core.Extensions
 {
     public static class MeshExtensions
     {
-        public static void GetVolumeAndCenterOfMass(this IReadOnlyList<Mesh> meshes, out float volume, out Vector3 centerOfMass)
+        public static void GetVolumeAndCenterOfMass(
+            this IReadOnlyList<Mesh> meshes,
+            out float volume,
+            out Vector3 centerOfMass)
         {
             var volumes = new float[meshes.Count];
             var centersOfMass = new Vector3[meshes.Count];
@@ -19,7 +22,13 @@ namespace Appalachia.Core.Extensions
             for (var index = 0; index < meshes.Count; index++)
             {
                 var mesh = meshes[index];
-                GetVolumeAndCenterOfMass(mesh, true, out volumes[index], true, out centersOfMass[index]);
+                GetVolumeAndCenterOfMass(
+                    mesh,
+                    true,
+                    out volumes[index],
+                    true,
+                    out centersOfMass[index]
+                );
             }
 
             volume = 0.0f;
@@ -73,7 +82,10 @@ namespace Appalachia.Core.Extensions
             return volume;
         }
 
-        public static void GetVolumeAndCenterOfMass(this Mesh[] meshes, out float volume, out Vector3 centerOfMass)
+        public static void GetVolumeAndCenterOfMass(
+            this Mesh[] meshes,
+            out float volume,
+            out Vector3 centerOfMass)
         {
             var volumes = new float[meshes.Length];
             var centersOfMass = new Vector3[meshes.Length];
@@ -81,7 +93,13 @@ namespace Appalachia.Core.Extensions
             for (var index = 0; index < meshes.Length; index++)
             {
                 var mesh = meshes[index];
-                GetVolumeAndCenterOfMass(mesh, true, out volumes[index], true, out centersOfMass[index]);
+                GetVolumeAndCenterOfMass(
+                    mesh,
+                    true,
+                    out volumes[index],
+                    true,
+                    out centersOfMass[index]
+                );
             }
 
             volume = 0.0f;
@@ -128,7 +146,10 @@ namespace Appalachia.Core.Extensions
             return volume;
         }
 
-        public static void GetVolumeAndCenterOfMass(this Mesh mesh, out float volume, out Vector3 centerOfMass)
+        public static void GetVolumeAndCenterOfMass(
+            this Mesh mesh,
+            out float volume,
+            out Vector3 centerOfMass)
         {
             GetVolumeAndCenterOfMass(mesh, true, out volume, true, out centerOfMass);
         }
@@ -154,7 +175,14 @@ namespace Appalachia.Core.Extensions
             bool calculateCenterOfMass,
             out Vector3 centerOfMass)
         {
-            GetVolumeAndCenterOfMass(mesh.vertices, mesh.triangles, calculateVolume, out volume, calculateCenterOfMass, out centerOfMass);
+            GetVolumeAndCenterOfMass(
+                mesh.vertices,
+                mesh.triangles,
+                calculateVolume,
+                out volume,
+                calculateCenterOfMass,
+                out centerOfMass
+            );
         }
 
         /*public static void GetVolumeAndCenterOfMass(this MeshObject mesh, 
@@ -252,7 +280,8 @@ namespace Appalachia.Core.Extensions
             }
 
             centerOfMass /= volume > 0 ? volume : 1f;
-        }*/ /**/
+        }*/
+        /**/
 
         private static float SignedVolumeOfTriangle(float3 p1, float3 p2, float3 p3)
         {

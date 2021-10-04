@@ -9,7 +9,10 @@ namespace Appalachia.Core.Collections.Extensions
         public static unsafe void ClearMemory<T>(this NativeList<T> native)
             where T : unmanaged
         {
-            UnsafeUtility.MemClear(native.GetUnsafePtr(), native.Length * UnsafeUtility.SizeOf<T>());
+            UnsafeUtility.MemClear(
+                native.GetUnsafePtr(),
+                native.Length * UnsafeUtility.SizeOf<T>()
+            );
         }
 
         public static void CompactMemory<T>(this NativeList<T> native)
@@ -19,7 +22,10 @@ namespace Appalachia.Core.Collections.Extensions
             native.Capacity = 0;
         }
 
-        public static void EnsureCapacity<T>(this ref NativeList<T> native, int capacity, Allocator allocator = Allocator.Persistent)
+        public static void EnsureCapacity<T>(
+            this ref NativeList<T> native,
+            int capacity,
+            Allocator allocator = Allocator.Persistent)
             where T : unmanaged
         {
             if (native.ShouldAllocate())
@@ -64,7 +70,10 @@ namespace Appalachia.Core.Collections.Extensions
             native.Length = length;
         }
 
-        public static void EnsureCapacityAndLength<T>(this ref NativeList<T> native, int length, Allocator allocator = Allocator.Persistent)
+        public static void EnsureCapacityAndLength<T>(
+            this ref NativeList<T> native,
+            int length,
+            Allocator allocator = Allocator.Persistent)
             where T : unmanaged
         {
             EnsureCapacityAndLength(ref native, length, length, length, allocator);

@@ -9,7 +9,9 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_PhysicsUpdateBehaviour2D : AppaSet<PhysicsUpdateBehaviour2D, AppaList_PhysicsUpdateBehaviour2D>
+    public sealed class
+        AppaSet_PhysicsUpdateBehaviour2D : AppaSet<PhysicsUpdateBehaviour2D,
+            AppaList_PhysicsUpdateBehaviour2D>
     {
     }
 }

@@ -5,18 +5,29 @@ using UnityEngine;
 namespace Appalachia.Core.Collections
 {
     [Serializable]
-    public abstract class AppaLookup2<TKey1, TKey2, TValue, TKey1List, TKey2List, TValueList, TNested, TNestedList> :
-        AppaLookup<TKey1, TNested, TKey1List, TNestedList>
+    public abstract class AppaLookup2<TKey1, TKey2, TValue, TKey1List, TKey2List, TValueList,
+                                      TNested, TNestedList> : AppaLookup<TKey1, TNested, TKey1List,
+        TNestedList>
         where TKey1List : AppaList<TKey1>, new()
         where TKey2List : AppaList<TKey2>, new()
         where TValueList : AppaList<TValue>, new()
         where TNested : AppaLookup<TKey2, TValue, TKey2List, TValueList>, new()
         where TNestedList : AppaList<TNested>, new()
     {
+        private const string _PRF_PFX =
+            nameof(AppaLookup2<TKey1, TKey2, TValue, TKey1List, TKey2List, TValueList, TNested,
+                TNestedList>) +
+            ".";
 
-        private const string _PRF_PFX = nameof(AppaLookup2<TKey1,TKey2,TValue,TKey1List,TKey2List,TValueList,TNested,TNestedList>) + ".";
+        private static readonly ProfilerMarker _PRF_AddOrUpdate =
+            new(_PRF_PFX + nameof(AddOrUpdate));
 
-        private static readonly ProfilerMarker _PRF_AddOrUpdate = new ProfilerMarker(_PRF_PFX + nameof(AddOrUpdate));
+        private static readonly ProfilerMarker _PRF_TryGetValue =
+            new(_PRF_PFX + nameof(TryGetValue));
+
+        private static readonly ProfilerMarker _PRF_TryGetValueWithFallback =
+            new(_PRF_PFX + nameof(TryGetValueWithFallback));
+
         public void AddOrUpdate(TKey1 primary, TKey2 secondary, TValue value)
         {
             using (_PRF_AddOrUpdate.Auto())
@@ -24,16 +35,14 @@ namespace Appalachia.Core.Collections
                 if (!TryGetValue(primary, out var sub))
                 {
                     sub = new TNested();
-                
-                    Add(primary, sub);;
+
+                    Add(primary, sub);
+                    ;
                 }
 
                 sub.AddOrUpdate(secondary, value);
             }
         }
-        
-        
-        private static readonly ProfilerMarker _PRF_TryGetValue = new ProfilerMarker(_PRF_PFX + nameof(TryGetValue));
 
         public bool TryGetValue(TKey1 primary, TKey2 secondary, out TValue value)
         {
@@ -52,8 +61,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_TryGetValueWithFallback = new ProfilerMarker(_PRF_PFX + nameof(TryGetValueWithFallback));
-
         public bool TryGetValueWithFallback(
             TKey1 primary,
             TKey2 secondary,
@@ -65,7 +72,7 @@ namespace Appalachia.Core.Collections
             using (_PRF_TryGetValueWithFallback.Auto())
             {
                 if (base.TryGetValue(primary, out var sub1))
-                {            
+                {
                     if (sub1.TryGet(secondary, out value))
                     {
                         return true;
@@ -75,7 +82,7 @@ namespace Appalachia.Core.Collections
                     {
                         Debug.LogWarning(logFallbackAttempt);
                     }
-                    
+
                     value = sub1.FirstWithPreference_NoAlloc(fallbackCheck, out var foundFallback);
 
                     if (foundFallback)
@@ -86,8 +93,7 @@ namespace Appalachia.Core.Collections
                     if (logFallbackFailure != null)
                     {
                         Debug.LogWarning(logFallbackFailure);
-                    }                       
-                    
+                    }
                 }
 
                 value = default;

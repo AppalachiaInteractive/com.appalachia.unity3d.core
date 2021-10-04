@@ -96,7 +96,10 @@ namespace Appalachia.Core.Collections.Native
             // Require a valid allocator
             if (allocator <= Allocator.None)
             {
-                throw new ArgumentException("Allocator must be Temp, TempJob or Persistent", nameof(allocator));
+                throw new ArgumentException(
+                    "Allocator must be Temp, TempJob or Persistent",
+                    nameof(allocator)
+                );
             }
 
             RequireBlittable();
@@ -126,8 +129,17 @@ namespace Appalachia.Core.Collections.Native
             // Allocate state arrays
             int nextOffset;
             int bucketOffset;
-            var totalSize = CalculateDataLayout(capacity, bucketLength, out nextOffset, out bucketOffset);
-            state->Items = (byte*) UnsafeUtility.Malloc(totalSize, JobsUtility.CacheLineSize, allocator);
+            var totalSize = CalculateDataLayout(
+                capacity,
+                bucketLength,
+                out nextOffset,
+                out bucketOffset
+            );
+            state->Items = (byte*) UnsafeUtility.Malloc(
+                totalSize,
+                JobsUtility.CacheLineSize,
+                allocator
+            );
             state->Next = state->Items + nextOffset;
             state->Buckets = state->Items + bucketOffset;
 
@@ -162,7 +174,10 @@ namespace Appalachia.Core.Collections.Native
                 var freeListSize = 0;
                 for (var tls = 0; tls < JobsUtility.MaxJobThreadCount; ++tls)
                 {
-                    for (var freeIdx = state->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine]; freeIdx >= 0; freeIdx = nextPtrs[freeIdx])
+                    for (var freeIdx =
+                            state->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine];
+                        freeIdx >= 0;
+                        freeIdx = nextPtrs[freeIdx])
                     {
                         ++freeListSize;
                     }
@@ -219,7 +234,8 @@ namespace Appalachia.Core.Collections.Native
             int idx;
             int* nextPtrs;
 
-            if ((m_State->AllocatedIndexLength >= m_State->ItemCapacity) && (m_State->FirstFreeTLS[0] < 0))
+            if ((m_State->AllocatedIndexLength >= m_State->ItemCapacity) &&
+                (m_State->FirstFreeTLS[0] < 0))
             {
                 for (var tls = 1; tls < JobsUtility.MaxJobThreadCount; ++tls)
                 {
@@ -227,7 +243,8 @@ namespace Appalachia.Core.Collections.Native
                     {
                         idx = m_State->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine];
                         nextPtrs = (int*) m_State->Next;
-                        m_State->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine] = nextPtrs[idx];
+                        m_State->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine] =
+                            nextPtrs[idx];
                         nextPtrs[idx] = -1;
                         m_State->FirstFreeTLS[0] = idx;
                         break;
@@ -544,7 +561,10 @@ namespace Appalachia.Core.Collections.Native
                 if (idx < 0)
                 {
                     // Try to refill local cache
-                    Interlocked.Exchange(ref state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine], -2);
+                    Interlocked.Exchange(
+                        ref state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine],
+                        -2
+                    );
 
                     // If it failed try to get one from the never-allocated array
                     if (state->AllocatedIndexLength < state->ItemCapacity)
@@ -560,18 +580,29 @@ namespace Appalachia.Core.Collections.Native
 
                             nextPtrs[(idx + count) - 1] = -1;
                             nextPtrs[idx] = -1;
-                            Interlocked.Exchange(ref state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine], idx + 1);
+                            Interlocked.Exchange(
+                                ref state->FirstFreeTLS[threadIndex *
+                                                        NativeHashSetState.IntsPerCacheLine],
+                                idx + 1
+                            );
                             return idx;
                         }
 
                         if (idx == (state->ItemCapacity - 1))
                         {
-                            Interlocked.Exchange(ref state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine], -1);
+                            Interlocked.Exchange(
+                                ref state->FirstFreeTLS[threadIndex *
+                                                        NativeHashSetState.IntsPerCacheLine],
+                                -1
+                            );
                             return idx;
                         }
                     }
 
-                    Interlocked.Exchange(ref state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine], -1);
+                    Interlocked.Exchange(
+                        ref state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine],
+                        -1
+                    );
 
                     // Failed to get any, try to get one from another free list
                     var again = true;
@@ -584,13 +615,15 @@ namespace Appalachia.Core.Collections.Native
                         {
                             do
                             {
-                                idx = state->FirstFreeTLS[other * NativeHashSetState.IntsPerCacheLine];
+                                idx = state->FirstFreeTLS[other *
+                                                          NativeHashSetState.IntsPerCacheLine];
                                 if (idx < 0)
                                 {
                                     break;
                                 }
                             } while (Interlocked.CompareExchange(
-                                         ref state->FirstFreeTLS[other * NativeHashSetState.IntsPerCacheLine],
+                                         ref state->FirstFreeTLS
+                                             [other * NativeHashSetState.IntsPerCacheLine],
                                          nextPtrs[idx],
                                          idx
                                      ) !=
@@ -615,14 +648,21 @@ namespace Appalachia.Core.Collections.Native
                 {
                     throw new InvalidOperationException("HashSet is full");
                 }
-            } while (Interlocked.CompareExchange(ref state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine], nextPtrs[idx], idx) !=
+            } while (Interlocked.CompareExchange(
+                         ref state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine],
+                         nextPtrs[idx],
+                         idx
+                     ) !=
                      idx);
 
             nextPtrs[idx] = -1;
             return idx;
         }
 
-        private static bool TryGetFirstValueAtomic(NativeHashSetState* state, T item, out NativeMultiHashSetIterator it)
+        private static bool TryGetFirstValueAtomic(
+            NativeHashSetState* state,
+            T item,
+            out NativeMultiHashSetIterator it)
         {
             it.Item = item;
             if (state->AllocatedIndexLength <= 0)
@@ -638,7 +678,9 @@ namespace Appalachia.Core.Collections.Native
             return TryGetNextValueAtomic(state, ref it);
         }
 
-        private static bool TryGetNextValueAtomic(NativeHashSetState* state, ref NativeMultiHashSetIterator it)
+        private static bool TryGetNextValueAtomic(
+            NativeHashSetState* state,
+            ref NativeMultiHashSetIterator it)
         {
             var entryIdx = it.NextEntryIndex;
             it.NextEntryIndex = -1;
@@ -753,9 +795,11 @@ namespace Appalachia.Core.Collections.Native
                             // else added it while trying to add
                             do
                             {
-                                nextPtrs[idx] = m_State->FirstFreeTLS[m_ThreadIndex * NativeHashSetState.IntsPerCacheLine];
+                                nextPtrs[idx] = m_State->FirstFreeTLS[m_ThreadIndex *
+                                    NativeHashSetState.IntsPerCacheLine];
                             } while (Interlocked.CompareExchange(
-                                         ref m_State->FirstFreeTLS[m_ThreadIndex * NativeHashSetState.IntsPerCacheLine],
+                                         ref m_State->FirstFreeTLS[m_ThreadIndex *
+                                             NativeHashSetState.IntsPerCacheLine],
                                          idx,
                                          nextPtrs[idx]
                                      ) !=
@@ -763,7 +807,8 @@ namespace Appalachia.Core.Collections.Native
 
                             return false;
                         }
-                    } while (Interlocked.CompareExchange(ref buckets[bucket], idx, nextPtrs[idx]) != nextPtrs[idx]);
+                    } while (Interlocked.CompareExchange(ref buckets[bucket], idx, nextPtrs[idx]) !=
+                             nextPtrs[idx]);
                 }
 
                 return true;
@@ -797,7 +842,8 @@ namespace Appalachia.Core.Collections.Native
             newBucketCapacity = NextHigherPowerOfTwo(newBucketCapacity);
 
             // No change in capacity
-            if ((m_State->ItemCapacity == newCapacity) && ((m_State->BucketCapacityMask + 1) == newBucketCapacity))
+            if ((m_State->ItemCapacity == newCapacity) &&
+                ((m_State->BucketCapacityMask + 1) == newBucketCapacity))
             {
                 return;
             }
@@ -811,16 +857,33 @@ namespace Appalachia.Core.Collections.Native
             // Allocate new data
             int nextOffset;
             int bucketOffset;
-            var totalSize = CalculateDataLayout(newCapacity, newBucketCapacity, out nextOffset, out bucketOffset);
-            var newData = (byte*) UnsafeUtility.Malloc(totalSize, JobsUtility.CacheLineSize, m_AllocatorLabel);
+            var totalSize = CalculateDataLayout(
+                newCapacity,
+                newBucketCapacity,
+                out nextOffset,
+                out bucketOffset
+            );
+            var newData = (byte*) UnsafeUtility.Malloc(
+                totalSize,
+                JobsUtility.CacheLineSize,
+                m_AllocatorLabel
+            );
             var newItems = newData;
             var newNext = newData + nextOffset;
             var newBuckets = newData + bucketOffset;
 
             // The items are taken from a free-list and might not be tightly
             // packed, copy all of the old capacity
-            UnsafeUtility.MemCpy(newItems, m_State->Items, m_State->ItemCapacity * UnsafeUtility.SizeOf<T>());
-            UnsafeUtility.MemCpy(newNext,  m_State->Next,  m_State->ItemCapacity * UnsafeUtility.SizeOf<int>());
+            UnsafeUtility.MemCpy(
+                newItems,
+                m_State->Items,
+                m_State->ItemCapacity * UnsafeUtility.SizeOf<T>()
+            );
+            UnsafeUtility.MemCpy(
+                newNext,
+                m_State->Next,
+                m_State->ItemCapacity * UnsafeUtility.SizeOf<int>()
+            );
             for (var emptyNext = m_State->ItemCapacity; emptyNext < newCapacity; ++emptyNext)
             {
                 ((int*) newNext)[emptyNext] = -1;
@@ -841,7 +904,9 @@ namespace Appalachia.Core.Collections.Native
                 {
                     var curEntry = buckets[bucket];
                     buckets[bucket] = nextPtrs[curEntry];
-                    var newBucket = UnsafeUtility.ReadArrayElement<T>(m_State->Items, curEntry).GetHashCode() & (newBucketCapacity - 1);
+                    var newBucket =
+                        UnsafeUtility.ReadArrayElement<T>(m_State->Items, curEntry).GetHashCode() &
+                        (newBucketCapacity - 1);
                     nextPtrs[curEntry] = ((int*) newBuckets)[newBucket];
                     ((int*) newBuckets)[newBucket] = curEntry;
                 }
@@ -941,7 +1006,11 @@ namespace Appalachia.Core.Collections.Native
         /// <returns>
         ///     The total size of the data
         /// </returns>
-        private static int CalculateDataLayout(int length, int bucketLength, out int nextOffset, out int bucketOffset)
+        private static int CalculateDataLayout(
+            int length,
+            int bucketLength,
+            out int nextOffset,
+            out int bucketOffset)
         {
             var itemSize = UnsafeUtility.SizeOf<T>();
 
@@ -949,7 +1018,10 @@ namespace Appalachia.Core.Collections.Native
             nextOffset = ((itemSize * length) + JobsUtility.CacheLineSize) - 1;
             nextOffset -= nextOffset % JobsUtility.CacheLineSize;
 
-            bucketOffset = (nextOffset + (UnsafeUtility.SizeOf<int>() * length) + JobsUtility.CacheLineSize) - 1;
+            bucketOffset = (nextOffset +
+                            (UnsafeUtility.SizeOf<int>() * length) +
+                            JobsUtility.CacheLineSize) -
+                           1;
             bucketOffset -= bucketOffset % JobsUtility.CacheLineSize;
 
             var totalSize = bucketOffset + (UnsafeUtility.SizeOf<int>() * bucketLength);

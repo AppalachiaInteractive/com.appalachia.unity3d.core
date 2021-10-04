@@ -1,11 +1,14 @@
 using System;
+using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Comparisons.ComponentEquality
 {
-    public abstract class ComponentContentEqualityState<T, TO> : ComponentContentEqualityStateBase<T>, IEquatable<TO>
+    public abstract class
+        ComponentContentEqualityState<T, TO> : ComponentContentEqualityStateBase<T>, IEquatable<TO>
         where T : ComponentContentEqualityState<T, TO>, new()
-        where TO : UnityEngine.Object
+        where TO : Object
     {
+        public abstract bool Equals(TO other);
         public abstract void Record(TO c);
 
         public static T CreateAndRecord(TO o)
@@ -15,8 +18,5 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
             return state;
         }
-
-        public abstract bool Equals(TO other);
-
     }
 }

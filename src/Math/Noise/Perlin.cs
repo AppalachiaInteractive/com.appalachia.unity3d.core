@@ -75,8 +75,12 @@ namespace Appalachia.Core.Math.Noise
                 ),
                 Lerp(
                     v,
-                    Lerp(u, Grad(perm[AA + 1], x, y,     z - 1), Grad(perm[BA + 1], x - 1, y,     z - 1)),
-                    Lerp(u, Grad(perm[AB + 1], x, y - 1, z - 1), Grad(perm[BB + 1], x - 1, y - 1, z - 1))
+                    Lerp(u, Grad(perm[AA + 1], x, y, z - 1), Grad(perm[BA + 1], x - 1, y, z - 1)),
+                    Lerp(
+                        u,
+                        Grad(perm[AB + 1], x,     y - 1, z - 1),
+                        Grad(perm[BB + 1], x - 1, y - 1, z - 1)
+                    )
                 )
             );
         }
@@ -178,7 +182,7 @@ namespace Appalachia.Core.Math.Noise
             return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
 
-        private static int[] perm =
+        private static readonly int[] perm =
         {
             151,
             160,

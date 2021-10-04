@@ -18,10 +18,12 @@ namespace Appalachia.Core.Collections.Native
         /// <param name="allocator">
         ///     Allocator to allocate and deallocate with. Must be valid.
         /// </param>
-        public static SharedDisposable<TDisposable> Share<TDisposable>(this TDisposable disposable, Allocator allocator)
+        public static SharedDisposable<TDisposable> Share<TDisposable>(
+            this TDisposable disposable,
+            Allocator allocator)
             where TDisposable : IDisposable
         {
-            return new SharedDisposable<TDisposable>(disposable, allocator);
+            return new(disposable, allocator);
         }
     }
 }

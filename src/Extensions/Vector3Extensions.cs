@@ -14,17 +14,21 @@ namespace Appalachia.Core.Extensions
     {
         public static Vector3 GetReciprocal(this Vector3 input)
         {
-            return new Vector3(1f / input.x, 1f / input.y, 1f / input.z);
+            return new(1f / input.x, 1f / input.y, 1f / input.z);
         }
 
         public static bool RoughlyEqual(this Vector3 input, Vector3 other)
         {
-            return input.x.RoughlyEqual(other.x) && input.y.RoughlyEqual(other.y) && input.z.RoughlyEqual(other.z);
+            return input.x.RoughlyEqual(other.x) &&
+                   input.y.RoughlyEqual(other.y) &&
+                   input.z.RoughlyEqual(other.z);
         }
 
         public static bool Roughly(this Vector3 input, float scalar)
         {
-            return input.x.RoughlyEqual(scalar) && input.y.RoughlyEqual(scalar) && input.z.RoughlyEqual(scalar);
+            return input.x.RoughlyEqual(scalar) &&
+                   input.y.RoughlyEqual(scalar) &&
+                   input.z.RoughlyEqual(scalar);
         }
 
         public static bool RoughlyZero(this Vector3 input)
@@ -145,11 +149,10 @@ namespace Appalachia.Core.Extensions
 
         public static Vector3 RandomPointWithinBoundingBox(this Vector3 size)
         {
-            return new Vector3(
-                Random.Range(-.5f * size.x, .5f * size.x),
-                Random.Range(-.5f * size.y, .5f * size.y),
-                Random.Range(-.5f * size.z, .5f * size.z)
-            );
+            return new(Random.Range(-.5f * size.x, .5f * size.x), Random.Range(
+                -.5f * size.y,
+                .5f * size.y
+            ), Random.Range(-.5f * size.z, .5f * size.z));
         }
 
         public static Vector3 RandomPointWithinBoundingBox(this Vector3 size, Vector3 center)
@@ -172,7 +175,12 @@ namespace Appalachia.Core.Extensions
             return (source * (1 - ratio1)) + (other1 * ratio1);
         }
 
-        public static Vector3 RatioCombine(this Vector3 source, Vector3 other1, float ratio1, Vector3 other2, float ratio2)
+        public static Vector3 RatioCombine(
+            this Vector3 source,
+            Vector3 other1,
+            float ratio1,
+            Vector3 other2,
+            float ratio2)
         {
             if ((ratio1 < 0) || (ratio1 > 1))
             {
@@ -225,21 +233,26 @@ namespace Appalachia.Core.Extensions
                 throw new NotSupportedException($"Invalid ratio sum: {ratioSum}");
             }
 
-            return (source * (1 - ratioSum)) + (other1 * ratio1) + (other2 * ratio2) + (other3 * ratio3);
+            return (source * (1 - ratioSum)) +
+                   (other1 * ratio1) +
+                   (other2 * ratio2) +
+                   (other3 * ratio3);
         }
 
         public static Vector3 ScaleBy(this Vector3 vector, Vector3 scaleBy)
         {
-            return new Vector3(vector.x * scaleBy.x, vector.y * scaleBy.y, vector.z * scaleBy.z);
+            return new(vector.x * scaleBy.x, vector.y * scaleBy.y, vector.z * scaleBy.z);
         }
 
-        public static Vector3 Anticipate(this Vector3 first, float elapsed, Vector3 second, float anticipationDuration)
+        public static Vector3 Anticipate(
+            this Vector3 first,
+            float elapsed,
+            Vector3 second,
+            float anticipationDuration)
         {
-            return new Vector3(
-                second.x + ((anticipationDuration / elapsed) * (second.x - first.x)),
-                second.y + ((anticipationDuration / elapsed) * (second.y - first.y)),
-                second.z + ((anticipationDuration / elapsed) * (second.z - first.z))
-            );
+            return new(second.x + ((anticipationDuration / elapsed) * (second.x - first.x)),
+                second.y + ((anticipationDuration / elapsed) * (second.y - first.y)), second.z +
+                ((anticipationDuration / elapsed) * (second.z - first.z)));
         }
 
         public static Vector3 Derivative(this Vector3 older, Vector3 newer, float elapsed)
@@ -249,182 +262,182 @@ namespace Appalachia.Core.Extensions
 
         public static Vector3 xxx(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.x, vector3.x);
+            return new(vector3.x, vector3.x, vector3.x);
         }
 
         public static Vector3 xxy(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.x, vector3.y);
+            return new(vector3.x, vector3.x, vector3.y);
         }
 
         public static Vector3 xxz(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.x, vector3.z);
+            return new(vector3.x, vector3.x, vector3.z);
         }
 
         public static Vector3 xyx(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.y, vector3.x);
+            return new(vector3.x, vector3.y, vector3.x);
         }
 
         public static Vector3 xyy(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.y, vector3.y);
+            return new(vector3.x, vector3.y, vector3.y);
         }
 
         public static Vector3 xyz(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.y, vector3.z);
+            return new(vector3.x, vector3.y, vector3.z);
         }
 
         public static Vector3 xzx(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.z, vector3.x);
+            return new(vector3.x, vector3.z, vector3.x);
         }
 
         public static Vector3 xzy(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.z, vector3.y);
+            return new(vector3.x, vector3.z, vector3.y);
         }
 
         public static Vector3 xzz(this Vector3 vector3)
         {
-            return new Vector3(vector3.x, vector3.z, vector3.z);
+            return new(vector3.x, vector3.z, vector3.z);
         }
 
         public static Vector3 yyy(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.y, vector3.y);
+            return new(vector3.y, vector3.y, vector3.y);
         }
 
         public static Vector3 yyx(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.y, vector3.x);
+            return new(vector3.y, vector3.y, vector3.x);
         }
 
         public static Vector3 yyz(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.y, vector3.z);
+            return new(vector3.y, vector3.y, vector3.z);
         }
 
         public static Vector3 yxy(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.x, vector3.y);
+            return new(vector3.y, vector3.x, vector3.y);
         }
 
         public static Vector3 yxx(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.x, vector3.x);
+            return new(vector3.y, vector3.x, vector3.x);
         }
 
         public static Vector3 yxz(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.x, vector3.z);
+            return new(vector3.y, vector3.x, vector3.z);
         }
 
         public static Vector3 yzy(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.z, vector3.y);
+            return new(vector3.y, vector3.z, vector3.y);
         }
 
         public static Vector3 yzx(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.z, vector3.x);
+            return new(vector3.y, vector3.z, vector3.x);
         }
 
         public static Vector3 yzz(this Vector3 vector3)
         {
-            return new Vector3(vector3.y, vector3.z, vector3.z);
+            return new(vector3.y, vector3.z, vector3.z);
         }
 
         public static Vector3 zzz(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.z, vector3.z);
+            return new(vector3.z, vector3.z, vector3.z);
         }
 
         public static Vector3 zzy(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.z, vector3.y);
+            return new(vector3.z, vector3.z, vector3.y);
         }
 
         public static Vector3 zzx(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.z, vector3.x);
+            return new(vector3.z, vector3.z, vector3.x);
         }
 
         public static Vector3 zyz(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.y, vector3.z);
+            return new(vector3.z, vector3.y, vector3.z);
         }
 
         public static Vector3 zyy(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.y, vector3.y);
+            return new(vector3.z, vector3.y, vector3.y);
         }
 
         public static Vector3 zyx(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.y, vector3.x);
+            return new(vector3.z, vector3.y, vector3.x);
         }
 
         public static Vector3 zxz(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.x, vector3.z);
+            return new(vector3.z, vector3.x, vector3.z);
         }
 
         public static Vector3 zxy(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.x, vector3.y);
+            return new(vector3.z, vector3.x, vector3.y);
         }
 
         public static Vector3 zxx(this Vector3 vector3)
         {
-            return new Vector3(vector3.z, vector3.x, vector3.x);
+            return new(vector3.z, vector3.x, vector3.x);
         }
 
         public static Vector2 xx(this Vector3 vector3)
         {
-            return new Vector2(vector3.x, vector3.x);
+            return new(vector3.x, vector3.x);
         }
 
         public static Vector2 xy(this Vector3 vector3)
         {
-            return new Vector2(vector3.x, vector3.y);
+            return new(vector3.x, vector3.y);
         }
 
         public static Vector2 xz(this Vector3 vector3)
         {
-            return new Vector2(vector3.x, vector3.z);
+            return new(vector3.x, vector3.z);
         }
 
         public static Vector2 yx(this Vector3 vector3)
         {
-            return new Vector2(vector3.y, vector3.x);
+            return new(vector3.y, vector3.x);
         }
 
         public static Vector2 yy(this Vector3 vector3)
         {
-            return new Vector2(vector3.y, vector3.y);
+            return new(vector3.y, vector3.y);
         }
 
         public static Vector2 yz(this Vector3 vector3)
         {
-            return new Vector2(vector3.y, vector3.z);
+            return new(vector3.y, vector3.z);
         }
 
         public static Vector2 zx(this Vector3 vector3)
         {
-            return new Vector2(vector3.z, vector3.x);
+            return new(vector3.z, vector3.x);
         }
 
         public static Vector2 zy(this Vector3 vector3)
         {
-            return new Vector2(vector3.z, vector3.y);
+            return new(vector3.z, vector3.y);
         }
 
         public static Vector2 zz(this Vector3 vector3)
         {
-            return new Vector2(vector3.z, vector3.z);
+            return new(vector3.z, vector3.z);
         }
 
         public static bool LessThan(this Vector3 vector3, Vector3 other)
@@ -447,7 +460,11 @@ namespace Appalachia.Core.Extensions
             return (vector3.x > other.x) && (vector3.y > other.y);
         }
 
-        public static Vector2[] Normalize(this IEnumerable<Vector2> args, Vector2 min, Vector2 max, bool clamped)
+        public static Vector2[] Normalize(
+            this IEnumerable<Vector2> args,
+            Vector2 min,
+            Vector2 max,
+            bool clamped)
         {
             return args.Select(
                             v =>
@@ -460,7 +477,11 @@ namespace Appalachia.Core.Extensions
                        .ToArray();
         }
 
-        public static Vector3[] Normalize(this IEnumerable<Vector3> args, Vector3 min, Vector3 max, bool clamped)
+        public static Vector3[] Normalize(
+            this IEnumerable<Vector3> args,
+            Vector3 min,
+            Vector3 max,
+            bool clamped)
         {
             return args.Select(
                             v =>
@@ -468,13 +489,19 @@ namespace Appalachia.Core.Extensions
                                 var x = (v.x - min.x) / (max.x - min.x);
                                 var y = (v.y - min.y) / (max.y - min.y);
                                 var z = (v.z - min.z) / (max.z - min.z);
-                                return clamped ? new Vector3(x, y, z).normalized : new Vector3(x, y, z);
+                                return clamped
+                                    ? new Vector3(x, y, z).normalized
+                                    : new Vector3(x, y, z);
                             }
                         )
                        .ToArray();
         }
 
-        public static Vector4[] Normalize(this IEnumerable<Vector4> args, Vector4 min, Vector4 max, bool clamped)
+        public static Vector4[] Normalize(
+            this IEnumerable<Vector4> args,
+            Vector4 min,
+            Vector4 max,
+            bool clamped)
         {
             return args.Select(
                             v =>
@@ -483,7 +510,9 @@ namespace Appalachia.Core.Extensions
                                 var y = (v.y - min.y) / (max.y - min.y);
                                 var z = (v.z - min.z) / (max.z - min.z);
                                 var w = (v.w - min.w) / (max.w - min.w);
-                                return clamped ? new Vector4(x, y, z, w).normalized : new Vector4(x, y, z, w);
+                                return clamped
+                                    ? new Vector4(x, y, z, w).normalized
+                                    : new Vector4(x, y, z, w);
                             }
                         )
                        .ToArray();
@@ -596,7 +625,10 @@ namespace Appalachia.Core.Extensions
                 multiplier *= 10f;
             }
 
-            return new Vector2(Mathf.Round(vector3.x * multiplier) / multiplier, Mathf.Round(vector3.y * multiplier) / multiplier);
+            return new Vector2(
+                Mathf.Round(vector3.x * multiplier) / multiplier,
+                Mathf.Round(vector3.y * multiplier) / multiplier
+            );
         }
 
         public static Vector3 Round(this Vector3 vector3, int decimalPlaces = 2)

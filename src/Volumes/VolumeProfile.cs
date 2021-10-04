@@ -16,29 +16,34 @@ namespace Appalachia.Core.Volumes
     {
         private const string _PRF_PFX = nameof(VolumeProfile) + ".";
 
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
 
-        private static readonly ProfilerMarker _PRF_Add = new ProfilerMarker(_PRF_PFX + nameof(Add));
+        private static readonly ProfilerMarker _PRF_Add = new(_PRF_PFX + nameof(Add));
 
-        private static readonly ProfilerMarker _PRF_Remove = new ProfilerMarker(_PRF_PFX + nameof(Remove));
+        private static readonly ProfilerMarker _PRF_Remove = new(_PRF_PFX + nameof(Remove));
 
-        private static readonly ProfilerMarker _PRF_Has = new ProfilerMarker(_PRF_PFX + nameof(Has));
+        private static readonly ProfilerMarker _PRF_Has = new(_PRF_PFX + nameof(Has));
 
-        private static readonly ProfilerMarker
-            _PRF_HasSubclassOf = new ProfilerMarker(_PRF_PFX + nameof(HasSubclassOf));
+        private static readonly ProfilerMarker _PRF_HasSubclassOf =
+            new(_PRF_PFX + nameof(HasSubclassOf));
 
-        private static readonly ProfilerMarker _PRF_TryGet = new ProfilerMarker(_PRF_PFX + nameof(TryGet));
+        private static readonly ProfilerMarker _PRF_TryGet = new(_PRF_PFX + nameof(TryGet));
 
         private static readonly ProfilerMarker _PRF_TryGetSubclassOf =
-            new ProfilerMarker(_PRF_PFX + nameof(TryGetSubclassOf));
+            new(_PRF_PFX + nameof(TryGetSubclassOf));
 
         private static readonly ProfilerMarker _PRF_TryGetAllSubclassOf =
-            new ProfilerMarker(_PRF_PFX + nameof(TryGetAllSubclassOf));
+            new(_PRF_PFX + nameof(TryGetAllSubclassOf));
 
-        public List<VolumeComponent> components = new List<VolumeComponent>();
+        public List<VolumeComponent> components = new();
 
         // Editor only, doesn't have any use outside of it
         [NonSerialized] public bool isDirty = true;
+
+        public void Reset()
+        {
+            isDirty = true;
+        }
 
         private void OnEnable()
         {
@@ -51,11 +56,6 @@ namespace Appalachia.Core.Volumes
                 // frame) before the recompilation step.
                 components.RemoveAll(x => x == null);
             }
-        }
-
-        public void Reset()
-        {
-            isDirty = true;
         }
 
         public T Add<T>(bool overrides = false)

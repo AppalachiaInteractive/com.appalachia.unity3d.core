@@ -91,7 +91,10 @@ namespace Appalachia.Core.Extensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool one(this bool4 v)
         {
-            return (v.x && !v.y && !v.z && !v.w) || (!v.x && v.y && !v.z && !v.w) || (!v.x && !v.y && v.z && !v.w) || (!v.x && !v.y && !v.z && v.w);
+            return (v.x && !v.y && !v.z && !v.w) ||
+                   (!v.x && v.y && !v.z && !v.w) ||
+                   (!v.x && !v.y && v.z && !v.w) ||
+                   (!v.x && !v.y && !v.z && v.w);
         }
 
         [BurstCompile]
@@ -105,7 +108,10 @@ namespace Appalachia.Core.Extensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool allButOne(this bool4 v)
         {
-            return (!v.x && v.y && v.z && v.w) || (v.x && !v.y && v.z && v.w) || (v.x && v.y && !v.z && v.w) || (v.x && v.y && v.z && !v.w);
+            return (!v.x && v.y && v.z && v.w) ||
+                   (v.x && !v.y && v.z && v.w) ||
+                   (v.x && v.y && !v.z && v.w) ||
+                   (v.x && v.y && v.z && !v.w);
         }
 
         [BurstCompile]

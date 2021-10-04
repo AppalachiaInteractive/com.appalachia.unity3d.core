@@ -5,11 +5,18 @@ using UnityEngine;
 
 namespace Appalachia.Core.Types
 {
-
     [Serializable]
     public class SerializableType
     {
+        [SerializeField] private string _typeString;
+
+        [NonSerialized] private ValueDropdownList<short> _enumValues;
         [NonSerialized] private Type _type;
+
+        public SerializableType(Type t)
+        {
+            type = t;
+        }
 
         public Type type
         {
@@ -34,29 +41,47 @@ namespace Appalachia.Core.Types
             }
         }
 
-        [SerializeField] private string _typeString;
-
-        public SerializableType(Type t)
+        public ValueDropdownList<short> EnumValues
         {
-            type = t;
+            get
+            {
+                if (_enumValues == null)
+                {
+                    _enumValues = new ValueDropdownList<short>();
+
+                    if (type.IsEnum)
+                    {
+                        var values = EnumValueManager.GetAllValues(type);
+
+                        for (var i = 0; i < values.Length; i++)
+                        {
+                            var value = values[i];
+
+                            _enumValues.Add(value.ToString(), (short) value);
+                        }
+                    }
+                }
+
+                return _enumValues;
+            }
         }
 
         // allow SerializableType to implicitly be converted to and from System.Type
-        static public implicit operator Type(SerializableType stype)
+        public static implicit operator Type(SerializableType stype)
         {
             return stype.type;
         }
 
-        static public implicit operator SerializableType(Type t)
+        public static implicit operator SerializableType(Type t)
         {
-            return new SerializableType(t);
+            return new(t);
         }
 
         // overload the == and != operators
         public static bool operator ==(SerializableType a, SerializableType b)
         {
             // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(a, b))
+            if (ReferenceEquals(a, b))
             {
                 return true;
             }
@@ -84,7 +109,7 @@ namespace Appalachia.Core.Types
         }
 
         // overload the .Equals method
-        public override bool Equals(System.Object obj)
+        public override bool Equals(object obj)
         {
             // If parameter is null return false.
             if (obj == null)
@@ -93,14 +118,14 @@ namespace Appalachia.Core.Types
             }
 
             // If parameter cannot be cast to SerializableType return false.
-            SerializableType p = obj as SerializableType;
-            if ((System.Object) p == null)
+            var p = obj as SerializableType;
+            if ((object) p == null)
             {
                 return false;
             }
 
             // Return true if the fields match:
-            return (type == p.type);
+            return type == p.type;
         }
 
         public bool Equals(SerializableType p)
@@ -112,34 +137,7 @@ namespace Appalachia.Core.Types
             }
 
             // Return true if the fields match:
-            return (type == p.type);
-        }
-
-        [NonSerialized] private ValueDropdownList<short> _enumValues;
-
-        public ValueDropdownList<short> EnumValues
-        {
-            get 
-            {
-                if (_enumValues == null)
-                {
-                    _enumValues = new ValueDropdownList<short>();
-
-                    if (type.IsEnum)
-                    {
-                        var values = EnumValueManager.GetAllValues(type);
-
-                        for (var i = 0; i < values.Length; i++)
-                        {
-                            var value = values[i];
-
-                            _enumValues.Add(value.ToString(), (short) value);
-                        }
-                    }
-                }
-                
-                return _enumValues;
-            }
+            return type == p.type;
         }
     }
 }

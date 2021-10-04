@@ -14,13 +14,13 @@ namespace Appalachia.Core.Execution.RateLimiting
         private static NonSerializedAppaLookup<string, RateLimit> _limits;
         private static bool _initialized;
 
-        static bool Initialize()
+        private static bool Initialize()
         {
             if (_initialized)
             {
                 return false;
             }
-            
+
             _limits = new NonSerializedAppaLookup<string, RateLimit>();
             _initialized = true;
             return true;
@@ -36,7 +36,12 @@ namespace Appalachia.Core.Execution.RateLimiting
             }
         }
 
-        public static void DoXTimesEvery(string key, Action a, int maxCalls, float periodMilliseconds, float currentTime)
+        public static void DoXTimesEvery(
+            string key,
+            Action a,
+            int maxCalls,
+            float periodMilliseconds,
+            float currentTime)
         {
             Setup(key, maxCalls, periodMilliseconds);
 
@@ -69,7 +74,7 @@ namespace Appalachia.Core.Execution.RateLimiting
 
             return false;
         }
-        
+
         public static void Dispose()
         {
             if (_limits != null)

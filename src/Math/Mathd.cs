@@ -401,17 +401,40 @@ namespace Appalachia.Core.Math
             return Abs(b - a) < Max(0.000001f * Max(Abs(a), Abs(b)), double.Epsilon * 8);
         }
 
-        public static double SmoothDamp(double current, double target, ref double currentVelocity, double smoothTime, double maxSpeed)
+        public static double SmoothDamp(
+            double current,
+            double target,
+            ref double currentVelocity,
+            double smoothTime,
+            double maxSpeed)
         {
             var deltaTime = CoreClock.VisualDelta;
-            return SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
+            return SmoothDamp(
+                current,
+                target,
+                ref currentVelocity,
+                smoothTime,
+                maxSpeed,
+                deltaTime
+            );
         }
 
-        public static double SmoothDamp(double current, double target, ref double currentVelocity, double smoothTime)
+        public static double SmoothDamp(
+            double current,
+            double target,
+            ref double currentVelocity,
+            double smoothTime)
         {
             var deltaTime = CoreClock.VisualDelta;
             var maxSpeed = Infinity;
-            return SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
+            return SmoothDamp(
+                current,
+                target,
+                ref currentVelocity,
+                smoothTime,
+                maxSpeed,
+                deltaTime
+            );
         }
 
         // Gradually changes a value towards a desired goal over time.
@@ -451,17 +474,40 @@ namespace Appalachia.Core.Math
             return output;
         }
 
-        public static double SmoothDampAngle(double current, double target, ref double currentVelocity, double smoothTime, double maxSpeed)
+        public static double SmoothDampAngle(
+            double current,
+            double target,
+            ref double currentVelocity,
+            double smoothTime,
+            double maxSpeed)
         {
             var deltaTime = CoreClock.VisualDelta;
-            return SmoothDampAngle(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
+            return SmoothDampAngle(
+                current,
+                target,
+                ref currentVelocity,
+                smoothTime,
+                maxSpeed,
+                deltaTime
+            );
         }
 
-        public static double SmoothDampAngle(double current, double target, ref double currentVelocity, double smoothTime)
+        public static double SmoothDampAngle(
+            double current,
+            double target,
+            ref double currentVelocity,
+            double smoothTime)
         {
             var deltaTime = CoreClock.VisualDelta;
             var maxSpeed = Infinity;
-            return SmoothDampAngle(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
+            return SmoothDampAngle(
+                current,
+                target,
+                ref currentVelocity,
+                smoothTime,
+                maxSpeed,
+                deltaTime
+            );
         }
 
         // Gradually changes an angle given in degrees towards a desired goal angle over time.
@@ -474,7 +520,14 @@ namespace Appalachia.Core.Math
             double deltaTime)
         {
             target = current + DeltaAngle(current, target);
-            return SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
+            return SmoothDamp(
+                current,
+                target,
+                ref currentVelocity,
+                smoothTime,
+                maxSpeed,
+                deltaTime
+            );
         }
 
         // Loops the value t, so that it is never larger than length and never smaller than 0.

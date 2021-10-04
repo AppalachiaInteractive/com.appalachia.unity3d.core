@@ -12,7 +12,10 @@ namespace Appalachia.Core.Volumes.Parameters
         public bool showAlpha = true;
         public bool showEyeDropper = true;
 
-        public NoInterpColorParameter(Color value, bool overrideState = false) : base(value, overrideState)
+        public NoInterpColorParameter(Color value, bool overrideState = false) : base(
+            value,
+            overrideState
+        )
         {
         }
 

@@ -43,15 +43,16 @@ namespace Appalachia.Core.Labels
         [OnValueChanged(nameof(ResetDisplayName))]
         public List<LabelSearchTerm> exclusions;
 
-        [NonSerialized] private string _displayName;
-        [NonSerialized] private int _termCount;
-        [NonSerialized] private int _exclusionCount;
         [NonSerialized] private StringBuilder _builder;
+
+        [NonSerialized] private string _displayName;
+        [NonSerialized] private int _exclusionCount;
         [NonSerialized] private StringBuilder _logBuilder;
+        [NonSerialized] private int _termCount;
 
         public LabelSearchSet()
         {
-            terms = new List<LabelSearchTerm> {new LabelSearchTerm()};
+            terms = new List<LabelSearchTerm> {new()};
             exclusions = new List<LabelSearchTerm>();
         }
 
@@ -74,7 +75,9 @@ namespace Appalachia.Core.Labels
                     var enabledTermCount = TermCount;
                     var enabledExclusionCount = ExclusionCount;
 
-                    if (string.IsNullOrWhiteSpace(_displayName) || (_termCount != enabledTermCount) || (_exclusionCount != enabledExclusionCount))
+                    if (string.IsNullOrWhiteSpace(_displayName) ||
+                        (_termCount != enabledTermCount) ||
+                        (_exclusionCount != enabledExclusionCount))
                     {
                         if (_builder == null)
                         {
@@ -207,7 +210,9 @@ namespace Appalachia.Core.Labels
             if (log)
             {
                 _logBuilder.AppendLine();
-                _logBuilder.AppendLine($"  TERMS: [{string.Join(", ", terms.Where(e => e.enabled).Select(e => e.label))}]");
+                _logBuilder.AppendLine(
+                    $"  TERMS: [{string.Join(", ", terms.Where(e => e.enabled).Select(e => e.label))}]"
+                );
                 _logBuilder.AppendLine();
             }
 
@@ -273,7 +278,9 @@ namespace Appalachia.Core.Labels
             if (log)
             {
                 _logBuilder.AppendLine();
-                _logBuilder.AppendLine($"  EXCLUSIONS: [{string.Join(", ", exclusions.Where(e => e.enabled).Select(e => e.label))}]");
+                _logBuilder.AppendLine(
+                    $"  EXCLUSIONS: [{string.Join(", ", exclusions.Where(e => e.enabled).Select(e => e.label))}]"
+                );
                 _logBuilder.AppendLine();
             }
 
@@ -324,7 +331,10 @@ namespace Appalachia.Core.Labels
             return !excluded;
         }
 
-        private static bool HasAll(IEnumerable<string> labels, List<LabelSearchTerm> searchTerms, StringBuilder _logBuilder = null)
+        private static bool HasAll(
+            IEnumerable<string> labels,
+            List<LabelSearchTerm> searchTerms,
+            StringBuilder _logBuilder = null)
         {
             if (searchTerms.Count == 0)
             {
@@ -354,7 +364,10 @@ namespace Appalachia.Core.Labels
             return true;
         }
 
-        private static bool HasAny(IEnumerable<string> labels, List<LabelSearchTerm> searchTerms, StringBuilder _logBuilder = null)
+        private static bool HasAny(
+            IEnumerable<string> labels,
+            List<LabelSearchTerm> searchTerms,
+            StringBuilder _logBuilder = null)
         {
             if (searchTerms.Count == 0)
             {
@@ -384,7 +397,10 @@ namespace Appalachia.Core.Labels
             return false;
         }
 
-        private static bool HasMoreThanOne(IEnumerable<string> labels, List<LabelSearchTerm> searchTerms, StringBuilder _logBuilder = null)
+        private static bool HasMoreThanOne(
+            IEnumerable<string> labels,
+            List<LabelSearchTerm> searchTerms,
+            StringBuilder _logBuilder = null)
         {
             if (searchTerms.Count < 2)
             {

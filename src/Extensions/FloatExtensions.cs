@@ -60,12 +60,16 @@ namespace Appalachia.Core.Extensions
 
         public static bool RoughlyWithinPositiveNegativeBounds(this float value, float comparison)
         {
-            return ((value < comparison) || value.RoughlyEqual(comparison)) && ((value > -comparison) || value.RoughlyEqual(-comparison));
+            return ((value < comparison) || value.RoughlyEqual(comparison)) &&
+                   ((value > -comparison) || value.RoughlyEqual(-comparison));
         }
 
         public static bool RoughlyOutsidePositiveNegativeBounds(this float value, float comparison)
         {
-            return (value > comparison) || value.RoughlyEqual(comparison) || value.RoughlyEqual(-comparison) || (value < -comparison);
+            return (value > comparison) ||
+                   value.RoughlyEqual(comparison) ||
+                   value.RoughlyEqual(-comparison) ||
+                   (value < -comparison);
         }
 
         public static float Clamp(this float value, float min, float max)
@@ -117,7 +121,12 @@ namespace Appalachia.Core.Extensions
             return (max - value) / (max - min);
         }
 
-        public static float Remap(this float value, float minOriginal, float maxOriginal, float minNew, float maxNew)
+        public static float Remap(
+            this float value,
+            float minOriginal,
+            float maxOriginal,
+            float minNew,
+            float maxNew)
         {
             return value.Normalized(minOriginal, maxOriginal).RemapFrom0to1(minNew, maxNew);
         }

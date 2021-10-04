@@ -12,21 +12,28 @@ namespace Appalachia.Core.Execution.Hooks
     public abstract class FrameEventBehaviour<T> : SingletonMonoBehaviour<FrameEventBehaviour<T>>
         where T : FrameEventBehaviour<T>
     {
-        #region Profiling
-        
+#region Profiling
+
         private const string _PRF_PFX = nameof(FrameEventBehaviour<T>) + ".";
-        private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + nameof(Awake));
-        private static readonly ProfilerMarker _PRF_Start = new ProfilerMarker(_PRF_PFX + nameof(Start));
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
-        private static readonly ProfilerMarker _PRF_OnDisable = new ProfilerMarker(_PRF_PFX + nameof(OnDisable));
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
-        private static readonly ProfilerMarker _PRF_FixedUpdate = new ProfilerMarker(_PRF_PFX + nameof(FixedUpdate));
-        private static readonly ProfilerMarker _PRF_OnApplicationQuit = new ProfilerMarker(_PRF_PFX + nameof(OnApplicationQuit));
-        private static readonly ProfilerMarker _PRF_OnDestroy = new ProfilerMarker(_PRF_PFX + nameof(OnDestroy));
-        #endregion
-        
+
+#endregion
+
         // ReSharper disable once StaticMemberInGenericType
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
+        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + nameof(Update));
+
+        private static readonly ProfilerMarker _PRF_FixedUpdate =
+            new(_PRF_PFX + nameof(FixedUpdate));
+
+        private static readonly ProfilerMarker _PRF_OnApplicationQuit =
+            new(_PRF_PFX + nameof(OnApplicationQuit));
+
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
         private static FrameEventDelegates<T> _eventDelegates;
+
         public static FrameEventDelegates<T> EventDelegates
         {
             get
@@ -52,7 +59,7 @@ namespace Appalachia.Core.Execution.Hooks
                 EventDelegates.InvokeAwake();
             }
         }
-        
+
         protected virtual void Start()
         {
             using (_PRF_Start.Auto())
@@ -63,6 +70,32 @@ namespace Appalachia.Core.Execution.Hooks
                 }
 
                 EventDelegates.InvokeStart();
+            }
+        }
+
+        protected virtual void Update()
+        {
+            using (_PRF_Update.Auto())
+            {
+                if (FrameEventSettings._ENABLE_DISABLE.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [Update]");
+                }
+
+                EventDelegates.InvokeUpdate();
+            }
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            using (_PRF_FixedUpdate.Auto())
+            {
+                if (FrameEventSettings._ENABLE_DISABLE.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [FixedUpdate]");
+                }
+
+                EventDelegates.InvokeFixedUpdate();
             }
         }
 
@@ -94,29 +127,16 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected virtual void Update()
+        protected virtual void OnDestroy()
         {
-            using (_PRF_Update.Auto())
+            using (_PRF_OnDestroy.Auto())
             {
-                if (FrameEventSettings._ENABLE_DISABLE.v)
+                if (FrameEventSettings._ENABLE_DESTROY.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [Update]");
+                    Debug.Log($"[{GetReadableName()}]: [OnDestroy]");
                 }
 
-                EventDelegates.InvokeUpdate();
-            }
-        }
-
-        protected virtual void FixedUpdate()
-        {
-            using (_PRF_FixedUpdate.Auto())
-            {
-                if (FrameEventSettings._ENABLE_DISABLE.v)
-                {
-                    Debug.Log($"[{GetReadableName()}]: [FixedUpdate]");
-                }
-
-                EventDelegates.InvokeFixedUpdate();
+                EventDelegates.InvokeOnDestroy();
             }
         }
 
@@ -133,21 +153,6 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected virtual void OnDestroy()
-        {
-            using (_PRF_OnDestroy.Auto())
-            {
-                if (FrameEventSettings._ENABLE_DESTROY.v)
-                {
-                    Debug.Log($"[{GetReadableName()}]: [OnDestroy]");
-                }
-
-                EventDelegates.InvokeOnDestroy();
-            }
-        }
-
         protected abstract string GetReadableName();
-        
-        
     }
 }

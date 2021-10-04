@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Appalachia.Core.Collections.NonSerialized
 {
-    public sealed class NonSerializedAppaLookup<TKey, TValue> : AppaLookup<TKey, TValue, NonSerializedList<TKey>, NonSerializedList<TValue>>
+    public sealed class NonSerializedAppaLookup<TKey, TValue> : AppaLookup<TKey, TValue,
+        NonSerializedList<TKey>, NonSerializedList<TValue>>
     {
         protected override string GetDisplayTitle(TKey key, TValue value)
         {

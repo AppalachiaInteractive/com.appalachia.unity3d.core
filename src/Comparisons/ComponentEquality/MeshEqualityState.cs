@@ -18,19 +18,22 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             triangleCount = m.triangles.Length;
             bounds = m.bounds;
         }
-        
+
 #region IEquatable
-        
+
         public override bool Equals(Mesh other)
         {
             if (ReferenceEquals(null, other))
             {
                 return false;
             }
-            
-            return Equals(mesh, other) && vertexCount == other.vertexCount && triangleCount == other.triangles.Length && bounds.Equals(other.bounds);
+
+            return Equals(mesh, other) &&
+                   (vertexCount == other.vertexCount) &&
+                   (triangleCount == other.triangles.Length) &&
+                   bounds.Equals(other.bounds);
         }
-        
+
         public override bool Equals(MeshEqualityState other)
         {
             if (ReferenceEquals(null, other))
@@ -43,7 +46,10 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                 return true;
             }
 
-            return Equals(mesh, other.mesh) && vertexCount == other.vertexCount && triangleCount == other.triangleCount && bounds.Equals(other.bounds);
+            return Equals(mesh, other.mesh) &&
+                   (vertexCount == other.vertexCount) &&
+                   (triangleCount == other.triangleCount) &&
+                   bounds.Equals(other.bounds);
         }
 
         public override bool Equals(object obj)
@@ -58,7 +64,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                 return true;
             }
 
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
@@ -70,7 +76,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
         {
             unchecked
             {
-                var hashCode = (mesh != null ? mesh.GetHashCode() : 0);
+                var hashCode = mesh != null ? mesh.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ vertexCount;
                 hashCode = (hashCode * 397) ^ triangleCount;
                 hashCode = (hashCode * 397) ^ bounds.GetHashCode();

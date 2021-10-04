@@ -9,7 +9,8 @@ using UnityEngine.Playables;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_PlayableDirector : AppaSet<PlayableDirector, AppaList_PlayableDirector>
+    public sealed class
+        AppaSet_PlayableDirector : AppaSet<PlayableDirector, AppaList_PlayableDirector>
     {
     }
 }

@@ -9,7 +9,8 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_AudioLowPassFilter : AppaSet<AudioLowPassFilter, AppaList_AudioLowPassFilter>
+    public sealed class
+        AppaSet_AudioLowPassFilter : AppaSet<AudioLowPassFilter, AppaList_AudioLowPassFilter>
     {
     }
 }

@@ -18,14 +18,14 @@ namespace Appalachia.Core.Volumes.Components
     {
         private const string _PRF_PFX = nameof(VolumeComponent) + ".";
 
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
 
-        private static readonly ProfilerMarker _PRF_OnDisable = new ProfilerMarker(_PRF_PFX + nameof(OnDisable));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
 
-        private static readonly ProfilerMarker _PRF_Override = new ProfilerMarker(_PRF_PFX + nameof(Override));
+        private static readonly ProfilerMarker _PRF_Override = new(_PRF_PFX + nameof(Override));
 
         private static readonly ProfilerMarker _PRF_SetAllOverridesTo =
-            new ProfilerMarker(_PRF_PFX + nameof(SetAllOverridesTo));
+            new(_PRF_PFX + nameof(SetAllOverridesTo));
 
         // Used to control the state of this override - handy to quickly turn a volume override
         // on & off in the editor
@@ -120,13 +120,11 @@ namespace Appalachia.Core.Volumes.Components
                     if (VolumeParameter.IsObjectParameter(t))
                     {
                         // This method won't be called a lot but this is sub-optimal, fix me
-                        var innerParams = (ReadOnlyCollection<VolumeParameter>) t
-                                                                               .GetProperty(
-                                                                                    "parameters",
-                                                                                    BindingFlags.NonPublic |
-                                                                                    BindingFlags.Instance
-                                                                                )
-                                                                               .GetValue(prop, null);
+                        var innerParams = (ReadOnlyCollection<VolumeParameter>) t.GetProperty(
+                                "parameters",
+                                BindingFlags.NonPublic | BindingFlags.Instance
+                            )
+                           .GetValue(prop, null);
 
                         if (innerParams != null)
                         {

@@ -12,8 +12,12 @@ namespace Appalachia.Core.Extensions
     {
         private static readonly Matrix4x4 _matrix_zero = Matrix4x4.zero;
 
-        private static readonly Matrix4x4 _matrix_trs_zero = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
-        
+        private static readonly Matrix4x4 _matrix_trs_zero = Matrix4x4.TRS(
+            Vector3.zero,
+            Quaternion.identity,
+            Vector3.one
+        );
+
         public static float4x4 localToParentMatrix(this Transform t)
         {
             if (t.parent == null)
@@ -23,7 +27,7 @@ namespace Appalachia.Core.Extensions
 
             return float4x4.TRS(t.localPosition, t.localRotation, t.localScale);
         }
-        
+
         public static void SetMatrix4x4ToTransform(this Transform t, Matrix4x4 matrix)
         {
             if (matrix == _matrix_zero)
@@ -32,10 +36,12 @@ namespace Appalachia.Core.Extensions
             }
 
             t.position = matrix.GetColumn(3);
-            t.localScale = new Vector3(matrix.GetColumn(0).magnitude, matrix.GetColumn(1).magnitude, matrix.GetColumn(2).magnitude);
+            t.localScale = new Vector3(
+                matrix.GetColumn(0).magnitude,
+                matrix.GetColumn(1).magnitude,
+                matrix.GetColumn(2).magnitude
+            );
             t.rotation = Quaternion.LookRotation(matrix.GetColumn(2), matrix.GetColumn(1));
-            
         }
-
     }
 }

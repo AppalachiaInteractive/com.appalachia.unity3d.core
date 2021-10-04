@@ -15,27 +15,80 @@ namespace Appalachia.Core.Collections
 {
     [Serializable]
     public abstract class AppaSet<TValue, TValueList> : ISerializationCallbackReceiver,
-                                                           IAppaSetState<TValue>,
-                                                           IAppaSet<TValue>,
-                                                           ICollection<TValue>,
-                                                           IReadOnlyList<TValue>
+                                                        IAppaSetState<TValue>,
+                                                        IAppaSet<TValue>,
+                                                        ICollection<TValue>,
+                                                        IReadOnlyList<TValue>
         where TValueList : AppaList<TValue>, new()
     {
         private const string _PRF_PFX = nameof(AppaSet<TValue, TValueList>) + ".";
 
-        [SerializeField, HideInInspector]
+        private static readonly ProfilerMarker _PRF_Remove = new(_PRF_PFX + nameof(Remove));
+
+        private static readonly ProfilerMarker _PRF_CopyTo = new(_PRF_PFX + nameof(CopyTo));
+
+        private static readonly ProfilerMarker _PRF_Count = new(_PRF_PFX + nameof(Count));
+
+        private static readonly ProfilerMarker _PRF_Add = new(_PRF_PFX + nameof(Add));
+
+        private static readonly ProfilerMarker _PRF_Indexer = new(_PRF_PFX + "Indexer");
+
+        private static readonly ProfilerMarker _PRF_RemoveAt = new(_PRF_PFX + nameof(RemoveAt));
+
+        private static readonly ProfilerMarker _PRF_AddRange = new(_PRF_PFX + nameof(AddRange));
+
+        private static readonly ProfilerMarker _PRF_Clear = new(_PRF_PFX + nameof(Clear));
+
+        private static readonly ProfilerMarker _PRF_Contains = new(_PRF_PFX + nameof(Contains));
+
+        private static readonly ProfilerMarker _PRF_GetByIndex = new(_PRF_PFX + nameof(GetByIndex));
+
+        private static readonly ProfilerMarker _PRF_IfPresent = new(_PRF_PFX + nameof(IfPresent));
+
+        private static readonly ProfilerMarker _PRF_SumCounts = new(_PRF_PFX + nameof(SumCounts));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_CLEAR =
+            new(_PRF_PFX + nameof(INTERNAL_CLEAR));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_GET_VALUE_BY_INDEX =
+            new(_PRF_PFX + nameof(INTERNAL_GET_VALUE_BY_INDEX));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_CONTAINS =
+            new(_PRF_PFX + nameof(INTERNAL_CONTAINS));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_REMOVE =
+            new(_PRF_PFX + nameof(INTERNAL_REMOVE));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_ADD =
+            new(_PRF_PFX + nameof(INTERNAL_ADD));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_INITIALIZE =
+            new(_PRF_PFX + nameof(INTERNAL_INITIALIZE));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_CHECK_FATAL =
+            new(_PRF_PFX + nameof(INTERNAL_CHECK_FATAL));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_REQUIRES_REBUILD =
+            new(_PRF_PFX + nameof(INTERNAL_REQUIRES_REBUILD));
+
+        private static readonly ProfilerMarker _PRF_INTERNAL_REBUILD =
+            new(_PRF_PFX + nameof(INTERNAL_REBUILD));
+
+        [SerializeField]
+        [HideInInspector]
         private int initializerCount = 64;
 
-        [SerializeField, HideInInspector]
+        [SerializeField]
+        [HideInInspector]
         private TValueList values;
 
         [NonSerialized] private Dictionary<TValue, int> _indices;
 
         [NonSerialized] private bool _isValueUnityObjectChecked;
 
-        [NonSerialized] private bool isValueUnityObject;
-
         [NonSerialized] private Action _setDirtyAction;
+
+        [NonSerialized] private bool isValueUnityObject;
 
         protected AppaSet()
         {
@@ -43,49 +96,6 @@ namespace Appalachia.Core.Collections
         }
 
         public bool NoTracking { get; set; } = false;
-
-        private static readonly ProfilerMarker _PRF_Remove = new ProfilerMarker(_PRF_PFX + nameof(Remove));
-
-        bool ICollection<TValue>.Remove(TValue item)
-        {
-            using (_PRF_Remove.Auto())
-            {
-                INTERNAL_INITIALIZE();
-
-                return Remove(item);
-            }
-        }
-
-        public bool IsReadOnly => false;
-
-        private static readonly ProfilerMarker _PRF_CopyTo = new ProfilerMarker(_PRF_PFX + nameof(CopyTo));
-
-        public void CopyTo(TValue[] array, int arrayIndex)
-        {
-            using (_PRF_CopyTo.Auto())
-            {
-                INTERNAL_INITIALIZE();
-
-                for (var i = arrayIndex; i < array.Length; i++)
-                {
-                    array[i] = values[i - arrayIndex];
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            INTERNAL_INITIALIZE();
-            return values.GetEnumerator();
-        }
-
-        IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
-        {
-            INTERNAL_INITIALIZE();
-            return values.GetEnumerator();
-        }
-
-        private static readonly ProfilerMarker _PRF_Count = new ProfilerMarker(_PRF_PFX + nameof(Count));
 
         public int Count
         {
@@ -99,8 +109,6 @@ namespace Appalachia.Core.Collections
                 }
             }
         }
-
-        private static readonly ProfilerMarker _PRF_Add = new ProfilerMarker(_PRF_PFX + nameof(Add));
 
         public void Add(TValue value)
         {
@@ -129,8 +137,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Indexer = new ProfilerMarker(_PRF_PFX + "Indexer");
-
         public TValue this[int index]
         {
             get
@@ -143,8 +149,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_RemoveAt = new ProfilerMarker(_PRF_PFX + nameof(RemoveAt));
-
         public TValue RemoveAt(int targetIndex)
         {
             using (_PRF_RemoveAt.Auto())
@@ -154,8 +158,6 @@ namespace Appalachia.Core.Collections
                 return INTERNAL_REMOVE(targetIndex);
             }
         }
-
-        private static readonly ProfilerMarker _PRF_AddRange = new ProfilerMarker(_PRF_PFX + nameof(AddRange));
 
         public void AddRange(IList<TValue> vals)
         {
@@ -172,8 +174,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Clear = new ProfilerMarker(_PRF_PFX + nameof(Clear));
-
         public void Clear()
         {
             using (_PRF_Clear.Auto())
@@ -182,8 +182,6 @@ namespace Appalachia.Core.Collections
                 INTERNAL_CLEAR();
             }
         }
-
-        private static readonly ProfilerMarker _PRF_Contains = new ProfilerMarker(_PRF_PFX + nameof(Contains));
 
         public bool Contains(TValue item)
         {
@@ -194,8 +192,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_GetByIndex = new ProfilerMarker(_PRF_PFX + nameof(GetByIndex));
-
         public TValue GetByIndex(int i)
         {
             using (_PRF_GetByIndex.Auto())
@@ -205,8 +201,6 @@ namespace Appalachia.Core.Collections
                 return INTERNAL_GET_VALUE_BY_INDEX(i);
             }
         }
-
-        private static readonly ProfilerMarker _PRF_IfPresent = new ProfilerMarker(_PRF_PFX + nameof(IfPresent));
 
         public void IfPresent(TValue value, Action present, Action notPresent)
         {
@@ -224,8 +218,6 @@ namespace Appalachia.Core.Collections
                 }
             }
         }
-
-        private static readonly ProfilerMarker _PRF_SumCounts = new ProfilerMarker(_PRF_PFX + nameof(SumCounts));
 
         public int SumCounts(Func<TValue, int> counter)
         {
@@ -261,6 +253,43 @@ namespace Appalachia.Core.Collections
             _setDirtyAction = a;
         }
 
+        bool ICollection<TValue>.Remove(TValue item)
+        {
+            using (_PRF_Remove.Auto())
+            {
+                INTERNAL_INITIALIZE();
+
+                return Remove(item);
+            }
+        }
+
+        public bool IsReadOnly => false;
+
+        public void CopyTo(TValue[] array, int arrayIndex)
+        {
+            using (_PRF_CopyTo.Auto())
+            {
+                INTERNAL_INITIALIZE();
+
+                for (var i = arrayIndex; i < array.Length; i++)
+                {
+                    array[i] = values[i - arrayIndex];
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            INTERNAL_INITIALIZE();
+            return values.GetEnumerator();
+        }
+
+        IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
+        {
+            INTERNAL_INITIALIZE();
+            return values.GetEnumerator();
+        }
+
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
         }
@@ -278,8 +307,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_CLEAR = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_CLEAR));
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void INTERNAL_CLEAR()
         {
@@ -291,8 +318,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_GET_VALUE_BY_INDEX = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_GET_VALUE_BY_INDEX));
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private TValue INTERNAL_GET_VALUE_BY_INDEX(int index)
         {
@@ -301,8 +326,6 @@ namespace Appalachia.Core.Collections
                 return values[index];
             }
         }
-
-        private static readonly ProfilerMarker _PRF_INTERNAL_CONTAINS = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_CONTAINS));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool INTERNAL_CONTAINS(TValue value)
@@ -313,8 +336,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_REMOVE = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_REMOVE));
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private TValue INTERNAL_REMOVE(int targetIndex)
         {
@@ -322,7 +343,9 @@ namespace Appalachia.Core.Collections
             {
                 if ((targetIndex >= values.Count) || (targetIndex < 0))
                 {
-                    throw new IndexOutOfRangeException($"Index [{targetIndex}] is out of range for collection of length [{values.Count}].");
+                    throw new IndexOutOfRangeException(
+                        $"Index [{targetIndex}] is out of range for collection of length [{values.Count}]."
+                    );
                 }
 
                 var deletingValue = values[targetIndex];
@@ -347,8 +370,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_ADD = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_ADD));
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void INTERNAL_ADD(TValue value)
         {
@@ -364,8 +385,6 @@ namespace Appalachia.Core.Collections
                 _setDirtyAction?.Invoke();
             }
         }
-
-        private static readonly ProfilerMarker _PRF_INTERNAL_INITIALIZE = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_INITIALIZE));
 
         private void INTERNAL_INITIALIZE(bool getFrameCount = true)
         {
@@ -420,8 +439,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_CHECK_FATAL = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_CHECK_FATAL));
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void INTERNAL_CHECK_FATAL()
         {
@@ -429,8 +446,6 @@ namespace Appalachia.Core.Collections
             {
             }
         }
-
-        private static readonly ProfilerMarker _PRF_INTERNAL_REQUIRES_REBUILD = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_REQUIRES_REBUILD));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool INTERNAL_REQUIRES_REBUILD()
@@ -464,8 +479,6 @@ namespace Appalachia.Core.Collections
                 return false;
             }
         }
-
-        private static readonly ProfilerMarker _PRF_INTERNAL_REBUILD = new ProfilerMarker(_PRF_PFX + nameof(INTERNAL_REBUILD));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void INTERNAL_REBUILD()

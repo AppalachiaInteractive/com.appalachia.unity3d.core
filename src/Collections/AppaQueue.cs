@@ -11,16 +11,40 @@ using UnityEngine;
 namespace Appalachia.Core.Collections
 {
     [Serializable]
-    public abstract class AppaQueue<T> : 
-                                        ISerializationCallbackReceiver,
-                                        IEnumerable<T>,
-                                        IEnumerable,
-                                        ICollection,
-                                        IReadOnlyCollection<T>
+    public abstract class AppaQueue<T> : ISerializationCallbackReceiver,
+                                         IEnumerable<T>,
+                                         IEnumerable,
+                                         ICollection,
+                                         IReadOnlyCollection<T>
     {
         private const string _PRF_PFX = nameof(AppaQueue<T>) + ".";
-        
-        [SerializeField, HideInInspector]
+
+        private static readonly ProfilerMarker _PRF_OnBeforeSerialize =
+            new(_PRF_PFX + nameof(OnBeforeSerialize));
+
+        private static readonly ProfilerMarker _PRF_OnAfterDeserialize =
+            new(_PRF_PFX + nameof(OnAfterDeserialize));
+
+        private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_Clear = new(_PRF_PFX + nameof(Clear));
+
+        private static readonly ProfilerMarker _PRF_CopyTo = new(_PRF_PFX + nameof(CopyTo));
+
+        private static readonly ProfilerMarker _PRF_Enqueue = new(_PRF_PFX + nameof(Enqueue));
+
+        private static readonly ProfilerMarker _PRF_Dequeue = new(_PRF_PFX + nameof(Dequeue));
+
+        private static readonly ProfilerMarker _PRF_Peek = new(_PRF_PFX + nameof(Peek));
+
+        private static readonly ProfilerMarker _PRF_Contains = new(_PRF_PFX + nameof(Contains));
+
+        private static readonly ProfilerMarker _PRF_ToArray = new(_PRF_PFX + nameof(ToArray));
+
+        private static readonly ProfilerMarker _PRF_TrimExcess = new(_PRF_PFX + nameof(TrimExcess));
+
+        [SerializeField]
+        [HideInInspector]
         private T[] _array;
 
         private Queue<T> _queue;
@@ -58,7 +82,6 @@ namespace Appalachia.Core.Collections
 
         int IReadOnlyCollection<T>.Count => _queue.Count;
 
-        private static readonly ProfilerMarker _PRF_OnBeforeSerialize = new ProfilerMarker(_PRF_PFX + nameof(OnBeforeSerialize));
         public void OnBeforeSerialize()
         {
             using (_PRF_OnBeforeSerialize.Auto())
@@ -74,7 +97,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_OnAfterDeserialize = new ProfilerMarker(_PRF_PFX + nameof(OnAfterDeserialize));
         public void OnAfterDeserialize()
         {
             using (_PRF_OnAfterDeserialize.Auto())
@@ -90,7 +112,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Initialize = new ProfilerMarker(_PRF_PFX + nameof(Initialize));
         private void Initialize()
         {
             using (_PRF_Initialize.Auto())
@@ -102,7 +123,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Clear = new ProfilerMarker(_PRF_PFX + nameof(Clear));
         public virtual void Clear()
         {
             using (_PRF_Clear.Auto())
@@ -112,7 +132,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_CopyTo = new ProfilerMarker(_PRF_PFX + nameof(CopyTo));
         public virtual void CopyTo(T[] array, int arrayIndex)
         {
             using (_PRF_CopyTo.Auto())
@@ -121,7 +140,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Enqueue = new ProfilerMarker(_PRF_PFX + nameof(Enqueue));
         public virtual void Enqueue(T item)
         {
             using (_PRF_Enqueue.Auto())
@@ -131,7 +149,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Dequeue = new ProfilerMarker(_PRF_PFX + nameof(Dequeue));
         public virtual T Dequeue()
         {
             using (_PRF_Dequeue.Auto())
@@ -141,7 +158,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Peek = new ProfilerMarker(_PRF_PFX + nameof(Peek));
         public virtual T Peek()
         {
             using (_PRF_Peek.Auto())
@@ -151,7 +167,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Contains = new ProfilerMarker(_PRF_PFX + nameof(Contains));
         public virtual bool Contains(T item)
         {
             using (_PRF_Contains.Auto())
@@ -161,7 +176,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_ToArray = new ProfilerMarker(_PRF_PFX + nameof(ToArray));
         public virtual T[] ToArray()
         {
             using (_PRF_ToArray.Auto())
@@ -170,7 +184,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_TrimExcess = new ProfilerMarker(_PRF_PFX + nameof(TrimExcess));
         public virtual void TrimExcess()
         {
             using (_PRF_TrimExcess.Auto())

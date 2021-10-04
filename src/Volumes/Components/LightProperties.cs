@@ -11,15 +11,15 @@ namespace Appalachia.Core.Volumes.Components
     [Serializable]
     public class LightProperties : PropertyVolumeComponent<LightProperties>
     {
-        public ExposedLightReferenceParameter target = new ExposedLightReferenceParameter(default);
+        public ExposedLightReferenceParameter target = new(default);
 
-        public Vector3Parameter rotation = new Vector3Parameter(Vector3.zero);
-        public ColorParameter color = new ColorParameter(Color.white);
-        public ClampedFloatParameter colorTemperature = new ClampedFloatParameter(5500f, 1000f, 20000f);
-        public MinFloatParameter intensity = new MinFloatParameter(1f,       0f);
-        public MinFloatParameter bounceIntensity = new MinFloatParameter(0f, 0f);
-        public TextureParameter cookie = new TextureParameter(null);
-        public MinFloatParameter cookieSize = new MinFloatParameter(0f, 0f);
+        public Vector3Parameter rotation = new(Vector3.zero);
+        public ColorParameter color = new(Color.white);
+        public ClampedFloatParameter colorTemperature = new(5500f, 1000f, 20000f);
+        public MinFloatParameter intensity = new(1f, 0f);
+        public MinFloatParameter bounceIntensity = new(0f, 0f);
+        public TextureParameter cookie = new(null);
+        public MinFloatParameter cookieSize = new(0f, 0f);
 
         public override void OverrideProperties(PropertyMaster master)
         {

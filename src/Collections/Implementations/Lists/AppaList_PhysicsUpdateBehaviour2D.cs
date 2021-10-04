@@ -14,15 +14,16 @@ namespace Appalachia.Core.Collections.Implementations.Lists
         {
         }
 
-        public AppaList_PhysicsUpdateBehaviour2D(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) : base(
-            capacity,
-            capacityIncreaseMultiplier,
-            noTracking
-        )
+        public AppaList_PhysicsUpdateBehaviour2D(
+            int capacity,
+            float capacityIncreaseMultiplier = 2,
+            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 
-        public AppaList_PhysicsUpdateBehaviour2D(AppaList<PhysicsUpdateBehaviour2D> list) : base(list)
+        public AppaList_PhysicsUpdateBehaviour2D(AppaList<PhysicsUpdateBehaviour2D> list) : base(
+            list
+        )
         {
         }
 

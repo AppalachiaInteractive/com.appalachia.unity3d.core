@@ -20,7 +20,9 @@ namespace Appalachia.Core.Collections.Extensions
             var nativeLength = native.Length;
             if (array.Length < nativeLength)
             {
-                throw new IndexOutOfRangeException(nameof(array) + " is shorter than " + nameof(native));
+                throw new IndexOutOfRangeException(
+                    nameof(array) + " is shorter than " + nameof(native)
+                );
             }
 
             var byteLength = native.Length * UnsafeUtility.SizeOf<T>();
@@ -40,7 +42,9 @@ namespace Appalachia.Core.Collections.Extensions
             var nativeLength = nativeSlice.Length;
             if (array.Length < nativeLength)
             {
-                throw new IndexOutOfRangeException(nameof(array) + " is shorter than " + nameof(nativeSlice));
+                throw new IndexOutOfRangeException(
+                    nameof(array) + " is shorter than " + nameof(nativeSlice)
+                );
             }
 
             var byteLength = nativeSlice.Length * UnsafeUtility.SizeOf<T>();
@@ -61,7 +65,9 @@ namespace Appalachia.Core.Collections.Extensions
             var managedArrayLength = array.GetLength(0) * array.GetLength(1) * array.GetLength(2);
             if (managedArrayLength < nativeLength)
             {
-                throw new IndexOutOfRangeException(nameof(array) + " is shorter than " + nameof(native));
+                throw new IndexOutOfRangeException(
+                    nameof(array) + " is shorter than " + nameof(native)
+                );
             }
 
             var byteLength = native.Length * UnsafeUtility.SizeOf<T>();
@@ -82,7 +88,9 @@ namespace Appalachia.Core.Collections.Extensions
             var managedArrayLength = array.GetLength(0) * array.GetLength(1);
             if (managedArrayLength > nativeLength)
             {
-                throw new IndexOutOfRangeException(nameof(native) + " is shorter than " + nameof(array));
+                throw new IndexOutOfRangeException(
+                    nameof(native) + " is shorter than " + nameof(array)
+                );
             }
 
             var byteLength = managedArrayLength * UnsafeUtility.SizeOf<T>();
@@ -103,7 +111,9 @@ namespace Appalachia.Core.Collections.Extensions
             var managedArrayLength = array.GetLength(0) * array.GetLength(1) * array.GetLength(2);
             if (managedArrayLength > nativeLength)
             {
-                throw new IndexOutOfRangeException(nameof(native) + " is shorter than " + nameof(array));
+                throw new IndexOutOfRangeException(
+                    nameof(native) + " is shorter than " + nameof(array)
+                );
             }
 
             var byteLength = managedArrayLength * UnsafeUtility.SizeOf<T>();
@@ -124,7 +134,9 @@ namespace Appalachia.Core.Collections.Extensions
             var managedArrayLength = array.GetLength(0);
             if (managedArrayLength > nativeLength)
             {
-                throw new IndexOutOfRangeException(nameof(native) + " is shorter than " + nameof(array));
+                throw new IndexOutOfRangeException(
+                    nameof(native) + " is shorter than " + nameof(array)
+                );
             }
 
             var byteLength = managedArrayLength * UnsafeUtility.SizeOf<T>();
@@ -148,7 +160,9 @@ namespace Appalachia.Core.Collections.Extensions
 
             if (managedListLength > nativeLength)
             {
-                throw new IndexOutOfRangeException(nameof(native) + " is shorter than " + nameof(managedInternalArray));
+                throw new IndexOutOfRangeException(
+                    nameof(native) + " is shorter than " + nameof(managedInternalArray)
+                );
             }
 
             var byteLength = managedListLength * UnsafeUtility.SizeOf<T>();
@@ -158,7 +172,11 @@ namespace Appalachia.Core.Collections.Extensions
             UnsafeUtility.MemCpy(nativeBuffer, managedBuffer, byteLength);
         }
 
-        public static void EnsureLengthAtLeast<T>(this ref NativeArray<T> native, int atLeast, int newLength, Allocator allocator)
+        public static void EnsureLengthAtLeast<T>(
+            this ref NativeArray<T> native,
+            int atLeast,
+            int newLength,
+            Allocator allocator)
             where T : unmanaged
         {
             if (native.ShouldAllocate())
@@ -173,7 +191,10 @@ namespace Appalachia.Core.Collections.Extensions
             }
         }
 
-        public static void EnsureLength<T>(this ref NativeArray<T> native, int length, Allocator allocator)
+        public static void EnsureLength<T>(
+            this ref NativeArray<T> native,
+            int length,
+            Allocator allocator)
             where T : unmanaged
         {
             if (native.ShouldAllocate())

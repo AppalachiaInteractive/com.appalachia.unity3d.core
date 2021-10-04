@@ -74,7 +74,11 @@ namespace Appalachia.Core.Layers
             return _layerLookup.Contains(layer);
         }
 
-        private static void AssignLayer(int layer, HashSet<int> layerLookup, List<int> layers, ref LayerMask mask)
+        private static void AssignLayer(
+            int layer,
+            HashSet<int> layerLookup,
+            List<int> layers,
+            ref LayerMask mask)
         {
             if (layerLookup.Contains(layer))
             {

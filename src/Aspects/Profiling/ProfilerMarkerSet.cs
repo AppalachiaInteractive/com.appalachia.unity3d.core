@@ -9,13 +9,18 @@ namespace Appalachia.Core.Aspects.Profiling
 {
     public class ProfilerMarkerSet : DisposableAspectSet<ProfilerMarker>
     {
-        private static readonly ProfilerMarker _marker_Create = new ProfilerMarker("ProfilerMarkerSet.Create");
+        private static readonly ProfilerMarker _marker_Create = new("ProfilerMarkerSet.Create");
 
-        protected override ProfilerMarker Create(string typePrefix, string memberName, string additive, int sourceLineNumber)
+        protected override ProfilerMarker Create(
+            string typePrefix,
+            string memberName,
+            string additive,
+            int sourceLineNumber)
         {
             using (_marker_Create.Auto())
             {
-                var markerName = $"{typePrefix}.{memberName} {(additive == null ? string.Empty : $"({additive})")} [{sourceLineNumber}]";
+                var markerName =
+                    $"{typePrefix}.{memberName} {(additive == null ? string.Empty : $"({additive})")} [{sourceLineNumber}]";
 
                 var marker = new ProfilerMarker(markerName);
 

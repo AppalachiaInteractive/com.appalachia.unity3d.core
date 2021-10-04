@@ -9,7 +9,8 @@ using UnityEngine.Animations;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_LookAtConstraint : AppaSet<LookAtConstraint, AppaList_LookAtConstraint>
+    public sealed class
+        AppaSet_LookAtConstraint : AppaSet<LookAtConstraint, AppaList_LookAtConstraint>
     {
     }
 }

@@ -12,7 +12,7 @@ namespace Appalachia.Core.Volumes.Components
         private const string _PRF_PFX = nameof(PropertyVolumeComponent<X>) + ".";
 
         private static readonly ProfilerMarker _PRF_PropertyVolumeComponent =
-            new ProfilerMarker(_PRF_PFX + nameof(PropertyVolumeComponent<X>));
+            new(_PRF_PFX + nameof(PropertyVolumeComponent<X>));
 
         static PropertyVolumeComponent()
         {

@@ -14,7 +14,13 @@ namespace Appalachia.Core.Extensions
         {
             var textureResolution = GetRenderQualityPixelResolution(renderTextureQuality);
 
-            var rt = new RenderTexture(textureResolution, textureResolution, 24, renderTextureFormat, RenderTextureReadWrite.Linear)
+            var rt = new RenderTexture(
+                textureResolution,
+                textureResolution,
+                24,
+                renderTextureFormat,
+                RenderTextureReadWrite.Linear
+            )
             {
                 wrapMode = TextureWrapMode.Clamp,
                 filterMode = filterMode,
@@ -25,7 +31,7 @@ namespace Appalachia.Core.Extensions
 
             if (old)
             {
-                UnityEngine.Object.DestroyImmediate(old);
+                Object.DestroyImmediate(old);
             }
 
             return rt;
@@ -60,15 +66,22 @@ namespace Appalachia.Core.Extensions
         {
             var width = texture.width;
             var height = texture.height;
-            
-            RenderTexture active = RenderTexture.active;
-            RenderTexture temporary = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 8);
+
+            var active = RenderTexture.active;
+            var temporary = RenderTexture.GetTemporary(
+                width,
+                height,
+                0,
+                RenderTextureFormat.ARGB32,
+                RenderTextureReadWrite.Default,
+                8
+            );
             RenderTexture.active = temporary;
             GL.Clear(false, true, new Color(1f, 1f, 1f, 0.0f));
             Graphics.Blit(texture, temporary);
-            Texture2D texture2D = new Texture2D((int) width, (int) height, TextureFormat.ARGB32, false, true);
-            texture2D.filterMode = UnityEngine.FilterMode.Point;
-            
+            var texture2D = new Texture2D(width, height, TextureFormat.ARGB32, false, true);
+            texture2D.filterMode = FilterMode.Point;
+
             var rect = new Rect(0, 0, width, height);
 
             texture2D.ReadPixels(rect, 0, 0);

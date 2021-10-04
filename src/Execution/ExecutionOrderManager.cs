@@ -16,7 +16,7 @@ namespace Appalachia.Core.Execution
         private const string _PRF_PFX = nameof(ExecutionOrderManager) + ".";
 
         private static readonly ProfilerMarker _PRF_ScriptOrderManager =
-            new ProfilerMarker(_PRF_PFX + nameof(ExecutionOrderManager));
+            new(_PRF_PFX + nameof(ExecutionOrderManager));
 
         static ExecutionOrderManager()
         {
@@ -28,7 +28,10 @@ namespace Appalachia.Core.Execution
                     var monoScript = scripts[i];
                     if (monoScript.GetClass() != null)
                     {
-                        var @as = Attribute.GetCustomAttributes(monoScript.GetClass(), typeof(ExecutionOrderAttribute));
+                        var @as = Attribute.GetCustomAttributes(
+                            monoScript.GetClass(),
+                            typeof(ExecutionOrderAttribute)
+                        );
                         for (var index = 0; index < @as.Length; index++)
                         {
                             var a = @as[index];

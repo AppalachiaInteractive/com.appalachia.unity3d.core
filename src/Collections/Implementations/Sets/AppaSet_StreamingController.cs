@@ -9,7 +9,8 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_StreamingController : AppaSet<StreamingController, AppaList_StreamingController>
+    public sealed class
+        AppaSet_StreamingController : AppaSet<StreamingController, AppaList_StreamingController>
     {
     }
 }

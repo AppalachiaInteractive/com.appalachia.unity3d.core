@@ -13,6 +13,11 @@ namespace Appalachia.Core.Aspects.Tracing
         public const bool _TRACE_BEFORE_PREFS_READY = false;
         private static PREF<bool> _enabled;
 
+        public static bool InternalDisable;
+
+        private static readonly ProfilerMarker _PRF_TraceMarkerSet_Create =
+            new("TraceMarkerSet.Create");
+
         public static bool Enabled
         {
             get
@@ -32,22 +37,22 @@ namespace Appalachia.Core.Aspects.Tracing
                 }
 
                 return _TRACE_BEFORE_PREFS_READY;
-
             }
         }
 
-        public static bool InternalDisable;
-        
-        private static readonly ProfilerMarker _PRF_TraceMarkerSet_Create = new ProfilerMarker("TraceMarkerSet.Create");
-
-        protected override TraceMarker Create(string typePrefix, string memberName, string additive, int sourceLineNumber)
+        protected override TraceMarker Create(
+            string typePrefix,
+            string memberName,
+            string additive,
+            int sourceLineNumber)
         {
             using (_PRF_TraceMarkerSet_Create.Auto())
             {
-                var markerName = $"[{typePrefix}] [{memberName}]{(additive == null ? string.Empty : $" ({additive})")} [{sourceLineNumber}]";
+                var markerName =
+                    $"[{typePrefix}] [{memberName}]{(additive == null ? string.Empty : $" ({additive})")} [{sourceLineNumber}]";
 
                 var marker = new TraceMarker(markerName);
-            
+
                 return marker;
             }
         }

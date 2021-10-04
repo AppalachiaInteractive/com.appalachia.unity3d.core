@@ -16,11 +16,10 @@ namespace Appalachia.Core.Collections
     public static class IndexedCollectionsGlobals
     {
         [ExecuteOnEnable]
-        static void Initialize()
+        private static void Initialize()
         {
             _UI_DEBUG.WakeUp();
         }
-        
 
 #region MENU_ENABLE_
 
@@ -28,7 +27,8 @@ namespace Appalachia.Core.Collections
         private const string MENU_BASE_ = "Tools/" + G_ + "/";
         private const string MENU_UI_DEBUG_ = MENU_BASE_ + "Show All Fields";
 
-        [NonSerialized] public static readonly PREF<bool> _UI_DEBUG = PREFS.REG(G_, "Show Debugging Fields", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _UI_DEBUG = PREFS.REG(G_, "Show Debugging Fields", false);
 
         [MenuItem(MENU_UI_DEBUG_, true)]
         private static bool MENU_UI_DEBUG_VALIDATE()

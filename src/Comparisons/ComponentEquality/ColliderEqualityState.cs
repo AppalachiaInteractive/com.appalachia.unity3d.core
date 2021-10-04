@@ -5,10 +5,11 @@ using UnityEngine;
 namespace Appalachia.Core.Comparisons.ComponentEquality
 {
     [Serializable]
-    public class ColliderEqualityState : ComponentContentEqualityState<ColliderEqualityState, Collider>
+    public class
+        ColliderEqualityState : ComponentContentEqualityState<ColliderEqualityState, Collider>
     {
         public ColliderType colliderType;
-        
+
         //public MeshCollider mc;
         public Mesh mesh;
         public bool convex;
@@ -16,11 +17,11 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
         //public BoxCollider bc;
         public Vector3 center;
         public Vector3 size;
-        
+
         //public SphereCollider sc;
         //public Vector3 center;
         public float radius;
-        
+
         //public CapsuleCollider cc;
         //public Vector3 center;
         //public float radius;
@@ -62,10 +63,14 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                 return false;
             }
 
-            return (other is MeshCollider mc && mesh == mc.sharedMesh && convex == mc.convex) ||
-                   (other is BoxCollider bc && center == bc.center && size == bc.size) ||
-                   (other is SphereCollider sc && center == sc.center && radius == sc.radius) ||
-                   (other is CapsuleCollider cc && center == cc.center && radius == cc.radius && height == cc.height && direction == cc.direction);
+            return (other is MeshCollider mc && (mesh == mc.sharedMesh) && (convex == mc.convex)) ||
+                   (other is BoxCollider bc && (center == bc.center) && (size == bc.size)) ||
+                   (other is SphereCollider sc && (center == sc.center) && (radius == sc.radius)) ||
+                   (other is CapsuleCollider cc &&
+                    (center == cc.center) &&
+                    (radius == cc.radius) &&
+                    (height == cc.height) &&
+                    (direction == cc.direction));
         }
 
         public override bool Equals(ColliderEqualityState other)
@@ -80,7 +85,14 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                 return true;
             }
 
-            return colliderType == other.colliderType && Equals(mesh, other.mesh) && convex == other.convex && center.Equals(other.center) && size.Equals(other.size) && radius.Equals(other.radius) && height.Equals(other.height) && direction == other.direction;
+            return (colliderType == other.colliderType) &&
+                   Equals(mesh, other.mesh) &&
+                   (convex == other.convex) &&
+                   center.Equals(other.center) &&
+                   size.Equals(other.size) &&
+                   radius.Equals(other.radius) &&
+                   height.Equals(other.height) &&
+                   (direction == other.direction);
         }
 
         public override bool Equals(object obj)
@@ -95,7 +107,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                 return true;
             }
 
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
             {
                 return false;
             }

@@ -10,7 +10,9 @@ using UnityEngine;
 
 namespace Appalachia.Core.Overrides
 {
-    [Serializable, InlineProperty, SmartLabel]
+    [Serializable]
+    [InlineProperty]
+    [SmartLabel]
     public abstract class Overridable<T, TO> : IEquatable<Overridable<T, TO>>
         where TO : Overridable<T, TO>, new()
     {
@@ -18,7 +20,8 @@ namespace Appalachia.Core.Overrides
         public bool isOverridingAllowed;*/
 
         [SerializeField]
-        [HideLabel, PropertyTooltip("Override")]
+        [HideLabel]
+        [PropertyTooltip("Override")]
         [ToggleLeft]
         [HorizontalGroup("A", .02f)]
         public bool overrideEnabled;
@@ -52,11 +55,7 @@ namespace Appalachia.Core.Overrides
 
         public static implicit operator Overridable<T, TO>(T a)
         {
-            var to = new TO
-            {
-                overrideEnabled = false,
-                value = a
-            };
+            var to = new TO {overrideEnabled = false, value = a};
 
             return to;
         }
@@ -76,7 +75,8 @@ namespace Appalachia.Core.Overrides
             }
 
             return /* isOverridingAllowed == other.isOverridingAllowed && */
-                (overrideEnabled == other.overrideEnabled) && EqualityComparer<T>.Default.Equals(value, other.value);
+                (overrideEnabled == other.overrideEnabled) &&
+                EqualityComparer<T>.Default.Equals(value, other.value);
         }
 
         public override bool Equals(object obj)
@@ -96,7 +96,7 @@ namespace Appalachia.Core.Overrides
                 return false;
             }
 
-            return Equals((Overridable<T,TO>) obj);
+            return Equals((Overridable<T, TO>) obj);
         }
 
         public override int GetHashCode()
@@ -114,12 +114,12 @@ namespace Appalachia.Core.Overrides
             }
         }
 
-        public static bool operator ==(Overridable<T,TO> left, Overridable<T,TO> right)
+        public static bool operator ==(Overridable<T, TO> left, Overridable<T, TO> right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(Overridable<T,TO> left, Overridable<T,TO> right)
+        public static bool operator !=(Overridable<T, TO> left, Overridable<T, TO> right)
         {
             return !Equals(left, right);
         }

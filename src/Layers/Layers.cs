@@ -51,6 +51,11 @@ namespace Appalachia.Core.Layers
         private const string _PRF_PFX = nameof(Layers) + ".";
         private static LayerInfo[] __layers;
 
+        private static readonly ProfilerMarker _PRF_InitializeLayers =
+            new(_PRF_PFX + nameof(InitializeLayers));
+
+        private static readonly ProfilerMarker _PRF_GetMask = new(_PRF_PFX + nameof(GetMask));
+
         public static LayerInfo[] _LAYERS
         {
             get
@@ -112,15 +117,13 @@ namespace Appalachia.Core.Layers
 #if UNITY_EDITOR
         public static int LOCKED_EDITOR_ONLY => 31;
 #endif
-
-        private static readonly ProfilerMarker _PRF_InitializeLayers = new ProfilerMarker(_PRF_PFX + nameof(InitializeLayers));
         [ExecuteOnEnable]
         public static void InitializeLayers()
         {
             using (_PRF_InitializeLayers.Auto())
             {
                 __layers = new LayerInfo[32];
-                
+
                 for (var i = 0; i < 32; i++)
                 {
                     __layers[i] = new LayerInfo(i);
@@ -128,7 +131,6 @@ namespace Appalachia.Core.Layers
             }
         }
 
-        private static readonly ProfilerMarker _PRF_GetMask = new ProfilerMarker(_PRF_PFX + nameof(GetMask));
         /// <summary>
         ///     <para>Given a set of layer names as defined by either a Builtin or a User Layer in the, returns the equivalent layer mask for all of them.</para>
         /// </summary>
@@ -140,11 +142,18 @@ namespace Appalachia.Core.Layers
         {
             using (_PRF_GetMask.Auto())
             {
-                if (layers == null) throw new ArgumentNullException(nameof(layers));
+                if (layers == null)
+                {
+                    throw new ArgumentNullException(nameof(layers));
+                }
+
                 var num = 0;
                 foreach (var layer in layers)
                 {
-                    if (layer.Id != -1) num |= 1 << layer.Id;
+                    if (layer.Id != -1)
+                    {
+                        num |= 1 << layer.Id;
+                    }
                 }
 
                 return num;

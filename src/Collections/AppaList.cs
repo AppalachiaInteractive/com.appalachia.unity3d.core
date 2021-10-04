@@ -18,9 +18,11 @@ namespace Appalachia.Core.Collections
         protected const int _DEFAULT_CAPACITY = 4;
 
         // ReSharper disable once StaticMemberInGenericType
-        private static object __itemPoolLock = new object();
+        private static object __itemPoolLock = new();
 
         private static DefaultArrayPool<T> __itemPool;
+
+        private static readonly ProfilerMarker _PRF_Reverse = new(_PRF_PFX + nameof(Reverse));
 
         [SerializeField] private bool noTracking;
 
@@ -118,6 +120,55 @@ namespace Appalachia.Core.Collections
             {
                 Array.Clear(_values, 0, Count);
                 _count = 0;
+            }
+        }
+
+        public int IndexOf(T item)
+        {
+            using (_PRF_IndexOf.Auto())
+            {
+                return Array.IndexOf(_values, item, 0, Count);
+            }
+        }
+
+        public virtual void Insert(int index, T item)
+        {
+            using (_PRF_Insert.Auto())
+            {
+                if (index > Count)
+                {
+                    Debug.LogError("Index " + index + " is out of range " + Count);
+                }
+
+                if (Count == _values.Length)
+                {
+                    IncreaseCapacity();
+                }
+
+                if (index < Count)
+                {
+                    Array.Copy(_values, index, _values, index + 1, Count - index);
+                }
+
+                _values[index] = item;
+                Count = ++Count;
+            }
+        }
+
+        public virtual void RemoveAt(int index)
+        {
+            using (_PRF_RemoveAt.Auto())
+            {
+                if (index >= Count)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        nameof(index),
+                        $"Index {index} is out of range. List count is {Count}."
+                    );
+                }
+
+                _values[index] = _values[--Count];
+                _values[Count] = default;
             }
         }
 
@@ -267,14 +318,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public int IndexOf(T item)
-        {
-            using (_PRF_IndexOf.Auto())
-            {
-                return Array.IndexOf(_values, item, 0, Count);
-            }
-        }
-
         public T GetIndex(T item)
         {
             using (_PRF_GetIndex.Auto())
@@ -386,30 +429,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public virtual void Insert(int index, T item)
-        {
-            using (_PRF_Insert.Auto())
-            {
-                if (index > Count)
-                {
-                    Debug.LogError("Index " + index + " is out of range " + Count);
-                }
-
-                if (Count == _values.Length)
-                {
-                    IncreaseCapacity();
-                }
-
-                if (index < Count)
-                {
-                    Array.Copy(_values, index, _values, index + 1, Count - index);
-                }
-
-                _values[index] = item;
-                Count = ++Count;
-            }
-        }
-
         public virtual void AddRange(T[] arrayItems)
         {
             using (_PRF_AddRange.Auto())
@@ -496,20 +515,6 @@ namespace Appalachia.Core.Collections
                 {
                     _values[startIndex + i] = arrayItems[i];
                 }
-            }
-        }
-
-        public virtual void RemoveAt(int index)
-        {
-            using (_PRF_RemoveAt.Auto())
-            {
-                if (index >= Count)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range. List count is {Count}.");
-                }
-
-                _values[index] = _values[--Count];
-                _values[Count] = default;
             }
         }
 
@@ -628,34 +633,34 @@ namespace Appalachia.Core.Collections
             using (_PRF_ToArray.Auto())
             {
                 var array = new T[Count];
-                
+
                 var start = 0;
                 var length = Count;
-                
+
                 Array.Copy(_values, start, array, 0, length);
                 return array;
             }
         }
-        
+
         public virtual T[] ToArray(int length)
         {
             using (_PRF_ToArray.Auto())
             {
                 var array = new T[Count];
-                
+
                 var start = 0;
-                
+
                 Array.Copy(_values, start, array, 0, length);
                 return array;
             }
         }
-        
+
         public virtual T[] ToArray(int start, int length)
         {
             using (_PRF_ToArray.Auto())
             {
                 var array = new T[Count];
-                
+
                 Array.Copy(_values, start, array, 0, length);
                 return array;
             }
@@ -668,7 +673,7 @@ namespace Appalachia.Core.Collections
                 Array.Sort(_values);
             }
         }
-        
+
         public void Sort(IComparer<T> comparer)
         {
             using (_PRF_Sort.Auto())
@@ -683,7 +688,10 @@ namespace Appalachia.Core.Collections
             {
                 if (index < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range. List count is {Count}.");
+                    throw new ArgumentOutOfRangeException(
+                        nameof(index),
+                        $"Index {index} is out of range. List count is {Count}."
+                    );
                 }
 
                 if ((length < 0) || ((Count - index) < length))
@@ -715,7 +723,7 @@ namespace Appalachia.Core.Collections
                 Array.Sort(_values, comparison);
             }
         }
-        
+
         public void Sort<T2>(AppaList<T2> paired, IComparer<T> comparer)
         {
             using (_PRF_Sort.Auto())
@@ -730,9 +738,12 @@ namespace Appalachia.Core.Collections
             {
                 if (index < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range. List count is {Count}.");
+                    throw new ArgumentOutOfRangeException(
+                        nameof(index),
+                        $"Index {index} is out of range. List count is {Count}."
+                    );
                 }
-                
+
                 if ((length < 0) || ((Count - index) < length))
                 {
                     throw new ArgumentOutOfRangeException(
@@ -746,7 +757,7 @@ namespace Appalachia.Core.Collections
                 paired._values = others;
             }
         }
-        
+
         public void Sort<T2>(AppaList<T2> paired, Comparison<T> comparison)
         {
             using (_PRF_Sort.Auto())
@@ -763,12 +774,15 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentNullException(nameof(comparison));
                 }
-                
+
                 if (index < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range. List count is {Count}.");
+                    throw new ArgumentOutOfRangeException(
+                        nameof(index),
+                        $"Index {index} is out of range. List count is {Count}."
+                    );
                 }
-                
+
                 if ((length < 0) || ((Count - index) < length))
                 {
                     throw new ArgumentOutOfRangeException(
@@ -783,7 +797,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_Reverse = new ProfilerMarker(_PRF_PFX + nameof(Reverse));
         public void Reverse()
         {
             using (_PRF_Reverse.Auto())
@@ -798,9 +811,12 @@ namespace Appalachia.Core.Collections
             {
                 if (index < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(index), $"Index {index} is out of range. List count is {Count}.");
+                    throw new ArgumentOutOfRangeException(
+                        nameof(index),
+                        $"Index {index} is out of range. List count is {Count}."
+                    );
                 }
-                
+
                 if ((length < 0) || ((Count - index) < length))
                 {
                     throw new ArgumentOutOfRangeException(
@@ -808,11 +824,10 @@ namespace Appalachia.Core.Collections
                         $"Length {length} is out of range. List count is {Count} and index is {index}."
                     );
                 }
-                
+
                 Array.Reverse(_values, index, length);
             }
         }
-
 
         public bool RemoveNulls(AppaList<int> removedIndicesSafeOrdered)
         {
@@ -885,37 +900,65 @@ namespace Appalachia.Core.Collections
 #region Performance Markers
 
         private const string _PRF_PFX = nameof(AppaList<T>) + ".";
-        private static readonly ProfilerMarker _PRF_Add = new ProfilerMarker(_PRF_PFX + nameof(Add));
-        private static readonly ProfilerMarker _PRF_AddRange = new ProfilerMarker(_PRF_PFX + nameof(AddRange));
-        private static readonly ProfilerMarker _PRF_AddThreadSafe = new ProfilerMarker(_PRF_PFX + nameof(AddThreadSafe));
-        private static readonly ProfilerMarker _PRF_AddUnique = new ProfilerMarker(_PRF_PFX + nameof(AddUnique));
-        private static readonly ProfilerMarker _PRF_ChangeRange = new ProfilerMarker(_PRF_PFX + nameof(ChangeRange));
-        private static readonly ProfilerMarker _PRF_Clear = new ProfilerMarker(_PRF_PFX + nameof(Clear));
-        private static readonly ProfilerMarker _PRF_ClearFast = new ProfilerMarker(_PRF_PFX + nameof(ClearFast));
-        private static readonly ProfilerMarker _PRF_ClearRange = new ProfilerMarker(_PRF_PFX + nameof(ClearRange));
-        private static readonly ProfilerMarker _PRF_ClearThreadSafe = new ProfilerMarker(_PRF_PFX + nameof(ClearThreadSafe));
-        private static readonly ProfilerMarker _PRF_Contains = new ProfilerMarker(_PRF_PFX + nameof(Contains));
-        private static readonly ProfilerMarker _PRF_CopyTo = new ProfilerMarker(_PRF_PFX + nameof(CopyTo));
-        private static readonly ProfilerMarker _PRF_Dequeue = new ProfilerMarker(_PRF_PFX + nameof(Dequeue));
-        private static readonly ProfilerMarker _PRF_EnsureCount = new ProfilerMarker(_PRF_PFX + nameof(EnsureCount));
-        private static readonly ProfilerMarker _PRF_GetIndex = new ProfilerMarker(_PRF_PFX + nameof(GetIndex));
-        private static readonly ProfilerMarker _PRF_GrabListThreadSafe = new ProfilerMarker(_PRF_PFX + nameof(GrabListThreadSafe));
-        private static readonly ProfilerMarker _PRF_IncreaseCapacity = new ProfilerMarker(_PRF_PFX + nameof(IncreaseCapacity));
-        private static readonly ProfilerMarker _PRF_IndexOf = new ProfilerMarker(_PRF_PFX + nameof(IndexOf));
-        private static readonly ProfilerMarker _PRF_Insert = new ProfilerMarker(_PRF_PFX + nameof(Insert));
-        private static readonly ProfilerMarker _PRF_AppaList = new ProfilerMarker(_PRF_PFX + nameof(AppaList<T>));
-        private static readonly ProfilerMarker _PRF_OnAfterDeserialize = new ProfilerMarker(_PRF_PFX + nameof(OnAfterDeserialize));
-        private static readonly ProfilerMarker _PRF_Remove = new ProfilerMarker(_PRF_PFX + nameof(Remove));
-        private static readonly ProfilerMarker _PRF_RemoveAt = new ProfilerMarker(_PRF_PFX + nameof(RemoveAt));
-        private static readonly ProfilerMarker _PRF_RemoveLast = new ProfilerMarker(_PRF_PFX + nameof(RemoveLast));
-        private static readonly ProfilerMarker _PRF_RemoveNulls = new ProfilerMarker(_PRF_PFX + nameof(RemoveNulls));
-        private static readonly ProfilerMarker _PRF_RemoveRange = new ProfilerMarker(_PRF_PFX + nameof(RemoveRange));
-        private static readonly ProfilerMarker _PRF_SetArray = new ProfilerMarker(_PRF_PFX + nameof(SetArray));
-        private static readonly ProfilerMarker _PRF_SetCapacity = new ProfilerMarker(_PRF_PFX + nameof(SetCapacity));
-        private static readonly ProfilerMarker _PRF_SetCount = new ProfilerMarker(_PRF_PFX + nameof(SetCount));
-        private static readonly ProfilerMarker _PRF_Sort = new ProfilerMarker(_PRF_PFX + nameof(Sort));
-        private static readonly ProfilerMarker _PRF_ToArray = new ProfilerMarker(_PRF_PFX + nameof(ToArray));
-        private static readonly ProfilerMarker _PRF_TrimExcess = new ProfilerMarker(_PRF_PFX + nameof(TrimExcess));
+        private static readonly ProfilerMarker _PRF_Add = new(_PRF_PFX + nameof(Add));
+        private static readonly ProfilerMarker _PRF_AddRange = new(_PRF_PFX + nameof(AddRange));
+
+        private static readonly ProfilerMarker _PRF_AddThreadSafe =
+            new(_PRF_PFX + nameof(AddThreadSafe));
+
+        private static readonly ProfilerMarker _PRF_AddUnique = new(_PRF_PFX + nameof(AddUnique));
+
+        private static readonly ProfilerMarker _PRF_ChangeRange =
+            new(_PRF_PFX + nameof(ChangeRange));
+
+        private static readonly ProfilerMarker _PRF_Clear = new(_PRF_PFX + nameof(Clear));
+        private static readonly ProfilerMarker _PRF_ClearFast = new(_PRF_PFX + nameof(ClearFast));
+        private static readonly ProfilerMarker _PRF_ClearRange = new(_PRF_PFX + nameof(ClearRange));
+
+        private static readonly ProfilerMarker _PRF_ClearThreadSafe =
+            new(_PRF_PFX + nameof(ClearThreadSafe));
+
+        private static readonly ProfilerMarker _PRF_Contains = new(_PRF_PFX + nameof(Contains));
+        private static readonly ProfilerMarker _PRF_CopyTo = new(_PRF_PFX + nameof(CopyTo));
+        private static readonly ProfilerMarker _PRF_Dequeue = new(_PRF_PFX + nameof(Dequeue));
+
+        private static readonly ProfilerMarker _PRF_EnsureCount =
+            new(_PRF_PFX + nameof(EnsureCount));
+
+        private static readonly ProfilerMarker _PRF_GetIndex = new(_PRF_PFX + nameof(GetIndex));
+
+        private static readonly ProfilerMarker _PRF_GrabListThreadSafe =
+            new(_PRF_PFX + nameof(GrabListThreadSafe));
+
+        private static readonly ProfilerMarker _PRF_IncreaseCapacity =
+            new(_PRF_PFX + nameof(IncreaseCapacity));
+
+        private static readonly ProfilerMarker _PRF_IndexOf = new(_PRF_PFX + nameof(IndexOf));
+        private static readonly ProfilerMarker _PRF_Insert = new(_PRF_PFX + nameof(Insert));
+        private static readonly ProfilerMarker _PRF_AppaList = new(_PRF_PFX + nameof(AppaList<T>));
+
+        private static readonly ProfilerMarker _PRF_OnAfterDeserialize =
+            new(_PRF_PFX + nameof(OnAfterDeserialize));
+
+        private static readonly ProfilerMarker _PRF_Remove = new(_PRF_PFX + nameof(Remove));
+        private static readonly ProfilerMarker _PRF_RemoveAt = new(_PRF_PFX + nameof(RemoveAt));
+        private static readonly ProfilerMarker _PRF_RemoveLast = new(_PRF_PFX + nameof(RemoveLast));
+
+        private static readonly ProfilerMarker _PRF_RemoveNulls =
+            new(_PRF_PFX + nameof(RemoveNulls));
+
+        private static readonly ProfilerMarker _PRF_RemoveRange =
+            new(_PRF_PFX + nameof(RemoveRange));
+
+        private static readonly ProfilerMarker _PRF_SetArray = new(_PRF_PFX + nameof(SetArray));
+
+        private static readonly ProfilerMarker _PRF_SetCapacity =
+            new(_PRF_PFX + nameof(SetCapacity));
+
+        private static readonly ProfilerMarker _PRF_SetCount = new(_PRF_PFX + nameof(SetCount));
+        private static readonly ProfilerMarker _PRF_Sort = new(_PRF_PFX + nameof(Sort));
+        private static readonly ProfilerMarker _PRF_ToArray = new(_PRF_PFX + nameof(ToArray));
+        private static readonly ProfilerMarker _PRF_TrimExcess = new(_PRF_PFX + nameof(TrimExcess));
 
 #endregion
 
@@ -925,7 +968,10 @@ namespace Appalachia.Core.Collections
         {
         }
 
-        protected AppaList(int capacity, float capacityIncreaseMultiplier = 2.0f, bool noTracking = false)
+        protected AppaList(
+            int capacity,
+            float capacityIncreaseMultiplier = 2.0f,
+            bool noTracking = false)
         {
             using (_PRF_AppaList.Auto())
             {

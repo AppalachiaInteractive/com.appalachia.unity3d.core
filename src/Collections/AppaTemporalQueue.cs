@@ -12,14 +12,21 @@ namespace Appalachia.Core.Collections
     public class AppaTemporalQueue<T> : AppaQueue<T>
     {
         private const string _PRF_PFX = nameof(AppaTemporalQueue<T>) + ".";
-        
+
+        private static readonly ProfilerMarker _PRF_Dequeue = new(_PRF_PFX + nameof(Dequeue));
+
+        private static readonly ProfilerMarker _PRF_ResetCurrent =
+            new(_PRF_PFX + nameof(ResetCurrent));
+
+        private static readonly ProfilerMarker _PRF_CurrentOrNext =
+            new(_PRF_PFX + nameof(CurrentOrNext));
+
         [SerializeField] private T _current;
 
         public T Current => _current;
 
         public bool HasCurrent => _current?.Equals(default) ?? false;
 
-        private static readonly ProfilerMarker _PRF_Dequeue = new ProfilerMarker(_PRF_PFX + nameof(Dequeue));
         public override T Dequeue()
         {
             using (_PRF_Dequeue.Auto())
@@ -30,7 +37,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_ResetCurrent = new ProfilerMarker(_PRF_PFX + nameof(ResetCurrent));
         public void ResetCurrent()
         {
             using (_PRF_ResetCurrent.Auto())
@@ -39,7 +45,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_CurrentOrNext = new ProfilerMarker(_PRF_PFX + nameof(CurrentOrNext));
         public T CurrentOrNext()
         {
             using (_PRF_CurrentOrNext.Auto())

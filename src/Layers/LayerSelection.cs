@@ -9,14 +9,32 @@ using UnityEngine;
 
 namespace Appalachia.Core.Layers
 {
-    [Serializable, InlineProperty]
+    [Serializable]
+    [InlineProperty]
     public struct LayerSelection
     {
-        [ValueDropdown(nameof(GetLayers)), HideLabel, OnValueChanged(nameof(ResetMask))]
+        private static ValueDropdownList<int> _layers;
+
+        [ValueDropdown(nameof(GetLayers))]
+        [HideLabel]
+        [OnValueChanged(nameof(ResetMask))]
         [SerializeField]
         public int layer;
 
-        private static ValueDropdownList<int> _layers;
+        private LayerMask mask;
+
+        public LayerMask Mask
+        {
+            get
+            {
+                if (mask == default)
+                {
+                    mask = LayerMask.GetMask(LayerMask.LayerToName(layer));
+                }
+
+                return mask;
+            }
+        }
 
         private ValueDropdownList<int> GetLayers()
         {
@@ -45,27 +63,12 @@ namespace Appalachia.Core.Layers
 
         public static implicit operator LayerSelection(int l)
         {
-            return new LayerSelection {layer = l};
+            return new() {layer = l};
         }
 
         private void ResetMask()
         {
             mask = default;
-        }
-
-        private LayerMask mask;
-
-        public LayerMask Mask
-        {
-            get
-            {
-                if (mask == default)
-                {
-                    mask = LayerMask.GetMask(LayerMask.LayerToName(layer));
-                }
-
-                return mask;
-            }
         }
 
         public bool IsLayerInMask(int layer)

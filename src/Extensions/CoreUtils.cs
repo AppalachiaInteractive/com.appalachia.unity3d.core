@@ -33,22 +33,22 @@ namespace Appalachia.Core.Extensions
         // Ref: https://msdn.microsoft.com/en-us/library/windows/desktop/bb204881(v=vs.85).aspx
         public static readonly Vector3[] lookAtList =
         {
-            new Vector3(1.0f,  0.0f,  0.0f),
-            new Vector3(-1.0f, 0.0f,  0.0f),
-            new Vector3(0.0f,  1.0f,  0.0f),
-            new Vector3(0.0f,  -1.0f, 0.0f),
-            new Vector3(0.0f,  0.0f,  1.0f),
-            new Vector3(0.0f,  0.0f,  -1.0f)
+            new(1.0f, 0.0f, 0.0f),
+            new(-1.0f, 0.0f, 0.0f),
+            new(0.0f, 1.0f, 0.0f),
+            new(0.0f, -1.0f, 0.0f),
+            new(0.0f, 0.0f, 1.0f),
+            new(0.0f, 0.0f, -1.0f)
         };
 
         public static readonly Vector3[] upVectorList =
         {
-            new Vector3(0.0f, 1.0f, 0.0f),
-            new Vector3(0.0f, 1.0f, 0.0f),
-            new Vector3(0.0f, 0.0f, -1.0f),
-            new Vector3(0.0f, 0.0f, 1.0f),
-            new Vector3(0.0f, 1.0f, 0.0f),
-            new Vector3(0.0f, 1.0f, 0.0f)
+            new(0.0f, 1.0f, 0.0f),
+            new(0.0f, 1.0f, 0.0f),
+            new(0.0f, 0.0f, -1.0f),
+            new(0.0f, 0.0f, 1.0f),
+            new(0.0f, 1.0f, 0.0f),
+            new(0.0f, 1.0f, 0.0f)
         };
 
         private static Cubemap m_BlackCubeTexture;
@@ -64,7 +64,7 @@ namespace Appalachia.Core.Extensions
         private static IEnumerable<Type> m_AssemblyTypes;
 
         // Note: Color.Black have alpha channel set to 1. Most of the time we want alpha channel set to 0 as we use black to clear render target
-        public static Color clearColorAllBlack => new Color(0f, 0f, 0f, 0f);
+        public static Color clearColorAllBlack => new(0f, 0f, 0f, 0f);
 
         public static Cubemap blackCubeTexture
         {
@@ -154,11 +154,18 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static void ClearRenderTarget(CommandBuffer cmd, ClearFlag clearFlag, Color clearColor)
+        public static void ClearRenderTarget(
+            CommandBuffer cmd,
+            ClearFlag clearFlag,
+            Color clearColor)
         {
             if (clearFlag != ClearFlag.None)
             {
-                cmd.ClearRenderTarget((clearFlag & ClearFlag.Depth) != 0, (clearFlag & ClearFlag.Color) != 0, clearColor);
+                cmd.ClearRenderTarget(
+                    (clearFlag & ClearFlag.Depth) != 0,
+                    (clearFlag & ClearFlag.Color) != 0,
+                    clearColor
+                );
             }
         }
 
@@ -184,7 +191,15 @@ namespace Appalachia.Core.Extensions
             CubemapFace cubemapFace = CubemapFace.Unknown,
             int depthSlice = 0)
         {
-            SetRenderTarget(cmd, buffer, clearFlag, clearColorAllBlack, miplevel, cubemapFace, depthSlice);
+            SetRenderTarget(
+                cmd,
+                buffer,
+                clearFlag,
+                clearColorAllBlack,
+                miplevel,
+                cubemapFace,
+                depthSlice
+            );
         }
 
         public static void SetRenderTarget(
@@ -195,7 +210,16 @@ namespace Appalachia.Core.Extensions
             CubemapFace cubemapFace = CubemapFace.Unknown,
             int depthSlice = 0)
         {
-            SetRenderTarget(cmd, colorBuffer, depthBuffer, ClearFlag.None, clearColorAllBlack, miplevel, cubemapFace, depthSlice);
+            SetRenderTarget(
+                cmd,
+                colorBuffer,
+                depthBuffer,
+                ClearFlag.None,
+                clearColorAllBlack,
+                miplevel,
+                cubemapFace,
+                depthSlice
+            );
         }
 
         public static void SetRenderTarget(
@@ -207,7 +231,16 @@ namespace Appalachia.Core.Extensions
             CubemapFace cubemapFace = CubemapFace.Unknown,
             int depthSlice = 0)
         {
-            SetRenderTarget(cmd, colorBuffer, depthBuffer, clearFlag, clearColorAllBlack, miplevel, cubemapFace, depthSlice);
+            SetRenderTarget(
+                cmd,
+                colorBuffer,
+                depthBuffer,
+                clearFlag,
+                clearColorAllBlack,
+                miplevel,
+                cubemapFace,
+                depthSlice
+            );
         }
 
         public static void SetRenderTarget(
@@ -224,7 +257,10 @@ namespace Appalachia.Core.Extensions
             ClearRenderTarget(cmd, clearFlag, clearColor);
         }
 
-        public static void SetRenderTarget(CommandBuffer cmd, RenderTargetIdentifier[] colorBuffers, RenderTargetIdentifier depthBuffer)
+        public static void SetRenderTarget(
+            CommandBuffer cmd,
+            RenderTargetIdentifier[] colorBuffers,
+            RenderTargetIdentifier depthBuffer)
         {
             SetRenderTarget(cmd, colorBuffers, depthBuffer, ClearFlag.None, clearColorAllBlack);
         }
@@ -283,7 +319,14 @@ namespace Appalachia.Core.Extensions
             ClearFlag clearFlag,
             Color clearColor)
         {
-            cmd.SetRenderTarget(colorBuffer, colorLoadAction, colorStoreAction, depthBuffer, depthLoadAction, depthStoreAction);
+            cmd.SetRenderTarget(
+                colorBuffer,
+                colorLoadAction,
+                colorStoreAction,
+                depthBuffer,
+                depthLoadAction,
+                depthStoreAction
+            );
             ClearRenderTarget(cmd, clearFlag, clearColor);
         }
 
@@ -326,15 +369,31 @@ namespace Appalachia.Core.Extensions
             }
             else
             {
-                temp = string.Format("{0}x{1}x{2}{3}_{4}", width, height, depth, mips ? "_Mips" : "", format);
+                temp = string.Format(
+                    "{0}x{1}x{2}{3}_{4}",
+                    width,
+                    height,
+                    depth,
+                    mips ? "_Mips" : "",
+                    format
+                );
             }
 
-            temp = string.Format("{0}_{1}_{2}", name == "" ? "Texture" : name, dim == TextureDimension.None ? "" : dim.ToString(), temp);
+            temp = string.Format(
+                "{0}_{1}_{2}",
+                name == "" ? "Texture" : name,
+                dim == TextureDimension.None ? "" : dim.ToString(),
+                temp
+            );
 
             return temp;
         }
 
-        public static void ClearCubemap(CommandBuffer cmd, RenderTexture renderTexture, Color clearColor, bool clearMips = false)
+        public static void ClearCubemap(
+            CommandBuffer cmd,
+            RenderTexture renderTexture,
+            Color clearColor,
+            bool clearMips = false)
         {
             var mipCount = 1;
             if (renderTexture.useMipMap && clearMips)
@@ -346,7 +405,14 @@ namespace Appalachia.Core.Extensions
             {
                 for (var mip = 0; mip < mipCount; ++mip)
                 {
-                    SetRenderTarget(cmd, new RenderTargetIdentifier(renderTexture), ClearFlag.Color, clearColor, mip, (CubemapFace) i);
+                    SetRenderTarget(
+                        cmd,
+                        new RenderTargetIdentifier(renderTexture),
+                        ClearFlag.Color,
+                        clearColor,
+                        mip,
+                        (CubemapFace) i
+                    );
                 }
             }
         }
@@ -358,7 +424,15 @@ namespace Appalachia.Core.Extensions
             MaterialPropertyBlock properties = null,
             int shaderPassId = 0)
         {
-            commandBuffer.DrawProcedural(Matrix4x4.identity, material, shaderPassId, MeshTopology.Triangles, 3, 1, properties);
+            commandBuffer.DrawProcedural(
+                Matrix4x4.identity,
+                material,
+                shaderPassId,
+                MeshTopology.Triangles,
+                3,
+                1,
+                properties
+            );
         }
 
         public static void DrawFullScreen(
@@ -369,7 +443,15 @@ namespace Appalachia.Core.Extensions
             int shaderPassId = 0)
         {
             commandBuffer.SetRenderTarget(colorBuffer);
-            commandBuffer.DrawProcedural(Matrix4x4.identity, material, shaderPassId, MeshTopology.Triangles, 3, 1, properties);
+            commandBuffer.DrawProcedural(
+                Matrix4x4.identity,
+                material,
+                shaderPassId,
+                MeshTopology.Triangles,
+                3,
+                1,
+                properties
+            );
         }
 
         public static void DrawFullScreen(
@@ -381,7 +463,15 @@ namespace Appalachia.Core.Extensions
             int shaderPassId = 0)
         {
             commandBuffer.SetRenderTarget(colorBuffer, depthStencilBuffer);
-            commandBuffer.DrawProcedural(Matrix4x4.identity, material, shaderPassId, MeshTopology.Triangles, 3, 1, properties);
+            commandBuffer.DrawProcedural(
+                Matrix4x4.identity,
+                material,
+                shaderPassId,
+                MeshTopology.Triangles,
+                3,
+                1,
+                properties
+            );
         }
 
         public static void DrawFullScreen(
@@ -393,7 +483,15 @@ namespace Appalachia.Core.Extensions
             int shaderPassId = 0)
         {
             commandBuffer.SetRenderTarget(colorBuffers, depthStencilBuffer);
-            commandBuffer.DrawProcedural(Matrix4x4.identity, material, shaderPassId, MeshTopology.Triangles, 3, 1, properties);
+            commandBuffer.DrawProcedural(
+                Matrix4x4.identity,
+                material,
+                shaderPassId,
+                MeshTopology.Triangles,
+                3,
+                1,
+                properties
+            );
         }
 
         // Important: the first RenderTarget must be created with 0 depth bits!
@@ -408,7 +506,14 @@ namespace Appalachia.Core.Extensions
             // To work around this deficiency of the CommandBuffer.SetRenderTarget() API,
             // we pass the first color target as the depth target. If it has 0 depth bits,
             // no depth target ends up being bound.
-            DrawFullScreen(commandBuffer, material, colorBuffers, colorBuffers[0], properties, shaderPassId);
+            DrawFullScreen(
+                commandBuffer,
+                material,
+                colorBuffers,
+                colorBuffers[0],
+                properties,
+                shaderPassId
+            );
         }
 
         // Color space utilities
@@ -428,7 +533,11 @@ namespace Appalachia.Core.Extensions
             var shader = Shader.Find(shaderPath);
             if (shader == null)
             {
-                Debug.LogError("Cannot create required material because shader " + shaderPath + " could not be found");
+                Debug.LogError(
+                    "Cannot create required material because shader " +
+                    shaderPath +
+                    " could not be found"
+                );
                 return null;
             }
 
@@ -479,13 +588,20 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static void SelectKeyword(Material material, string keyword1, string keyword2, bool enableFirst)
+        public static void SelectKeyword(
+            Material material,
+            string keyword1,
+            string keyword2,
+            bool enableFirst)
         {
             material.EnableKeyword(enableFirst ? keyword1 : keyword2);
             material.DisableKeyword(enableFirst ? keyword2 : keyword1);
         }
 
-        public static void SelectKeyword(Material material, string[] keywords, int enabledKeywordIndex)
+        public static void SelectKeyword(
+            Material material,
+            string[] keywords,
+            int enabledKeywordIndex)
         {
             material.EnableKeyword(keywords[enabledKeywordIndex]);
 
@@ -728,7 +844,9 @@ namespace Appalachia.Core.Extensions
                 animateMaterials = false;
 
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
-                foreach (MaterialEditor med in Resources.FindObjectsOfTypeAll(typeof(MaterialEditor)))
+                foreach (MaterialEditor med in Resources.FindObjectsOfTypeAll(
+                    typeof(MaterialEditor)
+                ))
                 {
                     // Warning: currently, there's no way to determine whether a given camera corresponds to this MaterialEditor.
                     // Therefore, if at least one of the visible MaterialEditors is in Play Mode, all of them will play.

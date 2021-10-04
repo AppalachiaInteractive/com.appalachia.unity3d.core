@@ -6,10 +6,13 @@ namespace Appalachia.Core.Volumes.Parameters
     [Serializable]
     public sealed class GradientParameter : VolumeParameter<Gradient>
     {
-        private GradientColorKey[] _colorKeys;
         private GradientAlphaKey[] _alphaKeys;
+        private GradientColorKey[] _colorKeys;
 
-        public GradientParameter(Gradient value, bool overrideState = false) : base(value, overrideState)
+        public GradientParameter(Gradient value, bool overrideState = false) : base(
+            value,
+            overrideState
+        )
         {
             _colorKeys = new GradientColorKey[8];
             _alphaKeys = new GradientAlphaKey[8];

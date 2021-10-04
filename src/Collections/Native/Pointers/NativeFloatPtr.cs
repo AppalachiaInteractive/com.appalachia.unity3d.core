@@ -247,11 +247,18 @@ namespace Appalachia.Core.Collections.Native.Pointers
             // Require a valid allocator
             if (allocator <= Allocator.None)
             {
-                throw new ArgumentException("Allocator must be Temp, TempJob or Persistent", nameof(allocator));
+                throw new ArgumentException(
+                    "Allocator must be Temp, TempJob or Persistent",
+                    nameof(allocator)
+                );
             }
 
             // Allocate the memory for the value
-            m_Buffer = (float*) UnsafeUtility.Malloc(sizeof(float), UnsafeUtility.AlignOf<float>(), allocator);
+            m_Buffer = (float*) UnsafeUtility.Malloc(
+                sizeof(float),
+                UnsafeUtility.AlignOf<float>(),
+                allocator
+            );
 
             // Store the allocator to use when deallocating
             m_AllocatorLabelLabel = allocator;

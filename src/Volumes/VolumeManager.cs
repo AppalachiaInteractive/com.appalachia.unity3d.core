@@ -26,24 +26,24 @@ namespace Appalachia.Core.Volumes
         private const int k_MaxLayerCount = 32;
 
         //>>> System.Lazy<T> is broken in Unity (legacy runtime) so we'll have to do it ourselves :|
-        private static readonly VolumeManager s_Instance = new VolumeManager();
-
-        // Cached lists of all volumes (sorted by priority) by layer mask
-        private readonly Dictionary<int, List<Volume>> m_SortedVolumes;
-
-        // Holds all the registered volumes
-        private readonly List<Volume> m_Volumes;
-
-        // Keep track of sorting states for layer masks
-        private readonly Dictionary<int, bool> m_SortNeeded;
+        private static readonly VolumeManager s_Instance = new();
 
         // Internal list of default state for each component type - this is used to reset component
         // states on update instead of having to implement a Reset method on all components (which
         // would be error-prone)
         private readonly List<VolumeComponent> m_ComponentsDefaultState;
 
+        // Cached lists of all volumes (sorted by priority) by layer mask
+        private readonly Dictionary<int, List<Volume>> m_SortedVolumes;
+
+        // Keep track of sorting states for layer masks
+        private readonly Dictionary<int, bool> m_SortNeeded;
+
         // Recycled list used for volume traversal
         private readonly List<Collider> m_TempColliders;
+
+        // Holds all the registered volumes
+        private readonly List<Volume> m_Volumes;
 
         // Explicit static constructor to tell the C# compiler not to mark type as beforefieldinit
         static VolumeManager()
@@ -88,7 +88,10 @@ namespace Appalachia.Core.Volumes
 
             // Grab all the component types we can find
             baseComponentTypes = CoreUtils.GetAllAssemblyTypes()
-                                          .Where(t => t.IsSubclassOf(typeof(VolumeComponent)) && !t.IsAbstract);
+                                          .Where(
+                                               t => t.IsSubclassOf(typeof(VolumeComponent)) &&
+                                                    !t.IsAbstract
+                                           );
 
             // Keep an instance of each type to be used in a virtual lowest priority global volume
             // so that we have a default state to fallback to when exiting volumes
@@ -184,7 +187,10 @@ namespace Appalachia.Core.Volumes
         }
 
         // Go through all listed components and lerp overriden values in the global state
-        private void OverrideData(VolumeStack s, List<VolumeComponent> components, float interpFactor)
+        private void OverrideData(
+            VolumeStack s,
+            List<VolumeComponent> components,
+            float interpFactor)
         {
             foreach (var component in components)
             {
@@ -344,7 +350,11 @@ namespace Appalachia.Core.Volumes
                 //custom-end
 
                 // No need to clamp01 the interpolation factor as it'll always be in [0;1[ range
-                OverrideData(s, volume.profileRef.components, interpFactor * Mathf.Clamp01(volume.weight));
+                OverrideData(
+                    s,
+                    volume.profileRef.components,
+                    interpFactor * Mathf.Clamp01(volume.weight)
+                );
             }
         }
 

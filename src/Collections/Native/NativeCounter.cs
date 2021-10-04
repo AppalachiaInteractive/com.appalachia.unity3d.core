@@ -45,13 +45,19 @@ namespace Appalachia.Core.Collections.Native
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             if (!UnsafeUtility.IsBlittable<int>())
             {
-                throw new ArgumentException(string.Format("{0} used in NativeQueue<{0}> must be blittable", typeof(int)));
+                throw new ArgumentException(
+                    string.Format("{0} used in NativeQueue<{0}> must be blittable", typeof(int))
+                );
             }
 #endif
             m_AllocatorLabelLabel = label;
 
             // Allocate native memory for a single integer// One full cache line (integers per cacheline * size of integer) for each potential worker index, JobsUtility.MaxJobThreadCount
-            m_Counter = (int*) UnsafeUtility.Malloc(UnsafeUtility.SizeOf<int>() * IntsPerCacheLine * JobsUtility.MaxJobThreadCount, 4, label);
+            m_Counter = (int*) UnsafeUtility.Malloc(
+                UnsafeUtility.SizeOf<int>() * IntsPerCacheLine * JobsUtility.MaxJobThreadCount,
+                4,
+                label
+            );
 
             // Create a dispose sentinel to track memory leaks. This also creates the AtomicSafetyHandle
 #if ENABLE_UNITY_COLLECTIONS_CHECKS

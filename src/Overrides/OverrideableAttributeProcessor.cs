@@ -16,7 +16,9 @@ namespace Appalachia.Core.Overrides
     [ResolverPriority(500)]
     public class OverrideableAttributeProcessor : OdinAttributeProcessor
     {
-        public override void ProcessSelfAttributes(InspectorProperty property, List<Attribute> attributes)
+        public override void ProcessSelfAttributes(
+            InspectorProperty property,
+            List<Attribute> attributes)
         {
             if (property.Info.TypeOfValue == null)
             {
@@ -37,7 +39,10 @@ namespace Appalachia.Core.Overrides
             }
         }
 
-        public override void ProcessChildMemberAttributes(InspectorProperty parentProperty, MemberInfo member, List<Attribute> attributes)
+        public override void ProcessChildMemberAttributes(
+            InspectorProperty parentProperty,
+            MemberInfo member,
+            List<Attribute> attributes)
         {
             if (member.Name != "value")
             {

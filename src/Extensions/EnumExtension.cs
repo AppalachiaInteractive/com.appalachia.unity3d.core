@@ -33,7 +33,7 @@ namespace Appalachia.Core.Extensions
             }
             catch
             {
-                return default(T);
+                return default;
             }
 #endif
         }

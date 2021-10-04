@@ -8,8 +8,15 @@ namespace Appalachia.Core.Overrides.Implementations
 {
     [Serializable]
     public sealed class double_OVERRIDE : Overridable<double, double_OVERRIDE>
-    { public double_OVERRIDE() : base(false, default){}
-        public double_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, double value) : base(overrideEnabled, value)
+    {
+        public double_OVERRIDE() : base(false, default)
+        {
+        }
+
+        public double_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, double value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

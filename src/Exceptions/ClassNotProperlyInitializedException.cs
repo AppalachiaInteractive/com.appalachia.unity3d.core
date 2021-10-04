@@ -8,7 +8,9 @@ namespace Appalachia.Core.Exceptions
 {
     public class ClassNotProperlyInitializedException : Exception
     {
-        public ClassNotProperlyInitializedException(string className) : base($"Static class {className} was not initialized properly.")
+        public ClassNotProperlyInitializedException(string className) : base(
+            $"Static class {className} was not initialized properly."
+        )
         {
         }
 

@@ -14,18 +14,18 @@ namespace Appalachia.Core.Volumes
     public class Volume : InternalMonoBehaviour
     {
         private const string _PRF_PFX = nameof(Volume) + ".";
-        private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + "Awake");
-        private static readonly ProfilerMarker _PRF_Start = new ProfilerMarker(_PRF_PFX + "Start");
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + "OnEnable");
-        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + "Update");
-        private static readonly ProfilerMarker _PRF_LateUpdate = new ProfilerMarker(_PRF_PFX + "LateUpdate");
-        private static readonly ProfilerMarker _PRF_OnDisable = new ProfilerMarker(_PRF_PFX + "OnDisable");
-        private static readonly ProfilerMarker _PRF_OnDestroy = new ProfilerMarker(_PRF_PFX + "OnDestroy");
-        private static readonly ProfilerMarker _PRF_Reset = new ProfilerMarker(_PRF_PFX + "Reset");
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new ProfilerMarker(_PRF_PFX + "OnDrawGizmos");
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
+        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
+        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
+        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
+        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
 
         private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new ProfilerMarker(_PRF_PFX + "OnDrawGizmosSelected");
+            new(_PRF_PFX + "OnDrawGizmosSelected");
 
 //custom-begin: malte: context reference for exposed property resolver
         public Object context;
@@ -35,7 +35,9 @@ namespace Appalachia.Core.Volumes
         [Tooltip("A global volume is applied to the whole scene.")]
         public bool isGlobal;
 
-        [Tooltip("Volume priority in the stack. Higher number means higher priority. Negative values are supported.")]
+        [Tooltip(
+            "Volume priority in the stack. Higher number means higher priority. Negative values are supported."
+        )]
         public float priority;
 
         [Tooltip(
@@ -44,17 +46,19 @@ namespace Appalachia.Core.Volumes
         public float blendDistance;
 
         [Range(0f, 1f)]
-        [Tooltip("Total weight of this volume in the scene. 0 means it won't do anything, 1 means full effect.")]
+        [Tooltip(
+            "Total weight of this volume in the scene. 0 means it won't do anything, 1 means full effect."
+        )]
         public float weight = 1f;
 
         // Modifying sharedProfile will change the behavior of all volumes using this profile, and
         // change profile settings that are stored in the project too
         public VolumeProfile sharedProfile;
+        private VolumeProfile m_InternalProfile;
 
         // Needed for state tracking (see the comments in Update)
         private int m_PreviousLayer;
         private float m_PreviousPriority;
-        private VolumeProfile m_InternalProfile;
 
         // This property automatically instantiates the profile and makes it unique to this volume
         // so you can safely edit it via scripting at runtime without changing the original asset
@@ -84,29 +88,8 @@ namespace Appalachia.Core.Volumes
             set => m_InternalProfile = value;
         }
 
-        internal VolumeProfile profileRef => m_InternalProfile == null ? sharedProfile : m_InternalProfile;
-
-        public bool HasInstantiatedProfile()
-        {
-            return m_InternalProfile != null;
-        }
-
-        private void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                m_PreviousLayer = gameObject.layer;
-                VolumeManager.instance.Register(this, m_PreviousLayer);
-            }
-        }
-
-        private void OnDisable()
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                VolumeManager.instance.Unregister(this, gameObject.layer);
-            }
-        }
+        internal VolumeProfile profileRef =>
+            m_InternalProfile == null ? sharedProfile : m_InternalProfile;
 
         private void Update()
         {
@@ -133,6 +116,28 @@ namespace Appalachia.Core.Volumes
                     m_PreviousPriority = priority;
                 }
             }
+        }
+
+        private void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                m_PreviousLayer = gameObject.layer;
+                VolumeManager.instance.Register(this, m_PreviousLayer);
+            }
+        }
+
+        private void OnDisable()
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                VolumeManager.instance.Unregister(this, gameObject.layer);
+            }
+        }
+
+        public bool HasInstantiatedProfile()
+        {
+            return m_InternalProfile != null;
         }
 
 #if UNITY_EDITOR

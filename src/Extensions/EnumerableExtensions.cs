@@ -11,7 +11,11 @@ namespace Appalachia.Core.Extensions
 {
     public static class EnumerableExtensions
     {
-        public static void Slice<T>(this IList<T> values, int slices, int sliceCount, Action<T> sliceAction)
+        public static void Slice<T>(
+            this IList<T> values,
+            int slices,
+            int sliceCount,
+            Action<T> sliceAction)
         {
             for (var i = 0; i < values.Count; i++)
             {
@@ -22,7 +26,11 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static void Slice<T>(this T[] values, int slices, int sliceCount, Action<T> sliceAction)
+        public static void Slice<T>(
+            this T[] values,
+            int slices,
+            int sliceCount,
+            Action<T> sliceAction)
         {
             for (var i = 0; i < values.Length; i++)
             {
@@ -33,7 +41,9 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static Dictionary<TKey, TValue> BuildLookup<TKey, TValue>(this IEnumerable<TValue> values, Func<TValue, TKey> keySelector)
+        public static Dictionary<TKey, TValue> BuildLookup<TKey, TValue>(
+            this IEnumerable<TValue> values,
+            Func<TValue, TKey> keySelector)
         {
             var dictionary = new Dictionary<TKey, TValue>();
 
@@ -46,7 +56,8 @@ namespace Appalachia.Core.Extensions
             return dictionary;
         }
 
-        public static Dictionary<TValue, int> BuildReverseIndexLookup<TValue>(this IEnumerable<TValue> values)
+        public static Dictionary<TValue, int> BuildReverseIndexLookup<TValue>(
+            this IEnumerable<TValue> values)
         {
             var dictionary = new Dictionary<TValue, int>();
 
@@ -114,25 +125,29 @@ namespace Appalachia.Core.Extensions
         /// <summary>Convert a colletion to a HashSet.</summary>
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
         {
-            return new HashSet<T>(source);
+            return new(source);
         }
 
         /// <summary>Convert a colletion to a HashSet.</summary>
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer)
+        public static HashSet<T> ToHashSet<T>(
+            this IEnumerable<T> source,
+            IEqualityComparer<T> comparer)
         {
-            return new HashSet<T>(source, comparer);
+            return new(source, comparer);
         }
 
         /// <summary>Convert a colletion to a HashSet.</summary>
         public static HashSet<T> ToHashSet2<T>(this IEnumerable<T> source)
         {
-            return new HashSet<T>(source);
+            return new(source);
         }
 
         /// <summary>Convert a colletion to a HashSet.</summary>
-        public static HashSet<T> ToHashSet2<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer)
+        public static HashSet<T> ToHashSet2<T>(
+            this IEnumerable<T> source,
+            IEqualityComparer<T> comparer)
         {
-            return new HashSet<T>(source, comparer);
+            return new(source, comparer);
         }
 
         /// <summary>Add an item to the beginning of a collection.</summary>
@@ -183,7 +198,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">Func to create the item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, bool condition, Func<T> prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            bool condition,
+            Func<T> prepend)
         {
             if (condition)
             {
@@ -202,7 +220,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">The item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, bool condition, T prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            bool condition,
+            T prepend)
         {
             if (condition)
             {
@@ -221,7 +242,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">The collection to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, bool condition, IEnumerable<T> prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            bool condition,
+            IEnumerable<T> prepend)
         {
             if (condition)
             {
@@ -243,7 +267,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">Func to create the item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, Func<bool> condition, Func<T> prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            Func<bool> condition,
+            Func<T> prepend)
         {
             if (condition())
             {
@@ -262,7 +289,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">The item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, Func<bool> condition, T prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            Func<bool> condition,
+            T prepend)
         {
             if (condition())
             {
@@ -281,7 +311,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">The collection to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, Func<bool> condition, IEnumerable<T> prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            Func<bool> condition,
+            IEnumerable<T> prepend)
         {
             if (condition())
             {
@@ -303,7 +336,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">Func to create the item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, Func<IEnumerable<T>, bool> condition, Func<T> prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            Func<IEnumerable<T>, bool> condition,
+            Func<T> prepend)
         {
             if (condition(source))
             {
@@ -322,7 +358,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">The item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, Func<IEnumerable<T>, bool> condition, T prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            Func<IEnumerable<T>, bool> condition,
+            T prepend)
         {
             if (condition(source))
             {
@@ -341,7 +380,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">The collection to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, Func<IEnumerable<T>, bool> condition, IEnumerable<T> prepend)
+        public static IEnumerable<T> PrependIf<T>(
+            this IEnumerable<T> source,
+            Func<IEnumerable<T>, bool> condition,
+            IEnumerable<T> prepend)
         {
             if (condition(source))
             {
@@ -386,7 +428,9 @@ namespace Appalachia.Core.Extensions
         /// <summary>Add a collection to the end of another collection.</summary>
         /// <param name="source">The collection.</param>
         /// <param name="append">The collection to append.</param>
-        public static IEnumerable<T> AppendWith<T>(this IEnumerable<T> source, IEnumerable<T> append)
+        public static IEnumerable<T> AppendWith<T>(
+            this IEnumerable<T> source,
+            IEnumerable<T> append)
         {
             foreach (var obj in source)
             {
@@ -405,7 +449,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="append">Func to create the item to append.</param>
-        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, bool condition, Func<T> append)
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            bool condition,
+            Func<T> append)
         {
             foreach (var obj in source)
             {
@@ -424,7 +471,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="append">The item to append.</param>
-        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, bool condition, T append)
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            bool condition,
+            T append)
         {
             foreach (var obj in source)
             {
@@ -443,7 +493,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="append">The collection to append.</param>
-        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, bool condition, IEnumerable<T> append)
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            bool condition,
+            IEnumerable<T> append)
         {
             foreach (var obj in source)
             {
@@ -465,7 +518,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="append">Func to create the item to append.</param>
-        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, Func<bool> condition, Func<T> append)
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            Func<bool> condition,
+            Func<T> append)
         {
             foreach (var obj in source)
             {
@@ -484,7 +540,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="append">The item to append.</param>
-        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, Func<bool> condition, T append)
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            Func<bool> condition,
+            T append)
         {
             foreach (var obj in source)
             {
@@ -503,7 +562,10 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="append">The collection to append.</param>
-        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, Func<bool> condition, IEnumerable<T> append)
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            Func<bool> condition,
+            IEnumerable<T> append)
         {
             foreach (var obj in source)
             {
@@ -656,7 +718,9 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static TValue MostFrequent<TList, TValue>(this IEnumerable<TList> list, Func<TList, TValue> selector)
+        public static TValue MostFrequent<TList, TValue>(
+            this IEnumerable<TList> list,
+            Func<TList, TValue> selector)
         {
             var counts = new Dictionary<TValue, int>();
 
@@ -664,8 +728,11 @@ namespace Appalachia.Core.Extensions
             {
                 var selection = selector(value);
 
-                if (selection == null) continue;
-                
+                if (selection == null)
+                {
+                    continue;
+                }
+
                 if (!counts.ContainsKey(selection))
                 {
                     counts.Add(selection, 1);
@@ -678,8 +745,10 @@ namespace Appalachia.Core.Extensions
 
             return counts.OrderByDescending(c => c.Value).FirstOrDefault().Key;
         }
-        
-        public static IEnumerable<TValue> OrderByFrequencyDescending<TList, TValue>(this IEnumerable<TList> list, Func<TList, TValue> selector)
+
+        public static IEnumerable<TValue> OrderByFrequencyDescending<TList, TValue>(
+            this IEnumerable<TList> list,
+            Func<TList, TValue> selector)
         {
             var counts = new Dictionary<TValue, int>();
 
@@ -687,8 +756,11 @@ namespace Appalachia.Core.Extensions
             {
                 var selection = selector(value);
 
-                if (selection == null) continue;
-                
+                if (selection == null)
+                {
+                    continue;
+                }
+
                 if (!counts.ContainsKey(selection))
                 {
                     counts.Add(selection, 1);

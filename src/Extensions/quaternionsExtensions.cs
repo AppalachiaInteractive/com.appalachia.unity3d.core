@@ -53,17 +53,27 @@ namespace Appalachia.Core.Extensions
             return math.mul(quaternion, float3c.up);
         }
 
-        public static quaternion Anticipate(this quaternion first, float elapsed, quaternion second, float anticipationDuration)
+        public static quaternion Anticipate(
+            this quaternion first,
+            float elapsed,
+            quaternion second,
+            float anticipationDuration)
         {
-            return new quaternion(
-                second.value.x + ((anticipationDuration / elapsed) * (second.value.x - first.value.x)),
-                second.value.y + ((anticipationDuration / elapsed) * (second.value.y - first.value.y)),
-                second.value.z + ((anticipationDuration / elapsed) * (second.value.z - first.value.z)),
-                second.value.w + ((anticipationDuration / elapsed) * (second.value.w - first.value.w))
-            );
+            return new(
+                second.value.x +
+                ((anticipationDuration / elapsed) * (second.value.x - first.value.x)),
+                second.value.y +
+                ((anticipationDuration / elapsed) * (second.value.y - first.value.y)),
+                second.value.z +
+                ((anticipationDuration / elapsed) * (second.value.z - first.value.z)),
+                second.value.w +
+                ((anticipationDuration / elapsed) * (second.value.w - first.value.w)));
         }
 
-        public static float3 GetAngularVelocity(this quaternion older, quaternion newer, float elapsed)
+        public static float3 GetAngularVelocity(
+            this quaternion older,
+            quaternion newer,
+            float elapsed)
         {
             var q = math.mul(newer, math.inverse(older));
 
@@ -125,7 +135,7 @@ namespace Appalachia.Core.Extensions
 
         public static float4x4 float4x4(this quaternion input)
         {
-            return new float4x4(input, float3.zero);
+            return new(input, float3.zero);
         }
     }
 }

@@ -73,7 +73,9 @@ namespace Appalachia.Core.Extensions
         /// </summary>
         public static string GetParamsNames(this MethodBase method)
         {
-            var parameterInfoArray = method.IsExtensionMethod() ? method.GetParameters().Skip(1).ToArray() : method.GetParameters();
+            var parameterInfoArray = method.IsExtensionMethod()
+                ? method.GetParameters().Skip(1).ToArray()
+                : method.GetParameters();
             var stringBuilder = new StringBuilder();
             var index = 0;
             for (var length = parameterInfoArray.Length; index < length; ++index)
@@ -126,13 +128,16 @@ namespace Appalachia.Core.Extensions
         /// <param name="throwOnNotAliased">if set to <c>true</c> an exception will be thrown if the method is not aliased.</param>
         /// <returns></returns>
         /// <exception cref="T:System.ArgumentException">The method was not aliased; this only occurs if throwOnNotAliased is true.</exception>
-        public static MethodInfo DeAliasMethod(this MethodInfo methodInfo, bool throwOnNotAliased = false)
+        public static MethodInfo DeAliasMethod(
+            this MethodInfo methodInfo,
+            bool throwOnNotAliased = false)
         {
             if (methodInfo is MemberAliasMethodInfo memberAliasMethodInfo)
             {
                 while (memberAliasMethodInfo.AliasedMethod is MemberAliasMethodInfo)
                 {
-                    memberAliasMethodInfo = memberAliasMethodInfo.AliasedMethod as MemberAliasMethodInfo;
+                    memberAliasMethodInfo =
+                        memberAliasMethodInfo.AliasedMethod as MemberAliasMethodInfo;
                 }
 
                 return memberAliasMethodInfo.AliasedMethod;
@@ -140,7 +145,9 @@ namespace Appalachia.Core.Extensions
 
             if (throwOnNotAliased)
             {
-                throw new ArgumentException("The method " + methodInfo.GetNiceName() + " was not aliased.");
+                throw new ArgumentException(
+                    "The method " + methodInfo.GetNiceName() + " was not aliased."
+                );
             }
 
             return methodInfo;

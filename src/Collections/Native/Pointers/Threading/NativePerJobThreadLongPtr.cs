@@ -195,7 +195,10 @@ namespace Appalachia.Core.Collections.Native.Pointers.Threading
             // Require a valid allocator
             if (allocator <= Allocator.None)
             {
-                throw new ArgumentException("Allocator must be Temp, TempJob or Persistent", nameof(allocator));
+                throw new ArgumentException(
+                    "Allocator must be Temp, TempJob or Persistent",
+                    nameof(allocator)
+                );
             }
 
             // Allocate the memory for the values

@@ -14,12 +14,22 @@ namespace Appalachia.Core.Aspects
     {
         private const int _INITIAL_ASPECT_CAPACITY = 30;
 
-        public static DummyDisposable _dummy = new DummyDisposable();
-        private static readonly ProfilerMarker _PRF_DisposableAspectSet = new ProfilerMarker("DisposableAspectSet.Constructor");
-        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute = new ProfilerMarker("DisposableAspectSet.Execute");
-        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Format = new ProfilerMarker("DisposableAspectSet.Execute.Format");
-        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Markers = new ProfilerMarker("DisposableAspectSet.Execute.Markers");
-        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Create = new ProfilerMarker("DisposableAspectSet.Execute.Create");
+        public static DummyDisposable _dummy = new();
+
+        private static readonly ProfilerMarker _PRF_DisposableAspectSet =
+            new("DisposableAspectSet.Constructor");
+
+        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute =
+            new("DisposableAspectSet.Execute");
+
+        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Format =
+            new("DisposableAspectSet.Execute.Format");
+
+        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Markers =
+            new("DisposableAspectSet.Execute.Markers");
+
+        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Create =
+            new("DisposableAspectSet.Execute.Create");
 
         protected Dictionary<int, T> _instances;
         protected string _typePrefix;
@@ -50,9 +60,9 @@ namespace Appalachia.Core.Aspects
                 dummy = true;
                 return default;
             }
-            
+
             T instance;
-            
+
             using (_PRF_DisposableAspectSet_Execute.Auto())
             {
                 using (_PRF_DisposableAspectSet_Execute_Format.Auto())
@@ -85,12 +95,16 @@ namespace Appalachia.Core.Aspects
                     }
                 }
             }
-            
+
             dummy = false;
             return instance;
         }
 
-        protected abstract T Create(string typePrefix, string memberName, string additive, int sourceLineNumber);
+        protected abstract T Create(
+            string typePrefix,
+            string memberName,
+            string additive,
+            int sourceLineNumber);
 
         public abstract IDisposable Initiate(T instance);
     }

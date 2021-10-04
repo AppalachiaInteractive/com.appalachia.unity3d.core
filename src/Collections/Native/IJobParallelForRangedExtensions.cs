@@ -35,7 +35,7 @@ namespace Appalachia.Core.Collections.Native
             this T jobData,
             int valuesLength,
             int innerloopBatchCount,
-            JobHandle dependsOn = new JobHandle())
+            JobHandle dependsOn = new())
             where T : struct, IJobParallelForRanged
         {
             var scheduleParams = new JobsUtility.JobScheduleParameters(
@@ -44,7 +44,11 @@ namespace Appalachia.Core.Collections.Native
                 dependsOn,
                 ScheduleMode.Parallel
             );
-            return JobsUtility.ScheduleParallelFor(ref scheduleParams, valuesLength, innerloopBatchCount);
+            return JobsUtility.ScheduleParallelFor(
+                ref scheduleParams,
+                valuesLength,
+                innerloopBatchCount
+            );
         }
 
         /// <summary>
@@ -92,7 +96,10 @@ namespace Appalachia.Core.Collections.Native
             {
                 if (jobReflectionData == IntPtr.Zero)
                 {
-                    jobReflectionData = JobsUtility.CreateJobReflectionData(typeof(TJob), (ExecuteJobFunction) Execute);
+                    jobReflectionData = JobsUtility.CreateJobReflectionData(
+                        typeof(TJob),
+                        (ExecuteJobFunction) Execute
+                    );
                 }
 
                 return jobReflectionData;
@@ -127,11 +134,21 @@ namespace Appalachia.Core.Collections.Native
             /// <param name="jobIndex">
             ///     Index of this job
             /// </param>
-            public static unsafe void Execute(ref TJob jobData, IntPtr additionalPtr, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex)
+            public static unsafe void Execute(
+                ref TJob jobData,
+                IntPtr additionalPtr,
+                IntPtr bufferRangePatchData,
+                ref JobRanges ranges,
+                int jobIndex)
             {
                 int startIndex;
                 int endIndex;
-                while (JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out startIndex, out endIndex))
+                while (JobsUtility.GetWorkStealingRange(
+                    ref ranges,
+                    jobIndex,
+                    out startIndex,
+                    out endIndex
+                ))
                 {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                     JobsUtility.PatchBufferMinMaxRanges(

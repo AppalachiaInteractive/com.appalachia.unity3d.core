@@ -107,7 +107,11 @@ namespace Appalachia.Core.Math
             return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
         }
 
-        public static Quaternion Lerp(Quaternion start, Quaternion end, float sharpness, double deltaTime)
+        public static Quaternion Lerp(
+            Quaternion start,
+            Quaternion end,
+            float sharpness,
+            double deltaTime)
         {
             return LerpExact(start, end, GetTimeExact(sharpness, deltaTime));
         }
@@ -141,7 +145,11 @@ namespace Appalachia.Core.Math
             return Slerp(start, end, sharpness, CoreClock.PhysicalDelta);
         }
 
-        public static Quaternion Slerp(Quaternion start, Quaternion end, float sharpness, double deltaTime)
+        public static Quaternion Slerp(
+            Quaternion start,
+            Quaternion end,
+            float sharpness,
+            double deltaTime)
         {
             return SlerpExact(start, end, GetTimeExact(sharpness, deltaTime));
         }

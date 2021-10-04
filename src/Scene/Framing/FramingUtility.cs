@@ -16,37 +16,37 @@ namespace Appalachia.Core.Scene.Framing
 {
     public static class FramingUtility
     {
-
         private const float _quaternionRotationCheck = 1023.5f / 1024.0f;
 
         private static NonSerializedList<GameObject> _lastFramed;
         private static NonSerializedList<Vector3> _framingVectorForwards;
         private static NonSerializedList<Vector3> _framingVectorUps;
-        
-        private static readonly Func<Camera, Transform, FramingDirection, Vector3> _basicLook = (c, t, dir) =>
-        {
-            switch (dir)
+
+        private static readonly Func<Camera, Transform, FramingDirection, Vector3> _basicLook =
+            (c, t, dir) =>
             {
-                case FramingDirection.Existing:
-                    return c.transform.forward;
-                case FramingDirection.Opposite:
-                    return -c.transform.forward;
-                case FramingDirection.Front:
-                    return -t.forward;
-                case FramingDirection.Right:
-                    return -t.right;
-                case FramingDirection.Top:
-                    return -t.up;
-                case FramingDirection.Back:
-                    return t.forward;
-                case FramingDirection.Left:
-                    return t.right;
-                case FramingDirection.Bottom:
-                    return t.up;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(dir), dir, null);
-            }
-        };
+                switch (dir)
+                {
+                    case FramingDirection.Existing:
+                        return c.transform.forward;
+                    case FramingDirection.Opposite:
+                        return -c.transform.forward;
+                    case FramingDirection.Front:
+                        return -t.forward;
+                    case FramingDirection.Right:
+                        return -t.right;
+                    case FramingDirection.Top:
+                        return -t.up;
+                    case FramingDirection.Back:
+                        return t.forward;
+                    case FramingDirection.Left:
+                        return t.right;
+                    case FramingDirection.Bottom:
+                        return t.up;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(dir), dir, null);
+                }
+            };
 
         public static void Frame(
             this GameObject go,
@@ -63,7 +63,10 @@ namespace Appalachia.Core.Scene.Framing
             Frame(go, bounds, adjustAngle, direction, _basicLook, up);
         }
 
-        public static void Frame(this GameObject[] gos, bool adjustAngle = true, FramingDirection direction = FramingDirection.Existing)
+        public static void Frame(
+            this GameObject[] gos,
+            bool adjustAngle = true,
+            FramingDirection direction = FramingDirection.Existing)
         {
             var up = direction == FramingDirection.Top
                 ? Vector3.forward
@@ -74,7 +77,10 @@ namespace Appalachia.Core.Scene.Framing
             Frame(gos, adjustAngle, direction, _basicLook, up);
         }
 
-        public static void Frame(this IEnumerable<GameObject> gos, bool adjustAngle = true, FramingDirection direction = FramingDirection.Existing)
+        public static void Frame(
+            this IEnumerable<GameObject> gos,
+            bool adjustAngle = true,
+            FramingDirection direction = FramingDirection.Existing)
         {
             var up = direction == FramingDirection.Top
                 ? Vector3.forward
@@ -85,7 +91,10 @@ namespace Appalachia.Core.Scene.Framing
             Frame(gos, adjustAngle, direction, _basicLook, up);
         }
 
-        public static void Frame(this AppaList<GameObject> gos, bool adjustAngle = true, FramingDirection direction = FramingDirection.Existing)
+        public static void Frame(
+            this AppaList<GameObject> gos,
+            bool adjustAngle = true,
+            FramingDirection direction = FramingDirection.Existing)
         {
             var up = direction == FramingDirection.Top
                 ? Vector3.forward
@@ -117,7 +126,7 @@ namespace Appalachia.Core.Scene.Framing
 
             if (bounds == default)
             {
-                bounds = FramingUtility.GetRenderingBounds(go);
+                bounds = go.GetRenderingBounds();
             }
 
             var target = bounds.center;
@@ -197,7 +206,10 @@ namespace Appalachia.Core.Scene.Framing
             FinalizeMultiFrame(view, adjustAngle, rotation, bounds);
         }
 
-        private static void InitializeState(out SceneView view, out Camera viewCamera, out Transform viewCameraTransform)
+        private static void InitializeState(
+            out SceneView view,
+            out Camera viewCamera,
+            out Transform viewCameraTransform)
         {
             if (_lastFramed == null)
             {
@@ -224,12 +236,12 @@ namespace Appalachia.Core.Scene.Framing
             viewCamera = view.camera;
             viewCameraTransform = viewCamera.transform;
         }
-        
+
         private static void MultiFrameIteration(
             GameObject go,
             bool adjustAngle,
             FramingDirection direction,
-            Camera viewCamera, 
+            Camera viewCamera,
             Func<Camera, Transform, FramingDirection, Vector3> look,
             Vector3 up,
             ref Bounds bounds)
@@ -241,10 +253,14 @@ namespace Appalachia.Core.Scene.Framing
                 _framingVectorUps.Add(up);
             }
 
-            bounds.Encapsulate(FramingUtility.GetRenderingBounds(go));
+            bounds.Encapsulate(go.GetRenderingBounds());
         }
 
-        private static void FinalizeMultiFrame(SceneView view, bool adjustAngle, Quaternion rotation, Bounds bounds)
+        private static void FinalizeMultiFrame(
+            SceneView view,
+            bool adjustAngle,
+            Quaternion rotation,
+            Bounds bounds)
         {
             if (adjustAngle)
             {
@@ -263,18 +279,24 @@ namespace Appalachia.Core.Scene.Framing
         public static void FRAME_MENU(KeyCode keyCode, bool control)
         {
             var objs = Selection.gameObjects;
-            
+
             var direction = keyCode == KeyCode.Keypad1
-                ? control ? FramingDirection.Back : FramingDirection.Front
+                ? control
+                    ? FramingDirection.Back
+                    : FramingDirection.Front
                 : keyCode == KeyCode.Keypad3
-                    ? control ? FramingDirection.Right :FramingDirection.Left
+                    ? control
+                        ? FramingDirection.Right
+                        : FramingDirection.Left
                     : keyCode == KeyCode.Keypad7
-                        ? control ? FramingDirection.Bottom :FramingDirection.Top
+                        ? control
+                            ? FramingDirection.Bottom
+                            : FramingDirection.Top
                         : keyCode == KeyCode.Keypad9
-                        ? FramingDirection.Opposite
-                        : FramingDirection.Existing;
-            
-            if (objs == null || objs.Length == 0)
+                            ? FramingDirection.Opposite
+                            : FramingDirection.Existing;
+
+            if ((objs == null) || (objs.Length == 0))
             {
                 Frame(_lastFramed, true, direction);
             }
@@ -303,6 +325,5 @@ namespace Appalachia.Core.Scene.Framing
 
             return bounds;
         }
-
     }
 }

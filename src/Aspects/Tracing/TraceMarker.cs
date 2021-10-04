@@ -15,18 +15,26 @@ namespace Appalachia.Core.Aspects.Tracing
         {
             _traceMessage = message;
         }
-        
+
         public static readonly TraceMarker empty = default;
 
         private readonly string _traceMessage;
 
         private static string[] _indents = new string[100];
 
-        private static readonly ProfilerMarker _PRF_TraceMarker_Trace = new ProfilerMarker("TraceMarker.Trace");
-        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_CheckAwake = new ProfilerMarker("TraceMarker.Trace.CheckAwake");
-        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_StackTrace = new ProfilerMarker("TraceMarker.Trace.StackTrace");
-        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_Format = new ProfilerMarker("TraceMarker.Trace.Format");
-        private static readonly ProfilerMarker _PRF_TraceMarker_EnsureInitialized = new ProfilerMarker("TraceMarker.EnsureInitialized");
+        private static readonly ProfilerMarker _PRF_TraceMarker_Trace = new("TraceMarker.Trace");
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_CheckAwake =
+            new("TraceMarker.Trace.CheckAwake");
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_StackTrace =
+            new("TraceMarker.Trace.StackTrace");
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_Format =
+            new("TraceMarker.Trace.Format");
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_EnsureInitialized =
+            new("TraceMarker.EnsureInitialized");
 
         public void Trace(TraceType type, bool ignore = false)
         {
@@ -67,7 +75,6 @@ namespace Appalachia.Core.Aspects.Tracing
             }
         }
 
-
         private void EnsureInitialized()
         {
             using (_PRF_TraceMarker_EnsureInitialized.Auto())
@@ -91,13 +98,16 @@ namespace Appalachia.Core.Aspects.Tracing
 
         public AutoScope Auto(bool ignored = false)
         {
-            return new AutoScope(this, ignored);
+            return new(this, ignored);
         }
 
         public struct AutoScope : IDisposable
         {
-            private static readonly ProfilerMarker _PRF_AutoScope_AutoScope = new ProfilerMarker("AutoScope.AutoScope");
-            private static readonly ProfilerMarker _PRF_AutoScope_Dispose = new ProfilerMarker("AutoScope.Dispose");
+            private static readonly ProfilerMarker _PRF_AutoScope_AutoScope =
+                new("AutoScope.AutoScope");
+
+            private static readonly ProfilerMarker
+                _PRF_AutoScope_Dispose = new("AutoScope.Dispose");
 
             internal TraceMarker _marker;
             internal bool _ignore;

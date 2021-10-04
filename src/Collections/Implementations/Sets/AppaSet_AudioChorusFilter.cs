@@ -9,7 +9,8 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_AudioChorusFilter : AppaSet<AudioChorusFilter, AppaList_AudioChorusFilter>
+    public sealed class
+        AppaSet_AudioChorusFilter : AppaSet<AudioChorusFilter, AppaList_AudioChorusFilter>
     {
     }
 }

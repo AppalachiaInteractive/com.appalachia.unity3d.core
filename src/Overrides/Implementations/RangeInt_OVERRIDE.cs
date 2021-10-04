@@ -9,8 +9,13 @@ namespace Appalachia.Core.Overrides.Implementations
 {
     [Serializable]
     public sealed class RangeInt_OVERRIDE : Overridable<RangeInt, RangeInt_OVERRIDE>
-    { public RangeInt_OVERRIDE() : base(false, default){}
-        public RangeInt_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, RangeInt value) : base(overrideEnabled, value)
+    {
+        public RangeInt_OVERRIDE() : base(false, default)
+        {
+        }
+
+        public RangeInt_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, RangeInt value) :
+            base(overrideEnabled, value)
         {
         }
 
