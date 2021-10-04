@@ -1,11 +1,11 @@
 #region
 
-using Appalachia.Core.Behaviours;
+using Appalachia.Base.Behaviours;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Volumes.PropertyMaster
+namespace Appalachia.Core.Volumes
 {
     public class PropertyInspector : InternalMonoBehaviour
     {

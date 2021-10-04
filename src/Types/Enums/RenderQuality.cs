@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Extensions
+namespace Appalachia.Core.Types.Enums
 {
     public enum RenderQuality
     {

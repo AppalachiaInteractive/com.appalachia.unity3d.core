@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Appalachia.Core.Volumes.Components;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

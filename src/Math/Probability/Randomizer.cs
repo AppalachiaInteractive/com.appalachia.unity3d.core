@@ -5,7 +5,7 @@
 
 using UnityEngine;
 
-namespace Appalachia.Core.Probability {
+namespace Appalachia.Core.Math.Probability {
 
 public struct Randomizer {
     public const float denominator = 1f / (float) 0x80000000;

@@ -4,7 +4,7 @@
 
 using Unity.Profiling;
 
-namespace Appalachia.Core.Volumes.PropertyMaster
+namespace Appalachia.Core.Volumes.Components
 {
     public abstract class PropertyVolumeComponent<X> : PropertyVolumeComponentBase
         where X : PropertyVolumeComponent<X>

@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using Appalachia.Core.Scriptables;
+using Appalachia.Base.Scriptables;
+using Appalachia.Core.Volumes.Parameters;
 using Unity.Profiling;
 
 #endregion
 
-namespace Appalachia.Core.Volumes
+namespace Appalachia.Core.Volumes.Components
 {
     [Serializable]
     public class VolumeComponent : InternalScriptableObject<VolumeComponent>

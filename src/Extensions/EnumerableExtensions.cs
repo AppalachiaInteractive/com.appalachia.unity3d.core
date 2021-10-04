@@ -7,7 +7,7 @@ using System.Linq;
 
 #endregion
 
-namespace Appalachia.Core.Collections.Extensions
+namespace Appalachia.Core.Extensions
 {
     public static class EnumerableExtensions
     {

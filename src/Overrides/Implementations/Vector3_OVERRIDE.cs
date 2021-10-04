@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Overridding.Implementations
+namespace Appalachia.Core.Overrides.Implementations
 {
     [Serializable]
     public sealed class Vector3_OVERRIDE : Overridable<Vector3, Vector3_OVERRIDE>

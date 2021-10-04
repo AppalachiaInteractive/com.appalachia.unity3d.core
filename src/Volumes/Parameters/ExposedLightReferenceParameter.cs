@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Volumes.PropertyMaster
+namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     public sealed class ExposedLightReferenceParameter : VolumeParameter<ExposedReference<Light>>

@@ -3,10 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Appalachia.Core.Data.Stats;
-using Appalachia.Core.Data.Stats.Implementations;
-using Appalachia.Core.Editing;
-using Appalachia.Core.Editing.AssetDB;
+using Appalachia.Core.Math.Stats;
+using Appalachia.Core.Math.Stats.Implementations;
+using Appalachia.Editing.Assets;
+using Appalachia.Editing.Scene;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEditor;
@@ -15,7 +15,7 @@ using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Appalachia.Core.Labeling
+namespace Appalachia.Core.Labels
 {
     public static class LabelManager
     {

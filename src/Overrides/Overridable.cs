@@ -2,13 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Editing.Attributes;
+using Appalachia.Editing.Attributes;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Overridding
+namespace Appalachia.Core.Overrides
 {
     [Serializable, InlineProperty, SmartLabel]
     public abstract class Overridable<T, TO> : IEquatable<Overridable<T, TO>>

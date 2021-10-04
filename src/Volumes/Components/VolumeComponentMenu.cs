@@ -1,6 +1,6 @@
 using System;
 
-namespace Appalachia.Core.Volumes
+namespace Appalachia.Core.Volumes.Components
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class VolumeComponentMenu : Attribute

@@ -5,7 +5,7 @@ using Unity.Mathematics;
 
 #endregion
 
-namespace Appalachia.Core.Overridding.Implementations
+namespace Appalachia.Core.Overrides.Implementations
 {
     [Serializable]
     public sealed class float4x2_OVERRIDE : Overridable<float4x2, float4x2_OVERRIDE>

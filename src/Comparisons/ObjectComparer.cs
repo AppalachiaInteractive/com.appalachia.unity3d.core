@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Appalachia.Core.Comparers
+namespace Appalachia.Core.Comparisons
 {
     public class ObjectComparer<T> : IEqualityComparer<T>, IComparer<T>
     where T : UnityEngine.Object

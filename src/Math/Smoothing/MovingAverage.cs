@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Editing.Attributes;
+using Appalachia.Editing.Attributes;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Appalachia.Core.Math
+namespace Appalachia.Core.Math.Smoothing
 {
     [Serializable]
     public abstract class MovingAverage<T>  

@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Data.Stats
+namespace Appalachia.Core.Math.Stats
 {
     public enum TransformationType
     {

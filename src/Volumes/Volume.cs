@@ -1,8 +1,8 @@
 #region
 
 using System.Collections.Generic;
-using Appalachia.Core.Behaviours;
-using Appalachia.Core.Editing;
+using Appalachia.Base.Behaviours;
+using Appalachia.Editing.Debugging;
 using Unity.Profiling;
 using UnityEngine;
 

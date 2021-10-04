@@ -13,7 +13,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Wind
+namespace Appalachia.Core.Math.Noise
 {
     public static class Perlin
     {

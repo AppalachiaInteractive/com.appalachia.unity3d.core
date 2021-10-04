@@ -1,6 +1,6 @@
 using System;
 
-namespace Appalachia.Core.Math
+namespace Appalachia.Core.Math.Smoothing
 {
     [Serializable]
     public class doubleAverage : MovingAverage<double>

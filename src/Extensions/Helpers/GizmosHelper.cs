@@ -4,7 +4,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Helpers
+namespace Appalachia.Core.Extensions.Helpers
 {
     public static class GizmosHelper
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Appalachia.Filtering
+namespace Appalachia.Core.Filtering
 {
     public interface IComponentFilterLimitedTask<T>
         where T : Component

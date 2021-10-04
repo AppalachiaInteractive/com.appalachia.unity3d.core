@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Appalachia.Core.Collections.Extensions
+namespace Appalachia.Core.Extensions
 {
     public static class DictionaryExtensions
     {

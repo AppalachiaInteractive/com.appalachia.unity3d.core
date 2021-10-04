@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Appalachia.Core.Helpers
+namespace Appalachia.Core.Extensions.Helpers
 {
     public static class DebugHelper
     {

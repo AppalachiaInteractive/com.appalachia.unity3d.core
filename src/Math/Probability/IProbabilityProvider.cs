@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Probability
+namespace Appalachia.Core.Math.Probability
 {
     public interface IProbabilityProvider
     {

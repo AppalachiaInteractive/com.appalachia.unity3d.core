@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Appalachia.Core.Comparisons;
-using Appalachia.Core.Pooling.Arrays;
+using Appalachia.Pooling.Arrays;
 using Unity.Profiling;
 using UnityEngine;
 

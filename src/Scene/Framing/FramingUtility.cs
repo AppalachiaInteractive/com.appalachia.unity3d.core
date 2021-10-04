@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Core.Collections;
-using Appalachia.Core.Collections.Extensions;
 using Appalachia.Core.Collections.NonSerialized;
-using Appalachia.Filtering;
+using Appalachia.Core.Extensions;
+using Appalachia.Core.Filtering;
 using UnityEditor;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Editing.Framing
+namespace Appalachia.Core.Scene.Framing
 {
     public static class FramingUtility
     {

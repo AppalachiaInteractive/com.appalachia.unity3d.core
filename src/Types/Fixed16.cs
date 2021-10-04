@@ -5,7 +5,7 @@
 
 using UnityEngine;
 
-namespace Appalachia.Core.Data {
+namespace Appalachia.Core.Types {
 
 // Q10.6 signed fixed point type
 

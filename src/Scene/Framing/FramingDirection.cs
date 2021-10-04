@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Editing.Framing
+namespace Appalachia.Core.Scene.Framing
 {
     public enum FramingDirection
     {

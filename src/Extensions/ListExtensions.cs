@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 using System.Reflection.Emit;
 #endif
 
-namespace Appalachia.Core.Collections.Extensions
+namespace Appalachia.Core.Extensions
 {
     public static class ListExtensions
     {

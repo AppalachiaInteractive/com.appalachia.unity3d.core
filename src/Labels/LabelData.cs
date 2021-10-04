@@ -1,13 +1,13 @@
 #region
 
 using System;
-using Appalachia.Core.Editing.Attributes;
+using Appalachia.Editing.Attributes;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Labeling
+namespace Appalachia.Core.Labels
 {
     [Serializable, InlineProperty, HideLabel, LabelWidth(0), HideDuplicateReferenceBox, HideReferenceObjectPicker]
     public class LabelData

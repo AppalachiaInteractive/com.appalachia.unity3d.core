@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace Appalachia.Core.Probability
+namespace Appalachia.Core.Math.Probability
 {
     [Serializable]
     public class ProbabilityPair

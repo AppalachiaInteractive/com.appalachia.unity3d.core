@@ -3,7 +3,7 @@ using Appalachia.Utility.Enums;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Appalachia.Core.Data
+namespace Appalachia.Core.Types
 {
 
     [Serializable]

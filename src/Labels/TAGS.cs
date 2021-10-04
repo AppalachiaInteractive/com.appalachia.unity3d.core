@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Labeling
+namespace Appalachia.Core.Labels
 {
     public static class TAGS
     {

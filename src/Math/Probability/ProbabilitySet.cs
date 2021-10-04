@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 #endregion
 
-namespace Appalachia.Core.Probability
+namespace Appalachia.Core.Math.Probability
 {
     [Serializable]
     public class ProbabilitySet

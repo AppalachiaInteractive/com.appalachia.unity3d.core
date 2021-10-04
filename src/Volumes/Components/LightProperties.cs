@@ -1,11 +1,12 @@
 #region
 
 using System;
+using Appalachia.Core.Volumes.Parameters;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Volumes.PropertyMaster
+namespace Appalachia.Core.Volumes.Components
 {
     [Serializable]
     public class LightProperties : PropertyVolumeComponent<LightProperties>

@@ -1,7 +1,7 @@
 using Appalachia.Core.Extensions;
 using UnityEngine;
 
-namespace Appalachia.Core.Data.ComponentEquality
+namespace Appalachia.Core.Comparisons.ComponentEquality
 {
     public static class ComponentEqualityExtensions
     {

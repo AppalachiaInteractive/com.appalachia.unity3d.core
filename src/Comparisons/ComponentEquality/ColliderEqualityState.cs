@@ -1,8 +1,8 @@
 using System;
-using Appalachia.Simulation.Physical;
+using Appalachia.Core.Types.Enums;
 using UnityEngine;
 
-namespace Appalachia.Core.Data.ComponentEquality
+namespace Appalachia.Core.Comparisons.ComponentEquality
 {
     [Serializable]
     public class ColliderEqualityState : ComponentContentEqualityState<ColliderEqualityState, Collider>

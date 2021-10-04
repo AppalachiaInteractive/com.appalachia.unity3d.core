@@ -6,7 +6,7 @@ using Unity.Profiling;
 
 #endregion
 
-namespace Appalachia.Core.Data.Stats.Implementations
+namespace Appalachia.Core.Math.Stats.Implementations
 {
     public class intStatsTracker : StatsTracker<int>
     {

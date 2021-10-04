@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Appalachia.Core.Volumes
+namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]

@@ -1,7 +1,7 @@
 using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Implementations.Lists;
 
-namespace Appalachia.Core.RateLimiting
+namespace Appalachia.Core.Execution.RateLimiting
 {
     public class RateLimit
     {

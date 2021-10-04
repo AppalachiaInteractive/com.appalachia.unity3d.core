@@ -1,9 +1,12 @@
+
+
+using Appalachia.Base.Behaviours;
+
 #region
 
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Attributes;
-using Appalachia.Core.Behaviours;
 using Unity.Profiling;
 using UnityEngine;
 #if ODIN_INSPECTOR

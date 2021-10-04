@@ -1,6 +1,6 @@
 using System;
 
-namespace Appalachia.Core.Data.ComponentEquality
+namespace Appalachia.Core.Comparisons.ComponentEquality
 {
     public abstract class ComponentContentEqualityStateBase<T> : IEquatable<T>
         where T : ComponentContentEqualityStateBase<T>, new()

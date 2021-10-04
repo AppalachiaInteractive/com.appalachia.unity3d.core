@@ -1,4 +1,4 @@
-namespace Appalachia.Simulation.Physical
+namespace Appalachia.Core.Types.Enums
 {
     public enum ColliderType
     {

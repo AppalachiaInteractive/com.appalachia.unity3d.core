@@ -7,7 +7,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Editing
+namespace Appalachia.Core.Layers.Extensions
 {
     public static class LayerMaskExtensions
     {

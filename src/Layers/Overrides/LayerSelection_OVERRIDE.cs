@@ -1,11 +1,11 @@
 #region
 
 using System;
-using Appalachia.Core.Editing;
+using Appalachia.Core.Overrides;
 
 #endregion
 
-namespace Appalachia.Core.Overridding.Implementations
+namespace Appalachia.Core.Layers.Overrides
 {
     [Serializable]
     public sealed class LayerSelection_OVERRIDE : Overridable<LayerSelection, LayerSelection_OVERRIDE>

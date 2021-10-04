@@ -1,4 +1,4 @@
-namespace Appalachia.Core.Data.Stats
+namespace Appalachia.Core.Math.Stats
 {
     public sealed class StatsTrackerCollection<TS, T>
         where TS : StatsTracker<T>, new()

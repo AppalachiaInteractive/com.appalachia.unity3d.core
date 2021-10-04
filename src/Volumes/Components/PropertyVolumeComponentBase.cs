@@ -1,4 +1,6 @@
-namespace Appalachia.Core.Volumes.PropertyMaster
+using Appalachia.Core.Volumes.Parameters;
+
+namespace Appalachia.Core.Volumes.Components
 {
     public abstract class PropertyVolumeComponentBase : VolumeComponent
     {

@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Helpers;
+using Appalachia.Core.Extensions.Helpers;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 using UnityEditor;

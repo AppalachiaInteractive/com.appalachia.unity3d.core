@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Core.Types.Enums;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -10,7 +11,7 @@ using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Appalachia.Core.Utilities
+namespace Appalachia.Core.Extensions
 {
 #region
 

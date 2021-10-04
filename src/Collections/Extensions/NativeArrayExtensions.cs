@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Collections.Native;
+using Appalachia.Core.Extensions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 

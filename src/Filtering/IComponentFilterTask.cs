@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Appalachia.Core.Layers;
 using UnityEngine;
 
-namespace Appalachia.Filtering
+namespace Appalachia.Core.Filtering
 {
     public interface IComponentFilterTask<T>
         where T : Component

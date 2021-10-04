@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using Appalachia.Core.Collections.NonSerialized;
-using Appalachia.Core.Editing.Attributes;
+using Appalachia.Editing.Attributes;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using Unity.Profiling;
@@ -12,7 +12,7 @@ using Random = System.Random;
 
 #endregion
 
-namespace Appalachia.Core.Data.Stats
+namespace Appalachia.Core.Math.Stats
 {
     [Serializable]
     public abstract class StatsTracker

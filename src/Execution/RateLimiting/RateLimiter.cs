@@ -5,7 +5,7 @@ using Appalachia.Core.Collections.NonSerialized;
 
 #endregion
 
-namespace Appalachia.Core.RateLimiting
+namespace Appalachia.Core.Execution.RateLimiting
 {
     public static class RateLimiter
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Appalachia.Core.Probability
+namespace Appalachia.Core.Math.Probability
 {
     public struct WeightedRandomizer {
         public List<float> weights;

@@ -1,13 +1,13 @@
 #region
 
 using System;
+using Appalachia.Base.Behaviours;
 using Appalachia.Core.Aspects.Tracing;
-using Appalachia.Core.Behaviours;
 using Unity.Profiling;
 
 #endregion
 
-namespace Appalachia.Core.Editing
+namespace Appalachia.Core.Overrides
 {
     public abstract class Restorable : InternalBase<Restorable>, IDisposable
     {

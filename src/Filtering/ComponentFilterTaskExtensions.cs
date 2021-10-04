@@ -2,7 +2,7 @@ using Appalachia.Core.Extensions;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace Appalachia.Filtering
+namespace Appalachia.Core.Filtering
 {
     public static class ComponentFilterTaskExtensions
     {

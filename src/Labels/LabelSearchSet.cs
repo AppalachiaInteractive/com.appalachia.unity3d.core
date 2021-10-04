@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Appalachia.Core.Editing.Attributes;
+using Appalachia.Editing.Attributes;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Appalachia.Core.Labeling
+namespace Appalachia.Core.Labels
 {
     [Serializable]
     public class LabelSearchSet

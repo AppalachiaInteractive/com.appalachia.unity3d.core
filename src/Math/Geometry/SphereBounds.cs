@@ -6,7 +6,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Geometry
+namespace Appalachia.Core.Math.Geometry
 {
     public struct SphereBounds
     {

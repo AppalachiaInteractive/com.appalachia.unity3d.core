@@ -1,12 +1,13 @@
 #region
 
 using System;
+using Appalachia.Core.Layers.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Editing
+namespace Appalachia.Core.Layers
 {
     [Serializable, InlineProperty]
     public struct LayerSelection

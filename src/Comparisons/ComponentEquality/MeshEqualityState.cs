@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Appalachia.Core.Data.ComponentEquality
+namespace Appalachia.Core.Comparisons.ComponentEquality
 {
     [Serializable]
     public class MeshEqualityState : ComponentContentEqualityState<MeshEqualityState, Mesh>

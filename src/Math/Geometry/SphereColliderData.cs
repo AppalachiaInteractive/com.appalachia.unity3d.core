@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Appalachia.Core.Geometry
+namespace Appalachia.Core.Math.Geometry
 {
     [Serializable]
     public class SphereColliderData

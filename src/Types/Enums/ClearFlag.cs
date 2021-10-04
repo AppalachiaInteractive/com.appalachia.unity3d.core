@@ -1,6 +1,6 @@
 using System;
 
-namespace Appalachia.Core.Utilities
+namespace Appalachia.Core.Types.Enums
 {
     [Flags]
     public enum ClearFlag

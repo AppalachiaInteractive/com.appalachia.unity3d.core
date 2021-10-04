@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Overridding.Implementations
+namespace Appalachia.Core.Overrides.Implementations
 {
     [Serializable]
     public sealed class BoundingSphere_OVERRIDE : Overridable<BoundingSphere, BoundingSphere_OVERRIDE>

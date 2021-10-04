@@ -10,7 +10,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Filtering
+namespace Appalachia.Core.Filtering
 {
     public sealed class ComponentFilterTask<T> : IComponentFilterTask<T>, IComponentFilterSortedTask<T>, IComponentFilterLimitedTask<T>
         where T : Component

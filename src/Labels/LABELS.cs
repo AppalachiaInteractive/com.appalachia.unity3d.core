@@ -1,11 +1,10 @@
 #region
 
-using System.Collections.Generic;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Labeling
+namespace Appalachia.Core.Labels
 {
     public static class LABELS
     {

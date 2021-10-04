@@ -1,7 +1,7 @@
 #region
 
 using System;
-using Appalachia.Core.Editing.Preferences;
+using Appalachia.Editing.Preferences;
 using UnityEditor;
 
 #endregion

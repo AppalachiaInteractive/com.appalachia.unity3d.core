@@ -1,7 +1,7 @@
 using System;
 using Unity.Mathematics;
 
-namespace Appalachia.Core.Math
+namespace Appalachia.Core.Math.Smoothing
 {
     [Serializable]
     public class double2Average : MovingAverage<double2>

@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace Appalachia.Core.Overridding.Implementations
+namespace Appalachia.Core.Overrides.Implementations
 {
     [Serializable]
     public sealed class decimal_OVERRIDE : Overridable<decimal, decimal_OVERRIDE>

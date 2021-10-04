@@ -1,12 +1,11 @@
 #region
 
-using Appalachia.Core.Globals.Timing;
-using Appalachia.Core.Math;
+using Appalachia.Globals.Timing;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Helpers
+namespace Appalachia.Core.Math
 {
     public static class LerpHelper
     {

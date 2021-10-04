@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Appalachia.Filtering
+namespace Appalachia.Core.Filtering
 {
     public static class ComponentComparisons
     {

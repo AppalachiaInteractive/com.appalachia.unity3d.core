@@ -2,14 +2,15 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Helpers;
+using Appalachia.Core.Extensions.Helpers;
+using Appalachia.Core.Volumes.Components;
 using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 #endregion
 
-namespace Appalachia.Core.Volumes.PropertyMaster
+namespace Appalachia.Core.Volumes
 {
     [ExecuteAlways]
     public class PropertyMaster : MonoBehaviour, IExposedPropertyTable, ISerializationCallbackReceiver

@@ -7,7 +7,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Collections.Extensions
+namespace Appalachia.Core.Extensions
 {
     public static partial class LinqExtensionsNoAlloc
     {

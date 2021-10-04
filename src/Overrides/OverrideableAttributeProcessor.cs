@@ -10,7 +10,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Overridding
+namespace Appalachia.Core.Overrides
 {
 #if UNITY_EDITOR
     [ResolverPriority(500)]

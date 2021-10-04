@@ -1,14 +1,14 @@
 #region
 
 using System;
-using Appalachia.Core.Editing.Attributes;
-using Appalachia.Core.Editing.Coloring;
+using Appalachia.Editing.Attributes;
+using Appalachia.Editing.Preferences.Globals;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Labeling
+namespace Appalachia.Core.Labels
 {
     [Serializable]
     public class LabelSearchTerm

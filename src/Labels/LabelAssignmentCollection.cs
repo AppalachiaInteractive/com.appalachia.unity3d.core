@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Appalachia.Core.Labeling
+namespace Appalachia.Core.Labels
 {
     public struct LabelAssignmentCollection
     {

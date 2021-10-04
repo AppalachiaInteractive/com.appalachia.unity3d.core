@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace Appalachia.Core.Data
+namespace Appalachia.Core.Types
 {
     [Serializable]
     public sealed class IDIncrementer

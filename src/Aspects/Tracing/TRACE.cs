@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Attributes;
-using Appalachia.Core.Editing.Preferences;
+using Appalachia.Editing.Preferences;
 using UnityEditor;
 
 #endregion

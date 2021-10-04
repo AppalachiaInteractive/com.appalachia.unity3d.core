@@ -1,3 +1,4 @@
+using Appalachia.Core.Types.Enums;
 using UnityEngine;
 
 namespace Appalachia.Core.Extensions

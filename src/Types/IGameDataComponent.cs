@@ -1,4 +1,4 @@
-namespace Appalachia.Core
+namespace Appalachia.Core.Types
 {
     public interface IGameDataComponent
     {
