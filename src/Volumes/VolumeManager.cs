@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Appalachia.Core.Extensions;
 using Appalachia.Core.Volumes.Components;
+using Appalachia.Utility.Reflection.Extensions;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Object = UnityEngine.Object;
@@ -87,7 +87,7 @@ namespace Appalachia.Core.Volumes
             m_ComponentsDefaultState.Clear();
 
             // Grab all the component types we can find
-            baseComponentTypes = CoreUtils.GetAllAssemblyTypes()
+            baseComponentTypes = ReflectionExtensions.GetAllTypes()
                                           .Where(
                                                t => t.IsSubclassOf(typeof(VolumeComponent)) &&
                                                     !t.IsAbstract

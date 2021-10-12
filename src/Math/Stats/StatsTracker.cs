@@ -1,9 +1,9 @@
 #region
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Appalachia.Core.Collections.NonSerialized;
-using Appalachia.Editing.Attributes;
+using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using Unity.Profiling;
@@ -115,7 +115,7 @@ namespace Appalachia.Core.Math.Stats
         [SerializeField]
         private T _average;
 
-        private NonSerializedList<T> _values;
+        private List<T> _values;
 
         protected StatsTracker(bool trackMedian = false, int limit = 256)
         {
@@ -133,7 +133,7 @@ namespace Appalachia.Core.Math.Stats
                 }
 
                 _trackMedian = trackMedian;
-                _values = new NonSerializedList<T>(limit, noTracking: true);
+                _values = new List<T>(limit);
                 _limit = limit;
             }
         }
@@ -217,7 +217,7 @@ namespace Appalachia.Core.Math.Stats
             {
                 if (_values == null)
                 {
-                    _values = new NonSerializedList<T>(_limit, noTracking: true);
+                    _values = new List<T>(_limit);
                 }
 
                 if (!ShouldCalculate)
@@ -261,7 +261,7 @@ namespace Appalachia.Core.Math.Stats
             {
                 if (_values == null)
                 {
-                    _values = new NonSerializedList<T>(_limit, noTracking: true);
+                    _values = new List<T>(_limit);
                 }
 
                 if (_values.Count < _limit)
@@ -283,7 +283,7 @@ namespace Appalachia.Core.Math.Stats
         {
             using (_PRF_Reset.Auto())
             {
-                _values.ClearFast();
+                _values.Clear();
                 _average = default;
                 _maximum = default;
                 _median = default;

@@ -2,7 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
+using Appalachia.Utility.Reflection.Extensions;
 
 namespace Appalachia.Core.Volumes.Parameters
 {
@@ -44,7 +44,7 @@ namespace Appalachia.Core.Volumes.Parameters
 
                 // Automatically grab all fields of type VolumeParameter contained in this instance
                 parameters = m_Value.GetType()
-                                    .GetFields(BindingFlags.Public | BindingFlags.Instance)
+                                    .GetFields_CACHE(ReflectionExtensions.PublicInstance)
                                     .Where(t => t.FieldType.IsSubclassOf(typeof(VolumeParameter)))
                                     .OrderBy(t => t.MetadataToken) // Guaranteed order
                                     .Select(t => (VolumeParameter) t.GetValue(m_Value))

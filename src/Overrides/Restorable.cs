@@ -1,8 +1,8 @@
 #region
 
 using System;
-using Appalachia.Base.Behaviours;
 using Appalachia.Core.Aspects.Tracing;
+using Appalachia.Core.Behaviours;
 using Unity.Profiling;
 
 #endregion

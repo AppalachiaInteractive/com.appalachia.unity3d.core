@@ -1,7 +1,7 @@
 #region
 
 using System.Collections.Generic;
-using Appalachia.Base.Behaviours;
+using Appalachia.Core.Behaviours;
 using Appalachia.Editing.Debugging;
 using Unity.Profiling;
 using UnityEngine;
@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Appalachia.Core.Volumes
 {
     [ExecuteAlways]
-    public class Volume : InternalMonoBehaviour
+    public class Volume : AppalachiaMonoBehaviour
     {
         private const string _PRF_PFX = nameof(Volume) + ".";
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");

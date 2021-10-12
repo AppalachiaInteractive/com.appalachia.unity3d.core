@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Appalachia.Core.Execution.Hooks
 {
     public sealed class FrameEventDelegates<T>
@@ -9,6 +11,7 @@ namespace Appalachia.Core.Execution.Hooks
         public event FrameActionDelegate onDisable;
         public event FrameActionDelegate update;
         public event FrameActionDelegate fixedUpdate;
+        public event FrameActionCameraDelegate onPreCull;
         public event FrameActionDelegate onApplicationQuit;
         public event FrameActionDelegate onDestroy;
 
@@ -40,6 +43,11 @@ namespace Appalachia.Core.Execution.Hooks
         public void InvokeFixedUpdate()
         {
             fixedUpdate?.Invoke();
+        }
+        
+        public void InvokeOnPreCull(Camera c)
+        {
+            onPreCull?.Invoke(c);
         }
 
         public void InvokeOnApplicationQuit()

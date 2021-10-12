@@ -1,6 +1,6 @@
 #region
 
-using Appalachia.Base.Behaviours;
+using Appalachia.Core.Behaviours;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -96,6 +96,19 @@ namespace Appalachia.Core.Execution.Hooks
                 }
 
                 EventDelegates.InvokeFixedUpdate();
+            }
+        }
+
+        protected virtual void OnPreCull()
+        {
+            using (_PRF_FixedUpdate.Auto())
+            {
+                if (FrameEventSettings._ENABLE_DISABLE.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [OnPreCull]");
+                }
+
+                EventDelegates.InvokeOnPreCull(Camera.current);
             }
         }
 

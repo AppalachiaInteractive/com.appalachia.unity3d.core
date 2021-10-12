@@ -1,20 +1,21 @@
 {
-    "name": "Appalachia.Core.Execution",
-    "rootNamespace": "",
-    "references": [
-        "GUID:4a600fa6fa2ca854b8f233a23710b315",
-        "GUID:a03736e1d95a0ed4c8a44e1ee02df53f",
-        "GUID:63a32ad87b517324398da8a6fcd4c2a6",
-        "GUID:195705ddaa6fe6c42a576177c5d36a5c",
-        "GUID:873f913f34eb2c34385d17b9a87f21b9"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "Appalachia.Core.Execution",
+  "rootNamespace": "",
+  "references": [
+    "GUID:a0053698365916c4291e09a4f5495c0b",
+    "GUID:4a600fa6fa2ca854b8f233a23710b315",
+    "GUID:195705ddaa6fe6c42a576177c5d36a5c",
+    "GUID:873f913f34eb2c34385d17b9a87f21b9",
+    "GUID:63a32ad87b517324398da8a6fcd4c2a6",
+    "GUID:a03736e1d95a0ed4c8a44e1ee02df53f"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

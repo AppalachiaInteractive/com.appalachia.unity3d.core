@@ -1,0 +1,16 @@
+{
+    "name": "Appalachia.Core.Timing",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4a600fa6fa2ca854b8f233a23710b315"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

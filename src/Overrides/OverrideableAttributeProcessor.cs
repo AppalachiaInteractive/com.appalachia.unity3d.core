@@ -51,7 +51,7 @@ namespace Appalachia.Core.Overrides
 
             var thisType = member.GetReturnType();
 
-            var atties = parentProperty.Info.GetMemberInfo()?.GetCustomAttributes();
+            var atties = parentProperty.Info.GetMemberInfo()?.GetAttributes_CACHE();
 
             foreach (var attribute in atties)
             {

@@ -1,7 +1,9 @@
 {
     "name": "Appalachia.Core.Attributes",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:28ae00157ecf0354981e730179f52cc3"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

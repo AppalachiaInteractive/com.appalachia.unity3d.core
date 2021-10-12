@@ -1,17 +1,17 @@
 {
-    "name": "Appalachia.Core.Filtering",
-    "rootNamespace": "",
-    "references": [
-        "GUID:52c3a4fa2ed74f14faae11aff711e57d",
-        "GUID:4c32fdd75da6bc94f9b79f03f11f5e30"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "Appalachia.Core.Filtering",
+  "rootNamespace": "",
+  "references": [
+    "GUID:4c32fdd75da6bc94f9b79f03f11f5e30",
+    "GUID:52c3a4fa2ed74f14faae11aff711e57d"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
 }

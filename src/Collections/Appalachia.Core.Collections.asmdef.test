@@ -1,0 +1,25 @@
+{
+  "name": "Appalachia.Core.Collections",
+  "rootNamespace": "",
+  "references": [
+    "GUID:4a600fa6fa2ca854b8f233a23710b315",
+    "GUID:a19f071f3a1a79b48bffa624a937253c",
+    "GUID:01789cac4a2597b458bedef85a39c3f2",
+    "GUID:4c32fdd75da6bc94f9b79f03f11f5e30",
+    "GUID:cf75d8bea22d8fb469a2aa239cfc6930",
+    "GUID:63a32ad87b517324398da8a6fcd4c2a6",
+    "GUID:babad3d1090822a48b681085c1cb858b",
+    "GUID:a03736e1d95a0ed4c8a44e1ee02df53f",
+    "GUID:e0cd26848372d4e5c891c569017e11f1",
+    "GUID:d8b63aba1907145bea998dd612889d6b"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

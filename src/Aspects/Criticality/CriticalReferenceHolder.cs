@@ -1,4 +1,6 @@
-using Appalachia.Base.Behaviours;
+using Appalachia.Core.Assets;
+using Appalachia.Core.Behaviours;
+using Appalachia.Utility.Reflection.Extensions;
 
 #region
 
@@ -20,7 +22,7 @@ using UnityEditor;
 
 namespace Appalachia.Core.Aspects.Criticality
 {
-    public class CriticalReferenceHolder : InternalMonoBehaviour
+    public class CriticalReferenceHolder : AppalachiaMonoBehaviour
     {
         private const string _PRF_PFX = nameof(CriticalReferenceHolder) + ".";
         public List<ScriptableObject> references = new();
@@ -53,28 +55,25 @@ namespace Appalachia.Core.Aspects.Criticality
 
                 references.Clear();
 
-                var types = new HashSet<Type>();
+                var foundTypes = new HashSet<Type>();
 
-                for (var index = 0; index < AppDomain.CurrentDomain.GetAssemblies().Length; index++)
+                var allTypes = ReflectionExtensions.GetAllTypes();
+ 
+                for (var i = 0; i < allTypes.Length; i++)
                 {
-                    var assembly = AppDomain.CurrentDomain.GetAssemblies()[index];
-                    var types1 = assembly.GetTypes();
-                    for (var i = 0; i < types1.Length; i++)
+                    var type = allTypes[i];
+                    
+                    if (type.GetAttributes_CACHE<CriticalAttribute>(true).Length > 0)
                     {
-                        var type = types1[i];
-                        if (type.GetCustomAttributes(typeof(CriticalAttribute), true).Length > 0)
-                        {
-                            types.Add(type);
-                        }
+                        foundTypes.Add(type);
                     }
                 }
 
-                var guids = AssetDatabase.FindAssets("t: ScriptableObject");
+                var soPaths = AssetDatabaseManager.GetAllAssetGuids(typeof(ScriptableObject));
 
-                for (var i = 0; i < guids.Length; i++)
+                for (var i = 0; i < soPaths.Length; i++)
                 {
-                    var guid = guids[i];
-                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var path = soPaths[i];
 
                     var instance = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
 
@@ -85,7 +84,7 @@ namespace Appalachia.Core.Aspects.Criticality
 
                     var type = instance.GetType();
 
-                    if (types.Contains(type))
+                    if (foundTypes.Contains(type))
                     {
                         references.Add(instance);
                     }

@@ -1,7 +1,5 @@
 #region
 
-using UnityEngine;
-
 #endregion
 
 namespace Appalachia.Core.Labels
@@ -57,38 +55,5 @@ namespace Appalachia.Core.Labels
         public const string LABEL_AssemblyMedium = "AssemblyMedium";
         public const string LABEL_AssemblyLarge = "AssemblyLarge";
         public const string LABEL_AssemblyHuge = "AssemblyHuge";
-
-        public static readonly LabelAssignmentCollection vegetations =
-            new(LABEL_BASE_Vegetation, Vector3.up,
-                new LabelAssignmentTerm(LABEL_VegetationVerySmall, 0.15f),
-                new LabelAssignmentTerm(LABEL_VegetationSmall,     .3f), new LabelAssignmentTerm(
-                    LABEL_VegetationMedium,
-                    0.6f
-                ), new LabelAssignmentTerm(LABEL_VegetationLarge, 1.0f), new LabelAssignmentTerm(
-                    LABEL_VegetationVeryLarge,
-                    1024.0f
-                ));
-
-        public static readonly LabelAssignmentCollection trees =
-            new(LABEL_BASE_Tree, Vector3.up, new LabelAssignmentTerm(LABEL_TreeSmall, 12.0f),
-                new LabelAssignmentTerm(LABEL_TreeMedium, 24.0f), new LabelAssignmentTerm(
-                    LABEL_TreeLarge,
-                    1024.0f
-                ));
-
-        public static readonly LabelAssignmentCollection objects =
-            new(LABEL_BASE_Object, Vector3.one, new LabelAssignmentTerm(LABEL_ObjectVerySmall, 0.2f)
-                , new LabelAssignmentTerm(LABEL_ObjectSmall, 2.0f),
-                new LabelAssignmentTerm(LABEL_ObjectMedium, 5.0f), new LabelAssignmentTerm(
-                    LABEL_ObjectLarge,
-                    24.0f
-                ), new LabelAssignmentTerm(LABEL_ObjectHuge, 1024.0f));
-
-        public static readonly LabelAssignmentCollection assemblies =
-            new(LABEL_BASE_Assembly, Vector3.one, new LabelAssignmentTerm(LABEL_AssemblySmall, 2.0f)
-                , new LabelAssignmentTerm(LABEL_AssemblyMedium, 5.0f), new LabelAssignmentTerm(
-                    LABEL_AssemblyLarge,
-                    24.0f
-                ), new LabelAssignmentTerm(LABEL_AssemblyHuge, 1024.0f));
     }
 }

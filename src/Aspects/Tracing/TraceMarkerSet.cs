@@ -1,7 +1,7 @@
 #region
 
 using System;
-using Appalachia.Editing.Preferences;
+using Appalachia.Core.Preferences;
 using Unity.Profiling;
 
 #endregion

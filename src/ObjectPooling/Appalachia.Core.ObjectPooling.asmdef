@@ -1,0 +1,16 @@
+{
+  "name": "Appalachia.Core.ObjectPooling",
+  "rootNamespace": "",
+  "references": [
+    "GUID:873f913f34eb2c34385d17b9a87f21b9"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

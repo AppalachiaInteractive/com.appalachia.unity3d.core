@@ -2,9 +2,8 @@
     "name": "Appalachia.Core.Math",
     "rootNamespace": "",
     "references": [
-        "GUID:873f913f34eb2c34385d17b9a87f21b9",
-        "GUID:cf75d8bea22d8fb469a2aa239cfc6930",
-        "GUID:4f51890e4f8fa0a4fb69d0fd0e4e89c2",
+        "GUID:4a600fa6fa2ca854b8f233a23710b315",
+        "GUID:0b8561711c57eda4d8982b2158f581b1",
         "GUID:6b8c99229a4703f47b9e6e696c2e8d8d",
         "GUID:d8b63aba1907145bea998dd612889d6b"
     ],

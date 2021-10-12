@@ -3,8 +3,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Appalachia.Core.ArrayPooling;
 using Appalachia.Core.Comparisons;
-using Appalachia.Pooling.Arrays;
 using Unity.Profiling;
 using UnityEngine;
 

@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
-using Appalachia.Base.Scriptables;
+using Appalachia.Core.Scriptables;
 using Appalachia.Core.Volumes.Parameters;
+using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 
 #endregion
@@ -14,7 +14,7 @@ using Unity.Profiling;
 namespace Appalachia.Core.Volumes.Components
 {
     [Serializable]
-    public class VolumeComponent : InternalScriptableObject<VolumeComponent>
+    public class VolumeComponent : AppalachiaScriptableObject<VolumeComponent>
     {
         private const string _PRF_PFX = nameof(VolumeComponent) + ".";
 
@@ -39,7 +39,7 @@ namespace Appalachia.Core.Volumes.Components
             {
                 // Automatically grab all fields of type VolumeParameter for this instance
                 parameters = GetType()
-                            .GetFields(BindingFlags.Public | BindingFlags.Instance)
+                            .GetFields_CACHE(ReflectionExtensions.PublicInstance)
                             .Where(t => t.FieldType.IsSubclassOf(typeof(VolumeParameter)))
                             .OrderBy(t => t.MetadataToken) // Guaranteed order
                             .Select(t => (VolumeParameter) t.GetValue(this))
@@ -122,7 +122,7 @@ namespace Appalachia.Core.Volumes.Components
                         // This method won't be called a lot but this is sub-optimal, fix me
                         var innerParams = (ReadOnlyCollection<VolumeParameter>) t.GetProperty(
                                 "parameters",
-                                BindingFlags.NonPublic | BindingFlags.Instance
+                                ReflectionExtensions.PrivateInstance
                             )
                            .GetValue(prop, null);
 

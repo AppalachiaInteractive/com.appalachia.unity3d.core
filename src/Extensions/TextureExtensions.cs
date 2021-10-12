@@ -1,7 +1,7 @@
 #region
 
 using System;
-using System.Reflection;
+using Appalachia.Utility.Reflection.Extensions;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,7 +29,7 @@ namespace Appalachia.Core.Extensions
             object[] parameters = {texture, rect, detail, alphaTolerance, holeDetection, opaths};
             var method = spriteType.GetMethod(
                 "GenerateOutline",
-                BindingFlags.Static | BindingFlags.NonPublic
+                ReflectionExtensions.PrivateStatic
             );
             method.Invoke(null, parameters);
             var paths = (Vector2[][]) parameters[5];

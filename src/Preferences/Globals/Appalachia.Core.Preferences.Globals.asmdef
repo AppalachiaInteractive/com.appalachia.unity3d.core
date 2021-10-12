@@ -1,0 +1,17 @@
+{
+    "name": "Appalachia.Core.Preferences.Globals",
+    "rootNamespace": "",
+    "references": [
+        "GUID:63a32ad87b517324398da8a6fcd4c2a6",
+        "GUID:28ae00157ecf0354981e730179f52cc3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

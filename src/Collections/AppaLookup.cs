@@ -4,11 +4,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Collections.Exceptions;
 using Appalachia.Core.Collections.Interfaces;
 using Appalachia.Core.Collections.NonSerialized;
 using Appalachia.Core.Extensions;
-using Appalachia.Editing.Attributes;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -1026,7 +1026,7 @@ namespace Appalachia.Core.Collections
                 _setDirtyAction?.Invoke();
             }
         }
-
+        
         private static readonly ProfilerMarker _PRF_INTERNAL_UPDATE_BY_INDEX =
             new(_PRF_PFX + nameof(INTERNAL_UPDATE_BY_INDEX));
 

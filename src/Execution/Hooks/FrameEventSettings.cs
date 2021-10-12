@@ -1,7 +1,7 @@
 #region
 
 using System;
-using Appalachia.Editing.Preferences;
+using Appalachia.Core.Preferences;
 using UnityEditor;
 
 #endregion
@@ -19,7 +19,7 @@ namespace Appalachia.Core.Execution.Hooks
 
 #if UNITY_EDITOR
 
-        private const string G_ = "Static Native Disposal";
+        private const string G_ = "Appalachia/Static Native Disposal";
         private const string MENU_BASE_ = "Tools/Frame Start And End/" + G_ + "/";
 
         private const string _ENABLE_SUB_ = MENU_BASE_ + "Log Subscribe";

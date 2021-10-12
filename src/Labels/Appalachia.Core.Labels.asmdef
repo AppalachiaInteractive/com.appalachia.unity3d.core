@@ -1,21 +1,3 @@
 {
-    "name": "Appalachia.Core.Labels",
-    "rootNamespace": "",
-    "references": [
-        "GUID:7ec7e612bfbe14a459c7dc59c358e760",
-        "GUID:cf75d8bea22d8fb469a2aa239cfc6930",
-        "GUID:63a32ad87b517324398da8a6fcd4c2a6",
-        "GUID:24fdee970d0d5494fa16b3c4e87937d0",
-        "GUID:15a8a4345cdb8584c9a4bab175bd5ded",
-        "GUID:9ed0d0ce44091f74492c01391adaaf6f"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+	"name": "Appalachia.Core.Labels"
 }

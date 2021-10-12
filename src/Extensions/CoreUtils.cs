@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Appalachia.Core.Types.Enums;
 using UnityEditor;
 using UnityEngine;
@@ -631,32 +630,6 @@ namespace Appalachia.Core.Extensions
                 UnityObject.Destroy(obj);
 #endif
             }
-        }
-
-        public static IEnumerable<Type> GetAllAssemblyTypes()
-        {
-            if (m_AssemblyTypes == null)
-            {
-                m_AssemblyTypes = AppDomain.CurrentDomain.GetAssemblies()
-                                           .SelectMany(
-                                                t =>
-                                                {
-                                                    // Ugly hack to handle mis-versioned dlls
-                                                    var innerTypes = new Type[0];
-                                                    try
-                                                    {
-                                                        innerTypes = t.GetTypes();
-                                                    }
-                                                    catch
-                                                    {
-                                                    }
-
-                                                    return innerTypes;
-                                                }
-                                            );
-            }
-
-            return m_AssemblyTypes;
         }
 
         public static void Destroy(params UnityObject[] objs)

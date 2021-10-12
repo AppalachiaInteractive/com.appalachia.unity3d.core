@@ -1,6 +1,6 @@
 #region
 
-using Appalachia.Globals.Timing;
+using Appalachia.Core.Timing;
 using UnityEngine;
 
 #endregion

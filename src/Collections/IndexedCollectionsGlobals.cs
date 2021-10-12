@@ -3,7 +3,7 @@
 using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Constants;
-using Appalachia.Editing.Preferences;
+using Appalachia.Core.Preferences;
 using UnityEditor;
 
 #endregion
@@ -23,7 +23,7 @@ namespace Appalachia.Core.Collections
 
 #region MENU_ENABLE_
 
-        private const string G_ = "Indexed Collections";
+        private const string G_ = "Appalachia/Indexed Collections";
         private const string MENU_BASE_ = "Tools/" + G_ + "/";
         private const string MENU_UI_DEBUG_ = MENU_BASE_ + "Show All Fields";
 

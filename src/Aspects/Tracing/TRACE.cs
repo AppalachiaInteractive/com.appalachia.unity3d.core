@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Attributes;
-using Appalachia.Editing.Preferences;
+using Appalachia.Core.Preferences;
 using UnityEditor;
 
 #endregion
@@ -15,7 +15,7 @@ namespace Appalachia.Core.Aspects.Tracing
     {
 #if UNITY_EDITOR
 
-        public const string _TRACE_LOG_GROUPING = "Trace Logging";
+        public const string _TRACE_LOG_GROUPING = "Appalachia/Trace Logging";
         public const string _TRACE_LOG_LABEL = "Enable Logging";
 
         public const string MENU_BASE = "Tools/Trace Logging/";

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 using Object = UnityEngine.Object;
 
@@ -117,9 +118,9 @@ namespace Appalachia.Core.Extensions
                 using (_PRF_ArrayAccessor.Auto())
                 {
 #if ENABLE_IL2CPP || NET_STANDARD_2_0
-                    FieldInfo = typeof(List<T>).GetField(
+                    FieldInfo = typeof(List<T>).GetField_CACHE(
                         "_items",
-                        BindingFlags.NonPublic | BindingFlags.Instance
+                        ReflectionExtensions.PrivateInstance
                     );
                     AotGetter = FieldInfo.GetValue;
 #else
@@ -131,8 +132,8 @@ namespace Appalachia.Core.Extensions
                 il.Emit(OpCodes.Ldarg_0); // Load List<T> argument
                 // ReSharper disable once AssignNullToNotNullAttribute
                 il.Emit(OpCodes.Ldfld,
-                    typeof(List<T>).GetField("_items",
-                        BindingFlags.NonPublic | BindingFlags.Instance)); // Replace argument by field
+                    typeof(List<T>).GetField_CACHE("_items",
+                        ReflectionExtensions.PrivateInstance)); // Replace argument by field
                 il.Emit(OpCodes.Ret); // Return field
                 Getter = (Func<List<T>, T[]>)dm.CreateDelegate(typeof(Func<List<T>, T[]>));
 #endif
