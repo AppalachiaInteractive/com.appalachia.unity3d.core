@@ -1,6 +1,6 @@
 namespace Appalachia.Core.Constants
 {
-    public static class APPA_MENU
+    public static partial class APPA_MENU
     {
         internal const string Appalachia = "Appalachia";
 

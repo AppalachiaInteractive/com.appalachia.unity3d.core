@@ -215,7 +215,7 @@ namespace Appalachia.Core.Scriptables
                 {
                     using (_PRF_UpdateAllIDs_SaveAssets.Auto())
                     {
-                        AssetDatabaseManager.SaveAssetsNextFrame();
+                        AssetDatabaseSaveManager.SaveAssetsNextFrame();
                     }
                 }
             }
@@ -311,7 +311,7 @@ namespace Appalachia.Core.Scriptables
                 SetDirty();
 
                 hasBadIDs = false;
-                AssetDatabaseManager.SaveAssetsNextFrame();
+                AssetDatabaseSaveManager.SaveAssetsNextFrame();
             }
         }
 

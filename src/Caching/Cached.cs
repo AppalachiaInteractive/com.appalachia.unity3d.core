@@ -3,7 +3,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using Appalachia.Core.Base;
+using Appalachia.Core.Behaviours;
 using Unity.Profiling;
 using UnityEngine;
 

@@ -1,19 +1,20 @@
 {
-    "name": "Appalachia.Core.Math",
-    "rootNamespace": "",
-    "references": [
-        "GUID:4a600fa6fa2ca854b8f233a23710b315",
-        "GUID:0b8561711c57eda4d8982b2158f581b1",
-        "GUID:6b8c99229a4703f47b9e6e696c2e8d8d",
-        "GUID:d8b63aba1907145bea998dd612889d6b"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "Appalachia.Core.Math",
+  "rootNamespace": "",
+  "references": [
+    "GUID:4a600fa6fa2ca854b8f233a23710b315",
+    "GUID:0b8561711c57eda4d8982b2158f581b1",
+    "GUID:6b8c99229a4703f47b9e6e696c2e8d8d",
+    "GUID:d8b63aba1907145bea998dd612889d6b"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": []
 }

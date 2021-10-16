@@ -185,7 +185,7 @@ namespace Appalachia.Core.Preferences
             }
         }
 
-        [MenuItem("Tools/Preferences/Awaken", false, MENU_P.TOOLS.GENERAL.PRIORITY)]
+        [MenuItem("Tools/Preferences/Awaken", false, APPA_MENU.TOOLS.GENERAL.PRIORITY)]
         [ExecuteOnEnable]
         public static void Awake()
         {

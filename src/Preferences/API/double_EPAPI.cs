@@ -21,7 +21,7 @@ namespace Appalachia.Core.Preferences.API
 
         public double Draw(string label, double value, double low, double high)
         {
-            var val = low != high
+            var val = Math.Abs(low - high) > float.Epsilon
                 ? EditorGUILayout.Slider(label, Round(value), (float) low, (float) high)
                 : EditorGUILayout.DoubleField(label, Round(value));
 

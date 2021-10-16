@@ -1,3 +1,4 @@
+
 namespace Appalachia.Core.Preferences
 {
     public abstract class PREF_BASE
@@ -8,6 +9,7 @@ namespace Appalachia.Core.Preferences
             _grouping = grouping;
             _label = label;
             _order = order;
+            _niceLabel = UnityEditor.ObjectNames.NicifyVariableName(label);
         }
         
         protected bool _isAwake;
@@ -23,7 +25,7 @@ namespace Appalachia.Core.Preferences
         internal string Grouping => _grouping;
         internal string Label => _label;
 
-        internal string NiceLabel
+        public string NiceLabel
         {
             get => _niceLabel;
             set => _niceLabel = value;

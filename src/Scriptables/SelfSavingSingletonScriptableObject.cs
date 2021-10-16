@@ -2,8 +2,8 @@
 
 using System;
 using System.Diagnostics;
+using Appalachia.CI.Integration.Assets;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -106,29 +106,11 @@ namespace Appalachia.Core.Scriptables
                     throw new NotSupportedException("Stack too deep!");
                 }
 
-                var searchTerm = $"t:{typeof(T).Name}";
-                var guids = AssetDatabase.FindAssets(searchTerm);
+                _instance = FindExistingInstance();
 
-                for (var index = 0; index < guids.Length; index++)
+                if (_instance != null)
                 {
-                    var guid = guids[index];
-                    var path = AssetDatabase.GUIDToAssetPath(guid);
-                    var type = AssetDatabase.GetMainAssetTypeAtPath(path);
-
-                    if (typeof(T).IsAssignableFrom(type))
-                    {
-                        var i = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
-
-                        if (i == null)
-                        {
-                            continue;
-                        }
-
-                        var cast = i as T;
-
-                        _instance = cast;
-                        return;
-                    }
+                    return;
                 }
 
                 _instance = CreateAndSaveSingleton();
@@ -154,20 +136,68 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_CreateAndSaveSingleton.Auto())
             {
-                var any = AssetDatabase.FindAssets($"t: {typeof(T).Name}");
 
-                if (any.Length > 0)
+                if (_instance != null)
                 {
-                    var target = any[0];
-                    var path = AssetDatabase.GUIDToAssetPath(target);
+                    return _instance;
+                }
+                
+                _instance = FindExistingInstance();
 
-                    return AssetDatabase.LoadAssetAtPath<T>(path);
+                if (_instance != null)
+                {
+                    return _instance;
                 }
 
                 var inst = CreateInstance(typeof(T)) as T;
 
                 return CreateNew(name, inst);
             }
+        }
+
+        private static T FindExistingInstance()
+        {
+            var searchTerm = $"t:{typeof(T).Name}";
+            var guids = AssetDatabaseManager.FindAssets(searchTerm);
+
+            T firstFound = null;
+                
+            for (var index = 0; index < guids.Length; index++)
+            {
+                var guid = guids[index];
+                var path = AssetDatabaseManager.GUIDToAssetPath(guid);
+                var type = AssetDatabaseManager.GetMainAssetTypeAtPath(path);
+
+                if (typeof(T).IsAssignableFrom(type))
+                {
+                    var i = AssetDatabaseManager.LoadAssetAtPath<ScriptableObject>(path);
+
+                    if (i == null)
+                    {
+                        continue;
+                    }
+
+                    var cast = i as T;
+
+                    // prefer assets to packages
+                    if (path.StartsWith("Assets"))
+                    {
+                        return cast;
+                    }
+
+                    if (firstFound == null)
+                    {
+                        firstFound = cast;
+                    }
+                }
+            }
+
+            if (firstFound != null)
+            {
+                return firstFound;
+            }
+
+            return null;
         }
 
 #endif

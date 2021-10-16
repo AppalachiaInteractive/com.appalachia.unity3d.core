@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Extensions.Helpers;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
@@ -310,7 +311,7 @@ namespace Appalachia.Core.Extensions
                 return _assetGUIDLookup[hashCode];
             }
 
-            if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(go, out var assetGUID, out long _))
+            if (AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(go, out var assetGUID, out long _))
             {
                 _assetGUIDLookup.Add(hashCode, assetGUID);
 
@@ -335,7 +336,7 @@ namespace Appalachia.Core.Extensions
                     return prefab;
                 }
 
-                return AssetDatabase.LoadAssetAtPath<GameObject>(
+                return AssetDatabaseManager.LoadAssetAtPath<GameObject>(
                     PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefab)
                 );
             }

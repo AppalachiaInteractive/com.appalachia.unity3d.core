@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Runtime.CompilerServices;
 using Appalachia.Utility.Constants;
 using Unity.Mathematics;
@@ -27,12 +28,12 @@ namespace Appalachia.Core.Extensions
 
             var dotFT = math.dot(f, t);
 
-            if (dotFT == 1f)
+            if (Math.Abs(dotFT - 1f) < float.Epsilon)
             {
                 return quaternion.identity;
             }
 
-            if (dotFT == -1f)
+            if (Math.Abs(dotFT - (-1f)) < float.Epsilon)
             {
                 return quaternion.EulerXYZ(180f * float3c.up_forward);
             }

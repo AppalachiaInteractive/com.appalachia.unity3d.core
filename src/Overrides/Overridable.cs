@@ -103,7 +103,7 @@ namespace Appalachia.Core.Overrides
         {
             unchecked
             {
-                var hashCode = 0;
+                int hashCode;
 
                 //hashCode = isOverridingAllowed.GetHashCode();
                 //hashCode = (hashCode * 397) ^ overrideEnabled.GetHashCode();

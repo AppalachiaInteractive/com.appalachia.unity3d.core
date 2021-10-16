@@ -1,5 +1,5 @@
 using System;
-using Appalachia.Core.Assets;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Interfaces;
 using Sirenix.OdinInspector;
@@ -146,11 +146,11 @@ namespace Appalachia.Core.Scriptables
                 return items.Get(key);
             }
 
-            var instance = ScriptableObjectFactory.LoadOrCreateNew<TValue>(name);
+            var i = ScriptableObjectFactory.LoadOrCreateNew<TValue>(name);
 
-            items.Add(key, instance);
+            items.Add(key, i);
 
-            return instance;
+            return i;
         }
 
 #if UNITY_EDITOR

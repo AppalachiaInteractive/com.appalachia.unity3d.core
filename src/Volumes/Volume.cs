@@ -1,10 +1,12 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using Appalachia.Core.Behaviours;
 using Appalachia.Editing.Debugging;
 using Unity.Profiling;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 #endregion
 
@@ -110,7 +112,7 @@ namespace Appalachia.Core.Volumes
                 // serialization system. Using a custom Attribute/PropertyDrawer for a property is
                 // possible but it doesn't work with Undo/Redo in the editor, which makes it useless for
                 // our case.
-                if (priority != m_PreviousPriority)
+                if (Math.Abs(priority - m_PreviousPriority) > float.Epsilon)
                 {
                     VolumeManager.instance.SetLayerDirty(layer);
                     m_PreviousPriority = priority;

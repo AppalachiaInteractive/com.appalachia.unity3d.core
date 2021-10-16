@@ -1,9 +1,8 @@
 using System;
-using System.IO;
 using Appalachia.CI.Integration;
-using Appalachia.Core.Assets;
+using Appalachia.CI.Integration.Assets;
+using Appalachia.CI.Integration.FileSystem;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Core.Scriptables
@@ -18,7 +17,7 @@ namespace Appalachia.Core.Scriptables
 
         private static readonly ProfilerMarker _PRF_Rename = new(_PRF_PFX + nameof(Rename));
 
-        public static T CreateNew<T>()
+        public static T CreateNew<T>(string dataFolder = null)
             where T : AppalachiaScriptableObject<T>
         {
             using (_PRF_CreateNew.Auto())
@@ -26,21 +25,26 @@ namespace Appalachia.Core.Scriptables
                 return LoadOrCreateNew<T>(
                     $"{typeof(T).Name}_{DateTime.Now:yyyyMMdd-hhmmssfff}.asset",
                     false,
-                    false
+                    false,
+                    dataFolder
                 );
             }
         }
 
-        public static T LoadOrCreateNew<T>(string name)
+        public static T LoadOrCreateNew<T>(string name, string dataFolder = null)
             where T : AppalachiaScriptableObject<T>
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return LoadOrCreateNew<T>(name, false, false);
+                return LoadOrCreateNew<T>(name, false, false, dataFolder);
             }
         }
 
-        public static T LoadOrCreateNew<T>(string name, bool prependType, bool appendType)
+        public static T LoadOrCreateNew<T>(
+            string name,
+            bool prependType,
+            bool appendType,
+            string dataFolder = null)
             where T : AppalachiaScriptableObject<T>
         {
             using (_PRF_LoadOrCreateNew.Auto())
@@ -60,10 +64,10 @@ namespace Appalachia.Core.Scriptables
                 }
                 else
                 {
-                    cleanFileName = Path.GetFileNameWithoutExtension(name);
+                    cleanFileName = AppaPath.GetFileNameWithoutExtension(name);
                 }
 
-                var extension = Path.GetExtension(name);
+                var extension = AppaPath.GetExtension(name);
 
                 var t = typeof(T).Name;
 
@@ -79,51 +83,54 @@ namespace Appalachia.Core.Scriptables
 
                 name = $"{cleanFileName}{extension}";
 
-                var any = AssetDatabase.FindAssets($"t: {t} {cleanFileName}");
+                var any = AssetDatabaseManager.FindAssets($"t: {t} {cleanFileName}");
 
                 for (var i = 0; i < any.Length; i++)
                 {
-                    var path = AssetDatabase.GUIDToAssetPath(any[i]);
-                    var existingName = Path.GetFileNameWithoutExtension(path);
+                    var path = AssetDatabaseManager.GUIDToAssetPath(any[i]);
+                    var existingName = AppaPath.GetFileNameWithoutExtension(path);
 
                     if ((existingName != null) &&
                         string.Equals(cleanFileName.ToLower(), existingName.ToLower()))
                     {
-                        return AssetDatabase.LoadAssetAtPath<T>(path);
+                        return AssetDatabaseManager.LoadAssetAtPath<T>(path);
                     }
                 }
 
                 var instance = ScriptableObject.CreateInstance(typeof(T)) as T;
 
-                return CreateNew(name, instance);
+                return CreateNew(name, instance, dataFolder);
             }
         }
-        
-        public static T CreateNew<T>(string name, T i)
+
+        public static T CreateNew<T>(string name, T i, string dataFolder = null)
             where T : AppalachiaScriptableObject<T>
         {
             using (_PRF_CreateNew.Auto())
             {
-                var ext = Path.GetExtension(name);
+                var ext = AppaPath.GetExtension(name);
 
                 if (string.IsNullOrWhiteSpace(ext))
                 {
                     name += ".asset";
                 }
 
-                var dataFolder = AssetDatabaseManager.GetSaveLocationForScriptableObject<T>()
+                if (dataFolder == null)
+                {
+                    dataFolder = AssetDatabaseManager.GetSaveLocationForScriptableObject<T>()
                                                      .relativePath;
+                }
 
-                var assetPath = Path.Combine(dataFolder, name);
+                var assetPath = AppaPath.Combine(dataFolder, name);
 
-                if (File.Exists(assetPath))
+                if (AppaFile.Exists(assetPath))
                 {
                     throw new AccessViolationException(assetPath);
                 }
 
                 assetPath = assetPath.Replace(ProjectLocations.GetAssetsDirectoryPath(), "Assets");
 
-                AssetDatabase.CreateAsset(i, assetPath);
+                AssetDatabaseManager.CreateAsset(i, assetPath);
 
                 i.OnCreate();
 
@@ -136,10 +143,10 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_Rename.Auto())
             {
-                var path = AssetDatabase.GetAssetPath(instance);
+                var path = AssetDatabaseManager.GetAssetPath(instance);
                 instance.name = newName;
 
-                AssetDatabase.RenameAsset(path, newName);
+                AssetDatabaseManager.RenameAsset(path, newName);
             }
         }
     }

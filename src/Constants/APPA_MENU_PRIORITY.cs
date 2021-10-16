@@ -1,6 +1,6 @@
 namespace Appalachia.Core.Constants
 {
-    public static class MENU_P
+    public static partial class APPA_MENU
     {
         public static class ASSETS
         {

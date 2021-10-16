@@ -3,8 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Appalachia.Core.Extensions;
 using Appalachia.Core.Layers;
-using Sirenix.Utilities;
+
 using Unity.Profiling;
 using UnityEngine;
 

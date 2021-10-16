@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Utility.Reflection.Extensions;
 using UnityEditor;
 using UnityEngine;
@@ -53,7 +54,7 @@ namespace Appalachia.Core.Extensions
 
         public static TextureImporter GetTextureImporter(this Texture2D texture)
         {
-            var path = AssetDatabase.GetAssetPath(texture);
+            var path = AssetDatabaseManager.GetAssetPath(texture);
             return (TextureImporter) AssetImporter.GetAtPath(path);
         }
     }

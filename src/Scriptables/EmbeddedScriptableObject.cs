@@ -1,7 +1,7 @@
 #region
 
 using System;
-using UnityEditor;
+using Appalachia.CI.Integration.Assets;
 using UnityEngine;
 
 #endregion
@@ -28,7 +28,7 @@ namespace Appalachia.Core.Scriptables
         public static TC CreateAndSaveInExisting<TC>(GameObject mainAsset, string assetName)
             where TC : AppalachiaScriptableObject<TC>
         {
-            var path = AssetDatabase.GetAssetPath(mainAsset);
+            var path = AssetDatabaseManager.GetAssetPath(mainAsset);
 
             if (path == null)
             {
@@ -44,7 +44,7 @@ namespace Appalachia.Core.Scriptables
             var instance = (TC) CreateInstance(typeof(TC));
             instance.name = assetName;
 
-            AssetDatabase.AddObjectToAsset(instance, assetPath);
+            AssetDatabaseManager.AddObjectToAsset(instance, assetPath);
 
             return instance;
         }

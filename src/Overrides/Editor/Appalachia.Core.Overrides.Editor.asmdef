@@ -1,0 +1,22 @@
+{
+    "name": "Appalachia.Core.Overrides.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:06d89ef463696534486384c7cc9fab96",
+        "GUID:a03736e1d95a0ed4c8a44e1ee02df53f"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.OdinInspector.Editor.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

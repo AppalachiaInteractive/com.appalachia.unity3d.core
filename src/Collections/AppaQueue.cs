@@ -12,8 +12,6 @@ namespace Appalachia.Core.Collections
 {
     [Serializable]
     public abstract class AppaQueue<T> : ISerializationCallbackReceiver,
-                                         IEnumerable<T>,
-                                         IEnumerable,
                                          ICollection,
                                          IReadOnlyCollection<T>
     {

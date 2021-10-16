@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Threading;
 using Unity.Mathematics;
 
@@ -21,7 +22,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -40,7 +41,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -69,7 +70,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -93,7 +94,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -112,7 +113,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -131,7 +132,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -150,7 +151,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -179,7 +180,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -203,7 +204,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -222,7 +223,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -241,7 +242,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -260,7 +261,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -289,7 +290,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -313,7 +314,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -332,7 +333,7 @@ namespace Appalachia.Core.Collections.Native
                     newValue,
                     currentValue
                 );
-                if (newCurrentValue == currentValue)
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                 {
                     return newValue;
                 }
@@ -362,7 +363,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;
@@ -396,7 +397,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;
@@ -430,7 +431,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;
@@ -474,7 +475,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;
@@ -508,7 +509,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;
@@ -542,7 +543,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;
@@ -586,7 +587,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;
@@ -620,7 +621,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;
@@ -654,7 +655,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (newCurrentValue == currentValue)
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;

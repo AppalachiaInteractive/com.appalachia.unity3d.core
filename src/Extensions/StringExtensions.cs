@@ -1,5 +1,7 @@
 #region
 
+using System;
+using System.Globalization;
 using System.Text;
 using UnityEngine;
 
@@ -9,7 +11,6 @@ namespace Appalachia.Core.Extensions
 {
     public static class StringExtensions
     {
-        // This needs to be added to a public static class to be used like an extension
         public static void CopyToClipboard(this string s)
         {
             var te = new TextEditor {text = s};
@@ -69,6 +70,99 @@ namespace Appalachia.Core.Extensions
             }
 
             return new string(chars);
+        }
+
+        public static string ToTitleCase(this string input)
+        {
+            var stringBuilder = new StringBuilder();
+            for (var index = 0; index < input.Length; ++index)
+            {
+                var ch = input[index];
+                if ((ch == '_') && ((index + 1) < input.Length))
+                {
+                    var upper = input[index + 1];
+                    if (char.IsLower(upper))
+                    {
+                        upper = char.ToUpper(upper, CultureInfo.InvariantCulture);
+                    }
+
+                    stringBuilder.Append(upper);
+                    ++index;
+                }
+                else
+                {
+                    stringBuilder.Append(ch);
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public static bool Contains(
+            this string source,
+            string toCheck,
+            StringComparison comparisonType)
+        {
+            return source.IndexOf(toCheck, comparisonType) >= 0;
+        }
+
+        public static string SplitPascalCase(this string input)
+        {
+            switch (input)
+            {
+                case "":
+                case null:
+                    return input;
+                default:
+                    var stringBuilder = new StringBuilder(input.Length);
+                    if (char.IsLetter(input[0]))
+                    {
+                        stringBuilder.Append(char.ToUpper(input[0]));
+                    }
+                    else
+                    {
+                        stringBuilder.Append(input[0]);
+                    }
+
+                    for (var index = 1; index < input.Length; ++index)
+                    {
+                        var c = input[index];
+                        if (char.IsUpper(c) && !char.IsUpper(input[index - 1]))
+                        {
+                            stringBuilder.Append(' ');
+                        }
+
+                        stringBuilder.Append(c);
+                    }
+
+                    return stringBuilder.ToString();
+            }
+        }
+
+        public static bool IsNullOrWhitespace(this string str)
+        {
+            if (!string.IsNullOrEmpty(str))
+            {
+                for (var index = 0; index < str.Length; ++index)
+                {
+                    if (!char.IsWhiteSpace(str[index]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public static bool Contains(this string str, char ch)
+        {
+            if (str == null)
+            {
+                return false;
+            }
+
+            return str.IndexOf(ch) != -1;
         }
     }
 }

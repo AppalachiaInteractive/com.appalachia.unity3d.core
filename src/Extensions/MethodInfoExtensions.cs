@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Appalachia.Utility.Reflection.Extensions;
-using Sirenix.Utilities;
+
 
 #endregion
 
@@ -110,47 +110,7 @@ namespace Appalachia.Core.Extensions
                    method.IsDefined(typeof(ExtensionAttribute), false);
         }
 
-        /// <summary>Determines whether the specified method is an alias.</summary>
-        /// <param name="methodInfo">The method to check.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified method is an alias; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsAliasMethod(this MethodInfo methodInfo)
-        {
-            return methodInfo is MemberAliasMethodInfo;
-        }
 
-        /// <summary>
-        ///     Returns the original, backing method of an alias method if the method is an alias.
-        /// </summary>
-        /// <param name="methodInfo">The method to check.</param>
-        /// ///
-        /// <param name="throwOnNotAliased">if set to <c>true</c> an exception will be thrown if the method is not aliased.</param>
-        /// <returns></returns>
-        /// <exception cref="T:System.ArgumentException">The method was not aliased; this only occurs if throwOnNotAliased is true.</exception>
-        public static MethodInfo DeAliasMethod(
-            this MethodInfo methodInfo,
-            bool throwOnNotAliased = false)
-        {
-            if (methodInfo is MemberAliasMethodInfo memberAliasMethodInfo)
-            {
-                while (memberAliasMethodInfo.AliasedMethod is MemberAliasMethodInfo)
-                {
-                    memberAliasMethodInfo =
-                        memberAliasMethodInfo.AliasedMethod as MemberAliasMethodInfo;
-                }
-
-                return memberAliasMethodInfo.AliasedMethod;
-            }
-
-            if (throwOnNotAliased)
-            {
-                throw new ArgumentException(
-                    "The method " + methodInfo.GetNiceName() + " was not aliased."
-                );
-            }
-
-            return methodInfo;
-        }
+      
     }
 }

@@ -259,14 +259,6 @@ namespace Appalachia.Core.Extensions
         public static void SetRenderTarget(
             CommandBuffer cmd,
             RenderTargetIdentifier[] colorBuffers,
-            RenderTargetIdentifier depthBuffer)
-        {
-            SetRenderTarget(cmd, colorBuffers, depthBuffer, ClearFlag.None, clearColorAllBlack);
-        }
-
-        public static void SetRenderTarget(
-            CommandBuffer cmd,
-            RenderTargetIdentifier[] colorBuffers,
             RenderTargetIdentifier depthBuffer,
             ClearFlag clearFlag = ClearFlag.None)
         {
@@ -767,8 +759,9 @@ namespace Appalachia.Core.Extensions
             Debug.LogError(msg);
 
 #if UNITY_EDITOR
-            foreach (SceneView sv in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
+            foreach (var o in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
             {
+                var sv = (SceneView) o;
                 sv.ShowNotification(new GUIContent(msg));
             }
 #endif
@@ -803,8 +796,9 @@ namespace Appalachia.Core.Extensions
                 animateMaterials = false;
 
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
-                foreach (SceneView sv in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
+                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
                 {
+                    var sv = (SceneView) o;
                     if ((sv.camera == camera) && sv.sceneViewState.alwaysRefresh)
                     {
                         animateMaterials = true;
@@ -817,10 +811,12 @@ namespace Appalachia.Core.Extensions
                 animateMaterials = false;
 
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
-                foreach (MaterialEditor med in Resources.FindObjectsOfTypeAll(
+                foreach (var o in Resources.FindObjectsOfTypeAll(
                     typeof(MaterialEditor)
                 ))
                 {
+                    var med = (MaterialEditor) o;
+
                     // Warning: currently, there's no way to determine whether a given camera corresponds to this MaterialEditor.
                     // Therefore, if at least one of the visible MaterialEditors is in Play Mode, all of them will play.
                     if (med.isVisible && med.RequiresConstantRepaint())
@@ -861,8 +857,9 @@ namespace Appalachia.Core.Extensions
                 fogEnable = false;
 
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
-                foreach (SceneView sv in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
+                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
                 {
+                    var sv = (SceneView) o;
                     if ((sv.camera == camera) && sv.sceneViewState.showFog)
                     {
                         fogEnable = true;

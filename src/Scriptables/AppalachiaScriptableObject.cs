@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using Appalachia.CI.Integration;
+using Appalachia.CI.Integration.Assets;
+using Appalachia.CI.Integration.FileSystem;
 using Appalachia.Core.Assets;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -53,7 +55,7 @@ namespace Appalachia.Core.Scriptables
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
-                    AssetDatabaseManager.SaveAssetsNextFrame();
+                    AssetDatabaseSaveManager.SaveAssetsNextFrame();
                 }
 #endif
             }
@@ -117,9 +119,9 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_Duplicate.Auto())
             {
-                var path = AssetDatabase.GenerateUniqueAssetPath(AssetDatabase.GetAssetPath(this));
+                var path = AssetDatabaseManager.GenerateUniqueAssetPath(AssetDatabaseManager.GetAssetPath(this));
                 var newInstance = Instantiate(this);
-                AssetDatabase.CreateAsset(newInstance, path);
+                AssetDatabaseManager.CreateAsset(newInstance, path);
                 Selection.activeObject = newInstance;
             }
         }
@@ -132,7 +134,7 @@ namespace Appalachia.Core.Scriptables
             {
                 using (_PRF_AssetPath.Auto())
                 {
-                    return AssetDatabase.GetAssetPath(this);
+                    return AssetDatabaseManager.GetAssetPath(this);
                 }
             }
         }
@@ -146,7 +148,7 @@ namespace Appalachia.Core.Scriptables
             {
                 using (_PRF_DirectoryPath.Auto())
                 {
-                    return Path.GetDirectoryName(AssetPath);
+                    return AppaPath.GetDirectoryName(AssetPath);
                 }
             }
         }
@@ -180,7 +182,7 @@ namespace Appalachia.Core.Scriptables
 
                 if (HasAssetPath(out var path))
                 {
-                    subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+                    subAssets = AssetDatabaseManager.LoadAllAssetsAtPath(path);
 
                     if ((subAssets == null) || (subAssets.Length == 0))
                     {
@@ -201,13 +203,13 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_UpdateNameAndMove.Auto())
             {
-                var assetPath = AssetDatabase.GetAssetPath(this).Replace("\\", "/");
-                var basePath = Path.GetDirectoryName(assetPath);
+                var assetPath = AssetDatabaseManager.GetAssetPath(this).Replace("\\", "/");
+                var basePath = AppaPath.GetDirectoryName(assetPath);
 
-                var newPath = Path.Combine(basePath, newName);
+                var newPath = AppaPath.Combine(basePath, newName);
 
-                var newPath_name = Path.GetFileNameWithoutExtension(newPath);
-                var newPath_extension = Path.GetExtension(newPath);
+                var newPath_name = AppaPath.GetFileNameWithoutExtension(newPath);
+                var newPath_extension = AppaPath.GetExtension(newPath);
 
                 newPath_name = newPath_name.TrimEnd('.', '-', '_', ',');
 
@@ -216,7 +218,7 @@ namespace Appalachia.Core.Scriptables
                     newPath_extension = ".asset";
                 }
 
-                var finalPath = Path.Combine(basePath, $"{newPath_name}{newPath_extension}")
+                var finalPath = AppaPath.Combine(basePath, $"{newPath_name}{newPath_extension}")
                                     .Replace("\\", "/");
 
                 name = newPath_name;
@@ -225,14 +227,14 @@ namespace Appalachia.Core.Scriptables
 
                 if (finalPath != assetPath)
                 {
-                    var landedAt = AssetDatabase.MoveAsset(assetPath, finalPath);
+                    var landedAt = AssetDatabaseManager.MoveAsset(assetPath, finalPath);
 
                     if (landedAt != finalPath)
                     {
                         successful = false;
                     }
 
-                    AssetDatabase.Refresh();
+                    AssetDatabaseManager.Refresh();
                 }
 
                 return successful;
@@ -252,15 +254,15 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_GetAllOfType.Auto())
             {
-                var all = AssetDatabase.FindAssets($"t: {typeof(T).Name}");
+                var all = AssetDatabaseManager.FindAssets($"t: {typeof(T).Name}");
 
                 var results = new T[all.Length];
 
                 for (var i = 0; i < all.Length; i++)
                 {
-                    var path = AssetDatabase.GUIDToAssetPath(all[i]);
+                    var path = AssetDatabaseManager.GUIDToAssetPath(all[i]);
 
-                    results[i] = AssetDatabase.LoadAssetAtPath<T>(path);
+                    results[i] = AssetDatabaseManager.LoadAssetAtPath<T>(path);
                 }
 
                 return results;
@@ -271,15 +273,15 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_GetAllOfType.Auto())
             {
-                var all = AssetDatabase.FindAssets($"t: {typeof(T).Name}");
+                var all = AssetDatabaseManager.FindAssets($"t: {typeof(T).Name}");
 
                 var results = new List<T>(all.Length);
 
                 for (var i = 0; i < all.Length; i++)
                 {
-                    var path = AssetDatabase.GUIDToAssetPath(all[i]);
+                    var path = AssetDatabaseManager.GUIDToAssetPath(all[i]);
 
-                    var loaded = AssetDatabase.LoadAssetAtPath<T>(path);
+                    var loaded = AssetDatabaseManager.LoadAssetAtPath<T>(path);
 
                     if (where(loaded))
                     {

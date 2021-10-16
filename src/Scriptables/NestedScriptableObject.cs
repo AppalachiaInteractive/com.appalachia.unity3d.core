@@ -1,7 +1,7 @@
 #region
 
+using Appalachia.CI.Integration.Assets;
 #if UNITY_EDITOR
-using UnityEditor;
 
 #endif
 
@@ -18,8 +18,8 @@ namespace Appalachia.Core.Scriptables
 #if UNITY_EDITOR
         public static T CreateNested(TP parent, bool initialize = true)
         {
-            var path = AssetDatabase.GetAssetPath(parent);
-            var subAssets = AssetDatabase.LoadAllAssetsAtPath(path);
+            var path = AssetDatabaseManager.GetAssetPath(parent);
+            var subAssets = AssetDatabaseManager.LoadAllAssetsAtPath(path);
 
             T instance = null;
 
@@ -37,7 +37,7 @@ namespace Appalachia.Core.Scriptables
             {
                 instance = CreateInstance<T>();
                 instance.name = instance.DefaultName;
-                AssetDatabase.AddObjectToAsset(instance, parent);
+                AssetDatabaseManager.AddObjectToAsset(instance, parent);
             }
 
             instance.name = instance.DefaultName;

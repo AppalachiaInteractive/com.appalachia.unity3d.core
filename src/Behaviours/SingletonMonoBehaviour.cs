@@ -47,7 +47,7 @@ namespace Appalachia.Core.Behaviours
                 if ((_instance != null) && (_instance != this))
                 {
 #if UNITY_EDITOR
-                    Selection.objects = new[] {_instance.gameObject};
+                    Selection.objects = new Object[] {_instance.gameObject};
 #endif
                     this.DestroySafely();
                 }

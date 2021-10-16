@@ -22,37 +22,34 @@ namespace Appalachia.Core.Timing
         public bool inRealTime;
 
         public float InSeconds =>
-            unit == TimeUnit.Milliseconds
-                ? value / 1000f
-                : unit == TimeUnit.Seconds
-                    ? value
-                    : unit == TimeUnit.Minutes
-                        ? value * 60f
-                        : unit == TimeUnit.Hours
-                            ? value * 60f * 60f
-                            : value * 60f * 60f * 24f;
+            unit switch
+            {
+                TimeUnit.Milliseconds => value / 1000f,
+                TimeUnit.Seconds      => value,
+                TimeUnit.Minutes      => value * 60f,
+                TimeUnit.Hours        => value * 60f * 60f,
+                _                     => value * 60f * 60f * 24f
+            };
 
         private float rangeMinimum =>
-            unit == TimeUnit.Milliseconds
-                ? 0f
-                : unit == TimeUnit.Seconds
-                    ? 0f
-                    : unit == TimeUnit.Minutes
-                        ? 0f
-                        : unit == TimeUnit.Hours
-                            ? 0f
-                            : 0f;
+            unit switch
+            {
+                TimeUnit.Milliseconds => 0f,
+                TimeUnit.Seconds      => 0f,
+                TimeUnit.Minutes      => 0f,
+                TimeUnit.Hours        => 0f,
+                _                     => 0f
+            };
 
         private float rangeMaximum =>
-            unit == TimeUnit.Milliseconds
-                ? 1000f
-                : unit == TimeUnit.Seconds
-                    ? 60f
-                    : unit == TimeUnit.Minutes
-                        ? 60f
-                        : unit == TimeUnit.Hours
-                            ? 24f
-                            : 30f;
+            unit switch
+            {
+                TimeUnit.Milliseconds => 1000f,
+                TimeUnit.Seconds      => 60f,
+                TimeUnit.Minutes      => 60f,
+                TimeUnit.Hours        => 24f,
+                _                     => 30f
+            };
 
         public static Duration ONE_SECOND()
         {

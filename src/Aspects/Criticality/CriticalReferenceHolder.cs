@@ -1,4 +1,4 @@
-using Appalachia.Core.Assets;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Behaviours;
 using Appalachia.Utility.Reflection.Extensions;
 
@@ -16,7 +16,6 @@ using Sirenix.OdinInspector;
 #endregion
 
 #if UNITY_EDITOR
-using UnityEditor;
 
 #endif
 
@@ -75,7 +74,7 @@ namespace Appalachia.Core.Aspects.Criticality
                 {
                     var path = soPaths[i];
 
-                    var instance = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                    var instance = AssetDatabaseManager.LoadAssetAtPath<ScriptableObject>(path);
 
                     if (instance == null)
                     {

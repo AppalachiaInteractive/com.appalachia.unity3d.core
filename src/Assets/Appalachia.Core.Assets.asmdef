@@ -1,20 +1,20 @@
 {
-    "name": "Appalachia.Core.Assets",
-    "rootNamespace": "",
-    "references": [
-        "GUID:56ca8901b63fd204692a4a27f67b605e",
-        "GUID:4a600fa6fa2ca854b8f233a23710b315",
-        "GUID:01789cac4a2597b458bedef85a39c3f2",
-        "GUID:63a32ad87b517324398da8a6fcd4c2a6",
-        "GUID:a03736e1d95a0ed4c8a44e1ee02df53f"
-    ],
-    "includePlatforms": [],
-    "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+  "name": "Appalachia.Core.Assets",
+  "rootNamespace": "",
+  "references": [
+    "GUID:56ca8901b63fd204692a4a27f67b605e",
+    "GUID:01789cac4a2597b458bedef85a39c3f2",
+    "GUID:63a32ad87b517324398da8a6fcd4c2a6",
+    "GUID:a03736e1d95a0ed4c8a44e1ee02df53f"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": []
 }

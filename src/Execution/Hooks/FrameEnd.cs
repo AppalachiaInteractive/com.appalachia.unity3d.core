@@ -7,8 +7,7 @@ namespace Appalachia.Core.Execution.Hooks
     {
         protected override string GetReadableName()
         {
-            const string name = nameof(FrameEnd);
-            return name;
+            return nameof(FrameEnd);
         }
     }
 }

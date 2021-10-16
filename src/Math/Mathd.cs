@@ -546,7 +546,7 @@ namespace Appalachia.Core.Math
         // Calculates the ::ref::Lerp parameter between of two values.
         public static double InverseLerp(double a, double b, double value)
         {
-            if (a != b)
+            if (System.Math.Abs(a - b) > float.Epsilon)
             {
                 return Clamp01((value - a) / (b - a));
             }

@@ -58,7 +58,8 @@ namespace Appalachia.Core.Aspects.Tracing
                 int frameCount;
                 using (_PRF_TraceMarker_Trace_StackTrace.Auto())
                 {
-                    frameCount = new StackTrace().FrameCount - (type == TraceType.EXIT ? 2 : 3);
+                    var stack = new StackTrace();
+                    frameCount = stack.FrameCount - (type == TraceType.EXIT ? 2 : 3);
 
                     if (frameCount < 0)
                     {
@@ -69,8 +70,8 @@ namespace Appalachia.Core.Aspects.Tracing
                 using (_PRF_TraceMarker_Trace_Format.Auto())
                 {
                     var formatPrefix = _indents[frameCount];
-
-                    Debug.Log($"{formatPrefix}{_traceMessage}: {type}");
+                    
+                    Console.WriteLine($"{formatPrefix}{_traceMessage}: {type}");
                 }
             }
         }

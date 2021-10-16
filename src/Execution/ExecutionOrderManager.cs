@@ -1,6 +1,6 @@
 #region
 
-using Appalachia.Core.Assets;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
@@ -23,7 +23,7 @@ namespace Appalachia.Core.Execution
         {
             using (_PRF_ExecutionOrderManager.Auto())
             {
-                var scripts = AssetDatabaseManager.GetAllMonoScripts();
+                var scripts = AssetDatabaseManager.GetAllRuntimeMonoScripts();
 
                 for (var i = 0; i < scripts.Count; i++)
                 {

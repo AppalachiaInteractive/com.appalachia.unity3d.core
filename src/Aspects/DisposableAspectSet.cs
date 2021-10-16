@@ -2,8 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
+using Appalachia.CI.Integration;
+using Appalachia.CI.Integration.FileSystem;
 using Unity.Profiling;
 
 #endregion
@@ -69,7 +70,7 @@ namespace Appalachia.Core.Aspects
                 {
                     if (_typePrefix == null)
                     {
-                        _typePrefix = Path.GetFileNameWithoutExtension(sourceFilePath);
+                        _typePrefix = AppaPath.GetFileNameWithoutExtension(sourceFilePath);
                     }
                 }
 

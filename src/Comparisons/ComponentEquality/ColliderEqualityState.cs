@@ -65,11 +65,11 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
             return (other is MeshCollider mc && (mesh == mc.sharedMesh) && (convex == mc.convex)) ||
                    (other is BoxCollider bc && (center == bc.center) && (size == bc.size)) ||
-                   (other is SphereCollider sc && (center == sc.center) && (radius == sc.radius)) ||
+                   (other is SphereCollider sc && (center == sc.center) && (Math.Abs(radius - sc.radius) < float.Epsilon)) ||
                    (other is CapsuleCollider cc &&
                     (center == cc.center) &&
-                    (radius == cc.radius) &&
-                    (height == cc.height) &&
+                    (Math.Abs(radius - cc.radius) < float.Epsilon) &&
+                    (Math.Abs(height - cc.height) < float.Epsilon) &&
                     (direction == cc.direction));
         }
 

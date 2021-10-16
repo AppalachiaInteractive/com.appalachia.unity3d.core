@@ -45,7 +45,7 @@ namespace Appalachia.Core.Collections.Native
             NativeArrayOptions options = NativeArrayOptions.ClearMemory)
         {
             Allocate(capacity0, capacity1, capacity2, allocator, out this);
-            if ((options & NativeArrayOptions.ClearMemory) == NativeArrayOptions.ClearMemory)
+            if (options == NativeArrayOptions.ClearMemory)
             {
                 UnsafeUtility.MemClear(m_Buffer, TotalLength * (long) UnsafeUtility.SizeOf<T>());
             }

@@ -122,11 +122,11 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        /// <summary>Convert a colletion to a HashSet.</summary>
+        /*/// <summary>Convert a colletion to a HashSet.</summary>
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
         {
             return new(source);
-        }
+        }*/
 
         /// <summary>Convert a colletion to a HashSet.</summary>
         public static HashSet<T> ToHashSet<T>(
@@ -136,19 +136,6 @@ namespace Appalachia.Core.Extensions
             return new(source, comparer);
         }
 
-        /// <summary>Convert a colletion to a HashSet.</summary>
-        public static HashSet<T> ToHashSet2<T>(this IEnumerable<T> source)
-        {
-            return new(source);
-        }
-
-        /// <summary>Convert a colletion to a HashSet.</summary>
-        public static HashSet<T> ToHashSet2<T>(
-            this IEnumerable<T> source,
-            IEqualityComparer<T> comparer)
-        {
-            return new(source, comparer);
-        }
 
         /// <summary>Add an item to the beginning of a collection.</summary>
         /// <param name="source">The collection.</param>

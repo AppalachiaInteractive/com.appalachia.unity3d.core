@@ -1,5 +1,6 @@
 #region
 
+using Appalachia.CI.Integration.Assets;
 using UnityEditor;
 
 #endregion
@@ -10,7 +11,7 @@ namespace Appalachia.Core.Extensions
     {
         public static void WriteSettings(this TextureImporter importer)
         {
-            AssetDatabase.WriteImportSettingsIfDirty(importer.assetPath);
+            AssetDatabaseManager.WriteImportSettingsIfDirty(importer.assetPath);
         }
     }
 }

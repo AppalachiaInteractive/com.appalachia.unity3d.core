@@ -28,34 +28,36 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        public static T LoadOrCreateNew(string name)
+        public static T LoadOrCreateNew(string name, string dataFolder = null)
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return ScriptableObjectFactory.LoadOrCreateNew<T>(name);
+                return ScriptableObjectFactory.LoadOrCreateNew<T>(name, dataFolder);
             }
         }
 
         public static T LoadOrCreateNew(
             string name,
             bool prependType,
-            bool appendType)
+            bool appendType,
+            string dataFolder = null)
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
                 return ScriptableObjectFactory.LoadOrCreateNew<T>(
                     name,
                     prependType,
-                    appendType
+                    appendType,
+                    dataFolder
                 );
             }
         }
 
-        public static T CreateNew(string name, T i)
+        public static T CreateNew(string name, T i, string dataFolder = null)
         {
             using (_PRF_CreateNew.Auto())
             {
-                return ScriptableObjectFactory.CreateNew(name, i);
+                return ScriptableObjectFactory.CreateNew(name, i, dataFolder);
             }
         }
 

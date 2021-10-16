@@ -35,7 +35,7 @@ namespace Appalachia.Core.Math.Probability
                     tempSum += prefab.Enabled ? prefab.Probability : 0.0;
                 }
 
-                if (tempSum != sum)
+                if (System.Math.Abs(tempSum - sum) > float.Epsilon)
                 {
                     update = true;
                 }

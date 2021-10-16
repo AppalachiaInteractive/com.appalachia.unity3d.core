@@ -42,7 +42,7 @@ namespace Appalachia.Core.Collections
             return true;
         }
 
-        [MenuItem(MENU_UI_DEBUG_, false, MENU_P.TOOLS.MESH_BURY.ENABLE)]
+        [MenuItem(MENU_UI_DEBUG_, false, APPA_MENU.TOOLS.MESH_BURY.ENABLE)]
         private static void MENU_UI_DEBUG()
         {
             if (!_UI_DEBUG.IsAwake)

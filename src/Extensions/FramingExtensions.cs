@@ -62,11 +62,12 @@ namespace Appalachia.Core.Extensions
             bool adjustAngle = true,
             FramingDirection direction = FramingDirection.Existing)
         {
-            var up = direction == FramingDirection.Top
-                ? Vector3.forward
-                : direction == FramingDirection.Bottom
-                    ? Vector3.back
-                    : Vector3.up;
+            var up = direction switch
+            {
+                FramingDirection.Top    => Vector3.forward,
+                FramingDirection.Bottom => Vector3.back,
+                _                       => Vector3.up
+            };
 
             Frame(go, bounds, adjustAngle, direction, _basicLook, up);
         }
@@ -76,11 +77,12 @@ namespace Appalachia.Core.Extensions
             bool adjustAngle = true,
             FramingDirection direction = FramingDirection.Existing)
         {
-            var up = direction == FramingDirection.Top
-                ? Vector3.forward
-                : direction == FramingDirection.Bottom
-                    ? Vector3.back
-                    : Vector3.up;
+            var up = direction switch
+            {
+                FramingDirection.Top    => Vector3.forward,
+                FramingDirection.Bottom => Vector3.back,
+                _                       => Vector3.up
+            };
 
             Frame(gos, adjustAngle, direction, _basicLook, up);
         }
@@ -90,11 +92,12 @@ namespace Appalachia.Core.Extensions
             bool adjustAngle = true,
             FramingDirection direction = FramingDirection.Existing)
         {
-            var up = direction == FramingDirection.Top
-                ? Vector3.forward
-                : direction == FramingDirection.Bottom
-                    ? Vector3.back
-                    : Vector3.up;
+            var up = direction switch
+            {
+                FramingDirection.Top    => Vector3.forward,
+                FramingDirection.Bottom => Vector3.back,
+                _                       => Vector3.up
+            };
 
             Frame(gos, adjustAngle, direction, _basicLook, up);
         }
@@ -135,11 +138,12 @@ namespace Appalachia.Core.Extensions
             bool adjustAngle = true,
             FramingDirection direction = FramingDirection.Existing)
         {
-            var up = direction == FramingDirection.Top
-                ? Vector3.forward
-                : direction == FramingDirection.Bottom
-                    ? Vector3.back
-                    : Vector3.up;
+            var up = direction switch
+            {
+                FramingDirection.Top    => Vector3.forward,
+                FramingDirection.Bottom => Vector3.back,
+                _                       => Vector3.up
+            };
 
             Frame(gos, adjustAngle, direction, _basicLook, up);
         }
@@ -289,21 +293,20 @@ namespace Appalachia.Core.Extensions
         {
             var objs = Selection.gameObjects;
 
-            var direction = keyCode == KeyCode.Keypad1
-                ? control
+            var direction = keyCode switch
+            {
+                KeyCode.Keypad1 => control
                     ? FramingDirection.Back
-                    : FramingDirection.Front
-                : keyCode == KeyCode.Keypad3
-                    ? control
-                        ? FramingDirection.Right
-                        : FramingDirection.Left
-                    : keyCode == KeyCode.Keypad7
-                        ? control
-                            ? FramingDirection.Bottom
-                            : FramingDirection.Top
-                        : keyCode == KeyCode.Keypad9
-                            ? FramingDirection.Opposite
-                            : FramingDirection.Existing;
+                    : FramingDirection.Front,
+                KeyCode.Keypad3 => control
+                    ? FramingDirection.Right
+                    : FramingDirection.Left,
+                KeyCode.Keypad7 => control
+                    ? FramingDirection.Bottom
+                    : FramingDirection.Top,
+                KeyCode.Keypad9 => FramingDirection.Opposite,
+                _               => FramingDirection.Existing
+            };
 
             if ((objs == null) || (objs.Length == 0))
             {

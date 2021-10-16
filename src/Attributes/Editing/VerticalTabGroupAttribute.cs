@@ -6,8 +6,8 @@ using System.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Internal;
-using Sirenix.Utilities;
-using Sirenix.Utilities.Editor;
+
+
 using UnityEditor;
 using UnityEngine;
 
@@ -297,8 +297,8 @@ namespace Appalachia.Core.Editing.Groups
                     InnerContainerStyle,
                     GUILayoutOptions.Width(tabGroup.InnerContainerWidth).ExpandHeight(tabGroup.ExpandHeight)
                 );
-                GUIHelper.PushHierarchyMode(false);
-                GUIHelper.PushLabelWidth(tabGroup.LabelWidth - 4f);
+                UIStateStacks.PushHierarchyMode(false);
+                UIStateStacks.PushLabelWidth(tabGroup.LabelWidth - 4f);
                 if (Event.current.type == EventType.Repaint)
                 {
                     Rect = rect;
@@ -320,8 +320,8 @@ namespace Appalachia.Core.Editing.Groups
         {
             if (IsVisible)
             {
-                GUIHelper.PopLabelWidth();
-                GUIHelper.PopHierarchyMode();
+                UIStateStacks.PopLabelWidth();
+                UIStateStacks.PopHierarchyMode();
                 if (tabGroup.IsAnimating)
                 {
                     GUI.color = prevColor;
@@ -490,9 +490,9 @@ namespace Appalachia.Core.Editing.Groups
                 options[2] = !FixedHeight ? GUILayout.Height(currentHeight) : GUILayout.Height(num1);
             }
 
-            GUIHelper.PushGUIEnabled(false);
+            UIStateStacks.guiEnabled.Push(false);
             GUILayout.BeginScrollView(scrollPosition, false, false, GUIStyle.none, GUIStyle.none, options);
-            GUIHelper.PopGUIEnabled();
+            UIStateStacks.PopGUIEnabled();
             var rect2 = EditorGUILayout.BeginHorizontal(GUILayoutOptions.ExpandHeight(ExpandHeight));
             if (Event.current.type != EventType.Repaint)
             {
@@ -506,9 +506,9 @@ namespace Appalachia.Core.Editing.Groups
         public void EndGroup()
         {
             EditorGUILayout.EndHorizontal();
-            GUIHelper.PushGUIEnabled(false);
+            UIStateStacks.guiEnabled.Push(false);
             GUILayout.EndScrollView();
-            GUIHelper.PopGUIEnabled();
+            UIStateStacks.PopGUIEnabled();
             EditorGUILayout.EndVertical();
             if (targetPage != currentPage)
             {
@@ -673,8 +673,8 @@ namespace Appalachia.Core.Editing.Groups
         {
             currentDrawingToolbarWidth = width;
             Rect rect = EditorGUILayout.BeginVertical(style, (GUILayoutOption[]) GUILayoutOptions.Width(width).ExpandHeight(false));
-            GUIHelper.PushHierarchyMode(false, true);
-            GUIHelper.PushIndentLevel(0);
+            UIStateStacks.PushHierarchyMode(false, true);
+            UIStateStacks.PushIndentLevel(0);
             return rect;
         }
 
@@ -691,8 +691,8 @@ namespace Appalachia.Core.Editing.Groups
                 SirenixEditorGUI.DrawBorders(currentLayoutRect, 1, true);
             }
 
-            GUIHelper.PopIndentLevel();
-            GUIHelper.PopHierarchyMode();
+            UIStateStacks.PopIndentLevel();
+            UIStateStacks.PopHierarchyMode();
             EditorGUILayout.EndVertical();
         }
 
@@ -723,15 +723,15 @@ namespace Appalachia.Core.Editing.Groups
         public static Rect BeginVerticalToolbarBox(params GUILayoutOption[] options)
         {
             SirenixEditorGUI.BeginIndentedVertical(SirenixGUIStyles.BoxContainer, options);
-            GUIHelper.PushHierarchyMode(false, true);
-            GUIHelper.PushLabelWidth(GUIHelper.BetterLabelWidth - 4f);
+            UIStateStacks.PushHierarchyMode(false, true);
+            UIStateStacks.PushLabelWidth(GUIHelper.BetterLabelWidth - 4f);
             return GUIHelper.GetCurrentLayoutRect();
         }
 
         public static void EndVerticalToolbarBox()
         {
-            GUIHelper.PopLabelWidth();
-            GUIHelper.PopHierarchyMode();
+            UIStateStacks.PopLabelWidth();
+            UIStateStacks.PopHierarchyMode();
             SirenixEditorGUI.EndIndentedVertical();
         }
 

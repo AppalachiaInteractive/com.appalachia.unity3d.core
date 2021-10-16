@@ -1,5 +1,6 @@
 #region
 
+using System;
 using Unity.Mathematics;
 using UnityEditor;
 
@@ -12,17 +13,17 @@ namespace Appalachia.Core.Preferences.API
         public float Get(string key, float defaultValue, float low, float high)
         {
             var val = EditorPrefs.GetFloat(key, defaultValue);
-            return low == high ? val : math.clamp(val, low, high);
+            return Math.Abs(low - high) < float.Epsilon ? val : math.clamp(val, low, high);
         }
 
         public void Save(string key, float value, float low, float high)
         {
-            EditorPrefs.SetFloat(key, low == high ? value : math.clamp(value, low, high));
+            EditorPrefs.SetFloat(key, Math.Abs(low - high) < float.Epsilon  ? value : math.clamp(value, low, high));
         }
 
         public float Draw(string label, float value, float low, float high)
         {
-            var val = low != high
+            var val = Math.Abs(low - high) > float.Epsilon
                 ? EditorGUILayout.Slider(label, value, low, high)
                 : EditorGUILayout.FloatField(label, value);
 

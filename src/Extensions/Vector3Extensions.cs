@@ -664,17 +664,17 @@ namespace Appalachia.Core.Extensions
 
         public static bool IsUniform(this Vector2 vector)
         {
-            return vector.x == vector.y;
+            return Math.Abs(vector.x - vector.y) < float.Epsilon;
         }
 
         public static bool IsUniform(this Vector3 vector)
         {
-            return (vector.x == vector.y) && (vector.x == vector.z);
+            return (Math.Abs(vector.x - vector.y) < float.Epsilon) && (Math.Abs(vector.x - vector.z) < float.Epsilon);
         }
 
         public static bool IsUniform(this Vector4 vector)
         {
-            return (vector.x == vector.y) && (vector.x == vector.z) && (vector.x == vector.w);
+            return (Math.Abs(vector.x - vector.y) < float.Epsilon) && (Math.Abs(vector.x - vector.z) < float.Epsilon) && (Math.Abs(vector.x - vector.w) < float.Epsilon);
         }
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Extensions;
 using Sirenix.OdinInspector;
@@ -100,18 +101,18 @@ namespace Appalachia.Core.Scriptables
 
                 using (_PRF_Scan_AssemblyLookup.Auto())
                 {
-                    excludedAssemblyLookup = excludedAssemblies.Select(ea => ea.name).ToHashSet2();
+                    excludedAssemblyLookup = excludedAssemblies.Select(ea => ea.name).ToHashSet();
                 }
 
                 using (_PRF_Scan_Search.Auto())
                 {
-                    guids = AssetDatabase.FindAssets("t: ScriptableObject");
+                    guids = AssetDatabaseManager.FindAssets("t: ScriptableObject");
                 }
 
                 for (var index = 0; index < guids.Length; index++)
                 {
                     var guid = guids[index];
-                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var path = AssetDatabaseManager.GUIDToAssetPath(guid);
 
                     Type type;
 
@@ -122,7 +123,7 @@ namespace Appalachia.Core.Scriptables
                             continue;
                         }
 
-                        type = AssetDatabase.GetMainAssetTypeAtPath(path);
+                        type = AssetDatabaseManager.GetMainAssetTypeAtPath(path);
 
                         if (type == null)
                         {
@@ -163,7 +164,7 @@ namespace Appalachia.Core.Scriptables
 
                         using (_PRF_Scan_LoadInstance.Auto())
                         {
-                            instance = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                            instance = AssetDatabaseManager.LoadAssetAtPath<ScriptableObject>(path);
                         }
 
                         if (instance == null)
@@ -232,11 +233,21 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_ScanExternal.Auto())
             {
-                var path = AssetDatabase.FindAssets("t: SingletonScriptableObjectLookup")
-                                        .Select(g => AssetDatabase.GUIDToAssetPath(g))
+                var path = AssetDatabaseManager.FindAssetPaths("t: SingletonScriptableObjectLookup")
                                         .FirstOrDefault();
 
-                var instance = AssetDatabase.LoadAssetAtPath<SingletonScriptableObjectLookup>(path);
+                if (path == null)
+                {
+                    return;
+                }
+                
+                var instance = AssetDatabaseManager.LoadAssetAtPath<SingletonScriptableObjectLookup>(path);
+
+                if (instance == null)
+                {
+                    return;
+                }
+                
                 instance.Scan();
             }
         }
