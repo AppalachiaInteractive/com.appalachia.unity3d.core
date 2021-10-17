@@ -12,6 +12,14 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| afae313d42f8ca4dd02716ab3f7a13d40683a90c | 2021-10-16 | Chris Schubert | UI project cleanup and integration completed |
+| 0cc3b9758b96242ad527bf1fb485210a5095f07a | 2021-10-16 | Chris Schubert | More project cleanup and refactoring |
+| 3bfdc043c6db5e6db9dccbc9090c29c412686b78 | 2021-10-12 | Chris Schubert | Code cleanup |
+
+
+ ## Tag: `v0.1.2`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
 | dc08cc637d31bec1f313f36e2f9c98706cd087e4 | 2021-10-04 | Chris Schubert | Code cleanup and refactoring |
 
 

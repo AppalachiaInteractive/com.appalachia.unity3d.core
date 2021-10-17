@@ -1,7 +1,7 @@
 {
   "name": "com.appalachia.unity3d.core",
   "displayName": "Appalachia.Core for Unity3D",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "unity": "2020.3",
   "description": "Common functionality for Unity3D applications.",
   "keywords": [
