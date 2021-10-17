@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Attributes;
 using Appalachia.Core.Preferences;
 using UnityEditor;
 
@@ -10,7 +9,6 @@ using UnityEditor;
 
 namespace Appalachia.Core.Aspects.Tracing
 {
-    [AlwaysInitializeOnLoad]
     public static class TRACE
     {
 #if UNITY_EDITOR
