@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using Appalachia.Core.Constants;
+using Appalachia.CI.Constants;
 using Appalachia.Utility.Reflection.Extensions;
 using UnityEditor;
 using UnityEngine;

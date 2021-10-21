@@ -1,8 +1,8 @@
 #region
 
 using System;
+using Appalachia.CI.Constants;
 using Appalachia.Core.Attributes;
-using Appalachia.Core.Constants;
 using Appalachia.Core.Preferences;
 using UnityEditor;
 

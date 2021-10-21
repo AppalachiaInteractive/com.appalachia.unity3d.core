@@ -1,7 +1,7 @@
 #region
 
 using Appalachia.Core.Attributes;
-using Appalachia.Utility.Constants;
+using Appalachia.Utility.src.Constants;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
