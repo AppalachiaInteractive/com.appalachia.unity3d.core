@@ -9,6 +9,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct double_EPAPI : IEditorPreferenceAPI<double>
     {
+        public void Save(PREF<double> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public double Draw(PREF<double> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public double Get(string key, double defaultValue, double low, double high)
         {
             return Round(EditorPrefs.GetFloat(key, Round(defaultValue)));

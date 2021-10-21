@@ -8,6 +8,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct bool_EPAPI : IEditorPreferenceAPI<bool>
     {
+        public void Save(PREF<bool> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public bool Draw(PREF<bool> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public bool Get(string key, bool defaultValue, bool low, bool high)
         {
             return EditorPrefs.GetBool(key, defaultValue);

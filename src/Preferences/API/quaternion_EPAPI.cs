@@ -10,6 +10,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct quaternion_EPAPI : IEditorPreferenceAPI<quaternion>
     {
+        public void Save(PREF<quaternion> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public quaternion Draw(PREF<quaternion> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public quaternion Get(string key, quaternion defaultValue, quaternion low, quaternion high)
         {
             var result = quaternion.identity;

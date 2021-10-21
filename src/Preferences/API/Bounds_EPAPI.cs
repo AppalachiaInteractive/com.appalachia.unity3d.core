@@ -9,6 +9,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct Bounds_EPAPI : IEditorPreferenceAPI<Bounds>
     {
+        public void Save(PREF<Bounds> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public Bounds Draw(PREF<Bounds> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public Bounds Get(string key, Bounds defaultValue, Bounds low, Bounds high)
         {
             var result = default(Bounds);

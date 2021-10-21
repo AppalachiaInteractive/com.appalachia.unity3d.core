@@ -14,13 +14,19 @@
   "author": {
     "name": "Appalachia Interactive"
   },
-  "dependencies": {},
   "repository": {
-    "url": "https://github.com/AppalachiaInteractive/com.appalachia.unity3d.core.git",
-    "type": "git"
+    "type": "git",
+    "url": "https://github.com/AppalachiaInteractive/com.appalachia.unity3d.core.git"
   },
   "publishConfig": {
     "registry": "http://35.211.123.13:4873/"
+  },
+  "dependencies": {
+    "com.unity.mathematics": "1.2.4",
+    "com.unity.collections": "1.0.0-pre.6",
+    "com.unity.burst": "1.6.0",
+    "com.appalachia.unity3d.utility": "0.1.0",
+    "com.appalachia.unity3d.ci": "0.1.0"
   },
   "scripts": {
     "preversion": "bash ~/com.appalachia/appa/appa package unity3d preversion",
@@ -33,5 +39,6 @@
     "prepublishOnly": "bash ~/com.appalachia/appa/appa package unity3d prepublishOnly",
     "publish": "bash ~/com.appalachia/appa/appa package unity3d publish",
     "postpublish": "bash ~/com.appalachia/appa/appa package unity3d postpublish"
-  }
+  },
+  "exports": null
 }

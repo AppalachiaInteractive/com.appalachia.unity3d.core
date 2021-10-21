@@ -9,6 +9,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct float3_EPAPI : IEditorPreferenceAPI<float3>
     {
+        public void Save(PREF<float3> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public float3 Draw(PREF<float3> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public float3 Get(string key, float3 defaultValue, float3 low, float3 high)
         {
             var result = float3.zero;

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Behaviours;
-using Appalachia.Editing.Debugging;
+using Appalachia.Core.Debugging;
 using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;

@@ -9,6 +9,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct Color_EPAPI : IEditorPreferenceAPI<Color>
     {
+        public void Save(PREF<Color> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public Color Draw(PREF<Color> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public Color Get(string key, Color defaultValue, Color low, Color high)
         {
             return GetColor(key, defaultValue);

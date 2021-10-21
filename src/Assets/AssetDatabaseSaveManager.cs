@@ -107,13 +107,10 @@ namespace Appalachia.Core.Assets
                 {
                     Log("Flushing import pauses.  ");
 
-                    var iteration = 0;
                     while (ImportSuspended)
                     {
                         StopAssetEditing();
                         _suspensionDepth -= 1;
-
-                        iteration += 1;
 
                         //Log($"Flushing import pause. Iteration: {iteration} ");
                     }

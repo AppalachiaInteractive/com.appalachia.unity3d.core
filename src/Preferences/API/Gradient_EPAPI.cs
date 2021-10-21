@@ -9,6 +9,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct Gradient_EPAPI : IEditorPreferenceAPI<Gradient>
     {
+        public void Save(PREF<Gradient> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public Gradient Draw(PREF<Gradient> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public Gradient Get(string key, Gradient defaultValue, Gradient low, Gradient high)
         {
             return GetGradient(key, defaultValue);
@@ -56,9 +66,7 @@ namespace Appalachia.Core.Preferences.API
             var gradient = new Gradient();
 
             var modeKey = $"{key}.mode";
-            gradient.mode = EditorPrefs.GetBool(modeKey, true)
-                ? GradientMode.Blend
-                : GradientMode.Fixed;
+            gradient.mode = EditorPrefs.GetBool(modeKey, true) ? GradientMode.Blend : GradientMode.Fixed;
 
             var colorBaseKey = $"{key}.color";
             var alphaBaseKey = $"{key}.alpha";
@@ -74,10 +82,7 @@ namespace Appalachia.Core.Preferences.API
                 var colorKey = $"{colorBaseKey}.{i}.value";
                 var timeKey = $"{colorBaseKey}.{i}.time";
 
-                var color = EditorPrefs.GetInt(
-                    colorKey,
-                    (int) ToHex(i == 0 ? Color.black : Color.white)
-                );
+                var color = EditorPrefs.GetInt(colorKey, (int) ToHex(i == 0 ? Color.black : Color.white));
                 var time = EditorPrefs.GetFloat(timeKey, i);
 
                 colorKeys[i] = new GradientColorKey(ToRGBA((uint) color), time);

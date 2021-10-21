@@ -1,5 +1,5 @@
 {
-  "name": "Appalachia.Core.Filtering",
+  "name": "Appalachia.Core.Debugging",
   "allowUnsafeCode": false,
   "autoReferenced": true,
   "noEngineReferences": false,
@@ -11,8 +11,7 @@
     "GUID:01789cac4a2597b458bedef85a39c3f2",
     "GUID:56ca8901b63fd204692a4a27f67b605e",
     "GUID:c7f2f2911de381941be7186214305448",
-    "GUID:4c32fdd75da6bc94f9b79f03f11f5e30",
-    "GUID:52c3a4fa2ed74f14faae11aff711e57d",
+    "GUID:63a32ad87b517324398da8a6fcd4c2a6",
     "GUID:28ae00157ecf0354981e730179f52cc3",
     "GUID:6b8c99229a4703f47b9e6e696c2e8d8d",
     "GUID:53345eb42d09cce4db5ac81c557058f7",

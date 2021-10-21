@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Constants;
 using Unity.Mathematics;
@@ -139,8 +141,6 @@ namespace Appalachia.Core.Preferences
             {
                 EditorGUI.indentLevel++;
 
-                var indent = EditorGUI.indentLevel * indentSize;
-
                 var sortCount = GetSortedCount(prefs);
                 
                 for (var index = 0; index < sortCount; index++)
@@ -149,35 +149,7 @@ namespace Appalachia.Core.Preferences
                     
                     if (preference.Grouping == groupFullName)
                     {
-                        EditorGUI.BeginChangeCheck();
-
-                        if (preference.NiceLabel == null)
-                        {
-                            preference.NiceLabel = ObjectNames.NicifyVariableName(preference.Label);
-                        }
-
-                        var labelWidth = indent + (preference.NiceLabel.Length * characterSize);
-                        var currentLabelWidth = EditorGUIUtility.labelWidth;
-
-                        EditorGUIUtility.labelWidth = labelWidth;
-                        preference.Value = prefs.API.Draw(
-                            preference.NiceLabel,
-                            preference.Value,
-                            preference.Low,
-                            preference.High
-                        );
-
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            prefs.API.Save(
-                                preference.Key,
-                                preference.Value,
-                                preference.Low,
-                                preference.High
-                            );
-                        }
-
-                        EditorGUIUtility.labelWidth = currentLabelWidth;
+                        preference.Draw();
                     }
                 }
 
@@ -310,7 +282,188 @@ namespace Appalachia.Core.Preferences
                 return (PREF_STATE<TR>) existing;
             }
         }
-       
+
+        public static bool Draw(this PREF_BASE preference)
+        {
+            EditorGUI.BeginChangeCheck();
+
+            var indent = EditorGUI.indentLevel * indentSize;
+
+            if (preference.NiceLabel == null)
+            {
+                preference.NiceLabel = ObjectNames.NicifyVariableName(preference.Label);
+            }
+
+            var labelWidth = indent + (preference.NiceLabel.Length * characterSize);
+            var currentLabelWidth = EditorGUIUtility.labelWidth;
+
+            EditorGUIUtility.labelWidth = currentLabelWidth;
+
+            var realType = preference.GetType();
+            var typeTR = realType.GetGenericArguments().FirstOrDefault();
+
+            if (typeTR == typeof(bool))
+            {
+                return DoDraw((PREF<bool>) preference, _bools);
+            }
+
+            if (typeTR == typeof(Bounds))
+            {
+                return DoDraw((PREF<Bounds>) preference, _bounds);
+            }
+
+            if (typeTR == typeof(Color))
+            {
+                return DoDraw((PREF<Color>) preference, _colors);
+            }
+
+            if (typeTR == typeof(Gradient))
+            {
+                return DoDraw((PREF<Gradient>) preference, _gradients);
+            }
+
+            if (typeTR == typeof(double))
+            {
+                return DoDraw((PREF<double>) preference, _doubles);
+            }
+
+            if (typeTR == typeof(float))
+            {
+                return DoDraw((PREF<float>) preference, _floats);
+            }
+
+            if (typeTR == typeof(float2))
+            {
+                return DoDraw((PREF<float2>) preference, _float2s);
+            }
+
+            if (typeTR == typeof(float3))
+            {
+                return DoDraw((PREF<float3>) preference, _float3s);
+            }
+
+            if (typeTR == typeof(float4))
+            {
+                return DoDraw((PREF<float4>) preference, _float4s);
+            }
+
+            if (typeTR == typeof(int))
+            {
+                return DoDraw((PREF<int>) preference, _ints);
+            }
+
+            if (typeTR == typeof(quaternion))
+            {
+                return DoDraw((PREF<quaternion>) preference, _quaternions);
+            }
+
+            if (typeTR == typeof(string))
+            {
+                return DoDraw((PREF<string>) preference, _strings);
+            }
+
+            if (typeTR.IsEnum || (typeTR == typeof(Enum)))
+            {
+                if (_GetEnumStateLookup == null)
+                {
+                    _GetEnumStateLookup = new Dictionary<Type, MethodInfo>();
+                }
+
+                if (_DoDrawLookup == null)
+                {
+                    _DoDrawLookup = new Dictionary<Type, MethodInfo>();
+                }
+
+                MethodInfo enumStateMethod;
+
+                if (_GetEnumStateLookup.ContainsKey(typeTR))
+                {
+                    enumStateMethod = _GetEnumStateLookup[typeTR];
+                }
+                else
+                {
+                    var unrealizedMethod = typeof(PREF_STATES).GetMethod(nameof(GetEnumState));
+                    enumStateMethod = unrealizedMethod.MakeGenericMethod(typeTR);
+
+                    _GetEnumStateLookup.Add(typeTR, enumStateMethod);
+                }
+
+                var prefs = enumStateMethod.Invoke(null, null);
+
+                MethodInfo drawMethod;
+
+                if (_DoDrawLookup.ContainsKey(typeTR))
+                {
+                    drawMethod = _DoDrawLookup[typeTR];
+                }
+                else
+                {
+                    var unrealizedMethod = typeof(PREF_STATES).GetMethod(
+                        nameof(DoDraw),
+                        BindingFlags.Static | BindingFlags.NonPublic
+                    );
+                    
+                    drawMethod = unrealizedMethod.MakeGenericMethod(typeTR);
+
+                    _DoDrawLookup.Add(typeTR, drawMethod);
+                }
+
+                return (bool)drawMethod.Invoke(null, new[] {preference, prefs});
+            }
+
+            throw new NotSupportedException(typeTR.Name);
+        }
+
+        private static Dictionary<Type, MethodInfo> _GetEnumStateLookup;
+        private static Dictionary<Type, MethodInfo> _DoDrawLookup;
+
+        public static bool Draw<TP>(this PREF<TP> preference)
+        {
+            var prefs = Get<TP>();
+
+            return DoDraw(preference, prefs);
+        }
+
+        private static bool DoDraw<TP>(PREF<TP> preference, PREF_STATE<TP> prefs)
+        {
+            EditorGUI.BeginChangeCheck();
+            
+            if (preference.NiceLabel == null)
+            {
+                preference.NiceLabel = ObjectNames.NicifyVariableName(preference.Label);
+            }
+            
+            var indent = EditorGUI.indentLevel * indentSize;
+            
+            var currentLabelWidth = EditorGUIUtility.labelWidth;
+            var labelWidth = indent + (preference.NiceLabel.Length * characterSize);
+            
+            EditorGUIUtility.labelWidth = labelWidth;
+            preference.Value = prefs.API.Draw(
+                preference.NiceLabel,
+                preference.Value,
+                preference.Low,
+                preference.High
+            );
+
+            var changed = false;
+            
+            if (EditorGUI.EndChangeCheck())
+            {
+                changed = true;
+                
+                prefs.API.Save(
+                    preference.Key,
+                    preference.Value,
+                    preference.Low,
+                    preference.High
+                );
+            }
+
+            EditorGUIUtility.labelWidth = currentLabelWidth;
+
+            return changed;
+        }
 
 /*
 _bools

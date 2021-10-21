@@ -120,5 +120,7 @@ namespace Appalachia.Core.Preferences
         public delegate void OnAwakeCallback(PREF<T> awakened);
 
         public event OnAwakeCallback OnAwake;
+
+        public static implicit operator T(PREF<T> o) => o.Value;
     }
 }

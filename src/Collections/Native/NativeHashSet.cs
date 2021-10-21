@@ -224,8 +224,7 @@ namespace Appalachia.Core.Collections.Native
         {
             CheckWriteAccess();
 
-            NativeMultiHashSetIterator tempIt;
-            if (TryGetFirstValueAtomic(m_State, item, out tempIt))
+            if (TryGetFirstValueAtomic(m_State, item, out _))
             {
                 return false;
             }
@@ -376,8 +375,7 @@ namespace Appalachia.Core.Collections.Native
         {
             CheckReadAccess();
 
-            NativeMultiHashSetIterator tempIt;
-            return TryGetFirstValueAtomic(m_State, item, out tempIt);
+            return TryGetFirstValueAtomic(m_State, item, out _);
         }
 
         /// <summary>
@@ -767,8 +765,7 @@ namespace Appalachia.Core.Collections.Native
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
 #endif
-                NativeMultiHashSetIterator tempIt;
-                if (TryGetFirstValueAtomic(m_State, item, out tempIt))
+                if (TryGetFirstValueAtomic(m_State, item, out _))
                 {
                     return false;
                 }
@@ -789,7 +786,7 @@ namespace Appalachia.Core.Collections.Native
                     do
                     {
                         nextPtrs[idx] = buckets[bucket];
-                        if (TryGetFirstValueAtomic(m_State, item, out tempIt))
+                        if (TryGetFirstValueAtomic(m_State, item, out _))
                         {
                             // Put back the entry in the free list if someone
                             // else added it while trying to add

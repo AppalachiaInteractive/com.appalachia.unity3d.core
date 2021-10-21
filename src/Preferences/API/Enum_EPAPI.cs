@@ -10,6 +10,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct Enum_EPAPI<T> : IEditorPreferenceAPI<T>
     {
+        public void Save(PREF<T> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public T Draw(PREF<T> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public T Get(string key, T defaultValue, T low, T high)
         {
             var intDefaultValue = Convert.ToInt32(defaultValue);

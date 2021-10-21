@@ -8,6 +8,16 @@ namespace Appalachia.Core.Preferences.API
 {
     public struct string_EPAPI : IEditorPreferenceAPI<string>
     {
+        public void Save(PREF<string> pref)
+        {
+            Save(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
+        public string Draw(PREF<string> pref)
+        {
+            return Draw(pref.Key, pref.Value, pref.Low, pref.High);
+        }
+
         public string Get(string key, string defaultValue, string low, string high)
         {
             return EditorPrefs.GetString(key, defaultValue);
