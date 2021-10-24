@@ -55,11 +55,7 @@ namespace Appalachia.Core.Context.Elements.Progress
             return Get(message, p);
         }
 
-        public AppaProgress GetIncrement<T>(
-            string message,
-            ref float p,
-            float sum,
-            T[] collection)
+        public AppaProgress GetIncrement<T>(string message, ref float p, float sum, T[] collection)
         {
             Increment(ref p, sum, collection);
             return Get(message, p);

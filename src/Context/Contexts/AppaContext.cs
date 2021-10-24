@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Appalachia.Core.Context.Elements;
 using Appalachia.Core.Context.Elements.Progress;
 
 namespace Appalachia.Core.Context.Contexts
@@ -31,14 +30,14 @@ namespace Appalachia.Core.Context.Contexts
             protected set => _initializing = value;
         }
 
-        protected virtual IEnumerable<AppaProgress> OnPreInitialize(AppaProgressCounter p)
+        protected abstract IEnumerable<AppaProgress> OnInitialize(AppaProgressCounter p);
+
+        protected virtual IEnumerable<AppaProgress> OnPostInitialize(AppaProgressCounter p)
         {
             yield break;
         }
-        
-        protected abstract IEnumerable<AppaProgress> OnInitialize(AppaProgressCounter p);
-        
-        protected virtual IEnumerable<AppaProgress> OnPostInitialize(AppaProgressCounter p)
+
+        protected virtual IEnumerable<AppaProgress> OnPreInitialize(AppaProgressCounter p)
         {
             yield break;
         }
@@ -64,24 +63,24 @@ namespace Appalachia.Core.Context.Contexts
             Initializing = true;
 
             var progressCounter = new AppaProgressCounter();
-            
+
             foreach (var progress in OnPreInitialize(progressCounter))
             {
                 var initializationProgress = progress;
-                
+
                 progressCounter.Interpret(ref initializationProgress);
-                    
+
                 InitializationProgress = initializationProgress;
 
                 yield return null;
             }
-            
+
             foreach (var progress in OnInitialize(progressCounter))
             {
                 var initializationProgress = progress;
-                
+
                 progressCounter.Interpret(ref initializationProgress);
-                    
+
                 InitializationProgress = initializationProgress;
 
                 yield return null;
@@ -90,14 +89,14 @@ namespace Appalachia.Core.Context.Contexts
             foreach (var progress in OnPostInitialize(progressCounter))
             {
                 var initializationProgress = progress;
-                
+
                 progressCounter.Interpret(ref initializationProgress);
-                    
+
                 InitializationProgress = initializationProgress;
 
                 yield return null;
             }
-            
+
             Initialized = true;
             Initializing = false;
         }

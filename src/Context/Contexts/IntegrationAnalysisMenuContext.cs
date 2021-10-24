@@ -13,7 +13,7 @@ namespace Appalachia.Core.Context.Contexts
 {
     public abstract class IntegrationAnalysisMenuContext<TT, TA, TE> : AnalysisMenuContext<TT, TA, TE>
         where TT : IntegrationMetadata<TT>
-        where TA : AnalysisMetadata<TA, TT, TE>, new()
+        where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
         #region Profiling And Tracing Markers
@@ -47,6 +47,24 @@ namespace Appalachia.Core.Context.Contexts
         public override string GetMenuDisplayName(TA item)
         {
             return item.Target.Name;
+        }
+
+        public override IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
+        {
+            drawer.RegisterFilterPref(AppalachiaOnly);
+
+            yield return null;
+
+            drawer.RegisterFilterPref(AssetsOnly);
+
+            yield return null;
+
+            var baseResults = base.RegisterPreferences(drawer);
+
+            while (baseResults.MoveNext())
+            {
+                yield return baseResults.Current;
+            }
         }
 
         public override bool ShouldShowInMenu(TA analysis)
@@ -115,7 +133,7 @@ namespace Appalachia.Core.Context.Contexts
                     yield return p.Get($"{AppaProgress.CHECKING}: {instance.Name}", progress);
 
                     var analysis = new TA();
-                    analysis.SetTarget(instance);
+                    analysis.SetAnalysisTarget(instance);
 
                     items.Add(analysis);
                 }
@@ -163,24 +181,6 @@ namespace Appalachia.Core.Context.Contexts
             yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Assets_Only}", 1);
 
             _assetsOnly = PREFS.REG(APPASTR.PREF.CI.Package_Review, APPASTR.Assets_Only, true);
-        }
-
-        public override IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
-        {
-            var baseResults = base.RegisterPreferences(drawer);
-
-            while (baseResults.MoveNext())
-            {
-                yield return baseResults.Current;
-            }
-            
-            drawer.RegisterFilterPref(AppalachiaOnly);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(AssetsOnly);
-
-            yield return null;
         }
     }
 }

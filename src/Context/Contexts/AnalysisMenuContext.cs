@@ -12,7 +12,7 @@ using Unity.Profiling;
 namespace Appalachia.Core.Context.Contexts
 {
     public abstract class AnalysisMenuContext<TT, TA, TE> : AppaOneMenuContext<TA>
-        where TA : AnalysisMetadata<TA, TT, TE>, new()
+        where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
         #region Profiling And Tracing Markers
@@ -57,17 +57,32 @@ namespace Appalachia.Core.Context.Contexts
 
         protected List<TA> items;
 
-        private AnalysisAggregate<TE> _aggregateAnalysis;
+        private AnalysisAggregate<TA, TT, TE> _aggregateAnalysis;
 
         protected abstract string GetPreferencePrefix { get; }
 
         protected abstract string IssueTypeName { get; }
         public override IReadOnlyList<TA> MenuOneItems => items;
 
-        public AnalysisAggregate<TE> AggregateAnalysis
+        public AnalysisAggregate<TA, TT, TE> AggregateAnalysis
         {
             get => _aggregateAnalysis;
             protected set => _aggregateAnalysis = value;
+        }
+
+        public virtual IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
+        {
+            drawer.RegisterFilterPref(OnlyShowIssues);
+
+            yield return null;
+
+            drawer.RegisterFilterPref(IssueType, () => OnlyShowIssues.v);
+
+            yield return null;
+
+            drawer.RegisterFilterPref(GenerateTestFiles);
+
+            yield return null;
         }
 
         public virtual bool ShouldShowInMenu(TA analysis)
@@ -96,15 +111,17 @@ namespace Appalachia.Core.Context.Contexts
             }
         }
 
+        public void ResetAnalysis()
+        {
+            AggregateAnalysis = null;
+        }
+
         public void ValidateSummaryProperties()
         {
             using (_PRF_ValidateSummaryProperties.Auto())
             {
-                if (_aggregateAnalysis == null)
-                {
-                    _aggregateAnalysis = new AnalysisAggregate<TE>();
-                }
-
+                _aggregateAnalysis = new AnalysisAggregate<TA, TT, TE>();
+                
                 for (var index = 0; index < MenuOneItems.Count; index++)
                 {
                     var analysis = MenuOneItems[index];
@@ -118,7 +135,7 @@ namespace Appalachia.Core.Context.Contexts
 
                     if ((target != null) && ShouldShowInMenu(analysis))
                     {
-                        _aggregateAnalysis.Add(analysis.AllIssues);
+                        _aggregateAnalysis.Add(analysis.AllTypes);
                     }
                 }
             }
@@ -162,26 +179,6 @@ namespace Appalachia.Core.Context.Contexts
 
                 items = null;
             }
-        }
-
-        public void ResetAnalysis()
-        {
-            AggregateAnalysis = null;
-        }
-
-        public virtual IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
-        {
-            drawer.RegisterFilterPref(OnlyShowIssues);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(IssueType, () => OnlyShowIssues.v);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(GenerateTestFiles);
-
-            yield return null;
         }
     }
 }

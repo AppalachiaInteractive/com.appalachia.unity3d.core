@@ -20,20 +20,6 @@ namespace Appalachia.Core.Context.Elements
 
         public float scrollTime => currentVisibleIndex / (float) Mathf.Max(1, lastVisibleCount);
 
-        public bool IsSelected(int index)
-        {
-            EnsureCollectionSizes(ref _visibility, ref _indexToVisibleIndex, ref _visibleIndexToIndex, index);
-
-            return currentIndex == index;
-        }
-
-        public bool IsVisible(int index)
-        {
-            EnsureCollectionSizes(ref _visibility, ref _indexToVisibleIndex, ref _visibleIndexToIndex, index);
-
-            return _visibility[index];
-        }
-
         public int GetIndex(int visibilityIndex)
         {
             EnsureCollectionSizes(
@@ -51,6 +37,20 @@ namespace Appalachia.Core.Context.Elements
             EnsureCollectionSizes(ref _visibility, ref _indexToVisibleIndex, ref _visibleIndexToIndex, index);
 
             return _indexToVisibleIndex[index];
+        }
+
+        public bool IsSelected(int index)
+        {
+            EnsureCollectionSizes(ref _visibility, ref _indexToVisibleIndex, ref _visibleIndexToIndex, index);
+
+            return currentIndex == index;
+        }
+
+        public bool IsVisible(int index)
+        {
+            EnsureCollectionSizes(ref _visibility, ref _indexToVisibleIndex, ref _visibleIndexToIndex, index);
+
+            return _visibility[index];
         }
 
         public void RecordIndexInformation(int index, int visibleIndex, bool visible)

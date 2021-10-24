@@ -7,6 +7,8 @@ namespace Appalachia.Core.Context.Elements
 {
     public class AppaCoroutineRunner
     {
+        #region Profiling And Tracing Markers
+
         private const string _PRF_PFX = nameof(AppaCoroutineRunner) + ".";
 
         private static readonly ProfilerMarker _PRF_ExecuteCoroutineEnumerator =
@@ -18,6 +20,8 @@ namespace Appalachia.Core.Context.Elements
         private static readonly ProfilerMarker _PRF_BeginExecution = new(_PRF_PFX + nameof(BeginExecution));
 
         private static readonly ProfilerMarker _PRF_EndExecution = new(_PRF_PFX + nameof(EndExecution));
+
+        #endregion
 
         private readonly Stopwatch _stopwatch = new();
 
@@ -32,18 +36,6 @@ namespace Appalachia.Core.Context.Elements
         private double _executionTime;
 
         private int _stepSize = 10;
-        
-        public bool CancelOnError 
-        {
-            get => _cancelOnError;
-            set => _cancelOnError = value;
-        }
-
-        public bool ForceCancelImmediately 
-        {
-            get => _forceCancelImmediately;
-            set => _forceCancelImmediately = value;
-        }
 
         public bool IsExecutingCoroutine => _isExecutingCoroutine;
 
@@ -51,7 +43,19 @@ namespace Appalachia.Core.Context.Elements
 
         public double ExecutionTime => _executionTime;
 
-        public int StepSize 
+        public bool CancelOnError
+        {
+            get => _cancelOnError;
+            set => _cancelOnError = value;
+        }
+
+        public bool ForceCancelImmediately
+        {
+            get => _forceCancelImmediately;
+            set => _forceCancelImmediately = value;
+        }
+
+        public int StepSize
         {
             get => _stepSize;
             set => _stepSize = value;
@@ -63,9 +67,9 @@ namespace Appalachia.Core.Context.Elements
             {
                 var enumerator = ExecuteCoroutineEnumerator(coroutine, onComplete);
 
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 Unity.EditorCoroutines.Editor.EditorCoroutineUtility.StartCoroutine(enumerator, this);
-                #endif  
+#endif
             }
         }
 

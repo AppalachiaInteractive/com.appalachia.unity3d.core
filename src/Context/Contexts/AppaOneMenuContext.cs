@@ -6,11 +6,11 @@ namespace Appalachia.Core.Context.Contexts
     {
         public abstract IReadOnlyList<T1> MenuOneItems { get; }
 
-        public abstract string GetMenuDisplayName(T1 item);
+        public override int RequiredMenuCount => 1;
 
         public IEnumerable<T1> VisibleMenuOneItems => GetVisibleItems(0, MenuOneItems);
 
-        public override int RequiredMenuCount => 1;
+        public abstract string GetMenuDisplayName(T1 item);
 
         public override int GetMenuItemCount(int menuIndex)
         {

@@ -8,15 +8,31 @@ namespace Appalachia.Core.Context.Contexts
 {
     public abstract class AppaMenuContext : AppaContext
     {
+        #region Profiling And Tracing Markers
+
         private const string _PRF_PFX = nameof(AppaMenuContext) + ".";
+
+        #endregion
 
         private AppaMenuSelection[] _menuSelections;
 
         public abstract int RequiredMenuCount { get; }
 
+        public abstract int GetMenuItemCount(int menuIndex);
+
         public abstract void ValidateMenuSelection(int menuIndex);
 
         protected abstract void OnReset();
+
+        // ReSharper disable once UnusedParameter.Global
+        protected virtual void OnAfterChangeMenuSelection(int menuIndex)
+        {
+        }
+
+        // ReSharper disable once UnusedParameter.Global
+        protected virtual void OnBeforeChangeMenuSelection(int menuIndex)
+        {
+        }
 
         public bool ChangeMenuSelection(int menuIndex, bool up)
         {
@@ -47,6 +63,21 @@ namespace Appalachia.Core.Context.Contexts
             return true;
         }
 
+        public int GetActiveMenuIndex(Vector2 mousePosition)
+        {
+            for (var i = 0; i < RequiredMenuCount; i++)
+            {
+                var selection = GetMenuSelection(i);
+
+                if (selection.position.Contains(mousePosition))
+                {
+                    return i;
+                }
+            }
+
+            return 0;
+        }
+
         public AppaMenuSelection GetMenuSelection(int menuIndex)
         {
             InitializeMenuSelections();
@@ -62,14 +93,23 @@ namespace Appalachia.Core.Context.Contexts
             OnReset();
         }
 
-        // ReSharper disable once UnusedParameter.Global
-        protected virtual void OnAfterChangeMenuSelection(int menuIndex)
+        protected IEnumerable<TL> GetVisibleItems<TL>(int menuIndex, IReadOnlyList<TL> items)
         {
-        }
+            var menuSelection = GetMenuSelection(menuIndex);
 
-        // ReSharper disable once UnusedParameter.Global
-        protected virtual void OnBeforeChangeMenuSelection(int menuIndex)
-        {
+            for (var menuItemIndex = 0; menuItemIndex < items.Count; menuItemIndex++)
+            {
+                var visible = menuSelection.IsVisible(menuItemIndex);
+
+                if (!visible)
+                {
+                    continue;
+                }
+
+                var menuItem = items[menuItemIndex];
+
+                yield return menuItem;
+            }
         }
 
         protected override IEnumerable<AppaProgress> OnPostInitialize(AppaProgressCounter pc)
@@ -96,42 +136,6 @@ namespace Appalachia.Core.Context.Contexts
                     _menuSelections[menuIndex] = current;
                 }
             }
-        }
-
-        public abstract int GetMenuItemCount(int menuIndex);
-        
-        protected IEnumerable<TL> GetVisibleItems<TL>(int menuIndex, IReadOnlyList<TL> items)
-        {
-            var menuSelection = GetMenuSelection(menuIndex);
-
-            for (var menuItemIndex = 0; menuItemIndex < items.Count; menuItemIndex++)
-            {
-                var visible = menuSelection.IsVisible(menuItemIndex);
-
-                if (!visible)
-                {
-                    continue;
-                }
-
-                var menuItem = items[menuItemIndex];
-
-                yield return menuItem;
-            }
-        }
-        
-        public int GetActiveMenuIndex(Vector2 mousePosition)
-        {
-            for (var i = 0; i < RequiredMenuCount; i++)
-            {
-                var selection = GetMenuSelection(i);
-
-                if (selection.position.Contains(mousePosition))
-                {
-                    return i;
-                }
-            }
-
-            return 0;
         }
     }
 }
