@@ -10,7 +10,7 @@
 
 ## Released Changes
 
-`0.1.4`
+`0.1.5`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
-| a69c9c7e59ae4c93dad1325fca00f95bf3bcf60b | 2021-10-20 | Chris Schubert | Automatic depenency and reference management and cleanup |
+
