@@ -14,7 +14,12 @@
 |------|------|--------|---------|
 
 
- ## Tag: `v0.1.5, origin/main`
+ ## Tag: `v0.1.6, origin/main`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
+
+
+ ## Tag: `v0.1.5`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
 | 7c8c47e70763901782183d3075da8a2f08f20c2f | 2021-10-24 | Chris Schubert | Finalizing integration assembly and package analysis and updating package versioning |
