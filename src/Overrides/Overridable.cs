@@ -16,6 +16,19 @@ namespace Appalachia.Core.Overrides
     public abstract class Overridable<T, TO> : IEquatable<Overridable<T, TO>>
         where TO : Overridable<T, TO>, new()
     {
+        protected Overridable(bool overrideEnabled, T value)
+        {
+            //this.isOverridingAllowed = isOverridingAllowed;
+            this.overrideEnabled = overrideEnabled;
+            this.value = value;
+        }
+
+        protected Overridable(Overridable<T, TO> value)
+        {
+            //this.isOverridingAllowed = value.isOverridingAllowed;
+            overrideEnabled = value.overrideEnabled;
+            this.value = value.value;
+        }
         /*[SerializeField, HideInInspector]
         public bool isOverridingAllowed;*/
 
@@ -34,30 +47,16 @@ namespace Appalachia.Core.Overrides
         [HorizontalGroup("A", .98f)]
         public T value;
 
-        protected Overridable(bool overrideEnabled, T value)
-        {
-            //this.isOverridingAllowed = isOverridingAllowed;
-            this.overrideEnabled = overrideEnabled;
-            this.value = value;
-        }
-
-        protected Overridable(Overridable<T, TO> value)
-        {
-            //this.isOverridingAllowed = value.isOverridingAllowed;
-            overrideEnabled = value.overrideEnabled;
-            this.value = value.value;
-        }
-
-        public static implicit operator T(Overridable<T, TO> a)
-        {
-            return a.value;
-        }
-
         public static implicit operator Overridable<T, TO>(T a)
         {
             var to = new TO {overrideEnabled = false, value = a};
 
             return to;
+        }
+
+        public static implicit operator T(Overridable<T, TO> a)
+        {
+            return a.value;
         }
 
 #region IEquatable

@@ -7,11 +7,18 @@ namespace Appalachia.Core.Behaviours
     {
         private const string _PRF_PFX = nameof(AppalachiaFrustumCulledMonoBehaviour<T>) + ".";
 
-        private static readonly ProfilerMarker _PRF_OnBecameVisible =
-            new(_PRF_PFX + nameof(OnBecameVisible));
+        private static readonly ProfilerMarker _PRF_OnBecameVisible = new(_PRF_PFX + nameof(OnBecameVisible));
 
         private static readonly ProfilerMarker _PRF_OnBecameInvisible =
             new(_PRF_PFX + nameof(OnBecameInvisible));
+
+        protected virtual void BeforeInvisible()
+        {
+        }
+
+        protected virtual void BeforeVisible()
+        {
+        }
 
         private void OnBecameInvisible()
         {
@@ -29,14 +36,6 @@ namespace Appalachia.Core.Behaviours
                 BeforeVisible();
                 enabled = true;
             }
-        }
-
-        protected virtual void BeforeVisible()
-        {
-        }
-
-        protected virtual void BeforeInvisible()
-        {
         }
     }
 }

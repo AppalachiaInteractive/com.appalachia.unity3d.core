@@ -9,9 +9,9 @@ using UnityEngine;
 namespace Appalachia.Core.Scriptables
 {
     [Serializable]
-    public abstract class ScriptableObjectLookupCollection<T, TI, TKey, TValue, TKeyList,
-                                                           TValueList> :
-        SelfSavingSingletonScriptableObject<T>
+    public abstract class
+        ScriptableObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList> :
+            SelfSavingSingletonScriptableObject<T>
         where T : ScriptableObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList>
         where TI : AppaLookup<TKey, TValue, TKeyList, TValueList>, new()
         where TKeyList : AppaList<TKey>, new()
@@ -19,19 +19,15 @@ namespace Appalachia.Core.Scriptables
         where TValue : AppalachiaScriptableObject<TValue>
     {
         private const string _PRF_PFX =
-            nameof(ScriptableObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList>) +
-            ".";
+            nameof(ScriptableObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList>) + ".";
 
         private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
 
-        private static readonly ProfilerMarker _PRF_WhenEnabled =
-            new(_PRF_PFX + nameof(WhenEnabled));
+        private static readonly ProfilerMarker _PRF_WhenEnabled = new(_PRF_PFX + nameof(WhenEnabled));
 
-        private static readonly ProfilerMarker _PRF_PopulateItems =
-            new(_PRF_PFX + nameof(PopulateItems));
+        private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
 
-        private static readonly ProfilerMarker _PRF_RemoveInvalid =
-            new(_PRF_PFX + nameof(RemoveInvalid));
+        private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
 
         private static readonly ProfilerMarker _PRF_DoForAll = new(_PRF_PFX + nameof(DoForAll));
 
@@ -66,44 +62,22 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        public virtual void OnDisable()
-        {
-        }
-
-        protected override void WhenEnabled()
-        {
-            using (_PRF_WhenEnabled.Auto())
-            {
-#if UNITY_EDITOR
-                PopulateItems();
-#endif
-            }
-        }
-
-        public void RemoveInvalid()
-        {
-            using (_PRF_RemoveInvalid.Auto())
-            {
-                for (var i = _items.Count - 1; i >= 0; i--)
-                {
-                    var item = _items.at[i];
-
-                    if (!IsValid(item))
-                    {
-                        _items.RemoveAt(i);
-                    }
-                }
-
-                SetDirty();
-            }
-        }
-
         protected abstract TKey GetUniqueKeyFromValue(TValue value);
 
-        // ReSharper disable once UnusedParameter.Global
-        protected virtual bool IsValid(TValue element)
+        public TValue GetOrLoadOrCreateNew(TKey key, string name)
         {
-            return true;
+            var items = Items;
+
+            if (items.ContainsKey(key))
+            {
+                return items.Get(key);
+            }
+
+            var i = ScriptableObjectFactory.LoadOrCreateNew<TValue>(name);
+
+            items.Add(key, i);
+
+            return i;
         }
 
         public void DoForAll(Action<TValue> action)
@@ -137,20 +111,42 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        public TValue GetOrLoadOrCreateNew(TKey key, string name)
+        public virtual void OnDisable()
         {
-            var items = Items;
+        }
 
-            if (items.ContainsKey(key))
+        public void RemoveInvalid()
+        {
+            using (_PRF_RemoveInvalid.Auto())
             {
-                return items.Get(key);
+                for (var i = _items.Count - 1; i >= 0; i--)
+                {
+                    var item = _items.at[i];
+
+                    if (!IsValid(item))
+                    {
+                        _items.RemoveAt(i);
+                    }
+                }
+
+                SetDirty();
             }
+        }
 
-            var i = ScriptableObjectFactory.LoadOrCreateNew<TValue>(name);
+        // ReSharper disable once UnusedParameter.Global
+        protected virtual bool IsValid(TValue element)
+        {
+            return true;
+        }
 
-            items.Add(key, i);
-
-            return i;
+        protected override void WhenEnabled()
+        {
+            using (_PRF_WhenEnabled.Auto())
+            {
+#if UNITY_EDITOR
+                PopulateItems();
+#endif
+            }
         }
 
 #if UNITY_EDITOR

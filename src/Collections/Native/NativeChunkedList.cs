@@ -1,9 +1,3 @@
-//-----------------------------------------------------------------------
-// <copyright file="NativeChunkedList.cs" company="Jackson Dunstan">
-//     Copyright (c) Jackson Dunstan. See LICENSE.md.
-// </copyright>
-//-----------------------------------------------------------------------
-
 #region
 
 using System;
@@ -118,8 +112,7 @@ namespace Appalachia.Core.Collections.Native
 	        /// </returns>
 	        public ChunksEnumerator GetEnumerator()
             {
-                return new(m_List, m_StartChunksIndex, m_StartChunkIndex, m_EndChunksIndex,
-                    m_EndChunkIndex);
+                return new(m_List, m_StartChunksIndex, m_StartChunkIndex, m_EndChunksIndex, m_EndChunkIndex);
             }
 
 	        /// <summary>
@@ -311,13 +304,7 @@ namespace Appalachia.Core.Collections.Native
                     // Create the enumerator
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                     var baseIndex = state->m_ChunkLength * m_Index;
-                    return new ChunkEnumerable(
-                        m_List,
-                        chunk,
-                        startChunkIndex,
-                        endChunkIndex,
-                        baseIndex
-                    );
+                    return new ChunkEnumerable(m_List, chunk, startChunkIndex, endChunkIndex, baseIndex);
 #else
 					return new ChunkEnumerable(
 						m_List,
@@ -386,10 +373,7 @@ namespace Appalachia.Core.Collections.Native
             public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(
-                    m_List.m_Safety,
-                    allowReadOrWriteAccess
-                );
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
 #endif
             }
         }
@@ -703,9 +687,7 @@ namespace Appalachia.Core.Collections.Native
 	        ///     job but set lower by ParallelFor jobs.
 	        /// </param>
 	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetParallelForSafetyCheckRange(
-                int minIndex = -1,
-                int maxIndex = -1)
+            public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 m_List.m_MinIndex = minIndex;
@@ -726,10 +708,7 @@ namespace Appalachia.Core.Collections.Native
             public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(
-                    m_List.m_Safety,
-                    allowReadOrWriteAccess
-                );
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
 #endif
             }
         }
@@ -847,9 +826,7 @@ namespace Appalachia.Core.Collections.Native
 	        ///     job but set lower by ParallelFor jobs.
 	        /// </param>
 	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetParallelForSafetyCheckRange(
-                int minIndex = -1,
-                int maxIndex = -1)
+            public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 m_List.m_MinIndex = minIndex;
@@ -870,10 +847,7 @@ namespace Appalachia.Core.Collections.Native
             public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(
-                    m_List.m_Safety,
-                    allowReadOrWriteAccess
-                );
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
 #endif
             }
         }
@@ -1183,8 +1157,7 @@ namespace Appalachia.Core.Collections.Native
 	    ///     An enumerator to the chunk at index -1.
 	    /// </value>
 	    public ChunksEnumerable Chunks =>
-            new(this, 0, 0, m_State->m_ChunksLength - 1, (m_State->m_Length - 1) %
-                                                         m_State->m_ChunkLength);
+            new(this, 0, 0, m_State->m_ChunksLength - 1, (m_State->m_Length - 1) % m_State->m_ChunkLength);
 
 	    /// <summary>
 	    ///     Get an enumerator over the chunks starting at the chunk before the
@@ -2024,8 +1997,7 @@ namespace Appalachia.Core.Collections.Native
             if (startIndex < 0)
             {
                 throw new IndexOutOfRangeException(
-                    "Invalid range start index specified. Range start " +
-                    "indices must be non-negative."
+                    "Invalid range start index specified. Range start " + "indices must be non-negative."
                 );
             }
 
@@ -2066,8 +2038,7 @@ namespace Appalachia.Core.Collections.Native
             if (startIndex < 0)
             {
                 throw new IndexOutOfRangeException(
-                    "Invalid range start index specified. Range start " +
-                    "indices must be non-negative."
+                    "Invalid range start index specified. Range start " + "indices must be non-negative."
                 );
             }
 
@@ -2103,9 +2074,7 @@ namespace Appalachia.Core.Collections.Native
 
             if (endIndex >= m_State->m_Length)
             {
-                throw new IndexOutOfRangeException(
-                    "Invalid end index. It must be less than the length."
-                );
+                throw new IndexOutOfRangeException("Invalid end index. It must be less than the length.");
             }
 
             if (startIndex > endIndex)

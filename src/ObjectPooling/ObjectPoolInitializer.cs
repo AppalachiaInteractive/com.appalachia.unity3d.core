@@ -1,4 +1,3 @@
-
 namespace Appalachia.Core.ObjectPooling
 {
     public static class ObjectPoolInitializer

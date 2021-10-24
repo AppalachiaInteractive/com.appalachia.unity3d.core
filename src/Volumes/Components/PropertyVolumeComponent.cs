@@ -1,7 +1,3 @@
-#region
-
-#endregion
-
 using Unity.Profiling;
 
 namespace Appalachia.Core.Volumes.Components

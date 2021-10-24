@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public Gradient_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Gradient value) :
-            base(overrideEnabled, value)
+        public Gradient_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Gradient value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

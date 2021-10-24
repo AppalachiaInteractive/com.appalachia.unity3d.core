@@ -19,7 +19,6 @@ namespace Appalachia.Core.Volumes.Components
         private const string _PRF_PFX = nameof(VolumeComponent) + ".";
 
         private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-
         private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
 
         private static readonly ProfilerMarker _PRF_Override = new(_PRF_PFX + nameof(Override));
@@ -32,43 +31,6 @@ namespace Appalachia.Core.Volumes.Components
         public bool active = true;
 
         internal ReadOnlyCollection<VolumeParameter> parameters { get; private set; }
-
-        protected virtual void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                // Automatically grab all fields of type VolumeParameter for this instance
-                parameters = GetType()
-                            .GetFields_CACHE(ReflectionExtensions.PublicInstance)
-                            .Where(t => t.FieldType.IsSubclassOf(typeof(VolumeParameter)))
-                            .OrderBy(t => t.MetadataToken) // Guaranteed order
-                            .Select(t => (VolumeParameter) t.GetValue(this))
-                            .ToList()
-                            .AsReadOnly();
-
-                for (var index = 0; index < parameters.Count; index++)
-                {
-                    var parameter = parameters[index];
-                    parameter.OnEnable();
-                }
-            }
-        }
-
-        protected virtual void OnDisable()
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                if (parameters == null)
-                {
-                    return;
-                }
-
-                foreach (var parameter in parameters)
-                {
-                    parameter.OnDisable();
-                }
-            }
-        }
 
         // You can override this to do your own blending. Either loop through the `parameters` list
         // or reference direct fields (you'll need to cast `state` to your custom type and don't
@@ -108,6 +70,63 @@ namespace Appalachia.Core.Volumes.Components
             SetAllOverridesTo(parameters, state);
         }
 
+        // Custom hashing function used to compare the state of settings (it's not meant to be
+        // unique but to be a quick way to check if two setting sets have the same state or not).
+        // Hash collision rate should be pretty low.
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                //return parameters.Aggregate(17, (i, p) => i * 23 + p.GetHash());
+
+                var hash = 17;
+
+                foreach (var p in parameters)
+                {
+                    hash = (hash * 23) + p.GetHashCode();
+                }
+
+                return hash;
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                if (parameters == null)
+                {
+                    return;
+                }
+
+                foreach (var parameter in parameters)
+                {
+                    parameter.OnDisable();
+                }
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                // Automatically grab all fields of type VolumeParameter for this instance
+                parameters = GetType()
+                            .GetFields_CACHE(ReflectionExtensions.PublicInstance)
+                            .Where(t => t.FieldType.IsSubclassOf(typeof(VolumeParameter)))
+                            .OrderBy(t => t.MetadataToken) // Guaranteed order
+                            .Select(t => (VolumeParameter) t.GetValue(this))
+                            .ToList()
+                            .AsReadOnly();
+
+                for (var index = 0; index < parameters.Count; index++)
+                {
+                    var parameter = parameters[index];
+                    parameter.OnEnable();
+                }
+            }
+        }
+
         private void SetAllOverridesTo(IEnumerable<VolumeParameter> enumerable, bool state)
         {
             using (_PRF_SetAllOverridesTo.Auto())
@@ -132,26 +151,6 @@ namespace Appalachia.Core.Volumes.Components
                         }
                     }
                 }
-            }
-        }
-
-        // Custom hashing function used to compare the state of settings (it's not meant to be
-        // unique but to be a quick way to check if two setting sets have the same state or not).
-        // Hash collision rate should be pretty low.
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                //return parameters.Aggregate(17, (i, p) => i * 23 + p.GetHash());
-
-                var hash = 17;
-
-                foreach (var p in parameters)
-                {
-                    hash = (hash * 23) + p.GetHashCode();
-                }
-
-                return hash;
             }
         }
     }

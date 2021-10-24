@@ -10,29 +10,21 @@ namespace Appalachia.Core.Execution.RateLimiting
     public static class RateLimiter
     {
         private const int _initialSize = 32;
-
-        private static NonSerializedAppaLookup<string, RateLimit> _limits;
         private static bool _initialized;
 
-        private static bool Initialize()
+        private static NonSerializedAppaLookup<string, RateLimit> _limits;
+
+        public static void Dispose()
         {
-            if (_initialized)
+            if (_limits != null)
             {
-                return false;
-            }
+                for (var i = 0; i < _limits.Count; i++)
+                {
+                    _limits.at[i].timings.Dispose();
+                    _limits.at[i].timings = null;
+                }
 
-            _limits = new NonSerializedAppaLookup<string, RateLimit>();
-            _initialized = true;
-            return true;
-        }
-
-        private static void Setup(string key, int maxCalls, float periodMilliseconds)
-        {
-            Initialize();
-
-            if (!_limits.ContainsKey(key))
-            {
-                _limits.Add(key, new RateLimit(maxCalls, periodMilliseconds));
+                _limits.Clear();
             }
         }
 
@@ -49,6 +41,18 @@ namespace Appalachia.Core.Execution.RateLimiting
             {
                 a();
             }
+        }
+
+        private static bool Initialize()
+        {
+            if (_initialized)
+            {
+                return false;
+            }
+
+            _limits = new NonSerializedAppaLookup<string, RateLimit>();
+            _initialized = true;
+            return true;
         }
 
         private static bool ShouldDo(string key, float currentTime)
@@ -75,17 +79,13 @@ namespace Appalachia.Core.Execution.RateLimiting
             return false;
         }
 
-        public static void Dispose()
+        private static void Setup(string key, int maxCalls, float periodMilliseconds)
         {
-            if (_limits != null)
-            {
-                for (var i = 0; i < _limits.Count; i++)
-                {
-                    _limits.at[i].timings.Dispose();
-                    _limits.at[i].timings = null;
-                }
+            Initialize();
 
-                _limits.Clear();
+            if (!_limits.ContainsKey(key))
+            {
+                _limits.Add(key, new RateLimit(maxCalls, periodMilliseconds));
             }
         }
     }

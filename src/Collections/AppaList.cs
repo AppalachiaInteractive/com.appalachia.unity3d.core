@@ -17,20 +17,9 @@ namespace Appalachia.Core.Collections
     {
         protected const int _DEFAULT_CAPACITY = 4;
 
-        // ReSharper disable once StaticMemberInGenericType
-        private static object __itemPoolLock = new();
-
         private static DefaultArrayPool<T> __itemPool;
-
+        private static object __itemPoolLock = new();
         private static readonly ProfilerMarker _PRF_Reverse = new(_PRF_PFX + nameof(Reverse));
-
-        [SerializeField] private bool noTracking;
-
-        [SerializeField] protected T[] _values;
-
-        [SerializeField] protected float _capacityIncreaseMultiplier = 2.0f;
-
-        [SerializeField] private int _count;
 
         private static DefaultArrayPool<T> _itemPool
         {
@@ -56,159 +45,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public int Capacity
-        {
-            get => _values.Length;
-            set => SetCapacity(value);
-        }
-
-        public float CapacityIncreaseMultiplier
-        {
-            get => _capacityIncreaseMultiplier;
-            set => _capacityIncreaseMultiplier = value;
-        }
-
-        public bool IsReadOnly => false;
-
-        public bool Contains(T item)
-        {
-            using (_PRF_Contains.Auto())
-            {
-                return Array.IndexOf(_values, item, 0, Count) != -1;
-            }
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            using (_PRF_CopyTo.Auto())
-            {
-                for (var i = arrayIndex; i < array.Length; i++)
-                {
-                    array[i] = _values[i - arrayIndex];
-                }
-            }
-        }
-
-        // Slow
-        public virtual bool Remove(T item)
-        {
-            using (_PRF_Remove.Auto())
-            {
-                var index = Array.IndexOf(_values, item, 0, Count);
-
-                if (index >= 0)
-                {
-                    _values[index] = _values[--Count];
-                    _values[Count] = default;
-
-                    return true;
-                }
-
-                return false;
-            }
-        }
-
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void ICollection<T>.Add(T item)
-        {
-            Add(item);
-        }
-
-        public virtual void Clear()
-        {
-            using (_PRF_Clear.Auto())
-            {
-                Array.Clear(_values, 0, Count);
-                _count = 0;
-            }
-        }
-
-        public int IndexOf(T item)
-        {
-            using (_PRF_IndexOf.Auto())
-            {
-                return Array.IndexOf(_values, item, 0, Count);
-            }
-        }
-
-        public virtual void Insert(int index, T item)
-        {
-            using (_PRF_Insert.Auto())
-            {
-                if (index > Count)
-                {
-                    Debug.LogError("Index " + index + " is out of range " + Count);
-                }
-
-                if (Count == _values.Length)
-                {
-                    IncreaseCapacity();
-                }
-
-                if (index < Count)
-                {
-                    Array.Copy(_values, index, _values, index + 1, Count - index);
-                }
-
-                _values[index] = item;
-                Count = ++Count;
-            }
-        }
-
-        public virtual void RemoveAt(int index)
-        {
-            using (_PRF_RemoveAt.Auto())
-            {
-                if (index >= Count)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(index),
-                        $"Index {index} is out of range. List count is {Count}."
-                    );
-                }
-
-                _values[index] = _values[--Count];
-                _values[Count] = default;
-            }
-        }
-
-        public T this[int index]
-        {
-            get => _values[index];
-            set => _values[index] = value;
-        }
-
-        public int Count
-        {
-            get => _count;
-            set => _count = value;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return _values.GetEnumerator();
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return ((IEnumerable<T>) _values).GetEnumerator();
-        }
-
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-            using (_PRF_OnAfterDeserialize.Auto())
-            {
-                if (__itemPoolLock == null)
-                {
-                    __itemPoolLock = new object();
-                }
-            }
-        }
-
         ~AppaList()
         {
             if (_values != null)
@@ -217,118 +53,84 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public void Dispose()
+        // ReSharper disable once StaticMemberInGenericType
+
+        [SerializeField] protected float _capacityIncreaseMultiplier = 2.0f;
+
+        [SerializeField] protected T[] _values;
+
+        [SerializeField] private bool noTracking;
+
+        [SerializeField] private int _count;
+
+        public float CapacityIncreaseMultiplier
         {
-            if (_values != null)
+            get => _capacityIncreaseMultiplier;
+            set => _capacityIncreaseMultiplier = value;
+        }
+
+        public int Capacity
+        {
+            get => _values.Length;
+            set => SetCapacity(value);
+        }
+
+        public bool IsReadOnly => false;
+
+        public int Count
+        {
+            get => _count;
+            set => _count = value;
+        }
+
+        public T this[int index]
+        {
+            get => _values[index];
+            set => _values[index] = value;
+        }
+
+        public bool RemoveNulls(AppaList<int> removedIndicesSafeOrdered)
+        {
+            using (_PRF_RemoveNulls.Auto())
             {
-                _itemPool.Return(_values);
-                _values = null;
+                removedIndicesSafeOrdered.ClearFast();
+
+                var hadNulls = false;
+
+                for (var i = _count - 1; i >= 0; i--)
+                {
+                    var obj = _values[i];
+
+                    if (obj == null)
+                    {
+                        hadNulls = true;
+                        RemoveAt(i);
+                        removedIndicesSafeOrdered.Add(i);
+                    }
+                }
+
+                return hadNulls;
             }
         }
 
-        protected void IncreaseCapacity()
+        public bool RemoveNulls()
         {
-            using (_PRF_IncreaseCapacity.Auto())
+            using (_PRF_RemoveNulls.Auto())
             {
-                var baseSize = Mathf.Max(1.0f, _values.Length);
+                var hadNulls = false;
 
-                var arraySize = (int) (baseSize * _capacityIncreaseMultiplier);
-
-                var tempItemArray = _itemPool.Rent(arraySize);
-
-                Array.Copy(_values, tempItemArray, Count);
-
-                _itemPool.Return(_values);
-
-                _values = tempItemArray;
-            }
-        }
-
-        protected void SetCapacity(int capacity)
-        {
-            using (_PRF_SetCapacity.Auto())
-            {
-                var newItems = _itemPool.Rent(capacity);
-
-                if (Count > 0)
+                for (var i = _count - 1; i >= 0; i--)
                 {
-                    Array.Copy(_values, newItems, Count);
+                    var obj = _values[i];
+
+                    if (obj == null)
+                    {
+                        hadNulls = true;
+                        RemoveAt(i);
+                    }
                 }
 
-                _itemPool.Return(_values);
-                _values = newItems;
-            }
-        }
-
-        public void SetCount(int count)
-        {
-            using (_PRF_SetCount.Auto())
-            {
-                if (count > _values.Length)
-                {
-                    SetCapacity(count);
-                }
-
-                Count = count;
-            }
-        }
-
-        public void EnsureCount(int count)
-        {
-            using (_PRF_EnsureCount.Auto())
-            {
-                if (count <= Count)
-                {
-                    return;
-                }
-
-                if (count > _values.Length)
-                {
-                    SetCapacity(count);
-                }
-
-                Count = count;
-            }
-        }
-
-        public virtual void SetArray(T[] items)
-        {
-            using (_PRF_SetArray.Auto())
-            {
-                if (_values != null)
-                {
-                    _itemPool.Return(_values);
-                }
-
-                _values = items;
-                Count = _values.Length;
-            }
-        }
-
-        public int AddUnique(T item)
-        {
-            using (_PRF_AddUnique.Auto())
-            {
-                if (!Contains(item))
-                {
-                    return Add(item);
-                }
-
-                return -1;
-            }
-        }
-
-        public T GetIndex(T item)
-        {
-            using (_PRF_GetIndex.Auto())
-            {
-                var index = Array.IndexOf(_values, item, 0, Count);
-                if (index == -1)
-                {
-                    return default;
-                }
-
-                return _values[index];
+                return hadNulls;
             }
         }
 
@@ -364,6 +166,128 @@ namespace Appalachia.Core.Collections
                     Count = ++Count;
                     return Count - 1;
                 }
+            }
+        }
+
+        public int AddUnique(T item)
+        {
+            using (_PRF_AddUnique.Auto())
+            {
+                if (!Contains(item))
+                {
+                    return Add(item);
+                }
+
+                return -1;
+            }
+        }
+
+        public virtual int GrabListThreadSafe(AppaList<T> threadList, bool fastClear = false)
+        {
+            using (_PRF_GrabListThreadSafe.Auto())
+            {
+                lock (threadList)
+                {
+                    var count = Count;
+                    AddRange(threadList);
+                    if (fastClear)
+                    {
+                        threadList.ClearFast();
+                    }
+                    else
+                    {
+                        threadList.Clear();
+                    }
+
+                    return count;
+                }
+            }
+        }
+
+        public virtual T Dequeue()
+        {
+            using (_PRF_Dequeue.Auto())
+            {
+                if (Count == 0)
+                {
+                    throw new NotSupportedException("List is empty!");
+                }
+
+                var item = _values[--Count];
+
+                _values[Count] = default;
+
+                return item;
+            }
+        }
+
+        public virtual T Dequeue(int index)
+        {
+            using (_PRF_Dequeue.Auto())
+            {
+                var item = _values[index];
+
+                _values[index] = _values[--Count];
+                _values[Count] = default;
+
+                return item;
+            }
+        }
+
+        public T GetIndex(T item)
+        {
+            using (_PRF_GetIndex.Auto())
+            {
+                var index = Array.IndexOf(_values, item, 0, Count);
+                if (index == -1)
+                {
+                    return default;
+                }
+
+                return _values[index];
+            }
+        }
+
+        public T[] GetInternalArray()
+        {
+            return _values;
+        }
+
+        public virtual T[] ToArray()
+        {
+            using (_PRF_ToArray.Auto())
+            {
+                var array = new T[Count];
+
+                var start = 0;
+                var length = Count;
+
+                Array.Copy(_values, start, array, 0, length);
+                return array;
+            }
+        }
+
+        public virtual T[] ToArray(int length)
+        {
+            using (_PRF_ToArray.Auto())
+            {
+                var array = new T[Count];
+
+                var start = 0;
+
+                Array.Copy(_values, start, array, 0, length);
+                return array;
+            }
+        }
+
+        public virtual T[] ToArray(int start, int length)
+        {
+            using (_PRF_ToArray.Auto())
+            {
+                var array = new T[Count];
+
+                Array.Copy(_values, start, array, 0, length);
+                return array;
             }
         }
 
@@ -485,28 +409,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public virtual int GrabListThreadSafe(AppaList<T> threadList, bool fastClear = false)
-        {
-            using (_PRF_GrabListThreadSafe.Auto())
-            {
-                lock (threadList)
-                {
-                    var count = Count;
-                    AddRange(threadList);
-                    if (fastClear)
-                    {
-                        threadList.ClearFast();
-                    }
-                    else
-                    {
-                        threadList.Clear();
-                    }
-
-                    return count;
-                }
-            }
-        }
-
         public virtual void ChangeRange(int startIndex, T[] arrayItems)
         {
             using (_PRF_ChangeRange.Auto())
@@ -515,6 +417,75 @@ namespace Appalachia.Core.Collections
                 {
                     _values[startIndex + i] = arrayItems[i];
                 }
+            }
+        }
+
+        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void ClearFast()
+        {
+            using (_PRF_ClearFast.Auto())
+            {
+                Count = 0;
+            }
+        }
+
+        public virtual void ClearFast(int newCount)
+        {
+            using (_PRF_ClearFast.Auto())
+            {
+                if (newCount < Count)
+                {
+                    Count = newCount;
+                }
+            }
+        }
+
+        public virtual void ClearRange(int startIndex)
+        {
+            using (_PRF_ClearRange.Auto())
+            {
+                Array.Clear(_values, startIndex, Count - startIndex);
+                Count = startIndex;
+            }
+        }
+
+        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual void ClearThreadSafe()
+        {
+            using (_PRF_ClearThreadSafe.Auto())
+            {
+                lock (this)
+                {
+                    Array.Clear(_values, 0, Count);
+                    _count = 0;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_values != null)
+            {
+                _itemPool.Return(_values);
+                _values = null;
+            }
+        }
+
+        public void EnsureCount(int count)
+        {
+            using (_PRF_EnsureCount.Auto())
+            {
+                if (count <= Count)
+                {
+                    return;
+                }
+
+                if (count > _values.Length)
+                {
+                    SetCapacity(count);
+                }
+
+                Count = count;
             }
         }
 
@@ -556,113 +527,62 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public virtual T Dequeue()
+        public void Reverse()
         {
-            using (_PRF_Dequeue.Auto())
+            using (_PRF_Reverse.Auto())
             {
-                if (Count == 0)
+                Array.Reverse(_values, 0, Count);
+            }
+        }
+
+        public void Reverse(int index, int length)
+        {
+            using (_PRF_Reverse.Auto())
+            {
+                if (index < 0)
                 {
-                    throw new NotSupportedException("List is empty!");
+                    throw new ArgumentOutOfRangeException(
+                        nameof(index),
+                        $"Index {index} is out of range. List count is {Count}."
+                    );
                 }
 
-                var item = _values[--Count];
-
-                _values[Count] = default;
-
-                return item;
-            }
-        }
-
-        public virtual T Dequeue(int index)
-        {
-            using (_PRF_Dequeue.Auto())
-            {
-                var item = _values[index];
-
-                _values[index] = _values[--Count];
-                _values[Count] = default;
-
-                return item;
-            }
-        }
-
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void ClearThreadSafe()
-        {
-            using (_PRF_ClearThreadSafe.Auto())
-            {
-                lock (this)
+                if ((length < 0) || ((Count - index) < length))
                 {
-                    Array.Clear(_values, 0, Count);
-                    _count = 0;
+                    throw new ArgumentOutOfRangeException(
+                        nameof(length),
+                        $"Length {length} is out of range. List count is {Count} and index is {index}."
+                    );
                 }
+
+                Array.Reverse(_values, index, length);
             }
         }
 
-        public virtual void ClearRange(int startIndex)
+        public virtual void SetArray(T[] items)
         {
-            using (_PRF_ClearRange.Auto())
+            using (_PRF_SetArray.Auto())
             {
-                Array.Clear(_values, startIndex, Count - startIndex);
-                Count = startIndex;
-            }
-        }
-
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual void ClearFast()
-        {
-            using (_PRF_ClearFast.Auto())
-            {
-                Count = 0;
-            }
-        }
-
-        public virtual void ClearFast(int newCount)
-        {
-            using (_PRF_ClearFast.Auto())
-            {
-                if (newCount < Count)
+                if (_values != null)
                 {
-                    Count = newCount;
+                    _itemPool.Return(_values);
                 }
+
+                _values = items;
+                Count = _values.Length;
             }
         }
 
-        public virtual T[] ToArray()
+        public void SetCount(int count)
         {
-            using (_PRF_ToArray.Auto())
+            using (_PRF_SetCount.Auto())
             {
-                var array = new T[Count];
+                if (count > _values.Length)
+                {
+                    SetCapacity(count);
+                }
 
-                var start = 0;
-                var length = Count;
-
-                Array.Copy(_values, start, array, 0, length);
-                return array;
-            }
-        }
-
-        public virtual T[] ToArray(int length)
-        {
-            using (_PRF_ToArray.Auto())
-            {
-                var array = new T[Count];
-
-                var start = 0;
-
-                Array.Copy(_values, start, array, 0, length);
-                return array;
-            }
-        }
-
-        public virtual T[] ToArray(int start, int length)
-        {
-            using (_PRF_ToArray.Auto())
-            {
-                var array = new T[Count];
-
-                Array.Copy(_values, start, array, 0, length);
-                return array;
+                Count = count;
             }
         }
 
@@ -797,88 +717,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public void Reverse()
-        {
-            using (_PRF_Reverse.Auto())
-            {
-                Array.Reverse(_values, 0, Count);
-            }
-        }
-
-        public void Reverse(int index, int length)
-        {
-            using (_PRF_Reverse.Auto())
-            {
-                if (index < 0)
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(index),
-                        $"Index {index} is out of range. List count is {Count}."
-                    );
-                }
-
-                if ((length < 0) || ((Count - index) < length))
-                {
-                    throw new ArgumentOutOfRangeException(
-                        nameof(length),
-                        $"Length {length} is out of range. List count is {Count} and index is {index}."
-                    );
-                }
-
-                Array.Reverse(_values, index, length);
-            }
-        }
-
-        public bool RemoveNulls(AppaList<int> removedIndicesSafeOrdered)
-        {
-            using (_PRF_RemoveNulls.Auto())
-            {
-                removedIndicesSafeOrdered.ClearFast();
-
-                var hadNulls = false;
-
-                for (var i = _count - 1; i >= 0; i--)
-                {
-                    var obj = _values[i];
-
-                    if (obj == null)
-                    {
-                        hadNulls = true;
-                        RemoveAt(i);
-                        removedIndicesSafeOrdered.Add(i);
-                    }
-                }
-
-                return hadNulls;
-            }
-        }
-
-        public bool RemoveNulls()
-        {
-            using (_PRF_RemoveNulls.Auto())
-            {
-                var hadNulls = false;
-
-                for (var i = _count - 1; i >= 0; i--)
-                {
-                    var obj = _values[i];
-
-                    if (obj == null)
-                    {
-                        hadNulls = true;
-                        RemoveAt(i);
-                    }
-                }
-
-                return hadNulls;
-            }
-        }
-
-        public T[] GetInternalArray()
-        {
-            return _values;
-        }
-
         public void TrimExcess()
         {
             using (_PRF_TrimExcess.Auto())
@@ -897,33 +735,190 @@ namespace Appalachia.Core.Collections
             }
         }
 
+        public bool Contains(T item)
+        {
+            using (_PRF_Contains.Auto())
+            {
+                return Array.IndexOf(_values, item, 0, Count) != -1;
+            }
+        }
+
+        // Slow
+        public virtual bool Remove(T item)
+        {
+            using (_PRF_Remove.Auto())
+            {
+                var index = Array.IndexOf(_values, item, 0, Count);
+
+                if (index >= 0)
+                {
+                    _values[index] = _values[--Count];
+                    _values[Count] = default;
+
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        public virtual void Clear()
+        {
+            using (_PRF_Clear.Auto())
+            {
+                Array.Clear(_values, 0, Count);
+                _count = 0;
+            }
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            using (_PRF_CopyTo.Auto())
+            {
+                for (var i = arrayIndex; i < array.Length; i++)
+                {
+                    array[i] = _values[i - arrayIndex];
+                }
+            }
+        }
+
+        public int IndexOf(T item)
+        {
+            using (_PRF_IndexOf.Auto())
+            {
+                return Array.IndexOf(_values, item, 0, Count);
+            }
+        }
+
+        public virtual void Insert(int index, T item)
+        {
+            using (_PRF_Insert.Auto())
+            {
+                if (index > Count)
+                {
+                    Debug.LogError("Index " + index + " is out of range " + Count);
+                }
+
+                if (Count == _values.Length)
+                {
+                    IncreaseCapacity();
+                }
+
+                if (index < Count)
+                {
+                    Array.Copy(_values, index, _values, index + 1, Count - index);
+                }
+
+                _values[index] = item;
+                Count = ++Count;
+            }
+        }
+
+        public virtual void RemoveAt(int index)
+        {
+            using (_PRF_RemoveAt.Auto())
+            {
+                if (index >= Count)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        nameof(index),
+                        $"Index {index} is out of range. List count is {Count}."
+                    );
+                }
+
+                _values[index] = _values[--Count];
+                _values[Count] = default;
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return ((IEnumerable<T>) _values).GetEnumerator();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            using (_PRF_OnAfterDeserialize.Auto())
+            {
+                if (__itemPoolLock == null)
+                {
+                    __itemPoolLock = new object();
+                }
+            }
+        }
+
+        public void OnBeforeSerialize()
+        {
+        }
+
+        protected void IncreaseCapacity()
+        {
+            using (_PRF_IncreaseCapacity.Auto())
+            {
+                var baseSize = Mathf.Max(1.0f, _values.Length);
+
+                var arraySize = (int) (baseSize * _capacityIncreaseMultiplier);
+
+                var tempItemArray = _itemPool.Rent(arraySize);
+
+                Array.Copy(_values, tempItemArray, Count);
+
+                _itemPool.Return(_values);
+
+                _values = tempItemArray;
+            }
+        }
+
+        protected void SetCapacity(int capacity)
+        {
+            using (_PRF_SetCapacity.Auto())
+            {
+                var newItems = _itemPool.Rent(capacity);
+
+                if (Count > 0)
+                {
+                    Array.Copy(_values, newItems, Count);
+                }
+
+                _itemPool.Return(_values);
+                _values = newItems;
+            }
+        }
+
+        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _values.GetEnumerator();
+        }
+
 #region Performance Markers
 
         private const string _PRF_PFX = nameof(AppaList<T>) + ".";
         private static readonly ProfilerMarker _PRF_Add = new(_PRF_PFX + nameof(Add));
         private static readonly ProfilerMarker _PRF_AddRange = new(_PRF_PFX + nameof(AddRange));
 
-        private static readonly ProfilerMarker _PRF_AddThreadSafe =
-            new(_PRF_PFX + nameof(AddThreadSafe));
+        private static readonly ProfilerMarker _PRF_AddThreadSafe = new(_PRF_PFX + nameof(AddThreadSafe));
 
         private static readonly ProfilerMarker _PRF_AddUnique = new(_PRF_PFX + nameof(AddUnique));
 
-        private static readonly ProfilerMarker _PRF_ChangeRange =
-            new(_PRF_PFX + nameof(ChangeRange));
+        private static readonly ProfilerMarker _PRF_ChangeRange = new(_PRF_PFX + nameof(ChangeRange));
 
         private static readonly ProfilerMarker _PRF_Clear = new(_PRF_PFX + nameof(Clear));
         private static readonly ProfilerMarker _PRF_ClearFast = new(_PRF_PFX + nameof(ClearFast));
         private static readonly ProfilerMarker _PRF_ClearRange = new(_PRF_PFX + nameof(ClearRange));
 
-        private static readonly ProfilerMarker _PRF_ClearThreadSafe =
-            new(_PRF_PFX + nameof(ClearThreadSafe));
+        private static readonly ProfilerMarker _PRF_ClearThreadSafe = new(_PRF_PFX + nameof(ClearThreadSafe));
 
         private static readonly ProfilerMarker _PRF_Contains = new(_PRF_PFX + nameof(Contains));
         private static readonly ProfilerMarker _PRF_CopyTo = new(_PRF_PFX + nameof(CopyTo));
         private static readonly ProfilerMarker _PRF_Dequeue = new(_PRF_PFX + nameof(Dequeue));
 
-        private static readonly ProfilerMarker _PRF_EnsureCount =
-            new(_PRF_PFX + nameof(EnsureCount));
+        private static readonly ProfilerMarker _PRF_EnsureCount = new(_PRF_PFX + nameof(EnsureCount));
 
         private static readonly ProfilerMarker _PRF_GetIndex = new(_PRF_PFX + nameof(GetIndex));
 
@@ -944,16 +939,13 @@ namespace Appalachia.Core.Collections
         private static readonly ProfilerMarker _PRF_RemoveAt = new(_PRF_PFX + nameof(RemoveAt));
         private static readonly ProfilerMarker _PRF_RemoveLast = new(_PRF_PFX + nameof(RemoveLast));
 
-        private static readonly ProfilerMarker _PRF_RemoveNulls =
-            new(_PRF_PFX + nameof(RemoveNulls));
+        private static readonly ProfilerMarker _PRF_RemoveNulls = new(_PRF_PFX + nameof(RemoveNulls));
 
-        private static readonly ProfilerMarker _PRF_RemoveRange =
-            new(_PRF_PFX + nameof(RemoveRange));
+        private static readonly ProfilerMarker _PRF_RemoveRange = new(_PRF_PFX + nameof(RemoveRange));
 
         private static readonly ProfilerMarker _PRF_SetArray = new(_PRF_PFX + nameof(SetArray));
 
-        private static readonly ProfilerMarker _PRF_SetCapacity =
-            new(_PRF_PFX + nameof(SetCapacity));
+        private static readonly ProfilerMarker _PRF_SetCapacity = new(_PRF_PFX + nameof(SetCapacity));
 
         private static readonly ProfilerMarker _PRF_SetCount = new(_PRF_PFX + nameof(SetCount));
         private static readonly ProfilerMarker _PRF_Sort = new(_PRF_PFX + nameof(Sort));
@@ -968,10 +960,7 @@ namespace Appalachia.Core.Collections
         {
         }
 
-        protected AppaList(
-            int capacity,
-            float capacityIncreaseMultiplier = 2.0f,
-            bool noTracking = false)
+        protected AppaList(int capacity, float capacityIncreaseMultiplier = 2.0f, bool noTracking = false)
         {
             using (_PRF_AppaList.Auto())
             {

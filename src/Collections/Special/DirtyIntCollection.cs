@@ -11,9 +11,9 @@ namespace Appalachia.Core.Collections.Special
     [Serializable]
     public sealed class DirtyIntCollection : IsDirtyCollection<int, AppaList_int>
     {
-        protected override string GetDisplayTitle(int key, bool value)
+        protected override Color GetDisplayColor(int key, bool value)
         {
-            throw new NotImplementedException();
+            return Color.white;
         }
 
         protected override string GetDisplaySubtitle(int key, bool value)
@@ -21,9 +21,9 @@ namespace Appalachia.Core.Collections.Special
             throw new NotImplementedException();
         }
 
-        protected override Color GetDisplayColor(int key, bool value)
+        protected override string GetDisplayTitle(int key, bool value)
         {
-            return Color.white;
+            throw new NotImplementedException();
         }
     }
 }

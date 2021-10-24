@@ -13,69 +13,98 @@ namespace Appalachia.Core.Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static void float4x4ToTransform(this Transform transform, float4x4 matrix)
+        public static bool anyInfinity(this float4x4 matrix)
         {
-            transform.position = matrix.c3.xyz;
+            var s = matrix[0][0] +
+                    matrix[0][1] +
+                    matrix[0][2] +
+                    matrix[0][3] +
+                    matrix[1][0] +
+                    matrix[1][1] +
+                    matrix[1][2] +
+                    matrix[1][3] +
+                    matrix[2][0] +
+                    matrix[2][1] +
+                    matrix[2][2] +
+                    matrix[2][3] +
+                    matrix[0][0] +
+                    matrix[0][1] +
+                    matrix[0][2] +
+                    matrix[0][3];
 
-            transform.localScale = new float3(
-                math.length(matrix.c0),
-                math.length(matrix.c1),
-                math.length(matrix.c2)
-            );
-            transform.rotation = quaternion.LookRotation(matrix.c2.xyz, matrix.c1.xyz);
+            return float.IsInfinity(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static float3 GetPositionFromMatrix(this float4x4 matrix)
+        public static bool anyNaN(this float4x4 matrix)
         {
-            return matrix.c3.xyz;
+            var s = matrix[0][0] +
+                    matrix[0][1] +
+                    matrix[0][2] +
+                    matrix[0][3] +
+                    matrix[1][0] +
+                    matrix[1][1] +
+                    matrix[1][2] +
+                    matrix[1][3] +
+                    matrix[2][0] +
+                    matrix[2][1] +
+                    matrix[2][2] +
+                    matrix[2][3] +
+                    matrix[0][0] +
+                    matrix[0][1] +
+                    matrix[0][2] +
+                    matrix[0][3];
+
+            return float.IsNaN(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static quaternion GetRotationFromMatrix(this float4x4 matrix)
+        public static bool anyNegativeInfinity(this float4x4 matrix)
         {
-            return quaternion.LookRotation(matrix.c2.xyz, matrix.c1.xyz);
+            var s = matrix[0][0] +
+                    matrix[0][1] +
+                    matrix[0][2] +
+                    matrix[0][3] +
+                    matrix[1][0] +
+                    matrix[1][1] +
+                    matrix[1][2] +
+                    matrix[1][3] +
+                    matrix[2][0] +
+                    matrix[2][1] +
+                    matrix[2][2] +
+                    matrix[2][3] +
+                    matrix[0][0] +
+                    matrix[0][1] +
+                    matrix[0][2] +
+                    matrix[0][3];
+
+            return float.IsNegativeInfinity(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static float3 GetScaleFromMatrix(this float4x4 matrix)
+        public static bool anyPositiveInfinity(this float4x4 matrix)
         {
-            return new(math.length(matrix.c0), math.length(matrix.c1), math.length(matrix.c2));
-        }
+            var s = matrix[0][0] +
+                    matrix[0][1] +
+                    matrix[0][2] +
+                    matrix[0][3] +
+                    matrix[1][0] +
+                    matrix[1][1] +
+                    matrix[1][2] +
+                    matrix[1][3] +
+                    matrix[2][0] +
+                    matrix[2][1] +
+                    matrix[2][2] +
+                    matrix[2][3] +
+                    matrix[0][0] +
+                    matrix[0][1] +
+                    matrix[0][2] +
+                    matrix[0][3];
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static float4x4 SetPosition(this float4x4 matrix, float3 position)
-        {
-            matrix.c3 = position.xyz1();
-
-            return matrix;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static float4x4 SetRotation(this float4x4 matrix, quaternion rotation)
-        {
-            matrix.c2 = rotation.forward().xyz1();
-            matrix.c1 = rotation.up().xyz1();
-
-            return matrix;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static float4x4 SetScale(this float4x4 matrix, float3 scale)
-        {
-            matrix = float4x4.TRS(
-                matrix.GetPositionFromMatrix(),
-                matrix.GetRotationFromMatrix(),
-                scale
-            );
-
-            return matrix;
+            return float.IsPositiveInfinity(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -101,15 +130,18 @@ namespace Appalachia.Core.Extensions
             return b;
         }
 
-        public static string ToStringTRS(this float4x4 matrix)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float3 GetPositionFromMatrix(this float4x4 matrix)
         {
-            var pos = matrix.GetPositionFromMatrix();
-            var rotation = matrix.GetRotationFromMatrix();
-            var scale = matrix.GetScaleFromMatrix();
+            return matrix.c3.xyz;
+        }
 
-            return $"T [{pos.ToStringF1()}] | " +
-                   $"R [{rotation.ToEuler().ToStringF1()}] | " +
-                   $"S [{scale.ToStringF1()}]";
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float3 GetScaleFromMatrix(this float4x4 matrix)
+        {
+            return new(math.length(matrix.c0), math.length(matrix.c1), math.length(matrix.c2));
         }
 
 /*
@@ -168,13 +200,6 @@ namespace Appalachia.Core.Extensions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static float4x4 Inverse(this float4x4 matrix)
-        {
-            return math.inverse(matrix);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
         public static float3 MultiplyPoint3x4(this float4x4 matrix, float3 point)
         {
             var vector3 = MultiplyVector(matrix, point);
@@ -207,14 +232,125 @@ namespace Appalachia.Core.Extensions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static quaternion MultiplyRotation(this float4x4 matrix, quaternion rotation)
+        public static float4x4 Inverse(this float4x4 matrix)
         {
-            var axis = rotation.value.xyz;
+            return math.inverse(matrix);
+        }
 
-            var rotated = matrix.MultiplyVector(axis);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 RotateOver(this quaternion following, float4x4 baseOperation)
+        {
+            return baseOperation.Transform(RotationMatrix(following));
+        }
 
-            rotation.value.xyz = rotated;
-            return rotation;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 RotateUnder(this quaternion baseOperation, float4x4 following)
+        {
+            return RotationMatrix(baseOperation).Transform(following);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 RotationMatrix(this quaternion q)
+        {
+            var num1 = q.value.x * 2f;
+            var num2 = q.value.y * 2f;
+            var num3 = q.value.z * 2f;
+            var num4 = q.value.x * num1;
+            var num5 = q.value.y * num2;
+            var num6 = q.value.z * num3;
+            var num7 = q.value.x * num2;
+            var num8 = q.value.x * num3;
+            var num9 = q.value.y * num3;
+            var num10 = q.value.w * num1;
+            var num11 = q.value.w * num2;
+            var num12 = q.value.w * num3;
+            float4x4 matrix4x4;
+            matrix4x4.c0.x = (float) (1.0 - (num5 + (double) num6));
+            matrix4x4.c0.y = num7 + num12;
+            matrix4x4.c0.z = num8 - num11;
+            matrix4x4.c0.w = 0.0f;
+            matrix4x4.c1.x = num7 - num12;
+            matrix4x4.c1.y = (float) (1.0 - (num4 + (double) num6));
+            matrix4x4.c1.z = num9 + num10;
+            matrix4x4.c1.w = 0.0f;
+            matrix4x4.c2.x = num8 + num11;
+            matrix4x4.c2.y = num9 - num10;
+            matrix4x4.c2.z = (float) (1.0 - (num4 + (double) num5));
+            matrix4x4.c2.w = 0.0f;
+            matrix4x4.c3.x = 0.0f;
+            matrix4x4.c3.y = 0.0f;
+            matrix4x4.c3.z = 0.0f;
+            matrix4x4.c3.w = 1f;
+            return matrix4x4;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 ScaleOver(this float3 following, float4x4 baseOperation)
+        {
+            return baseOperation.Transform(ScalingMatrix(following));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 ScaleUnder(this float3 baseOperation, float4x4 following)
+        {
+            return ScalingMatrix(baseOperation).Transform(following);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 ScalingMatrix(this float3 vector)
+        {
+            float4x4 matrix4x4;
+            matrix4x4.c0.x = vector.x;
+            matrix4x4.c0.y = 0.0f;
+            matrix4x4.c0.z = 0.0f;
+            matrix4x4.c0.w = 0.0f;
+            matrix4x4.c1.x = 0.0f;
+            matrix4x4.c1.y = vector.y;
+            matrix4x4.c1.z = 0.0f;
+            matrix4x4.c1.w = 0.0f;
+            matrix4x4.c2.x = 0.0f;
+            matrix4x4.c2.y = 0.0f;
+            matrix4x4.c2.z = vector.z;
+            matrix4x4.c2.w = 0.0f;
+            matrix4x4.c3.x = 0.0f;
+            matrix4x4.c3.y = 0.0f;
+            matrix4x4.c3.z = 0.0f;
+            matrix4x4.c3.w = 1f;
+            return matrix4x4;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 SetPosition(this float4x4 matrix, float3 position)
+        {
+            matrix.c3 = position.xyz1();
+
+            return matrix;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 SetRotation(this float4x4 matrix, quaternion rotation)
+        {
+            matrix.c2 = rotation.forward().xyz1();
+            matrix.c1 = rotation.up().xyz1();
+
+            return matrix;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 SetScale(this float4x4 matrix, float3 scale)
+        {
+            matrix = float4x4.TRS(matrix.GetPositionFromMatrix(), matrix.GetRotationFromMatrix(), scale);
+
+            return matrix;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -292,55 +428,7 @@ namespace Appalachia.Core.Extensions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static float4x4 ScaleUnder(this float3 baseOperation, float4x4 following)
-        {
-            return ScalingMatrix(baseOperation).Transform(following);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static float4x4 ScaleOver(this float3 following, float4x4 baseOperation)
-        {
-            return baseOperation.Transform(ScalingMatrix(following));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static float4x4 ScalingMatrix(this float3 vector)
-        {
-            float4x4 matrix4x4;
-            matrix4x4.c0.x = vector.x;
-            matrix4x4.c0.y = 0.0f;
-            matrix4x4.c0.z = 0.0f;
-            matrix4x4.c0.w = 0.0f;
-            matrix4x4.c1.x = 0.0f;
-            matrix4x4.c1.y = vector.y;
-            matrix4x4.c1.z = 0.0f;
-            matrix4x4.c1.w = 0.0f;
-            matrix4x4.c2.x = 0.0f;
-            matrix4x4.c2.y = 0.0f;
-            matrix4x4.c2.z = vector.z;
-            matrix4x4.c2.w = 0.0f;
-            matrix4x4.c3.x = 0.0f;
-            matrix4x4.c3.y = 0.0f;
-            matrix4x4.c3.z = 0.0f;
-            matrix4x4.c3.w = 1f;
-            return matrix4x4;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static float4x4 TranslateUnder(this float3 baseOperation, float4x4 following)
-        {
-            return TranslationMatrix(baseOperation).Transform(following);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static float4x4 TranslateOver(
-            this float3 following,
-            float4x4 baseOperation,
-            bool local)
+        public static float4x4 TranslateOver(this float3 following, float4x4 baseOperation, bool local)
         {
             if (local)
             {
@@ -352,6 +440,13 @@ namespace Appalachia.Core.Extensions
             }
 
             return baseOperation.Transform(TranslationMatrix(following));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [BurstCompile]
+        public static float4x4 TranslateUnder(this float3 baseOperation, float4x4 following)
+        {
+            return TranslationMatrix(baseOperation).Transform(following);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -380,148 +475,46 @@ namespace Appalachia.Core.Extensions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static float4x4 RotateUnder(this quaternion baseOperation, float4x4 following)
+        public static quaternion GetRotationFromMatrix(this float4x4 matrix)
         {
-            return RotationMatrix(baseOperation).Transform(following);
+            return quaternion.LookRotation(matrix.c2.xyz, matrix.c1.xyz);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static float4x4 RotateOver(this quaternion following, float4x4 baseOperation)
+        public static quaternion MultiplyRotation(this float4x4 matrix, quaternion rotation)
         {
-            return baseOperation.Transform(RotationMatrix(following));
+            var axis = rotation.value.xyz;
+
+            var rotated = matrix.MultiplyVector(axis);
+
+            rotation.value.xyz = rotated;
+            return rotation;
+        }
+
+        public static string ToStringTRS(this float4x4 matrix)
+        {
+            var pos = matrix.GetPositionFromMatrix();
+            var rotation = matrix.GetRotationFromMatrix();
+            var scale = matrix.GetScaleFromMatrix();
+
+            return $"T [{pos.ToStringF1()}] | " +
+                   $"R [{rotation.ToEuler().ToStringF1()}] | " +
+                   $"S [{scale.ToStringF1()}]";
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [BurstCompile]
-        public static float4x4 RotationMatrix(this quaternion q)
+        public static void float4x4ToTransform(this Transform transform, float4x4 matrix)
         {
-            var num1 = q.value.x * 2f;
-            var num2 = q.value.y * 2f;
-            var num3 = q.value.z * 2f;
-            var num4 = q.value.x * num1;
-            var num5 = q.value.y * num2;
-            var num6 = q.value.z * num3;
-            var num7 = q.value.x * num2;
-            var num8 = q.value.x * num3;
-            var num9 = q.value.y * num3;
-            var num10 = q.value.w * num1;
-            var num11 = q.value.w * num2;
-            var num12 = q.value.w * num3;
-            float4x4 matrix4x4;
-            matrix4x4.c0.x = (float) (1.0 - (num5 + (double) num6));
-            matrix4x4.c0.y = num7 + num12;
-            matrix4x4.c0.z = num8 - num11;
-            matrix4x4.c0.w = 0.0f;
-            matrix4x4.c1.x = num7 - num12;
-            matrix4x4.c1.y = (float) (1.0 - (num4 + (double) num6));
-            matrix4x4.c1.z = num9 + num10;
-            matrix4x4.c1.w = 0.0f;
-            matrix4x4.c2.x = num8 + num11;
-            matrix4x4.c2.y = num9 - num10;
-            matrix4x4.c2.z = (float) (1.0 - (num4 + (double) num5));
-            matrix4x4.c2.w = 0.0f;
-            matrix4x4.c3.x = 0.0f;
-            matrix4x4.c3.y = 0.0f;
-            matrix4x4.c3.z = 0.0f;
-            matrix4x4.c3.w = 1f;
-            return matrix4x4;
-        }
+            transform.position = matrix.c3.xyz;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static bool anyNaN(this float4x4 matrix)
-        {
-            var s = matrix[0][0] +
-                    matrix[0][1] +
-                    matrix[0][2] +
-                    matrix[0][3] +
-                    matrix[1][0] +
-                    matrix[1][1] +
-                    matrix[1][2] +
-                    matrix[1][3] +
-                    matrix[2][0] +
-                    matrix[2][1] +
-                    matrix[2][2] +
-                    matrix[2][3] +
-                    matrix[0][0] +
-                    matrix[0][1] +
-                    matrix[0][2] +
-                    matrix[0][3];
-
-            return float.IsNaN(s);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static bool anyPositiveInfinity(this float4x4 matrix)
-        {
-            var s = matrix[0][0] +
-                    matrix[0][1] +
-                    matrix[0][2] +
-                    matrix[0][3] +
-                    matrix[1][0] +
-                    matrix[1][1] +
-                    matrix[1][2] +
-                    matrix[1][3] +
-                    matrix[2][0] +
-                    matrix[2][1] +
-                    matrix[2][2] +
-                    matrix[2][3] +
-                    matrix[0][0] +
-                    matrix[0][1] +
-                    matrix[0][2] +
-                    matrix[0][3];
-
-            return float.IsPositiveInfinity(s);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static bool anyNegativeInfinity(this float4x4 matrix)
-        {
-            var s = matrix[0][0] +
-                    matrix[0][1] +
-                    matrix[0][2] +
-                    matrix[0][3] +
-                    matrix[1][0] +
-                    matrix[1][1] +
-                    matrix[1][2] +
-                    matrix[1][3] +
-                    matrix[2][0] +
-                    matrix[2][1] +
-                    matrix[2][2] +
-                    matrix[2][3] +
-                    matrix[0][0] +
-                    matrix[0][1] +
-                    matrix[0][2] +
-                    matrix[0][3];
-
-            return float.IsNegativeInfinity(s);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [BurstCompile]
-        public static bool anyInfinity(this float4x4 matrix)
-        {
-            var s = matrix[0][0] +
-                    matrix[0][1] +
-                    matrix[0][2] +
-                    matrix[0][3] +
-                    matrix[1][0] +
-                    matrix[1][1] +
-                    matrix[1][2] +
-                    matrix[1][3] +
-                    matrix[2][0] +
-                    matrix[2][1] +
-                    matrix[2][2] +
-                    matrix[2][3] +
-                    matrix[0][0] +
-                    matrix[0][1] +
-                    matrix[0][2] +
-                    matrix[0][3];
-
-            return float.IsInfinity(s);
+            transform.localScale = new float3(
+                math.length(matrix.c0),
+                math.length(matrix.c1),
+                math.length(matrix.c2)
+            );
+            transform.rotation = quaternion.LookRotation(matrix.c2.xyz, matrix.c1.xyz);
         }
     }
 }

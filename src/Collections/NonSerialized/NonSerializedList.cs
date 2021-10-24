@@ -6,10 +6,8 @@ namespace Appalachia.Core.Collections.NonSerialized
         {
         }
 
-        public NonSerializedList(
-            int capacity,
-            float capacityIncreaseMultiplier = 2,
-            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
+        public NonSerializedList(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false)
+            : base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

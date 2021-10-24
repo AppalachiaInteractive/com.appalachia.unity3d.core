@@ -97,12 +97,7 @@ namespace Appalachia.Core.Collections.Native
                 label_5:
                 int beginIndex;
                 int endIndex;
-                if (!JobsUtility.GetWorkStealingRange(
-                    ref ranges,
-                    jobIndex,
-                    out beginIndex,
-                    out endIndex
-                ))
+                if (!JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out beginIndex, out endIndex))
                 {
                     return;
                 }

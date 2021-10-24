@@ -4,15 +4,15 @@ namespace Appalachia.Core.Collections.Native
         where TK : struct
         where TV : struct
     {
-        private readonly NativeKeyArray2D<TK, TV> _mArray;
-
         public NativeKeyArray2DDebugView(NativeKeyArray2D<TK, TV> array)
         {
             _mArray = array;
         }
 
-        public TV[,] Items => _mArray.ToArray();
+        private readonly NativeKeyArray2D<TK, TV> _mArray;
 
         public TK[] Keys => _mArray.ToKeyArray();
+
+        public TV[,] Items => _mArray.ToArray();
     }
 }

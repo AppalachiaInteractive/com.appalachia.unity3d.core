@@ -1,9 +1,3 @@
-//-----------------------------------------------------------------------
-// <copyright file="SharedDisposable.cs" company="Jackson Dunstan">
-//     Copyright (c) Jackson Dunstan. See LICENSE.md.
-// </copyright>
-//-----------------------------------------------------------------------
-
 #region
 
 using System;
@@ -89,11 +83,7 @@ namespace Appalachia.Core.Collections.Native
             }
 
             // Allocate the memory for the ref count and initialize to 1
-            m_Buffer = (int*) UnsafeUtility.Malloc(
-                sizeof(int),
-                UnsafeUtility.AlignOf<int>(),
-                allocator
-            );
+            m_Buffer = (int*) UnsafeUtility.Malloc(sizeof(int), UnsafeUtility.AlignOf<int>(), allocator);
             *m_Buffer = 1;
 
             // Store the allocator to use when deallocating

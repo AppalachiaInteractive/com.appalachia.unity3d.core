@@ -23,14 +23,12 @@ namespace Appalachia.Core.Volumes
         private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
         private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
         private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
+
         private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
         private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
 
         private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
             new(_PRF_PFX + "OnDrawGizmosSelected");
-
-//custom-begin: malte: context reference for exposed property resolver
-        public Object context;
 
 //custom-end
 
@@ -38,14 +36,14 @@ namespace Appalachia.Core.Volumes
         public bool isGlobal;
 
         [Tooltip(
-            "Volume priority in the stack. Higher number means higher priority. Negative values are supported."
-        )]
-        public float priority;
-
-        [Tooltip(
             "Outer distance to start blending from. A value of 0 means no blending and the volume overrides will be applied immediately upon entry."
         )]
         public float blendDistance;
+
+        [Tooltip(
+            "Volume priority in the stack. Higher number means higher priority. Negative values are supported."
+        )]
+        public float priority;
 
         [Range(0f, 1f)]
         [Tooltip(
@@ -53,14 +51,17 @@ namespace Appalachia.Core.Volumes
         )]
         public float weight = 1f;
 
+//custom-begin: malte: context reference for exposed property resolver
+        public Object context;
+
         // Modifying sharedProfile will change the behavior of all volumes using this profile, and
         // change profile settings that are stored in the project too
         public VolumeProfile sharedProfile;
-        private VolumeProfile m_InternalProfile;
+        private float m_PreviousPriority;
 
         // Needed for state tracking (see the comments in Update)
         private int m_PreviousLayer;
-        private float m_PreviousPriority;
+        private VolumeProfile m_InternalProfile;
 
         // This property automatically instantiates the profile and makes it unique to this volume
         // so you can safely edit it via scripting at runtime without changing the original asset
@@ -90,8 +91,29 @@ namespace Appalachia.Core.Volumes
             set => m_InternalProfile = value;
         }
 
-        internal VolumeProfile profileRef =>
-            m_InternalProfile == null ? sharedProfile : m_InternalProfile;
+        internal VolumeProfile profileRef => m_InternalProfile == null ? sharedProfile : m_InternalProfile;
+
+        public bool HasInstantiatedProfile()
+        {
+            return m_InternalProfile != null;
+        }
+
+        private void OnDisable()
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                VolumeManager.instance.Unregister(this, gameObject.layer);
+            }
+        }
+
+        private void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                m_PreviousLayer = gameObject.layer;
+                VolumeManager.instance.Register(this, m_PreviousLayer);
+            }
+        }
 
         private void Update()
         {
@@ -118,28 +140,6 @@ namespace Appalachia.Core.Volumes
                     m_PreviousPriority = priority;
                 }
             }
-        }
-
-        private void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                m_PreviousLayer = gameObject.layer;
-                VolumeManager.instance.Register(this, m_PreviousLayer);
-            }
-        }
-
-        private void OnDisable()
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                VolumeManager.instance.Unregister(this, gameObject.layer);
-            }
-        }
-
-        public bool HasInstantiatedProfile()
-        {
-            return m_InternalProfile != null;
         }
 
 #if UNITY_EDITOR

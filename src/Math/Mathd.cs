@@ -9,8 +9,8 @@ namespace Appalachia.Core.Math
 {
     public static class Mathd
     {
-        // The infamous ''3.14159265358979...'' value (RO).
-        public const double PI = System.Math.PI;
+        // Degrees-to-radians conversion constant (RO).
+        public const double Deg2Rad = (PI * 2F) / 360F;
 
         // A representation of positive infinity (RO).
         public const double Infinity = float.PositiveInfinity;
@@ -18,40 +18,41 @@ namespace Appalachia.Core.Math
         // A representation of negative infinity (RO).
         public const double NegativeInfinity = float.NegativeInfinity;
 
-        // Degrees-to-radians conversion constant (RO).
-        public const double Deg2Rad = (PI * 2F) / 360F;
+        // The infamous ''3.14159265358979...'' value (RO).
+        public const double PI = System.Math.PI;
 
         // Radians-to-degrees conversion constant (RO).
         public const double Rad2Deg = 1F / Deg2Rad;
 
-        // Returns the sine of angle /f/ in radians.
-        public static double Sin(double d)
+        // Compares two doubleing point values if they are similar.
+        public static bool Approximately(double a, double b)
         {
-            return System.Math.Sin(d);
+            // If a or b is zero, compare that the other is less or equal to epsilon.
+            // If neither a or b are 0, then find an epsilon that is good for
+            // comparing numbers at the maximum magnitude of a and b.
+            // Floating points have about 7 significant digits, so
+            // 1.000001f can be represented while 1.0000001f is rounded to zero,
+            // thus we could use an epsilon of 0.000001f for comparing values close to 1.
+            // We multiply this epsilon by the biggest magnitude of a and b.
+            return Abs(b - a) < Max(0.000001f * Max(Abs(a), Abs(b)), double.Epsilon * 8);
         }
 
-        // Returns the cosine of angle /f/ in radians.
-        public static double Cos(double d)
+        // Returns the absolute value of /f/.
+        public static double Abs(double d)
         {
-            return System.Math.Cos(d);
-        }
-
-        // Returns the tangent of angle /f/ in radians.
-        public static double Tan(double d)
-        {
-            return System.Math.Tan(d);
-        }
-
-        // Returns the arc-sine of /f/ - the angle in radians whose sine is /f/.
-        public static double Asin(double d)
-        {
-            return System.Math.Asin(d);
+            return System.Math.Abs(d);
         }
 
         // Returns the arc-cosine of /f/ - the angle in radians whose cosine is /f/.
         public static double Acos(double d)
         {
             return System.Math.Acos(d);
+        }
+
+        // Returns the arc-sine of /f/ - the angle in radians whose sine is /f/.
+        public static double Asin(double d)
+        {
+            return System.Math.Asin(d);
         }
 
         // Returns the arc-tangent of /f/ - the angle in radians whose tangent is /f/.
@@ -66,76 +67,143 @@ namespace Appalachia.Core.Math
             return System.Math.Atan2(y, x);
         }
 
-        // Returns square root of /f/.
-        public static double Sqrt(double d)
+        // Returns the smallest integer greater to or equal to /f/.
+        public static double Ceil(double d)
         {
-            return System.Math.Sqrt(d);
+            return System.Math.Ceiling(d);
         }
 
-        // Returns the absolute value of /f/.
-        public static double Abs(double d)
+        // Clamps a value between a minimum double and maximum double value.
+        public static double Clamp(double value, double min, double max)
         {
-            return System.Math.Abs(d);
-        }
-
-        // Returns the absolute value of /value/.
-        public static int Abs(int value)
-        {
-            return System.Math.Abs(value);
-        }
-
-        /// *listonly*
-        public static double Min(double a, double b)
-        {
-            return a < b ? a : b;
-        }
-
-        // Returns the smallest of two or more values.
-        public static double Min(params double[] values)
-        {
-            var len = values.Length;
-            if (len == 0)
+            if (value < min)
             {
-                return 0;
+                value = min;
+            }
+            else if (value > max)
+            {
+                value = max;
             }
 
-            var m = values[0];
-            for (var i = 1; i < len; i++)
-            {
-                if (values[i] < m)
-                {
-                    m = values[i];
-                }
-            }
-
-            return m;
+            return value;
         }
 
-        /// *listonly*
-        public static int Min(int a, int b)
+        // Clamps value between 0 and 1 and returns value
+        public static double Clamp01(double value)
         {
-            return a < b ? a : b;
+            if (value < 0F)
+            {
+                return 0F;
+            }
+
+            if (value > 1F)
+            {
+                return 1F;
+            }
+
+            return value;
         }
 
-        // Returns the smallest of two or more values.
-        public static int Min(params int[] values)
+        // Returns the cosine of angle /f/ in radians.
+        public static double Cos(double d)
         {
-            var len = values.Length;
-            if (len == 0)
+            return System.Math.Cos(d);
+        }
+
+        // Calculates the shortest difference between two given angles.
+        public static double DeltaAngle(double current, double target)
+        {
+            var delta = Repeat(target - current, 360.0F);
+            if (delta > 180.0F)
             {
-                return 0;
+                delta -= 360.0F;
             }
 
-            var m = values[0];
-            for (var i = 1; i < len; i++)
+            return delta;
+        }
+
+        // Returns e raised to the specified power.
+        public static double Exp(double power)
+        {
+            return System.Math.Exp(power);
+        }
+
+        // Returns the largest integer smaller to or equal to /f/.
+        public static double Floor(double d)
+        {
+            return System.Math.Floor(d);
+        }
+
+        //*undocumented
+        public static double Gamma(double value, double absmax, double gamma)
+        {
+            var negative = false;
+            if (value < 0F)
             {
-                if (values[i] < m)
-                {
-                    m = values[i];
-                }
+                negative = true;
             }
 
-            return m;
+            var absval = Abs(value);
+            if (absval > absmax)
+            {
+                return negative ? -absval : absval;
+            }
+
+            var result = Pow(absval / absmax, gamma) * absmax;
+            return negative ? -result : result;
+        }
+
+        // Calculates the ::ref::Lerp parameter between of two values.
+        public static double InverseLerp(double a, double b, double value)
+        {
+            if (System.Math.Abs(a - b) > float.Epsilon)
+            {
+                return Clamp01((value - a) / (b - a));
+            }
+
+            return 0.0f;
+        }
+
+        // Interpolates between /a/ and /b/ by /t/. /t/ is clamped between 0 and 1.
+        public static double Lerp(double a, double b, double t)
+        {
+            return a + ((b - a) * Clamp01(t));
+        }
+
+        // Same as ::ref::Lerp but makes sure the values interpolate correctly when they wrap around 360 degrees.
+        public static double LerpAngle(double a, double b, double t)
+        {
+            var delta = Repeat(b - a, 360);
+            if (delta > 180)
+            {
+                delta -= 360;
+            }
+
+            return a + (delta * Clamp01(t));
+        }
+
+        // Interpolates between /a/ and /b/ by /t/ without clamping the interpolant.
+        public static double LerpUnclamped(double a, double b, double t)
+        {
+            return a + ((b - a) * t);
+        }
+
+        // Returns the logarithm of a specified number in a specified base.
+        public static double Log(double d, double p)
+        {
+            return System.Math.Log(d, p);
+        }
+
+        // Returns the natural (base e) logarithm of a specified number.
+        public static double Log(double d)
+        {
+            return System.Math.Log(d);
+        }
+
+        // Returns the base 10 logarithm of a specified number.
+        public static double Log10(double d)
+        {
+            return System.Math.Log10(d);
         }
 
         /// *listonly*
@@ -166,13 +234,13 @@ namespace Appalachia.Core.Math
         }
 
         /// *listonly*
-        public static int Max(int a, int b)
+        public static double Min(double a, double b)
         {
-            return a > b ? a : b;
+            return a < b ? a : b;
         }
 
-        // Returns the largest of two or more values.
-        public static int Max(params int[] values)
+        // Returns the smallest of two or more values.
+        public static double Min(params double[] values)
         {
             var len = values.Length;
             if (len == 0)
@@ -183,158 +251,13 @@ namespace Appalachia.Core.Math
             var m = values[0];
             for (var i = 1; i < len; i++)
             {
-                if (values[i] > m)
+                if (values[i] < m)
                 {
                     m = values[i];
                 }
             }
 
             return m;
-        }
-
-        // Returns /f/ raised to power /p/.
-        public static double Pow(double d, double p)
-        {
-            return System.Math.Pow(d, p);
-        }
-
-        // Returns e raised to the specified power.
-        public static double Exp(double power)
-        {
-            return System.Math.Exp(power);
-        }
-
-        // Returns the logarithm of a specified number in a specified base.
-        public static double Log(double d, double p)
-        {
-            return System.Math.Log(d, p);
-        }
-
-        // Returns the natural (base e) logarithm of a specified number.
-        public static double Log(double d)
-        {
-            return System.Math.Log(d);
-        }
-
-        // Returns the base 10 logarithm of a specified number.
-        public static double Log10(double d)
-        {
-            return System.Math.Log10(d);
-        }
-
-        // Returns the smallest integer greater to or equal to /f/.
-        public static double Ceil(double d)
-        {
-            return System.Math.Ceiling(d);
-        }
-
-        // Returns the largest integer smaller to or equal to /f/.
-        public static double Floor(double d)
-        {
-            return System.Math.Floor(d);
-        }
-
-        // Returns /f/ rounded to the nearest integer.
-        public static double Round(double d)
-        {
-            return System.Math.Round(d);
-        }
-
-        // Returns the smallest integer greater to or equal to /f/.
-        public static int CeilToInt(double d)
-        {
-            return (int) System.Math.Ceiling(d);
-        }
-
-        // Returns the largest integer smaller to or equal to /f/.
-        public static int FloorToInt(double d)
-        {
-            return (int) System.Math.Floor(d);
-        }
-
-        // Returns /f/ rounded to the nearest integer.
-        public static int RoundToInt(double d)
-        {
-            return (int) System.Math.Round(d);
-        }
-
-        // Returns the sign of /f/.
-        public static double Sign(double d)
-        {
-            return d >= 0F ? 1F : -1F;
-        }
-
-        // Clamps a value between a minimum double and maximum double value.
-        public static double Clamp(double value, double min, double max)
-        {
-            if (value < min)
-            {
-                value = min;
-            }
-            else if (value > max)
-            {
-                value = max;
-            }
-
-            return value;
-        }
-
-        // Clamps value between min and max and returns value.
-        // Set the position of the transform to be that of the time
-        // but never less than 1 or more than 3
-        //
-        public static int Clamp(int value, int min, int max)
-        {
-            if (value < min)
-            {
-                value = min;
-            }
-            else if (value > max)
-            {
-                value = max;
-            }
-
-            return value;
-        }
-
-        // Clamps value between 0 and 1 and returns value
-        public static double Clamp01(double value)
-        {
-            if (value < 0F)
-            {
-                return 0F;
-            }
-
-            if (value > 1F)
-            {
-                return 1F;
-            }
-
-            return value;
-        }
-
-        // Interpolates between /a/ and /b/ by /t/. /t/ is clamped between 0 and 1.
-        public static double Lerp(double a, double b, double t)
-        {
-            return a + ((b - a) * Clamp01(t));
-        }
-
-        // Interpolates between /a/ and /b/ by /t/ without clamping the interpolant.
-        public static double LerpUnclamped(double a, double b, double t)
-        {
-            return a + ((b - a) * t);
-        }
-
-        // Same as ::ref::Lerp but makes sure the values interpolate correctly when they wrap around 360 degrees.
-        public static double LerpAngle(double a, double b, double t)
-        {
-            var delta = Repeat(b - a, 360);
-            if (delta > 180)
-            {
-                delta -= 360;
-            }
-
-            return a + (delta * Clamp01(t));
         }
 
         // Moves a value /current/ towards /target/.
@@ -361,44 +284,41 @@ namespace Appalachia.Core.Math
             return MoveTowards(current, target, maxDelta);
         }
 
-        // Interpolates between /min/ and /max/ with smoothing at the limits.
-        public static double SmoothStep(double from, double to, double t)
+        // PingPongs the value t, so that it is never larger than length and never smaller than 0.
+        public static double PingPong(double t, double length)
         {
-            t = Clamp01(t);
-            t = (-2.0F * t * t * t) + (3.0F * t * t);
-            return (to * t) + (from * (1F - t));
+            t = Repeat(t, length * 2F);
+            return length - Abs(t - length);
         }
 
-        //*undocumented
-        public static double Gamma(double value, double absmax, double gamma)
+        // Returns /f/ raised to power /p/.
+        public static double Pow(double d, double p)
         {
-            var negative = false;
-            if (value < 0F)
-            {
-                negative = true;
-            }
-
-            var absval = Abs(value);
-            if (absval > absmax)
-            {
-                return negative ? -absval : absval;
-            }
-
-            var result = Pow(absval / absmax, gamma) * absmax;
-            return negative ? -result : result;
+            return System.Math.Pow(d, p);
         }
 
-        // Compares two doubleing point values if they are similar.
-        public static bool Approximately(double a, double b)
+        // Loops the value t, so that it is never larger than length and never smaller than 0.
+        public static double Repeat(double t, double length)
         {
-            // If a or b is zero, compare that the other is less or equal to epsilon.
-            // If neither a or b are 0, then find an epsilon that is good for
-            // comparing numbers at the maximum magnitude of a and b.
-            // Floating points have about 7 significant digits, so
-            // 1.000001f can be represented while 1.0000001f is rounded to zero,
-            // thus we could use an epsilon of 0.000001f for comparing values close to 1.
-            // We multiply this epsilon by the biggest magnitude of a and b.
-            return Abs(b - a) < Max(0.000001f * Max(Abs(a), Abs(b)), double.Epsilon * 8);
+            return Clamp(t - (Floor(t / length) * length), 0.0f, length);
+        }
+
+        // Returns /f/ rounded to the nearest integer.
+        public static double Round(double d)
+        {
+            return System.Math.Round(d);
+        }
+
+        // Returns the sign of /f/.
+        public static double Sign(double d)
+        {
+            return d >= 0F ? 1F : -1F;
+        }
+
+        // Returns the sine of angle /f/ in radians.
+        public static double Sin(double d)
+        {
+            return System.Math.Sin(d);
         }
 
         public static double SmoothDamp(
@@ -409,14 +329,7 @@ namespace Appalachia.Core.Math
             double maxSpeed)
         {
             var deltaTime = CoreClock.VisualDelta;
-            return SmoothDamp(
-                current,
-                target,
-                ref currentVelocity,
-                smoothTime,
-                maxSpeed,
-                deltaTime
-            );
+            return SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
 
         public static double SmoothDamp(
@@ -427,14 +340,7 @@ namespace Appalachia.Core.Math
         {
             var deltaTime = CoreClock.VisualDelta;
             var maxSpeed = Infinity;
-            return SmoothDamp(
-                current,
-                target,
-                ref currentVelocity,
-                smoothTime,
-                maxSpeed,
-                deltaTime
-            );
+            return SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
 
         // Gradually changes a value towards a desired goal over time.
@@ -482,14 +388,7 @@ namespace Appalachia.Core.Math
             double maxSpeed)
         {
             var deltaTime = CoreClock.VisualDelta;
-            return SmoothDampAngle(
-                current,
-                target,
-                ref currentVelocity,
-                smoothTime,
-                maxSpeed,
-                deltaTime
-            );
+            return SmoothDampAngle(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
 
         public static double SmoothDampAngle(
@@ -500,14 +399,7 @@ namespace Appalachia.Core.Math
         {
             var deltaTime = CoreClock.VisualDelta;
             var maxSpeed = Infinity;
-            return SmoothDampAngle(
-                current,
-                target,
-                ref currentVelocity,
-                smoothTime,
-                maxSpeed,
-                deltaTime
-            );
+            return SmoothDampAngle(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
 
         // Gradually changes an angle given in degrees towards a desired goal angle over time.
@@ -520,50 +412,123 @@ namespace Appalachia.Core.Math
             double deltaTime)
         {
             target = current + DeltaAngle(current, target);
-            return SmoothDamp(
-                current,
-                target,
-                ref currentVelocity,
-                smoothTime,
-                maxSpeed,
-                deltaTime
-            );
+            return SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
 
-        // Loops the value t, so that it is never larger than length and never smaller than 0.
-        public static double Repeat(double t, double length)
+        // Interpolates between /min/ and /max/ with smoothing at the limits.
+        public static double SmoothStep(double from, double to, double t)
         {
-            return Clamp(t - (Floor(t / length) * length), 0.0f, length);
+            t = Clamp01(t);
+            t = (-2.0F * t * t * t) + (3.0F * t * t);
+            return (to * t) + (from * (1F - t));
         }
 
-        // PingPongs the value t, so that it is never larger than length and never smaller than 0.
-        public static double PingPong(double t, double length)
+        // Returns square root of /f/.
+        public static double Sqrt(double d)
         {
-            t = Repeat(t, length * 2F);
-            return length - Abs(t - length);
+            return System.Math.Sqrt(d);
         }
 
-        // Calculates the ::ref::Lerp parameter between of two values.
-        public static double InverseLerp(double a, double b, double value)
+        // Returns the tangent of angle /f/ in radians.
+        public static double Tan(double d)
         {
-            if (System.Math.Abs(a - b) > float.Epsilon)
+            return System.Math.Tan(d);
+        }
+
+        // Returns the absolute value of /value/.
+        public static int Abs(int value)
+        {
+            return System.Math.Abs(value);
+        }
+
+        // Returns the smallest integer greater to or equal to /f/.
+        public static int CeilToInt(double d)
+        {
+            return (int) System.Math.Ceiling(d);
+        }
+
+        // Clamps value between min and max and returns value.
+        // Set the position of the transform to be that of the time
+        // but never less than 1 or more than 3
+        //
+        public static int Clamp(int value, int min, int max)
+        {
+            if (value < min)
             {
-                return Clamp01((value - a) / (b - a));
+                value = min;
+            }
+            else if (value > max)
+            {
+                value = max;
             }
 
-            return 0.0f;
+            return value;
         }
 
-        // Calculates the shortest difference between two given angles.
-        public static double DeltaAngle(double current, double target)
+        // Returns the largest integer smaller to or equal to /f/.
+        public static int FloorToInt(double d)
         {
-            var delta = Repeat(target - current, 360.0F);
-            if (delta > 180.0F)
+            return (int) System.Math.Floor(d);
+        }
+
+        /// *listonly*
+        public static int Max(int a, int b)
+        {
+            return a > b ? a : b;
+        }
+
+        // Returns the largest of two or more values.
+        public static int Max(params int[] values)
+        {
+            var len = values.Length;
+            if (len == 0)
             {
-                delta -= 360.0F;
+                return 0;
             }
 
-            return delta;
+            var m = values[0];
+            for (var i = 1; i < len; i++)
+            {
+                if (values[i] > m)
+                {
+                    m = values[i];
+                }
+            }
+
+            return m;
+        }
+
+        /// *listonly*
+        public static int Min(int a, int b)
+        {
+            return a < b ? a : b;
+        }
+
+        // Returns the smallest of two or more values.
+        public static int Min(params int[] values)
+        {
+            var len = values.Length;
+            if (len == 0)
+            {
+                return 0;
+            }
+
+            var m = values[0];
+            for (var i = 1; i < len; i++)
+            {
+                if (values[i] < m)
+                {
+                    m = values[i];
+                }
+            }
+
+            return m;
+        }
+
+        // Returns /f/ rounded to the nearest integer.
+        public static int RoundToInt(double d)
+        {
+            return (int) System.Math.Round(d);
         }
 
         internal static long RandomToLong(Random r)

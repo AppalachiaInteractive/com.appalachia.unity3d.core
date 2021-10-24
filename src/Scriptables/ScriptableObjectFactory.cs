@@ -12,8 +12,7 @@ namespace Appalachia.Core.Scriptables
         private const string _PRF_PFX = nameof(ScriptableObjectFactory) + ".";
         private static readonly ProfilerMarker _PRF_CreateNew = new(_PRF_PFX + nameof(CreateNew));
 
-        private static readonly ProfilerMarker _PRF_LoadOrCreateNew =
-            new(_PRF_PFX + nameof(LoadOrCreateNew));
+        private static readonly ProfilerMarker _PRF_LoadOrCreateNew = new(_PRF_PFX + nameof(LoadOrCreateNew));
 
         private static readonly ProfilerMarker _PRF_Rename = new(_PRF_PFX + nameof(Rename));
 
@@ -28,6 +27,40 @@ namespace Appalachia.Core.Scriptables
                     false,
                     dataFolder
                 );
+            }
+        }
+
+        public static T CreateNew<T>(string name, T i, string dataFolder = null)
+            where T : AppalachiaScriptableObject<T>
+        {
+            using (_PRF_CreateNew.Auto())
+            {
+                var ext = AppaPath.GetExtension(name);
+
+                if (string.IsNullOrWhiteSpace(ext))
+                {
+                    name += ".asset";
+                }
+
+                if (dataFolder == null)
+                {
+                    dataFolder = AssetDatabaseManager.GetSaveLocationForScriptableObject<T>().relativePath;
+                }
+
+                var assetPath = AppaPath.Combine(dataFolder, name);
+
+                if (AppaFile.Exists(assetPath))
+                {
+                    throw new AccessViolationException(assetPath);
+                }
+
+                assetPath = assetPath.Replace(ProjectLocations.GetAssetsDirectoryPath(), "Assets");
+
+                AssetDatabaseManager.CreateAsset(i, assetPath);
+
+                i.OnCreate();
+
+                return i;
             }
         }
 
@@ -100,41 +133,6 @@ namespace Appalachia.Core.Scriptables
                 var instance = ScriptableObject.CreateInstance(typeof(T)) as T;
 
                 return CreateNew(name, instance, dataFolder);
-            }
-        }
-
-        public static T CreateNew<T>(string name, T i, string dataFolder = null)
-            where T : AppalachiaScriptableObject<T>
-        {
-            using (_PRF_CreateNew.Auto())
-            {
-                var ext = AppaPath.GetExtension(name);
-
-                if (string.IsNullOrWhiteSpace(ext))
-                {
-                    name += ".asset";
-                }
-
-                if (dataFolder == null)
-                {
-                    dataFolder = AssetDatabaseManager.GetSaveLocationForScriptableObject<T>()
-                                                     .relativePath;
-                }
-
-                var assetPath = AppaPath.Combine(dataFolder, name);
-
-                if (AppaFile.Exists(assetPath))
-                {
-                    throw new AccessViolationException(assetPath);
-                }
-
-                assetPath = assetPath.Replace(ProjectLocations.GetAssetsDirectoryPath(), "Assets");
-
-                AssetDatabaseManager.CreateAsset(i, assetPath);
-
-                i.OnCreate();
-
-                return i;
             }
         }
 

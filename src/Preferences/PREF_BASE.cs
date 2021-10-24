@@ -1,6 +1,8 @@
+using System.Diagnostics;
 
 namespace Appalachia.Core.Preferences
 {
+    [DebuggerStepThrough]
     public abstract class PREF_BASE
     {
         protected PREF_BASE(string key, string grouping, string label, int order)
@@ -11,19 +13,17 @@ namespace Appalachia.Core.Preferences
             _order = order;
             _niceLabel = UnityEditor.ObjectNames.NicifyVariableName(label);
         }
-        
-        protected bool _isAwake;
-        protected readonly string _key;
-        protected readonly string _grouping;
-        protected readonly string _label;
-        protected string _niceLabel;
+
         protected readonly int _order;
+        protected readonly string _grouping;
+        protected readonly string _key;
+        protected readonly string _label;
+
+        protected bool _isAwake;
         protected bool _reset;
-        
+        protected string _niceLabel;
+
         public bool IsAwake => _isAwake;
-        internal string Key => _key;
-        internal string Grouping => _grouping;
-        internal string Label => _label;
 
         public string NiceLabel
         {
@@ -32,6 +32,8 @@ namespace Appalachia.Core.Preferences
         }
 
         internal int Order => _order;
-
+        internal string Grouping => _grouping;
+        internal string Key => _key;
+        internal string Label => _label;
     }
 }

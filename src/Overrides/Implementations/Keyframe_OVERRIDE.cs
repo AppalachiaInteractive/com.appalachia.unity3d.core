@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public Keyframe_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Keyframe value) :
-            base(overrideEnabled, value)
+        public Keyframe_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Keyframe value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

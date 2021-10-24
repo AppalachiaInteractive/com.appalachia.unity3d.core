@@ -8,15 +8,12 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class MinIntParameter : IntParameter
     {
-        public int min;
-
-        public MinIntParameter(int value, int min, bool overrideState = false) : base(
-            value,
-            overrideState
-        )
+        public MinIntParameter(int value, int min, bool overrideState = false) : base(value, overrideState)
         {
             this.min = min;
         }
+
+        public int min;
 
         public override int value
         {

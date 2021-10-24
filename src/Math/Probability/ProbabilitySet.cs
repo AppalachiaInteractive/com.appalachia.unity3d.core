@@ -15,6 +15,23 @@ namespace Appalachia.Core.Math.Probability
 
         public ProbabilityPair[] pairs;
 
+        public int GetNextIndex()
+        {
+            var random = Random.Range(0.0f, 1.0f);
+
+            for (var i = 0; i < pairs.Length; i++)
+            {
+                var pair = pairs[i];
+
+                if ((pair.inclusiveStart <= random) && (pair.exclusiveEnd > random))
+                {
+                    return i;
+                }
+            }
+
+            return pairs.Length - 1;
+        }
+
         public void ValidateProbabilities(IReadOnlyList<IProbabilityProvider> providers)
         {
             var update = pairs == null;
@@ -74,23 +91,6 @@ namespace Appalachia.Core.Math.Probability
                     pairs[pairs.Length - 1].exclusiveEnd = 1.0;
                 }
             }
-        }
-
-        public int GetNextIndex()
-        {
-            var random = Random.Range(0.0f, 1.0f);
-
-            for (var i = 0; i < pairs.Length; i++)
-            {
-                var pair = pairs[i];
-
-                if ((pair.inclusiveStart <= random) && (pair.exclusiveEnd > random))
-                {
-                    return i;
-                }
-            }
-
-            return pairs.Length - 1;
         }
     }
 }

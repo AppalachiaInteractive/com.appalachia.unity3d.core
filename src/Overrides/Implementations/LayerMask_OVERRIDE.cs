@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public LayerMask_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, LayerMask value) :
-            base(overrideEnabled, value)
+        public LayerMask_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, LayerMask value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

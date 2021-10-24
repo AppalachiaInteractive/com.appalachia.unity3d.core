@@ -16,11 +16,10 @@ namespace Appalachia.Core.Scriptables
 {
     [Serializable]
     public abstract class SelfSavingSingletonScriptableObject<T> : SelfSavingScriptableObject<T>,
-        ICrossAssemblySerializable,
-        ISingletonScriptableObject
+                                                                   ICrossAssemblySerializable,
+                                                                   ISingletonScriptableObject
         where T : SelfSavingSingletonScriptableObject<T>
     {
-        
         /*
         [MenuItem(APPA_MENU.BASE_AppalachiaData + "Ping/" + nameof(T))]
         private static void PingImportSettings()
@@ -29,17 +28,14 @@ namespace Appalachia.Core.Scriptables
         }
         */
 
-        
         private const string _PRF_PFX = nameof(SelfSavingSingletonScriptableObject<T>) + ".";
-        private static T _instance;
 
+        private static T _instance;
         private static readonly ProfilerMarker _PRF_instance = new(_PRF_PFX + nameof(instance));
 
-        private static readonly ProfilerMarker _PRF_GetSerializable =
-            new(_PRF_PFX + nameof(GetSerializable));
+        private static readonly ProfilerMarker _PRF_GetSerializable = new(_PRF_PFX + nameof(GetSerializable));
 
-        private static readonly ProfilerMarker _PRF_SetInstance =
-            new(_PRF_PFX + nameof(SetInstance));
+        private static readonly ProfilerMarker _PRF_SetInstance = new(_PRF_PFX + nameof(SetInstance));
 
         private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
 
@@ -60,16 +56,6 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        protected virtual void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                _instance = this as T;
-
-                WhenEnabled();
-            }
-        }
-
         public ScriptableObject GetSerializable()
         {
             using (_PRF_GetSerializable.Auto())
@@ -83,6 +69,16 @@ namespace Appalachia.Core.Scriptables
             using (_PRF_SetInstance.Auto())
             {
                 _instance = i as T;
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                _instance = this as T;
+
+                WhenEnabled();
             }
         }
 
@@ -123,9 +119,7 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_CreateAndSaveSingleton.Auto())
             {
-                return CreateAndSaveSingleton(
-                    $"{typeof(T).Name}_{DateTime.Now:yyyyMMdd-hhmmssfff}.asset"
-                );
+                return CreateAndSaveSingleton($"{typeof(T).Name}_{DateTime.Now:yyyyMMdd-hhmmssfff}.asset");
             }
         }
 
@@ -136,12 +130,11 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_CreateAndSaveSingleton.Auto())
             {
-
                 if (_instance != null)
                 {
                     return _instance;
                 }
-                
+
                 _instance = FindExistingInstance();
 
                 if (_instance != null)
@@ -161,7 +154,7 @@ namespace Appalachia.Core.Scriptables
             var guids = AssetDatabaseManager.FindAssets(searchTerm);
 
             T firstFound = null;
-                
+
             for (var index = 0; index < guids.Length; index++)
             {
                 var guid = guids[index];

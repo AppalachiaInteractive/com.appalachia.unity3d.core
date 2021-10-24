@@ -11,50 +11,6 @@ namespace Appalachia.Core.Extensions
 {
     public static class MeshExtensions
     {
-        public static void GetVolumeAndCenterOfMass(
-            this IReadOnlyList<Mesh> meshes,
-            out float volume,
-            out Vector3 centerOfMass)
-        {
-            var volumes = new float[meshes.Count];
-            var centersOfMass = new Vector3[meshes.Count];
-
-            for (var index = 0; index < meshes.Count; index++)
-            {
-                var mesh = meshes[index];
-                GetVolumeAndCenterOfMass(
-                    mesh,
-                    true,
-                    out volumes[index],
-                    true,
-                    out centersOfMass[index]
-                );
-            }
-
-            volume = 0.0f;
-
-            for (var i = 0; i < volumes.Length; i++)
-            {
-                volume += volumes[i];
-            }
-
-            centerOfMass = Vector3.zero;
-
-            for (var i = 0; i < volumes.Length; i++)
-            {
-                var percentage = volumes[i] / volume;
-
-                centerOfMass += percentage * centersOfMass[i];
-            }
-        }
-
-        public static Vector3 GetCenterOfMass(this IReadOnlyList<Mesh> meshes)
-        {
-            GetVolumeAndCenterOfMass(meshes, out _, out var centerOfMass);
-
-            return centerOfMass;
-        }
-
         public static float GetVolume(this IReadOnlyList<Renderer> renderers)
         {
             var meshes = renderers.Select(r => r.GetSharedMesh()).ToList();
@@ -82,50 +38,6 @@ namespace Appalachia.Core.Extensions
             return volume;
         }
 
-        public static void GetVolumeAndCenterOfMass(
-            this Mesh[] meshes,
-            out float volume,
-            out Vector3 centerOfMass)
-        {
-            var volumes = new float[meshes.Length];
-            var centersOfMass = new Vector3[meshes.Length];
-
-            for (var index = 0; index < meshes.Length; index++)
-            {
-                var mesh = meshes[index];
-                GetVolumeAndCenterOfMass(
-                    mesh,
-                    true,
-                    out volumes[index],
-                    true,
-                    out centersOfMass[index]
-                );
-            }
-
-            volume = 0.0f;
-
-            for (var i = 0; i < volumes.Length; i++)
-            {
-                volume += volumes[i];
-            }
-
-            centerOfMass = Vector3.zero;
-
-            for (var i = 0; i < volumes.Length; i++)
-            {
-                var percentage = volumes[i] / volume;
-
-                centerOfMass += percentage * centersOfMass[i];
-            }
-        }
-
-        public static Vector3 GetCenterOfMass(this Mesh[] meshes)
-        {
-            GetVolumeAndCenterOfMass(meshes, out _, out var centerOfMass);
-
-            return centerOfMass;
-        }
-
         public static float GetVolume(this Mesh[] meshes)
         {
             var volumes = new float[meshes.Length];
@@ -146,12 +58,25 @@ namespace Appalachia.Core.Extensions
             return volume;
         }
 
-        public static void GetVolumeAndCenterOfMass(
-            this Mesh mesh,
-            out float volume,
-            out Vector3 centerOfMass)
+        public static float GetVolume(this Mesh mesh)
         {
-            GetVolumeAndCenterOfMass(mesh, true, out volume, true, out centerOfMass);
+            GetVolumeAndCenterOfMass(mesh, true, out var volume, false, out _);
+
+            return volume;
+        }
+
+        public static Vector3 GetCenterOfMass(this IReadOnlyList<Mesh> meshes)
+        {
+            GetVolumeAndCenterOfMass(meshes, out _, out var centerOfMass);
+
+            return centerOfMass;
+        }
+
+        public static Vector3 GetCenterOfMass(this Mesh[] meshes)
+        {
+            GetVolumeAndCenterOfMass(meshes, out _, out var centerOfMass);
+
+            return centerOfMass;
         }
 
         public static Vector3 GetCenterOfMass(this Mesh mesh)
@@ -161,11 +86,74 @@ namespace Appalachia.Core.Extensions
             return centerOfMass;
         }
 
-        public static float GetVolume(this Mesh mesh)
+        public static void GetVolumeAndCenterOfMass(
+            this IReadOnlyList<Mesh> meshes,
+            out float volume,
+            out Vector3 centerOfMass)
         {
-            GetVolumeAndCenterOfMass(mesh, true, out var volume, false, out _);
+            var volumes = new float[meshes.Count];
+            var centersOfMass = new Vector3[meshes.Count];
 
-            return volume;
+            for (var index = 0; index < meshes.Count; index++)
+            {
+                var mesh = meshes[index];
+                GetVolumeAndCenterOfMass(mesh, true, out volumes[index], true, out centersOfMass[index]);
+            }
+
+            volume = 0.0f;
+
+            for (var i = 0; i < volumes.Length; i++)
+            {
+                volume += volumes[i];
+            }
+
+            centerOfMass = Vector3.zero;
+
+            for (var i = 0; i < volumes.Length; i++)
+            {
+                var percentage = volumes[i] / volume;
+
+                centerOfMass += percentage * centersOfMass[i];
+            }
+        }
+
+        public static void GetVolumeAndCenterOfMass(
+            this Mesh[] meshes,
+            out float volume,
+            out Vector3 centerOfMass)
+        {
+            var volumes = new float[meshes.Length];
+            var centersOfMass = new Vector3[meshes.Length];
+
+            for (var index = 0; index < meshes.Length; index++)
+            {
+                var mesh = meshes[index];
+                GetVolumeAndCenterOfMass(mesh, true, out volumes[index], true, out centersOfMass[index]);
+            }
+
+            volume = 0.0f;
+
+            for (var i = 0; i < volumes.Length; i++)
+            {
+                volume += volumes[i];
+            }
+
+            centerOfMass = Vector3.zero;
+
+            for (var i = 0; i < volumes.Length; i++)
+            {
+                var percentage = volumes[i] / volume;
+
+                centerOfMass += percentage * centersOfMass[i];
+            }
+        }
+
+        public static void GetVolumeAndCenterOfMass(
+            this Mesh mesh,
+            out float volume,
+            out Vector3 centerOfMass)
+        {
+            GetVolumeAndCenterOfMass(mesh, true, out volume, true, out centerOfMass);
         }
 
         public static void GetVolumeAndCenterOfMass(

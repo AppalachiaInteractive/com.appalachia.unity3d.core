@@ -8,9 +8,6 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class ClampedIntParameter : IntParameter
     {
-        public int min;
-        public int max;
-
         public ClampedIntParameter(int value, int min, int max, bool overrideState = false) : base(
             value,
             overrideState
@@ -19,6 +16,9 @@ namespace Appalachia.Core.Volumes.Parameters
             this.min = min;
             this.max = max;
         }
+
+        public int max;
+        public int min;
 
         public override int value
         {

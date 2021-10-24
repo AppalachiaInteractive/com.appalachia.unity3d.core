@@ -11,9 +11,9 @@ namespace Appalachia.Core.Collections.Special
     [Serializable]
     public sealed class DirtyStringCollection : IsDirtyCollection<string, AppaList_string>
     {
-        protected override string GetDisplayTitle(string key, bool value)
+        protected override Color GetDisplayColor(string key, bool value)
         {
-            return key;
+            return Color.white;
         }
 
         protected override string GetDisplaySubtitle(string key, bool value)
@@ -21,9 +21,9 @@ namespace Appalachia.Core.Collections.Special
             return value.ToString();
         }
 
-        protected override Color GetDisplayColor(string key, bool value)
+        protected override string GetDisplayTitle(string key, bool value)
         {
-            return Color.white;
+            return key;
         }
     }
 }

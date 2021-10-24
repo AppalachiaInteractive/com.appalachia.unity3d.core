@@ -8,8 +8,10 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class NoInterpRenderTextureParameter : VolumeParameter<RenderTexture>
     {
-        public NoInterpRenderTextureParameter(RenderTexture value, bool overrideState = false) :
-            base(value, overrideState)
+        public NoInterpRenderTextureParameter(RenderTexture value, bool overrideState = false) : base(
+            value,
+            overrideState
+        )
         {
         }
     }

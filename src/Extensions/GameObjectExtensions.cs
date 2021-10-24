@@ -19,27 +19,72 @@ namespace Appalachia.Core.Extensions
         private static readonly ProfilerMarker _PRF_GameObjectExtensions_DestroySafely =
             new("GameObjectExtensions.DestroySafely");
 
+        private static readonly ProfilerMarker _PRF_GameObjectExtensions_GetAsset =
+            new("GameObjectExtensions.GetAsset");
+
+        private static readonly ProfilerMarker _PRF_GameObjectExtensions_GetComponentInImmediateChildren =
+            new("GameObjectExtensions.GetComponentInImmediateChildren");
+
         private static readonly ProfilerMarker _PRF_GameObjectExtensions_InstantiatePrefab =
             new("GameObjectExtensions.InstantiatePrefab");
 
         private static readonly ProfilerMarker _PRF_GameObjectExtensions_MoveToLayerRecursive =
             new("GameObjectExtensions.MoveToLayerRecursive");
 
-        private static readonly ProfilerMarker _PRF_GameObjectExtensions_GetAsset =
-            new("GameObjectExtensions.GetAsset");
-
-        private static readonly ProfilerMarker
-            _PRF_GameObjectExtensions_GetComponentInImmediateChildren =
-                new("GameObjectExtensions.GetComponentInImmediateChildren");
-
-        private static readonly ProfilerMarker
-            _PRF_GameObjectExtensions_MoveToLayerRecursiveRecoverable =
-                new("GameObjectExtensions.MoveToLayerRecursiveRecoverable");
+        private static readonly ProfilerMarker _PRF_GameObjectExtensions_MoveToLayerRecursiveRecoverable =
+            new("GameObjectExtensions.MoveToLayerRecursiveRecoverable");
 
         private static readonly ProfilerMarker _PRF_GameObjectExtensions_RecoverLayersRecursive =
             new("GameObjectExtensions.RecoverLayersRecursive");
 
         private static Dictionary<int, string> _assetGUIDLookup = new();
+
+        public static Dictionary<Transform, int> MoveToLayerRecursiveRecoverable(
+            this GameObject go,
+            int layer)
+        {
+            using (_PRF_GameObjectExtensions_MoveToLayerRecursiveRecoverable.Auto())
+            {
+                var originalLayers = new Dictionary<Transform, int>();
+                originalLayers.Add(go.transform, go.layer);
+                go.layer = layer;
+
+                var children = go.GetComponentsInChildren<Transform>();
+                foreach (var child in children)
+                {
+                    if (!originalLayers.ContainsKey(child))
+                    {
+                        originalLayers.Add(child, child.gameObject.layer);
+                    }
+
+                    child.gameObject.layer = layer;
+                }
+
+                return originalLayers;
+            }
+        }
+
+#if UNITY_EDITOR
+        public static GameObject GetAsset(this GameObject prefab)
+        {
+            using (_PRF_GameObjectExtensions_GetAsset.Auto())
+            {
+                if (!PrefabUtility.IsPartOfPrefabInstance(prefab))
+                {
+                    if (!PrefabUtility.IsPartOfPrefabAsset(prefab))
+                    {
+                        return null;
+                    }
+
+                    return prefab;
+                }
+
+                return AssetDatabaseManager.LoadAssetAtPath<GameObject>(
+                    PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefab)
+                );
+            }
+        }
+#endif
 
         public static GameObject InstantiatePrefab(
             this GameObject prefab,
@@ -81,6 +126,30 @@ namespace Appalachia.Core.Extensions
             }
         }
 
+        public static string GetAssetGUID(this GameObject go)
+        {
+            if (_assetGUIDLookup == null)
+            {
+                _assetGUIDLookup = new Dictionary<int, string>();
+            }
+
+            var hashCode = go.GetHashCode();
+
+            if (_assetGUIDLookup.ContainsKey(hashCode))
+            {
+                return _assetGUIDLookup[hashCode];
+            }
+
+            if (AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(go, out var assetGUID, out var _))
+            {
+                _assetGUIDLookup.Add(hashCode, assetGUID);
+
+                return assetGUID;
+            }
+
+            return null;
+        }
+
         public static T GetComponentInImmediateChildren<T>(this GameObject go)
             where T : Component
         {
@@ -97,60 +166,6 @@ namespace Appalachia.Core.Extensions
                 }
 
                 return null;
-            }
-        }
-
-        public static void MoveToLayerRecursive(this GameObject go, int layer)
-        {
-            using (_PRF_GameObjectExtensions_MoveToLayerRecursive.Auto())
-            {
-                go.layer = layer;
-
-                var children = go.GetComponentsInChildren<Transform>();
-                foreach (var child in children)
-                {
-                    child.gameObject.layer = layer;
-                }
-            }
-        }
-
-        public static Dictionary<Transform, int> MoveToLayerRecursiveRecoverable(
-            this GameObject go,
-            int layer)
-        {
-            using (_PRF_GameObjectExtensions_MoveToLayerRecursiveRecoverable.Auto())
-            {
-                var originalLayers = new Dictionary<Transform, int>();
-                originalLayers.Add(go.transform, go.layer);
-                go.layer = layer;
-
-                var children = go.GetComponentsInChildren<Transform>();
-                foreach (var child in children)
-                {
-                    if (!originalLayers.ContainsKey(child))
-                    {
-                        originalLayers.Add(child, child.gameObject.layer);
-                    }
-
-                    child.gameObject.layer = layer;
-                }
-
-                return originalLayers;
-            }
-        }
-
-        public static void RecoverLayersRecursive(
-            this GameObject go,
-            Dictionary<Transform, int> originalLayers)
-        {
-            using (_PRF_GameObjectExtensions_RecoverLayersRecursive.Auto())
-            {
-                go.layer = originalLayers[go.transform];
-                var children = go.GetComponentsInChildren<Transform>();
-                foreach (var child in children)
-                {
-                    child.gameObject.layer = originalLayers[child];
-                }
             }
         }
 
@@ -173,7 +188,8 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    ex.LogException($"Not able to dispose of [{o.name}] before destroying.");
+                    Debug.LogError($"Not able to dispose of [{o.name}] before destroying.", o);
+                    Debug.LogException(ex, o);
                 }
                 finally
                 {
@@ -192,7 +208,8 @@ namespace Appalachia.Core.Extensions
                         }
                         catch (Exception ex)
                         {
-                            ex.LogException("Exception while destroying object.");
+                            Debug.LogError($"Exception while destroying object.", o);
+                            Debug.LogException(ex, o);
                         }
                     }
                 }
@@ -216,9 +233,8 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    ex.LogException(
-                        $"Not able to dispose of [{typeof(T).GetReadableName()} before destroying."
-                    );
+                    Debug.LogError( $"Not able to dispose of [{typeof(T).GetReadableName()} before destroying.", o);
+                    Debug.LogException(ex, o);
                 }
                 finally
                 {
@@ -237,7 +253,8 @@ namespace Appalachia.Core.Extensions
                         }
                         catch (Exception ex)
                         {
-                            ex.LogException("Exception while destroying object.");
+                            Debug.LogError($"Exception while destroying object", o);
+                            Debug.LogException(ex, o);
                         }
                     }
                 }
@@ -264,7 +281,8 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    ex.LogException("Exception while destroying GameObject.");
+                    Debug.LogError($"Exception while destroying GameObject.", o);
+                    Debug.LogException(ex, o);
                 }
             }
         }
@@ -292,55 +310,39 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    ex.LogException("Exception while destroying transform.");
+                    Debug.LogError($"Exception while destroying transform.", o);
+                    Debug.LogException(ex, o);
                 }
             }
         }
 
-        public static string GetAssetGUID(this GameObject go)
+        public static void MoveToLayerRecursive(this GameObject go, int layer)
         {
-            if (_assetGUIDLookup == null)
+            using (_PRF_GameObjectExtensions_MoveToLayerRecursive.Auto())
             {
-                _assetGUIDLookup = new Dictionary<int, string>();
-            }
+                go.layer = layer;
 
-            var hashCode = go.GetHashCode();
-
-            if (_assetGUIDLookup.ContainsKey(hashCode))
-            {
-                return _assetGUIDLookup[hashCode];
-            }
-
-            if (AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(go, out var assetGUID, out long _))
-            {
-                _assetGUIDLookup.Add(hashCode, assetGUID);
-
-                return assetGUID;
-            }
-
-            return null;
-        }
-
-#if UNITY_EDITOR
-        public static GameObject GetAsset(this GameObject prefab)
-        {
-            using (_PRF_GameObjectExtensions_GetAsset.Auto())
-            {
-                if (!PrefabUtility.IsPartOfPrefabInstance(prefab))
+                var children = go.GetComponentsInChildren<Transform>();
+                foreach (var child in children)
                 {
-                    if (!PrefabUtility.IsPartOfPrefabAsset(prefab))
-                    {
-                        return null;
-                    }
-
-                    return prefab;
+                    child.gameObject.layer = layer;
                 }
-
-                return AssetDatabaseManager.LoadAssetAtPath<GameObject>(
-                    PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefab)
-                );
             }
         }
-#endif
+
+        public static void RecoverLayersRecursive(
+            this GameObject go,
+            Dictionary<Transform, int> originalLayers)
+        {
+            using (_PRF_GameObjectExtensions_RecoverLayersRecursive.Auto())
+            {
+                go.layer = originalLayers[go.transform];
+                var children = go.GetComponentsInChildren<Transform>();
+                foreach (var child in children)
+                {
+                    child.gameObject.layer = originalLayers[child];
+                }
+            }
+        }
     }
 }

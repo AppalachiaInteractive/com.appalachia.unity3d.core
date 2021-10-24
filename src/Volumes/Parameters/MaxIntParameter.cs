@@ -8,15 +8,12 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class MaxIntParameter : IntParameter
     {
-        public int max;
-
-        public MaxIntParameter(int value, int max, bool overrideState = false) : base(
-            value,
-            overrideState
-        )
+        public MaxIntParameter(int value, int max, bool overrideState = false) : base(value, overrideState)
         {
             this.max = max;
         }
+
+        public int max;
 
         public override int value
         {

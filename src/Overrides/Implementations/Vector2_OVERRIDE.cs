@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public Vector2_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Vector2 value) :
-            base(overrideEnabled, value)
+        public Vector2_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Vector2 value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

@@ -5,49 +5,24 @@ namespace Appalachia.Core.Execution.Hooks
     public sealed class FrameEventDelegates<T>
         where T : FrameEventBehaviour<T>
     {
-        public event FrameActionDelegate awake;
-        public event FrameActionDelegate start;
-        public event FrameActionDelegate onEnable;
-        public event FrameActionDelegate onDisable;
-        public event FrameActionDelegate update;
-        public event FrameActionDelegate fixedUpdate;
         public event FrameActionCameraDelegate onPreCull;
+        public event FrameActionDelegate awake;
+        public event FrameActionDelegate fixedUpdate;
         public event FrameActionDelegate onApplicationQuit;
         public event FrameActionDelegate onDestroy;
+        public event FrameActionDelegate onDisable;
+        public event FrameActionDelegate onEnable;
+        public event FrameActionDelegate start;
+        public event FrameActionDelegate update;
 
         public void InvokeAwake()
         {
             awake?.Invoke();
         }
 
-        public void InvokeStart()
-        {
-            start?.Invoke();
-        }
-
-        public void InvokeOnEnable()
-        {
-            onEnable?.Invoke();
-        }
-
-        public void InvokeOnDisable()
-        {
-            onDisable?.Invoke();
-        }
-
-        public void InvokeUpdate()
-        {
-            update?.Invoke();
-        }
-
         public void InvokeFixedUpdate()
         {
             fixedUpdate?.Invoke();
-        }
-        
-        public void InvokeOnPreCull(Camera c)
-        {
-            onPreCull?.Invoke(c);
         }
 
         public void InvokeOnApplicationQuit()
@@ -58,6 +33,31 @@ namespace Appalachia.Core.Execution.Hooks
         public void InvokeOnDestroy()
         {
             onDestroy?.Invoke();
+        }
+
+        public void InvokeOnDisable()
+        {
+            onDisable?.Invoke();
+        }
+
+        public void InvokeOnEnable()
+        {
+            onEnable?.Invoke();
+        }
+
+        public void InvokeOnPreCull(Camera c)
+        {
+            onPreCull?.Invoke(c);
+        }
+
+        public void InvokeStart()
+        {
+            start?.Invoke();
+        }
+
+        public void InvokeUpdate()
+        {
+            update?.Invoke();
         }
     }
 }

@@ -10,13 +10,13 @@ namespace Appalachia.Core.Extensions
 {
     public static class TransformExtensions
     {
-        private static readonly Matrix4x4 _matrix_zero = Matrix4x4.zero;
-
         private static readonly Matrix4x4 _matrix_trs_zero = Matrix4x4.TRS(
             Vector3.zero,
             Quaternion.identity,
             Vector3.one
         );
+
+        private static readonly Matrix4x4 _matrix_zero = Matrix4x4.zero;
 
         public static float4x4 localToParentMatrix(this Transform t)
         {

@@ -14,10 +14,9 @@ namespace Appalachia.Core.Types.Exceptions
         {
         }
 
-        public StaticClassNotProperlyInitializedException(string className, string fieldName) :
-            base(
-                $"Static class {className} was not initialized properly: Issue with field {fieldName}."
-            )
+        public StaticClassNotProperlyInitializedException(string className, string fieldName) : base(
+            $"Static class {className} was not initialized properly: Issue with field {fieldName}."
+        )
         {
         }
     }

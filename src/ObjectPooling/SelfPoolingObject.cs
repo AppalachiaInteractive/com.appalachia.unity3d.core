@@ -9,19 +9,21 @@ namespace Appalachia.Core.ObjectPooling
 {
     public abstract class SelfPoolingObject
     {
+        public abstract void Initialize();
         public abstract void Reset();
         public abstract void Return();
-        public abstract void Initialize();
     }
 
     public abstract class SelfPoolingObject<T> : SelfPoolingObject
         where T : SelfPoolingObject<T>, new()
     {
-        private static ObjectPool<T> _internalPool;
-        private static bool _initializing;
+        private static readonly ProfilerMarker _PRF_SelfPoolingObject_ExecuteInitialize =
+            new("SelfPoolingObject.ExecuteInitialize");
 
-        private static readonly ProfilerMarker _PRF_SelfPoolingObject_Get =
-            new("SelfPoolingObject.Get");
+        private static readonly ProfilerMarker _PRF_SelfPoolingObject_ExecuteReset =
+            new("SelfPoolingObject.ExecuteReset");
+
+        private static readonly ProfilerMarker _PRF_SelfPoolingObject_Get = new("SelfPoolingObject.Get");
 
         private static readonly ProfilerMarker _PRF_SelfPoolingObject_Get_CreatePool =
             new("SelfPoolingObject.Get.CreatePool");
@@ -29,18 +31,23 @@ namespace Appalachia.Core.ObjectPooling
         private static readonly ProfilerMarker _PRF_SelfPoolingObject_Return =
             new("SelfPoolingObject.Return");
 
-        private static readonly ProfilerMarker _PRF_SelfPoolingObject_ExecuteReset =
-            new("SelfPoolingObject.ExecuteReset");
-
-        private static readonly ProfilerMarker _PRF_SelfPoolingObject_ExecuteInitialize =
-            new("SelfPoolingObject.ExecuteInitialize");
-
         [Obsolete]
         protected SelfPoolingObject()
         {
             if (!_initializing)
             {
                 throw new NotSupportedException("Do not call constructor directly");
+            }
+        }
+
+        private static bool _initializing;
+        private static ObjectPool<T> _internalPool;
+
+        public override void Return()
+        {
+            using (_PRF_SelfPoolingObject_Return.Auto())
+            {
+                _internalPool.Return((T) this);
             }
         }
 
@@ -54,10 +61,7 @@ namespace Appalachia.Core.ObjectPooling
                 {
                     using (_PRF_SelfPoolingObject_Get_CreatePool.Auto())
                     {
-                        _internalPool = ObjectPoolProvider.Create<T>(
-                            ExecuteReset,
-                            ExecuteInitialize
-                        );
+                        _internalPool = ObjectPoolProvider.Create<T>(ExecuteReset, ExecuteInitialize);
                     }
                 }
 
@@ -65,14 +69,6 @@ namespace Appalachia.Core.ObjectPooling
 
                 _initializing = false;
                 return result;
-            }
-        }
-
-        private static void ExecuteReset(T obj)
-        {
-            using (_PRF_SelfPoolingObject_ExecuteReset.Auto())
-            {
-                obj.Reset();
             }
         }
 
@@ -84,11 +80,11 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
-        public override void Return()
+        private static void ExecuteReset(T obj)
         {
-            using (_PRF_SelfPoolingObject_Return.Auto())
+            using (_PRF_SelfPoolingObject_ExecuteReset.Auto())
             {
-                _internalPool.Return((T) this);
+                obj.Reset();
             }
         }
     }

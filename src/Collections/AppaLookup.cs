@@ -19,8 +19,7 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Core.Collections
 {
     [Serializable]
-    public abstract class AppaLookup<TKey, TValue, TKeyList, TValueList> :
-            ISerializationCallbackReceiver,
+    public abstract class AppaLookup<TKey, TValue, TKeyList, TValueList> : ISerializationCallbackReceiver,
             IAppaLookupState<TKey, TValue>,
             IAppaLookup<TKey, TValue, TValueList>,
             IAppaLookupSafeUpdates<TKey, TValue, TValueList>,
@@ -30,8 +29,7 @@ namespace Appalachia.Core.Collections
         where TKeyList : AppaList<TKey>, new()
         where TValueList : AppaList<TValue>, new()
     {
-        private const string _PRF_PFX =
-            nameof(AppaLookup<TKey, TValue, TKeyList, TValueList>) + ".";
+        private const string _PRF_PFX = nameof(AppaLookup<TKey, TValue, TKeyList, TValueList>) + ".";
 
         private const int _REMOVE_INDICES_CAPACITY = 32;
 
@@ -148,10 +146,7 @@ namespace Appalachia.Core.Collections
 
                 for (var i = arrayIndex; i < array.Length; i++)
                 {
-                    array[i] = new KeyValuePair<TKey, TValue>(
-                        keys[i - arrayIndex],
-                        values[i - arrayIndex]
-                    );
+                    array[i] = new KeyValuePair<TKey, TValue>(keys[i - arrayIndex], values[i - arrayIndex]);
                 }
             }
         }
@@ -180,8 +175,7 @@ namespace Appalachia.Core.Collections
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys => keys;
 
-        private static readonly ProfilerMarker _PRF_TryGetValue =
-            new(_PRF_PFX + nameof(TryGetValue));
+        private static readonly ProfilerMarker _PRF_TryGetValue = new(_PRF_PFX + nameof(TryGetValue));
 
         public bool TryGetValue(TKey key, out TValue value)
         {
@@ -232,8 +226,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.
-            GetEnumerator()
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
             INTERNAL_INITIALIZE();
             return _lookup.GetEnumerator();
@@ -289,8 +282,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_ContainsKey =
-            new(_PRF_PFX + nameof(ContainsKey));
+        private static readonly ProfilerMarker _PRF_ContainsKey = new(_PRF_PFX + nameof(ContainsKey));
 
         public bool ContainsKey(TKey key)
         {
@@ -364,8 +356,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_AddOrUpdateIf =
-            new(_PRF_PFX + nameof(AddOrUpdateIf));
+        private static readonly ProfilerMarker _PRF_AddOrUpdateIf = new(_PRF_PFX + nameof(AddOrUpdateIf));
 
         public void AddOrUpdateIf(TKey key, Func<TValue> valueRetriever, Predicate<TValue> updateIf)
         {
@@ -409,8 +400,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_AddOrUpdate =
-            new(_PRF_PFX + nameof(AddOrUpdate));
+        private static readonly ProfilerMarker _PRF_AddOrUpdate = new(_PRF_PFX + nameof(AddOrUpdate));
 
         public void AddOrUpdate(TKey key, TValue value)
         {
@@ -454,8 +444,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_RemoveByKey =
-            new(_PRF_PFX + nameof(RemoveByKey));
+        private static readonly ProfilerMarker _PRF_RemoveByKey = new(_PRF_PFX + nameof(RemoveByKey));
 
         public TValue RemoveByKey(TKey key)
         {
@@ -532,8 +521,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_GetKeyByIndex =
-            new(_PRF_PFX + nameof(GetKeyByIndex));
+        private static readonly ProfilerMarker _PRF_GetKeyByIndex = new(_PRF_PFX + nameof(GetKeyByIndex));
 
         public TKey GetKeyByIndex(int i)
         {
@@ -687,12 +675,7 @@ namespace Appalachia.Core.Collections
                 {
                     for (var i = 0; i < keys.Count; i++)
                     {
-                        CheckReplacementAtStart(
-                            keys[i],
-                            values[i],
-                            out var newKey,
-                            out var newValue
-                        );
+                        CheckReplacementAtStart(keys[i], values[i], out var newKey, out var newValue);
                         keys[i] = newKey;
                         values[i] = newValue;
                     }
@@ -702,8 +685,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_RemoveNulls =
-            new(_PRF_PFX + nameof(RemoveNulls));
+        private static readonly ProfilerMarker _PRF_RemoveNulls = new(_PRF_PFX + nameof(RemoveNulls));
 
         public void RemoveNulls()
         {
@@ -886,8 +868,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_CLEAR =
-            new(_PRF_PFX + nameof(INTERNAL_CLEAR));
+        private static readonly ProfilerMarker _PRF_INTERNAL_CLEAR = new(_PRF_PFX + nameof(INTERNAL_CLEAR));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void INTERNAL_CLEAR()
@@ -914,8 +895,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_GET =
-            new(_PRF_PFX + nameof(INTERNAL_GET));
+        private static readonly ProfilerMarker _PRF_INTERNAL_GET = new(_PRF_PFX + nameof(INTERNAL_GET));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private TValue INTERNAL_GET(TKey key)
@@ -967,8 +947,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_REMOVE =
-            new(_PRF_PFX + nameof(INTERNAL_REMOVE));
+        private static readonly ProfilerMarker _PRF_INTERNAL_REMOVE = new(_PRF_PFX + nameof(INTERNAL_REMOVE));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private TValue INTERNAL_REMOVE(int targetIndex)
@@ -1010,8 +989,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_ADD =
-            new(_PRF_PFX + nameof(INTERNAL_ADD));
+        private static readonly ProfilerMarker _PRF_INTERNAL_ADD = new(_PRF_PFX + nameof(INTERNAL_ADD));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void INTERNAL_ADD(TKey key, TValue value)
@@ -1026,7 +1004,7 @@ namespace Appalachia.Core.Collections
                 _setDirtyAction?.Invoke();
             }
         }
-        
+
         private static readonly ProfilerMarker _PRF_INTERNAL_UPDATE_BY_INDEX =
             new(_PRF_PFX + nameof(INTERNAL_UPDATE_BY_INDEX));
 
@@ -1042,8 +1020,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_UPDATE =
-            new(_PRF_PFX + nameof(INTERNAL_UPDATE));
+        private static readonly ProfilerMarker _PRF_INTERNAL_UPDATE = new(_PRF_PFX + nameof(INTERNAL_UPDATE));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void INTERNAL_UPDATE(TKey key, TValue value)
@@ -1330,8 +1307,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_SortByValue =
-            new(_PRF_PFX + nameof(SortByValue));
+        private static readonly ProfilerMarker _PRF_SortByValue = new(_PRF_PFX + nameof(SortByValue));
 
         public void SortByValue(IComparer<TValue> comparer)
         {
@@ -1385,8 +1361,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private static readonly ProfilerMarker _PRF_GetKeyValuePair =
-            new(_PRF_PFX + nameof(GetKeyValuePair));
+        private static readonly ProfilerMarker _PRF_GetKeyValuePair = new(_PRF_PFX + nameof(GetKeyValuePair));
 
         private NonSerializedList<KVPDisplayWrapper> _displayWrappers;
 
@@ -1444,26 +1419,18 @@ namespace Appalachia.Core.Collections
         [HideReferenceObjectPicker]
         public class KVPDisplayWrapper : IEquatable<KVPDisplayWrapper>
         {
+            private const string _colorPointer = nameof(_color);
+            private const string _disableTitlePointer = nameof(_disableTitle);
             private const string _PRF_PFX = nameof(KVPDisplayWrapper) + ".";
+            private const string _subtitlePointer = "$" + nameof(_subtitle);
 
             private const string _titlePointer = "$" + nameof(_title);
-            private const string _subtitlePointer = "$" + nameof(_subtitle);
-            private const string _disableTitlePointer = nameof(_disableTitle);
-            private const string _colorPointer = nameof(_color);
 
             private static readonly ProfilerMarker _PRF_KVPDisplayWrapper =
                 new(_PRF_PFX + nameof(KVPDisplayWrapper));
 
             private static readonly ProfilerMarker _PRF_Value = new(_PRF_PFX + nameof(Value));
-
             private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + nameof(Update));
-            private Color _color;
-            private bool _disableTitle;
-            private KeyValuePair<TKey, TValue> _pair;
-            private string _subtitle;
-            private string _title;
-
-            private Action<TKey, TValue> _updateAction;
 
             public KVPDisplayWrapper(
                 bool showTitle,
@@ -1484,6 +1451,13 @@ namespace Appalachia.Core.Collections
                     _updateAction = updateAction;
                 }
             }
+
+            private Action<TKey, TValue> _updateAction;
+            private bool _disableTitle;
+            private Color _color;
+            private KeyValuePair<TKey, TValue> _pair;
+            private string _subtitle;
+            private string _title;
 
             //[ShowInInspector]
             [ReadOnly] public TKey Key => _pair.Key;

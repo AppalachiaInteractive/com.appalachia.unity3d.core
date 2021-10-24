@@ -24,21 +24,6 @@ namespace Appalachia.Core.Math.Stats
     [Serializable]
     public abstract class StatsTracker<T> : StatsTracker
     {
-        private const string _PRF_PFX = nameof(StatsTracker<T>) + ".";
-
-        private const string AVG = "Average";
-        private const string MIN = "Min";
-        private const string MAX = "Max";
-        private const string MED = "Median";
-        private const string FMT = "F2";
-
-        private const string _seperator = " | ";
-
-        private const string _formattedLongest = "{0}{1}{2}{3}{4}{5}{6}";
-        private const string _formattedLong = "{0}{1}{2}{3}{4}";
-
-        private const string _formatted = "{0} {1}{2}";
-
         protected const string _F0 = "F0";
         protected const string _F1 = "F1";
         protected const string _F2 = "F2";
@@ -46,76 +31,36 @@ namespace Appalachia.Core.Math.Stats
 
         protected const string suffix_fpx = "fps ({0:F1}ms)";
 
-        private static readonly ProfilerMarker _PRF_StatsTracker =
-            new(_PRF_PFX + nameof(StatsTracker));
+        private const string _formatted = "{0} {1}{2}";
+        private const string _formattedLong = "{0}{1}{2}{3}{4}";
+
+        private const string _formattedLongest = "{0}{1}{2}{3}{4}{5}{6}";
+        private const string _PRF_PFX = nameof(StatsTracker<T>) + ".";
+
+        private const string _seperator = " | ";
+
+        private const string AVG = "Average";
+        private const string FMT = "F2";
+        private const string MAX = "Max";
+        private const string MED = "Median";
+        private const string MIN = "Min";
+
+        private static readonly ProfilerMarker _PRF_StatsTracker = new(_PRF_PFX + nameof(StatsTracker));
 
         private static readonly ProfilerMarker _PRF_Median = new(_PRF_PFX + nameof(Median));
-
         private static readonly ProfilerMarker _PRF_Minimum = new(_PRF_PFX + nameof(Minimum));
-
         private static readonly ProfilerMarker _PRF_Maximum = new(_PRF_PFX + nameof(Maximum));
-
         private static readonly ProfilerMarker _PRF_Sum = new(_PRF_PFX + nameof(Sum));
-
         private static readonly ProfilerMarker _PRF_Average = new(_PRF_PFX + nameof(Average));
 
         private static readonly ProfilerMarker _PRF_Calculate = new(_PRF_PFX + nameof(Calculate));
 
         private static readonly ProfilerMarker _PRF_Track = new(_PRF_PFX + nameof(Track));
-
         private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + nameof(Reset));
-
         private static readonly ProfilerMarker _PRF_ToString = new(_PRF_PFX + nameof(ToString));
 
         private static readonly ProfilerMarker _PRF_GetFormattedString =
             new(_PRF_PFX + nameof(GetFormattedString));
-
-        [SmartLabel]
-        [HorizontalGroup("Meta")]
-        [SerializeField]
-        private int _lastTrackingIndex;
-
-        [SmartLabel]
-        [HorizontalGroup("Meta")]
-        [SerializeField]
-        private int _limit;
-
-        [SmartLabel]
-        [HorizontalGroup("Meta")]
-        [SerializeField]
-        private bool _trackMedian;
-
-        [SmartLabel]
-        [HorizontalGroup("Meta")]
-        [SerializeField]
-        private int _calculatedAt;
-
-        [SmartLabel]
-        [HorizontalGroup("Stats")]
-        [SerializeField]
-        private T _median;
-
-        [SmartLabel]
-        [HorizontalGroup("Stats")]
-        [SerializeField]
-        private T _minimum;
-
-        [SmartLabel]
-        [HorizontalGroup("Stats")]
-        [SerializeField]
-        private T _maximum;
-
-        [SmartLabel]
-        [HorizontalGroup("Stats")]
-        [SerializeField]
-        private T _sum;
-
-        [SmartLabel]
-        [HorizontalGroup("Stats")]
-        [SerializeField]
-        private T _average;
-
-        private List<T> _values;
 
         protected StatsTracker(bool trackMedian = false, int limit = 256)
         {
@@ -138,9 +83,80 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        private bool ShouldCalculate => _calculatedAt != _values.Count;
+        [SmartLabel]
+        [HorizontalGroup("Meta")]
+        [SerializeField]
+        private bool _trackMedian;
+
+        [SmartLabel]
+        [HorizontalGroup("Meta")]
+        [SerializeField]
+        private int _calculatedAt;
+
+        [SmartLabel]
+        [HorizontalGroup("Meta")]
+        [SerializeField]
+        private int _lastTrackingIndex;
+
+        [SmartLabel]
+        [HorizontalGroup("Meta")]
+        [SerializeField]
+        private int _limit;
+
+        private List<T> _values;
+
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
+        private T _average;
+
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
+        private T _maximum;
+
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
+        private T _median;
+
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
+        private T _minimum;
+
+        [SmartLabel]
+        [HorizontalGroup("Stats")]
+        [SerializeField]
+        private T _sum;
 
         public int Count => _values.Count;
+
+        public T Average
+        {
+            get
+            {
+                using (_PRF_Average.Auto())
+                {
+                    Calculate();
+                    return _average;
+                }
+            }
+        }
+
+        public T Maximum
+        {
+            get
+            {
+                using (_PRF_Maximum.Auto())
+                {
+                    Calculate();
+                    return _maximum;
+                }
+            }
+        }
+
+        public T Mean => Average;
 
         public T Median
         {
@@ -171,18 +187,6 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        public T Maximum
-        {
-            get
-            {
-                using (_PRF_Maximum.Auto())
-                {
-                    Calculate();
-                    return _maximum;
-                }
-            }
-        }
-
         public T Sum
         {
             get
@@ -195,108 +199,17 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        public T Mean => Average;
-
-        public T Average
-        {
-            get
-            {
-                using (_PRF_Average.Auto())
-                {
-                    Calculate();
-                    return _average;
-                }
-            }
-        }
-
         protected abstract Comparison<T> Comparer { get; }
 
-        private void Calculate()
-        {
-            using (_PRF_Calculate.Auto())
-            {
-                if (_values == null)
-                {
-                    _values = new List<T>(_limit);
-                }
+        private bool ShouldCalculate => _calculatedAt != _values.Count;
 
-                if (!ShouldCalculate)
-                {
-                    return;
-                }
-
-                _calculatedAt = _values.Count;
-
-                if (_trackMedian)
-                {
-                    _values.Sort(Comparer);
-
-                    var midIndex = _values.Count / 2;
-                    _median = _values[midIndex];
-                }
-
-                _minimum = _values[0];
-                _maximum = _values[0];
-                _sum = _values[0];
-
-                for (var i = 1; i < _values.Count; i++)
-                {
-                    var val = _values[i];
-
-                    _sum = Add(val, _sum);
-                    _minimum = Comparer(val, _minimum) < 0 ? val : _minimum;
-                    _maximum = Comparer(val, _maximum) > 0 ? val : _maximum;
-                }
-
-                _average = Divide(_sum, _values.Count);
-            }
-        }
+        public abstract string Format(T value, FormatType format);
+        protected abstract string Suffix(T value, SuffixType type);
 
         protected abstract T Add(T a, T b);
         protected abstract T Divide(T dividend, int divisor);
 
-        public void Track(T value)
-        {
-            using (_PRF_Track.Auto())
-            {
-                if (_values == null)
-                {
-                    _values = new List<T>(_limit);
-                }
-
-                if (_values.Count < _limit)
-                {
-                    _values.Add(value);
-                }
-                else
-                {
-                    _calculatedAt = 0;
-
-                    _values[_lastTrackingIndex] = value;
-
-                    _lastTrackingIndex = _random.NextInt(0, _values.Count);
-                }
-            }
-        }
-
-        public void Reset()
-        {
-            using (_PRF_Reset.Auto())
-            {
-                _values.Clear();
-                _average = default;
-                _maximum = default;
-                _median = default;
-                _minimum = default;
-                _sum = default;
-                _calculatedAt = 0;
-            }
-        }
-
-        public override string ToString()
-        {
-            return ToString(_trackMedian, SuffixType.None, TransformationType.None, _seperator);
-        }
+        protected abstract T Transform(T value, TransformationType type);
 
         public string ToString(SuffixType suffix)
         {
@@ -341,6 +254,49 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
+        public void Reset()
+        {
+            using (_PRF_Reset.Auto())
+            {
+                _values.Clear();
+                _average = default;
+                _maximum = default;
+                _median = default;
+                _minimum = default;
+                _sum = default;
+                _calculatedAt = 0;
+            }
+        }
+
+        public void Track(T value)
+        {
+            using (_PRF_Track.Auto())
+            {
+                if (_values == null)
+                {
+                    _values = new List<T>(_limit);
+                }
+
+                if (_values.Count < _limit)
+                {
+                    _values.Add(value);
+                }
+                else
+                {
+                    _calculatedAt = 0;
+
+                    _values[_lastTrackingIndex] = value;
+
+                    _lastTrackingIndex = _random.NextInt(0, _values.Count);
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            return ToString(_trackMedian, SuffixType.None, TransformationType.None, _seperator);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetFormattedString(
             T value,
@@ -359,9 +315,45 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        public abstract string Format(T value, FormatType format);
+        private void Calculate()
+        {
+            using (_PRF_Calculate.Auto())
+            {
+                if (_values == null)
+                {
+                    _values = new List<T>(_limit);
+                }
 
-        protected abstract T Transform(T value, TransformationType type);
-        protected abstract string Suffix(T value, SuffixType type);
+                if (!ShouldCalculate)
+                {
+                    return;
+                }
+
+                _calculatedAt = _values.Count;
+
+                if (_trackMedian)
+                {
+                    _values.Sort(Comparer);
+
+                    var midIndex = _values.Count / 2;
+                    _median = _values[midIndex];
+                }
+
+                _minimum = _values[0];
+                _maximum = _values[0];
+                _sum = _values[0];
+
+                for (var i = 1; i < _values.Count; i++)
+                {
+                    var val = _values[i];
+
+                    _sum = Add(val, _sum);
+                    _minimum = Comparer(val, _minimum) < 0 ? val : _minimum;
+                    _maximum = Comparer(val, _maximum) > 0 ? val : _maximum;
+                }
+
+                _average = Divide(_sum, _values.Count);
+            }
+        }
     }
 }

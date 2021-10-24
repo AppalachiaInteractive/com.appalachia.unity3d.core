@@ -3,12 +3,12 @@
 using System;
 using System.Diagnostics;
 using Unity.Profiling;
-using Debug = UnityEngine.Debug;
 
 #endregion
 
 namespace Appalachia.Core.Aspects.Tracing
 {
+    [DebuggerStepThrough]
     public struct TraceMarker
     {
         public TraceMarker(string message)
@@ -70,7 +70,7 @@ namespace Appalachia.Core.Aspects.Tracing
                 using (_PRF_TraceMarker_Trace_Format.Auto())
                 {
                     var formatPrefix = _indents[frameCount];
-                    
+
                     Console.WriteLine($"{formatPrefix}{_traceMessage}: {type}");
                 }
             }
@@ -102,13 +102,12 @@ namespace Appalachia.Core.Aspects.Tracing
             return new(this, ignored);
         }
 
+        [DebuggerStepThrough]
         public struct AutoScope : IDisposable
         {
-            private static readonly ProfilerMarker _PRF_AutoScope_AutoScope =
-                new("AutoScope.AutoScope");
+            private static readonly ProfilerMarker _PRF_AutoScope_AutoScope = new("AutoScope.AutoScope");
 
-            private static readonly ProfilerMarker
-                _PRF_AutoScope_Dispose = new("AutoScope.Dispose");
+            private static readonly ProfilerMarker _PRF_AutoScope_Dispose = new("AutoScope.Dispose");
 
             internal TraceMarker _marker;
             internal bool _ignore;

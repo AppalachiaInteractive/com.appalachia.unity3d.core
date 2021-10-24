@@ -1,6 +1,7 @@
+#region
+
 using System;
 using System.Collections.Generic;
-using Appalachia.CI.Integration;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.FileSystem;
 using Appalachia.Core.Assets;
@@ -8,9 +9,6 @@ using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
-
-#region
-
 using Object = UnityEngine.Object;
 
 #endregion
@@ -28,8 +26,7 @@ namespace Appalachia.Core.Scriptables
 
         private static readonly ProfilerMarker _PRF_SetDirty = new(_PRF_PFX + nameof(SetDirty));
 
-        private static readonly ProfilerMarker _PRF_SetDirtyAndSave =
-            new(_PRF_PFX + nameof(SetDirtyAndSave));
+        private static readonly ProfilerMarker _PRF_SetDirtyAndSave = new(_PRF_PFX + nameof(SetDirtyAndSave));
 
         //private static AspectSets _aspects;
 
@@ -104,7 +101,7 @@ namespace Appalachia.Core.Scriptables
         public void Select()
         {
             using (_PRF_Select.Auto())
-            {                
+            {
                 AssetDatabaseManager.SetSelection(this);
             }
         }
@@ -119,7 +116,9 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_Duplicate.Auto())
             {
-                var path = AssetDatabaseManager.GenerateUniqueAssetPath(AssetDatabaseManager.GetAssetPath(this));
+                var path = AssetDatabaseManager.GenerateUniqueAssetPath(
+                    AssetDatabaseManager.GetAssetPath(this)
+                );
                 var newInstance = Instantiate(this);
                 AssetDatabaseManager.CreateAsset(newInstance, path);
                 Selection.activeObject = newInstance;
@@ -139,8 +138,7 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        private static readonly ProfilerMarker _PRF_DirectoryPath =
-            new(_PRF_PFX + nameof(DirectoryPath));
+        private static readonly ProfilerMarker _PRF_DirectoryPath = new(_PRF_PFX + nameof(DirectoryPath));
 
         public string DirectoryPath
         {
@@ -153,8 +151,7 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        private static readonly ProfilerMarker _PRF_HasAssetPath =
-            new(_PRF_PFX + nameof(HasAssetPath));
+        private static readonly ProfilerMarker _PRF_HasAssetPath = new(_PRF_PFX + nameof(HasAssetPath));
 
         public bool HasAssetPath(out string path)
         {
@@ -171,8 +168,7 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        private static readonly ProfilerMarker _PRF_HasSubAssets =
-            new(_PRF_PFX + nameof(HasSubAssets));
+        private static readonly ProfilerMarker _PRF_HasSubAssets = new(_PRF_PFX + nameof(HasSubAssets));
 
         public bool HasSubAssets(out Object[] subAssets)
         {
@@ -219,7 +215,7 @@ namespace Appalachia.Core.Scriptables
                 }
 
                 var finalPath = AppaPath.Combine(basePath, $"{newPath_name}{newPath_extension}")
-                                    .Replace("\\", "/");
+                                        .Replace("\\", "/");
 
                 name = newPath_name;
 
@@ -247,8 +243,7 @@ namespace Appalachia.Core.Scriptables
         {
         }
 
-        private static readonly ProfilerMarker _PRF_GetAllOfType =
-            new(_PRF_PFX + nameof(GetAllOfType));
+        private static readonly ProfilerMarker _PRF_GetAllOfType = new(_PRF_PFX + nameof(GetAllOfType));
 
         public static T[] GetAllOfType()
         {

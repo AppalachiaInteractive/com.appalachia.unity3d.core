@@ -8,44 +8,14 @@ namespace Appalachia.Core.Extensions
 {
     public static class FloatExtensions
     {
-        private const float PositiveEpsilon = 0.00001f;
         private const float NegativeEpsilon = -0.00001f;
+        private const float PositiveEpsilon = 0.00001f;
 
         public static bool RoughlyEqual(this float value, float other)
         {
             var diff = value - other;
 
             return (diff < PositiveEpsilon) && (diff > NegativeEpsilon);
-        }
-
-        public static bool RoughlyZero(this float value)
-        {
-            return RoughlyEqual(value, 0);
-        }
-
-        public static bool RoughlyZeroOrMore(this float value)
-        {
-            return (value >= 0) || RoughlyEqual(value, 0);
-        }
-
-        public static bool RoughlyZeroOrLess(this float value)
-        {
-            return (value <= 0) || RoughlyEqual(value, 0);
-        }
-
-        public static bool RoughlyOne(this float value)
-        {
-            return RoughlyEqual(value, 1);
-        }
-
-        public static bool RoughlyOneOrMore(this float value)
-        {
-            return RoughlyGreaterThanOrEqualTo(value, 1);
-        }
-
-        public static bool RoughlyOneOrLess(this float value)
-        {
-            return RoughlyLessThanOrEqualTo(value, 1);
         }
 
         public static bool RoughlyGreaterThanOrEqualTo(this float value, float comparison)
@@ -58,10 +28,19 @@ namespace Appalachia.Core.Extensions
             return (value <= comparison) || RoughlyEqual(value, comparison);
         }
 
-        public static bool RoughlyWithinPositiveNegativeBounds(this float value, float comparison)
+        public static bool RoughlyOne(this float value)
         {
-            return ((value < comparison) || value.RoughlyEqual(comparison)) &&
-                   ((value > -comparison) || value.RoughlyEqual(-comparison));
+            return RoughlyEqual(value, 1);
+        }
+
+        public static bool RoughlyOneOrLess(this float value)
+        {
+            return RoughlyLessThanOrEqualTo(value, 1);
+        }
+
+        public static bool RoughlyOneOrMore(this float value)
+        {
+            return RoughlyGreaterThanOrEqualTo(value, 1);
         }
 
         public static bool RoughlyOutsidePositiveNegativeBounds(this float value, float comparison)
@@ -70,6 +49,27 @@ namespace Appalachia.Core.Extensions
                    value.RoughlyEqual(comparison) ||
                    value.RoughlyEqual(-comparison) ||
                    (value < -comparison);
+        }
+
+        public static bool RoughlyWithinPositiveNegativeBounds(this float value, float comparison)
+        {
+            return ((value < comparison) || value.RoughlyEqual(comparison)) &&
+                   ((value > -comparison) || value.RoughlyEqual(-comparison));
+        }
+
+        public static bool RoughlyZero(this float value)
+        {
+            return RoughlyEqual(value, 0);
+        }
+
+        public static bool RoughlyZeroOrLess(this float value)
+        {
+            return (value <= 0) || RoughlyEqual(value, 0);
+        }
+
+        public static bool RoughlyZeroOrMore(this float value)
+        {
+            return (value >= 0) || RoughlyEqual(value, 0);
         }
 
         public static float Clamp(this float value, float min, float max)
@@ -81,14 +81,14 @@ namespace Appalachia.Core.Extensions
                     : value;
         }
 
-        public static float ClampAbs(this float value, float min, float max)
-        {
-            return value < 0 ? Clamp(-1 * value, min, max) : Clamp(value, min, max);
-        }
-
         public static float Clamp0to1(this float value)
         {
             return Clamp(value, 0, 1);
+        }
+
+        public static float ClampAbs(this float value, float min, float max)
+        {
+            return value < 0 ? Clamp(-1 * value, min, max) : Clamp(value, min, max);
         }
 
         public static float ClampAbs0to1(this float value)
@@ -104,11 +104,6 @@ namespace Appalachia.Core.Extensions
             }
 
             return Clamp(angle, min, max);
-        }
-
-        public static float Squared(this float value)
-        {
-            return value * value;
         }
 
         public static float HalfSquared(this float value)
@@ -134,6 +129,11 @@ namespace Appalachia.Core.Extensions
         public static float RemapFrom0to1(this float time, float minNew, float maxNew)
         {
             return Mathf.Lerp(minNew, maxNew, time);
+        }
+
+        public static float Squared(this float value)
+        {
+            return value * value;
         }
     }
 }

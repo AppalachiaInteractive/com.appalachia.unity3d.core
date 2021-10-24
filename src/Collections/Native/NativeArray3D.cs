@@ -274,9 +274,7 @@ namespace Appalachia.Core.Collections.Native
 
             if (totalCapacity <= 0)
             {
-                throw new InvalidOperationException(
-                    "Total number of elements must be greater than zero"
-                );
+                throw new InvalidOperationException("Total number of elements must be greater than zero");
             }
 
             array = new NativeArray3D<T>
@@ -527,9 +525,7 @@ namespace Appalachia.Core.Collections.Native
 
             if (sourceLength != thisLength)
             {
-                throw new ArgumentException(
-                    "Array length must match the TotalCapacity of this array."
-                );
+                throw new ArgumentException("Array length must match the TotalCapacity of this array.");
             }
 
             for (var i = 0; i < src.Length; i++)

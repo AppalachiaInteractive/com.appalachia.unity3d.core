@@ -1,7 +1,7 @@
 #region
 
 using System.Runtime.CompilerServices;
-using Appalachia.Utility.src.Constants;
+using Appalachia.Utility.Constants;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -35,45 +35,7 @@ namespace Appalachia.Core.Extensions
             return math.mul(quaternion, float3c.forward);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 left(this quaternion quaternion)
-        {
-            return math.mul(quaternion, float3c.left);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 right(this quaternion quaternion)
-        {
-            return math.mul(quaternion, float3c.right);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float3 up(this quaternion quaternion)
-        {
-            return math.mul(quaternion, float3c.up);
-        }
-
-        public static quaternion Anticipate(
-            this quaternion first,
-            float elapsed,
-            quaternion second,
-            float anticipationDuration)
-        {
-            return new(
-                second.value.x +
-                ((anticipationDuration / elapsed) * (second.value.x - first.value.x)),
-                second.value.y +
-                ((anticipationDuration / elapsed) * (second.value.y - first.value.y)),
-                second.value.z +
-                ((anticipationDuration / elapsed) * (second.value.z - first.value.z)),
-                second.value.w +
-                ((anticipationDuration / elapsed) * (second.value.w - first.value.w)));
-        }
-
-        public static float3 GetAngularVelocity(
-            this quaternion older,
-            quaternion newer,
-            float elapsed)
+        public static float3 GetAngularVelocity(this quaternion older, quaternion newer, float elapsed)
         {
             var q = math.mul(newer, math.inverse(older));
 
@@ -98,9 +60,16 @@ namespace Appalachia.Core.Extensions
             return new float3(q.value.x * gain, q.value.y * gain, q.value.z * gain);
         }
 
-        public static Vector3 ToEulerV3(this quaternion quat)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float3 left(this quaternion quaternion)
         {
-            return ToEuler(quat);
+            return math.mul(quaternion, float3c.left);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float3 right(this quaternion quaternion)
+        {
+            return math.mul(quaternion, float3c.right);
         }
 
         public static float3 ToEuler(this quaternion quat)
@@ -133,9 +102,32 @@ namespace Appalachia.Core.Extensions
             return angles;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float3 up(this quaternion quaternion)
+        {
+            return math.mul(quaternion, float3c.up);
+        }
+
         public static float4x4 float4x4(this quaternion input)
         {
             return new(input, float3.zero);
+        }
+
+        public static quaternion Anticipate(
+            this quaternion first,
+            float elapsed,
+            quaternion second,
+            float anticipationDuration)
+        {
+            return new(second.value.x + ((anticipationDuration / elapsed) * (second.value.x - first.value.x)),
+                second.value.y + ((anticipationDuration / elapsed) * (second.value.y - first.value.y)),
+                second.value.z + ((anticipationDuration / elapsed) * (second.value.z - first.value.z)),
+                second.value.w + ((anticipationDuration / elapsed) * (second.value.w - first.value.w)));
+        }
+
+        public static Vector3 ToEulerV3(this quaternion quat)
+        {
+            return ToEuler(quat);
         }
     }
 }

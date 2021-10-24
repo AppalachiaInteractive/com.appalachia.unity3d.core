@@ -8,6 +8,13 @@ namespace Appalachia.Core.ArrayPooling
 {
     internal static class Utilities
     {
+        internal static int GetMaxSizeForBucket(int binIndex)
+        {
+            var maxSize = 16 << binIndex;
+            Assert.IsTrue(maxSize >= 0);
+            return maxSize;
+        }
+
         internal static int SelectBucketIndex(int bufferSize)
         {
             Assert.IsTrue(bufferSize > 0);
@@ -46,13 +53,6 @@ namespace Appalachia.Core.ArrayPooling
             }
 
             return poolIndex + (int) bitsRemaining;
-        }
-
-        internal static int GetMaxSizeForBucket(int binIndex)
-        {
-            var maxSize = 16 << binIndex;
-            Assert.IsTrue(maxSize >= 0);
-            return maxSize;
         }
     }
 }

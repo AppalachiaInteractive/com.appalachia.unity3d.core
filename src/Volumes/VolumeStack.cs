@@ -12,11 +12,25 @@ namespace Appalachia.Core.Volumes
 {
     public sealed class VolumeStack : IDisposable
     {
+        internal VolumeStack()
+        {
+        }
+
         // Holds the state of _all_ component types you can possibly add on volumes
         public Dictionary<Type, VolumeComponent> components;
 
-        internal VolumeStack()
+        public T GetComponent<T>()
+            where T : VolumeComponent
         {
+            var comp = GetComponent(typeof(T));
+            return (T) comp;
+        }
+
+        public VolumeComponent GetComponent(Type type)
+        {
+            VolumeComponent comp;
+            components.TryGetValue(type, out comp);
+            return comp;
         }
 
         public void Dispose()
@@ -45,20 +59,6 @@ namespace Appalachia.Core.Volumes
                 var inst = (VolumeComponent) ScriptableObject.CreateInstance(type);
                 components.Add(type, inst);
             }
-        }
-
-        public T GetComponent<T>()
-            where T : VolumeComponent
-        {
-            var comp = GetComponent(typeof(T));
-            return (T) comp;
-        }
-
-        public VolumeComponent GetComponent(Type type)
-        {
-            VolumeComponent comp;
-            components.TryGetValue(type, out comp);
-            return comp;
         }
     }
 }

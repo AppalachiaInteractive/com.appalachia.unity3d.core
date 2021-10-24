@@ -18,16 +18,13 @@ namespace Appalachia.Core.Execution
         private static readonly ProfilerMarker _PRF_HookAttributeSubscriberManager_ProcessType =
             new(_PRF_PFX + nameof(HookAttributeSubscriberManager) + ".ProcessType");
 
-        private static readonly ProfilerMarker
-            _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod = new(_PRF_PFX +
-                nameof(HookAttributeSubscriberManager) +
-                ".ProcessType.ProcessMethod");
+        private static readonly ProfilerMarker _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod =
+            new(_PRF_PFX + nameof(HookAttributeSubscriberManager) + ".ProcessType.ProcessMethod");
 
         private static readonly ProfilerMarker
-            _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod_ProcessAttribute =
-                new(_PRF_PFX +
-                    nameof(HookAttributeSubscriberManager) +
-                    ".ProcessType.ProcessMethod.ProcessAttribute");
+            _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod_ProcessAttribute = new(_PRF_PFX +
+                nameof(HookAttributeSubscriberManager) +
+                ".ProcessType.ProcessMethod.ProcessAttribute");
 
         static HookAttributeSubscriberManager()
         {
@@ -45,8 +42,7 @@ namespace Appalachia.Core.Execution
                 for (var methodIndex = 0; methodIndex < methods.Length; methodIndex++)
                 {
                     var method = methods[methodIndex];
-                    using var scope3 = _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod
-                       .Auto();
+                    using var scope3 = _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod.Auto();
 
                     if (!method.IsStatic_CACHE())
                     {
@@ -55,9 +51,7 @@ namespace Appalachia.Core.Execution
 
                     var attributes = method.GetAttributes_CACHE(false);
 
-                    for (var attributeIndex = 0;
-                        attributeIndex < attributes.Length;
-                        attributeIndex++)
+                    for (var attributeIndex = 0; attributeIndex < attributes.Length; attributeIndex++)
                     {
                         var attribute = attributes[attributeIndex];
                         using var scope4 =
@@ -73,23 +67,19 @@ namespace Appalachia.Core.Execution
 
                         if (attribute is ExecuteOnAwakeAttribute)
                         {
-                            FrameStart.EventDelegates.awake +=
-                                StaticRoutine.CreateDelegate(method).Invoke;
+                            FrameStart.EventDelegates.awake += StaticRoutine.CreateDelegate(method).Invoke;
                         }
                         else if (attribute is ExecuteOnStartAttribute)
                         {
-                            FrameStart.EventDelegates.start +=
-                                StaticRoutine.CreateDelegate(method).Invoke;
+                            FrameStart.EventDelegates.start += StaticRoutine.CreateDelegate(method).Invoke;
                         }
                         else if (attribute is ExecuteOnEnableAttribute)
                         {
-                            FrameStart.EventDelegates.onEnable +=
-                                StaticRoutine.CreateDelegate(method).Invoke;
+                            FrameStart.EventDelegates.onEnable += StaticRoutine.CreateDelegate(method).Invoke;
                         }
                         else if (attribute is ExecuteOnUpdateAttribute)
                         {
-                            FrameStart.EventDelegates.update +=
-                                StaticRoutine.CreateDelegate(method).Invoke;
+                            FrameStart.EventDelegates.update += StaticRoutine.CreateDelegate(method).Invoke;
                         }
                         else if (attribute is ExecuteOnFixedUpdateAttribute)
                         {

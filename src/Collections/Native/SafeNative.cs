@@ -77,8 +77,7 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        private static readonly ProfilerMarker _PRF_SafeDispose =
-            new(_PRF_PFX + nameof(SafeDisposeAll));
+        private static readonly ProfilerMarker _PRF_SafeDispose = new(_PRF_PFX + nameof(SafeDisposeAll));
 
         public static void SafeDispose<T>(this NativeArray<T> native, JobHandle handle)
             where T : unmanaged
@@ -257,8 +256,7 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        private static readonly ProfilerMarker _PRF_SafeDisposeAll =
-            new(_PRF_PFX + nameof(SafeDisposeAll));
+        private static readonly ProfilerMarker _PRF_SafeDisposeAll = new(_PRF_PFX + nameof(SafeDisposeAll));
 
         public static void SafeDisposeAll(this NativeList<JobHandle> native)
         {
@@ -607,21 +605,20 @@ namespace Appalachia.Core.Collections.Native
             SafeDispose(ref d11);
         }
 
-        public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12>(
-                ref T00 d00,
-                ref T01 d01,
-                ref T02 d02,
-                ref T03 d03,
-                ref T04 d04,
-                ref T05 d05,
-                ref T06 d06,
-                ref T07 d07,
-                ref T08 d08,
-                ref T09 d09,
-                ref T10 d10,
-                ref T11 d11,
-                ref T12 d12)
+        public static void SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12>(
+            ref T00 d00,
+            ref T01 d01,
+            ref T02 d02,
+            ref T03 d03,
+            ref T04 d04,
+            ref T05 d05,
+            ref T06 d06,
+            ref T07 d07,
+            ref T08 d08,
+            ref T09 d09,
+            ref T10 d10,
+            ref T11 d11,
+            ref T12 d12)
             where T00 : IDisposable
             where T01 : IDisposable
             where T02 : IDisposable
@@ -651,22 +648,21 @@ namespace Appalachia.Core.Collections.Native
             SafeDispose(ref d12);
         }
 
-        public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13>(
-                ref T00 d00,
-                ref T01 d01,
-                ref T02 d02,
-                ref T03 d03,
-                ref T04 d04,
-                ref T05 d05,
-                ref T06 d06,
-                ref T07 d07,
-                ref T08 d08,
-                ref T09 d09,
-                ref T10 d10,
-                ref T11 d11,
-                ref T12 d12,
-                ref T13 d13)
+        public static void SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13>(
+            ref T00 d00,
+            ref T01 d01,
+            ref T02 d02,
+            ref T03 d03,
+            ref T04 d04,
+            ref T05 d05,
+            ref T06 d06,
+            ref T07 d07,
+            ref T08 d08,
+            ref T09 d09,
+            ref T10 d10,
+            ref T11 d11,
+            ref T12 d12,
+            ref T13 d13)
             where T00 : IDisposable
             where T01 : IDisposable
             where T02 : IDisposable
@@ -749,8 +745,7 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -803,8 +798,7 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -860,8 +854,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -920,8 +914,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -983,8 +977,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1049,8 +1043,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19, T20>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19, T20>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1118,8 +1112,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19, T20, T21>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19, T20, T21>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1190,8 +1184,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19, T20, T21, T22>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19, T20, T21, T22>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1265,8 +1259,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void SafeDispose<
-            T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
-            T17, T18, T19, T20, T21, T22, T23>(
+            T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16, T17, T18,
+            T19, T20, T21, T22, T23>(
             ref T00 d00,
             ref T01 d01,
             ref T02 d02,
@@ -1343,8 +1337,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void SafeDispose<
-            T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
-            T17, T18, T19, T20, T21, T22, T23, T24>(
+            T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16, T17, T18,
+            T19, T20, T21, T22, T23, T24>(
             ref T00 d00,
             ref T01 d01,
             ref T02 d02,
@@ -1424,8 +1418,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19, T20, T21, T22, T23, T24, T25>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1508,8 +1502,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1595,8 +1589,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1685,8 +1679,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1778,8 +1772,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                        T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(
+            SafeDispose<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                        T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(
                 ref T00 d00,
                 ref T01 d01,
                 ref T02 d02,
@@ -1877,8 +1871,7 @@ namespace Appalachia.Core.Collections.Native
 
 #region Safe Check
 
-        private static readonly ProfilerMarker _PRF_ShouldAllocate =
-            new(_PRF_PFX + nameof(ShouldAllocate));
+        private static readonly ProfilerMarker _PRF_ShouldAllocate = new(_PRF_PFX + nameof(ShouldAllocate));
 
         public static bool ShouldAllocate<T>(this NativeList<T> native)
             where T : unmanaged
@@ -2292,21 +2285,20 @@ namespace Appalachia.Core.Collections.Native
             SafeClear(ref d11);
         }
 
-        public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12>(
-                ref NativeList<T00> d00,
-                ref NativeList<T01> d01,
-                ref NativeList<T02> d02,
-                ref NativeList<T03> d03,
-                ref NativeList<T04> d04,
-                ref NativeList<T05> d05,
-                ref NativeList<T06> d06,
-                ref NativeList<T07> d07,
-                ref NativeList<T08> d08,
-                ref NativeList<T09> d09,
-                ref NativeList<T10> d10,
-                ref NativeList<T11> d11,
-                ref NativeList<T12> d12)
+        public static void SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12>(
+            ref NativeList<T00> d00,
+            ref NativeList<T01> d01,
+            ref NativeList<T02> d02,
+            ref NativeList<T03> d03,
+            ref NativeList<T04> d04,
+            ref NativeList<T05> d05,
+            ref NativeList<T06> d06,
+            ref NativeList<T07> d07,
+            ref NativeList<T08> d08,
+            ref NativeList<T09> d09,
+            ref NativeList<T10> d10,
+            ref NativeList<T11> d11,
+            ref NativeList<T12> d12)
             where T00 : unmanaged
             where T01 : unmanaged
             where T02 : unmanaged
@@ -2336,22 +2328,21 @@ namespace Appalachia.Core.Collections.Native
             SafeClear(ref d12);
         }
 
-        public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13>(
-                ref NativeList<T00> d00,
-                ref NativeList<T01> d01,
-                ref NativeList<T02> d02,
-                ref NativeList<T03> d03,
-                ref NativeList<T04> d04,
-                ref NativeList<T05> d05,
-                ref NativeList<T06> d06,
-                ref NativeList<T07> d07,
-                ref NativeList<T08> d08,
-                ref NativeList<T09> d09,
-                ref NativeList<T10> d10,
-                ref NativeList<T11> d11,
-                ref NativeList<T12> d12,
-                ref NativeList<T13> d13)
+        public static void SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13>(
+            ref NativeList<T00> d00,
+            ref NativeList<T01> d01,
+            ref NativeList<T02> d02,
+            ref NativeList<T03> d03,
+            ref NativeList<T04> d04,
+            ref NativeList<T05> d05,
+            ref NativeList<T06> d06,
+            ref NativeList<T07> d07,
+            ref NativeList<T08> d08,
+            ref NativeList<T09> d09,
+            ref NativeList<T10> d10,
+            ref NativeList<T11> d11,
+            ref NativeList<T12> d12,
+            ref NativeList<T13> d13)
             where T00 : unmanaged
             where T01 : unmanaged
             where T02 : unmanaged
@@ -2434,8 +2425,7 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -2488,8 +2478,7 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -2545,8 +2534,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -2605,8 +2594,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -2668,8 +2657,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -2734,8 +2723,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -2803,8 +2792,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -2875,8 +2864,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21, T22>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21, T22>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -2950,8 +2939,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21, T22, T23>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21, T22, T23>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -3028,8 +3017,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21, T22, T23, T24>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -3109,8 +3098,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21, T22, T23, T24, T25>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -3193,8 +3182,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -3280,8 +3269,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -3370,8 +3359,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,
@@ -3463,8 +3452,8 @@ namespace Appalachia.Core.Collections.Native
         }
 
         public static void
-            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14,
-                      T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(
+            SafeClear<T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16,
+                      T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(
                 ref NativeList<T00> d00,
                 ref NativeList<T01> d01,
                 ref NativeList<T02> d02,

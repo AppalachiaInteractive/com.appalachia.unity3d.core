@@ -110,9 +110,7 @@ namespace Appalachia.Core.Extensions
             return result;
         }
 
-        public static Bounds GetEncompassingBounds<T>(
-            this IEnumerable<T> objects,
-            Func<T, Vector3> retriever)
+        public static Bounds GetEncompassingBounds<T>(this IEnumerable<T> objects, Func<T, Vector3> retriever)
             where T : Object
         {
             var result = new Bounds();

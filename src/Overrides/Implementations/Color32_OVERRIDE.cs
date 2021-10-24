@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public Color32_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Color32 value) :
-            base(overrideEnabled, value)
+        public Color32_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Color32 value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

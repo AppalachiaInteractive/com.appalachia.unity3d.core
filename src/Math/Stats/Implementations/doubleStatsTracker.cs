@@ -17,19 +17,8 @@ namespace Appalachia.Core.Math.Stats.Implementations
         private static readonly ProfilerMarker _PRF_Format = new(_PRF_PFX + nameof(Format));
         private static readonly ProfilerMarker _PRF_Transform = new(_PRF_PFX + nameof(Transform));
         private static readonly ProfilerMarker _PRF_Suffix = new(_PRF_PFX + nameof(Suffix));
+
         protected override Comparison<double> Comparer => _comparison;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override double Add(double a, double b)
-        {
-            return a + b;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override double Divide(double dividend, int divisor)
-        {
-            return dividend / divisor;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string Format(double value, FormatType format)
@@ -50,6 +39,18 @@ namespace Appalachia.Core.Math.Stats.Implementations
                         throw new ArgumentOutOfRangeException(nameof(format), format, null);
                 }
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override double Add(double a, double b)
+        {
+            return a + b;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override double Divide(double dividend, int divisor)
+        {
+            return dividend / divisor;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,9 +1,3 @@
-//-----------------------------------------------------------------------
-// <copyright file="IJobParallelForRanged.cs" company="Jackson Dunstan">
-//     Copyright (c) Jackson Dunstan. See LICENSE.md.
-// </copyright>
-//-----------------------------------------------------------------------
-
 #region
 
 using Unity.Jobs.LowLevel.Unsafe;

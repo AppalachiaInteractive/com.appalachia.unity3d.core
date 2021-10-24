@@ -9,13 +9,14 @@ namespace Appalachia.Core.Assets
 {
     public class AssetAssemblyUtilities
     {
-        
+        private static string _assemblyLog;
 
         private static string[] _assemblyLogs;
         private static StringBuilder _assemblyLogBuilder;
-        private static string _assemblyLog;
-        
-        [MenuItem(APPA_MENU.BASE_AppalachiaTools + APPA_MENU.ASM_AppalachiaEditingCore + nameof(LogAssemblies))]
+
+        [MenuItem(
+            APPA_MENU.BASE_AppalachiaTools + APPA_MENU.ASM_AppalachiaEditingCore + nameof(LogAssemblies)
+        )]
         public static void LogAssemblies()
         {
             var assemblies = ReflectionExtensions.GetAssemblies();
@@ -23,7 +24,7 @@ namespace Appalachia.Core.Assets
             if (_assemblyLogs == null)
             {
                 _assemblyLogs = new string[assemblies.Length];
-                
+
                 for (var index = 0; index < assemblies.Length; index++)
                 {
                     var assembly = assemblies[index];
@@ -38,7 +39,7 @@ namespace Appalachia.Core.Assets
                 {
                     _assemblyLogBuilder = new StringBuilder();
                 }
-                  
+
                 for (var index = 0; index < _assemblyLogs.Length; index++)
                 {
                     _assemblyLogBuilder.AppendLine(_assemblyLogs[index]);
@@ -46,8 +47,6 @@ namespace Appalachia.Core.Assets
 
                 _assemblyLog = _assemblyLogBuilder.ToString();
             }
-
-          
 
             Debug.Log(_assemblyLog);
         }

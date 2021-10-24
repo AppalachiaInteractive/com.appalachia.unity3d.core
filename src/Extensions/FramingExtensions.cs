@@ -12,49 +12,56 @@ namespace Appalachia.Core.Extensions
 {
     public static class FramingExtensions
     {
-        public enum FramingDirection
-        {
-            Existing,
-            Opposite,
-            Front,
-            Right,
-            Top,
-            Back,
-            Left,
-            Bottom
-        }
-        
         private const float _quaternionRotationCheck = 1023.5f / 1024.0f;
+
+        private static readonly Func<Camera, Transform, FramingDirection, Vector3> _basicLook = (c, t, dir) =>
+        {
+            switch (dir)
+            {
+                case FramingDirection.Existing:
+                    return c.transform.forward;
+                case FramingDirection.Opposite:
+                    return -c.transform.forward;
+                case FramingDirection.Front:
+                    return -t.forward;
+                case FramingDirection.Right:
+                    return -t.right;
+                case FramingDirection.Top:
+                    return -t.up;
+                case FramingDirection.Back:
+                    return t.forward;
+                case FramingDirection.Left:
+                    return t.right;
+                case FramingDirection.Bottom:
+                    return t.up;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(dir), dir, null);
+            }
+        };
 
         private static List<GameObject> _lastFramed;
         private static List<Vector3> _framingVectorForwards;
         private static List<Vector3> _framingVectorUps;
 
-        private static readonly Func<Camera, Transform, FramingDirection, Vector3> _basicLook =
-            (c, t, dir) =>
+        public static Bounds GetRenderingBounds(this GameObject gameObject)
+        {
+            var renderers = gameObject.GetComponents<Renderer>();
+            var colliders = gameObject.GetComponents<Collider>().Where(c => !c.isTrigger);
+
+            var bounds = new Bounds {center = gameObject.transform.position, size = Vector3.zero};
+
+            foreach (var renderer in renderers)
             {
-                switch (dir)
-                {
-                    case FramingDirection.Existing:
-                        return c.transform.forward;
-                    case FramingDirection.Opposite:
-                        return -c.transform.forward;
-                    case FramingDirection.Front:
-                        return -t.forward;
-                    case FramingDirection.Right:
-                        return -t.right;
-                    case FramingDirection.Top:
-                        return -t.up;
-                    case FramingDirection.Back:
-                        return t.forward;
-                    case FramingDirection.Left:
-                        return t.right;
-                    case FramingDirection.Bottom:
-                        return t.up;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(dir), dir, null);
-                }
-            };
+                bounds.Encapsulate(renderer.bounds);
+            }
+
+            foreach (var collider in colliders)
+            {
+                bounds.Encapsulate(collider.bounds);
+            }
+
+            return bounds;
+        }
 
         public static void Frame(
             this GameObject go,
@@ -102,7 +109,64 @@ namespace Appalachia.Core.Extensions
             Frame(gos, adjustAngle, direction, _basicLook, up);
         }
 
-        
+        public static void Frame(
+            this IReadOnlyList<GameObject> gos,
+            bool adjustAngle = true,
+            FramingDirection direction = FramingDirection.Existing)
+        {
+            var up = direction switch
+            {
+                FramingDirection.Top    => Vector3.forward,
+                FramingDirection.Bottom => Vector3.back,
+                _                       => Vector3.up
+            };
+
+            Frame(gos, adjustAngle, direction, _basicLook, up);
+        }
+
+        public static void FRAME_MENU(KeyCode keyCode, bool control)
+        {
+            var objs = Selection.gameObjects;
+
+            var direction = keyCode switch
+            {
+                KeyCode.Keypad1 => control ? FramingDirection.Back : FramingDirection.Front,
+                KeyCode.Keypad3 => control ? FramingDirection.Right : FramingDirection.Left,
+                KeyCode.Keypad7 => control ? FramingDirection.Bottom : FramingDirection.Top,
+                KeyCode.Keypad9 => FramingDirection.Opposite,
+                _               => FramingDirection.Existing
+            };
+
+            if ((objs == null) || (objs.Length == 0))
+            {
+                Frame(_lastFramed, true, direction);
+            }
+            else
+            {
+                Frame(objs, true, direction);
+            }
+        }
+
+        private static void FinalizeMultiFrame(
+            SceneView view,
+            bool adjustAngle,
+            Quaternion rotation,
+            Bounds bounds)
+        {
+            if (adjustAngle)
+            {
+                var forward = _framingVectorForwards.Average_NoAlloc();
+                var up = _framingVectorUps.Average_NoAlloc();
+
+                rotation = Quaternion.LookRotation(forward, up);
+            }
+
+            var target = bounds.center;
+            var size = bounds.size.y;
+
+            view.LookAt(target, rotation, size);
+        }
+
         private static void Frame(
             this GameObject go,
             Bounds bounds,
@@ -131,21 +195,6 @@ namespace Appalachia.Core.Extensions
             var size = bounds.size.y;
 
             view.LookAt(target, rotation, size);
-        }
-        
-        public static void Frame(
-            this IReadOnlyList<GameObject> gos,
-            bool adjustAngle = true,
-            FramingDirection direction = FramingDirection.Existing)
-        {
-            var up = direction switch
-            {
-                FramingDirection.Top    => Vector3.forward,
-                FramingDirection.Bottom => Vector3.back,
-                _                       => Vector3.up
-            };
-
-            Frame(gos, adjustAngle, direction, _basicLook, up);
         }
 
         private static void Frame(
@@ -269,73 +318,16 @@ namespace Appalachia.Core.Extensions
             bounds.Encapsulate(go.GetRenderingBounds());
         }
 
-        private static void FinalizeMultiFrame(
-            SceneView view,
-            bool adjustAngle,
-            Quaternion rotation,
-            Bounds bounds)
+        public enum FramingDirection
         {
-            if (adjustAngle)
-            {
-                var forward = _framingVectorForwards.Average_NoAlloc();
-                var up = _framingVectorUps.Average_NoAlloc();
-
-                rotation = Quaternion.LookRotation(forward, up);
-            }
-
-            var target = bounds.center;
-            var size = bounds.size.y;
-
-            view.LookAt(target, rotation, size);
-        }
-
-        public static void FRAME_MENU(KeyCode keyCode, bool control)
-        {
-            var objs = Selection.gameObjects;
-
-            var direction = keyCode switch
-            {
-                KeyCode.Keypad1 => control
-                    ? FramingDirection.Back
-                    : FramingDirection.Front,
-                KeyCode.Keypad3 => control
-                    ? FramingDirection.Right
-                    : FramingDirection.Left,
-                KeyCode.Keypad7 => control
-                    ? FramingDirection.Bottom
-                    : FramingDirection.Top,
-                KeyCode.Keypad9 => FramingDirection.Opposite,
-                _               => FramingDirection.Existing
-            };
-
-            if ((objs == null) || (objs.Length == 0))
-            {
-                Frame(_lastFramed, true, direction);
-            }
-            else
-            {
-                Frame(objs, true, direction);
-            }
-        }
-
-        public static Bounds GetRenderingBounds(this GameObject gameObject)
-        {
-            var renderers = gameObject.GetComponents<Renderer>();
-            var colliders = gameObject.GetComponents<Collider>().Where(c => !c.isTrigger);
-
-            var bounds = new Bounds {center = gameObject.transform.position, size = Vector3.zero};
-
-            foreach (var renderer in renderers)
-            {
-                bounds.Encapsulate(renderer.bounds);
-            }
-
-            foreach (var collider in colliders)
-            {
-                bounds.Encapsulate(collider.bounds);
-            }
-
-            return bounds;
+            Existing,
+            Opposite,
+            Front,
+            Right,
+            Top,
+            Back,
+            Left,
+            Bottom
         }
     }
 }

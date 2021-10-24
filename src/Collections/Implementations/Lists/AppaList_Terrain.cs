@@ -14,10 +14,8 @@ namespace Appalachia.Core.Collections.Implementations.Lists
         {
         }
 
-        public AppaList_Terrain(
-            int capacity,
-            float capacityIncreaseMultiplier = 2,
-            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
+        public AppaList_Terrain(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) :
+            base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

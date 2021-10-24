@@ -8,14 +8,7 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class NoInterpColorParameter : VolumeParameter<Color>
     {
-        public bool hdr;
-        public bool showAlpha = true;
-        public bool showEyeDropper = true;
-
-        public NoInterpColorParameter(Color value, bool overrideState = false) : base(
-            value,
-            overrideState
-        )
+        public NoInterpColorParameter(Color value, bool overrideState = false) : base(value, overrideState)
         {
         }
 
@@ -31,5 +24,9 @@ namespace Appalachia.Core.Volumes.Parameters
             this.showEyeDropper = showEyeDropper;
             this.overrideState = overrideState;
         }
+
+        public bool hdr;
+        public bool showAlpha = true;
+        public bool showEyeDropper = true;
     }
 }

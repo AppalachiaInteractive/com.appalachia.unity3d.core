@@ -16,29 +16,6 @@ namespace Appalachia.Core.Overrides
     [ResolverPriority(500)]
     public class OverrideableAttributeProcessor : OdinAttributeProcessor
     {
-        public override void ProcessSelfAttributes(
-            InspectorProperty property,
-            List<Attribute> attributes)
-        {
-            if (property.Info.TypeOfValue == null)
-            {
-                return;
-            }
-
-            var match = typeof(Overridable<,>).IsAssignableFrom(property.Info.TypeOfValue);
-
-            if (match)
-            {
-                for (var i = attributes.Count - 1; i >= 0; i--)
-                {
-                    if (ShouldPushToChildren(attributes[i]))
-                    {
-                        attributes.Remove(attributes[i]);
-                    }
-                }
-            }
-        }
-
         public override void ProcessChildMemberAttributes(
             InspectorProperty parentProperty,
             MemberInfo member,
@@ -60,6 +37,27 @@ namespace Appalachia.Core.Overrides
                     if (member.Name == "value")
                     {
                         attributes.Add(attribute);
+                    }
+                }
+            }
+        }
+
+        public override void ProcessSelfAttributes(InspectorProperty property, List<Attribute> attributes)
+        {
+            if (property.Info.TypeOfValue == null)
+            {
+                return;
+            }
+
+            var match = typeof(Overridable<,>).IsAssignableFrom(property.Info.TypeOfValue);
+
+            if (match)
+            {
+                for (var i = attributes.Count - 1; i >= 0; i--)
+                {
+                    if (ShouldPushToChildren(attributes[i]))
+                    {
+                        attributes.Remove(attributes[i]);
                     }
                 }
             }

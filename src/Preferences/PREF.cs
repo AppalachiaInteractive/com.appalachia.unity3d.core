@@ -1,5 +1,7 @@
 #region
 
+using System.Diagnostics;
+using Appalachia.Core.Preferences.API;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,25 +9,12 @@ using UnityEngine;
 
 namespace Appalachia.Core.Preferences
 {
+    [DebuggerStepThrough]
     [ShowInInspector]
     [InlineProperty]
     [HideReferenceObjectPicker]
     public sealed class PREF<T> : PREF_BASE
     {
-        private readonly T _defaultValue;
-        private readonly T _high;
-
-        private readonly T _low;
-
-        private readonly PREF_STATE<T> _prefs;
-
-        [HideLabel]
-        [InlineProperty]
-        [OnValueChanged(nameof(UIApplyValue))]
-        [SerializeField]
-        [InlineButton(nameof(Reset), " Reset ")]
-        private T _value;
-
         internal PREF(
             string key,
             string grouping,
@@ -34,15 +23,34 @@ namespace Appalachia.Core.Preferences
             T low,
             T high,
             int order,
-            bool reset) : base(key, grouping, label,  order)
+            bool reset,
+            IEditorPreferenceAPI<T> api) : base(key, grouping, label, order)
         {
             _defaultValue = defaultValue;
             _low = low;
             _high = high;
-            _prefs = PREF_STATES.Get<T>();
+            _api = api;
             _reset = reset;
         }
 
+        private readonly IEditorPreferenceAPI<T> _api;
+        private readonly T _defaultValue;
+        private readonly T _high;
+
+        private readonly T _low;
+
+        [HideLabel]
+        [InlineProperty]
+        [OnValueChanged(nameof(UIApplyValue))]
+        [SerializeField]
+        [InlineButton(nameof(Reset), " Reset ")]
+        private T _value;
+
+        public T v
+        {
+            get => Value;
+            set => Value = value;
+        }
 
         public T Value
         {
@@ -52,55 +60,28 @@ namespace Appalachia.Core.Preferences
                 _value = value;
                 if (_isAwake)
                 {
-                    _prefs.API.Save(_key, _value, _low, _high);
+                    _api.Save(_key, _value, _low, _high);
                 }
             }
         }
 
-        public T v
-        {
-            get => Value;
-            set => Value = value;
-        }
-
-        internal T Low => _low;
         internal T High => _high;
 
-        private void UIApplyValue()
-        {
-            if (_isAwake)
-            {
-                _prefs.API.Save(_key, _value, _low, _high);
-            }
-        }
+        internal T Low => _low;
+
+        public event OnAwakeCallback OnAwake;
 
         /*[HorizontalGroup("A", 52f)]
         [Button("Awake", ButtonSizes.Small)]
         [DisableIf(nameof(_isAwake))]*/
         public void WakeUp()
         {
-            _value = _prefs.API.Get(_key, _defaultValue, _low, _high);
+            _value = _api.Get(_key, _defaultValue, _low, _high);
 
             ExecuteResetIfNecessary();
             _isAwake = true;
-            
+
             OnAwake?.Invoke(this);
-        }
-
-        /*[HorizontalGroup("A", 58f)]
-        [Button("Refresh", ButtonSizes.Small)]*/
-        private void Refresh()
-        {
-            if (_isAwake)
-            {
-                _value = _prefs.API.Get(_key, _defaultValue, _low, _high);
-            }
-        }
-
-        private void Reset()
-        {
-            _reset = true;
-            ExecuteResetIfNecessary();
         }
 
         private void ExecuteResetIfNecessary()
@@ -111,16 +92,41 @@ namespace Appalachia.Core.Preferences
 
                 if (_isAwake)
                 {
-                    _prefs.API.Save(_key, _defaultValue, _low, _high);
+                    _api.Save(_key, _defaultValue, _low, _high);
                     _reset = false;
                 }
             }
         }
-        
+
+        /*[HorizontalGroup("A", 58f)]
+        [Button("Refresh", ButtonSizes.Small)]*/
+        private void Refresh()
+        {
+            if (_isAwake)
+            {
+                _value = _api.Get(_key, _defaultValue, _low, _high);
+            }
+        }
+
+        private void Reset()
+        {
+            _reset = true;
+            ExecuteResetIfNecessary();
+        }
+
+        private void UIApplyValue()
+        {
+            if (_isAwake)
+            {
+                _api.Save(_key, _value, _low, _high);
+            }
+        }
+
+        public static implicit operator T(PREF<T> o)
+        {
+            return o.Value;
+        }
+
         public delegate void OnAwakeCallback(PREF<T> awakened);
-
-        public event OnAwakeCallback OnAwake;
-
-        public static implicit operator T(PREF<T> o) => o.Value;
     }
 }

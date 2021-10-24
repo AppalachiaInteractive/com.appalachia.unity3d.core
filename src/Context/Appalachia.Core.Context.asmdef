@@ -1,0 +1,23 @@
+{
+    "name": "Appalachia.Core.Context",
+    "rootNamespace": "",
+    "references": [
+        "GUID:63a32ad87b517324398da8a6fcd4c2a6",
+        "GUID:56ca8901b63fd204692a4a27f67b605e",
+        "GUID:478a2357cc57436488a56e564b08d223",
+        "GUID:28ae00157ecf0354981e730179f52cc3",
+        "GUID:6b8c99229a4703f47b9e6e696c2e8d8d",
+        "GUID:bab61a001c58d3c468cdd73bdb97a91a",
+        "GUID:a03736e1d95a0ed4c8a44e1ee02df53f",
+        "GUID:bd2961106a865a542b8ec0d49cb152f3"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

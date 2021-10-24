@@ -10,16 +10,16 @@ namespace Appalachia.Core.Collections.Interfaces
     public interface IAppaLookupReadOnly<TKey, TValue, TValueList>
         where TValueList : AppaList<TValue>
     {
-        IReadOnlyDictionary<TKey, TValue> Lookup { get; }
-        TValue this[TKey key] { get; }
-        TValueList at { get; set; }
         int Count { get; }
-        TKey GetKeyByIndex(int i);
-        TValue Get(TKey key);
-        TValue GetByIndex(int i);
+        IReadOnlyDictionary<TKey, TValue> Lookup { get; }
+        TValueList at { get; set; }
+        TValue this[TKey key] { get; }
         bool ContainsKey(TKey key);
         bool TryGet(TKey key, out TValue value);
         int SumCounts(Func<TValue, int> counter);
+        TKey GetKeyByIndex(int i);
+        TValue Get(TKey key);
+        TValue GetByIndex(int i);
         void IfPresent(TKey key, Action present, Action notPresent);
     }
 }

@@ -2,18 +2,18 @@ using UnityEngine;
 
 namespace Appalachia.Core.Collections.NonSerialized
 {
-    public sealed class NonSerializedAppaLookup3<TKey1, TKey2, TKey3, TValue> : AppaLookup3<TKey1,
-        TKey2, TKey3, TValue, NonSerializedList<TKey1>, NonSerializedList<TKey2>,
-        NonSerializedList<TKey3>, NonSerializedList<TValue>, NonSerializedAppaLookup<TKey3, TValue>,
+    public sealed class NonSerializedAppaLookup3<TKey1, TKey2, TKey3, TValue> : AppaLookup3<TKey1, TKey2,
+        TKey3, TValue, NonSerializedList<TKey1>, NonSerializedList<TKey2>, NonSerializedList<TKey3>,
+        NonSerializedList<TValue>, NonSerializedAppaLookup<TKey3, TValue>,
         NonSerializedAppaLookup2<TKey2, TKey3, TValue>,
         NonSerializedList<NonSerializedAppaLookup<TKey3, TValue>>,
         NonSerializedList<NonSerializedAppaLookup2<TKey2, TKey3, TValue>>>
     {
-        protected override string GetDisplayTitle(
+        protected override Color GetDisplayColor(
             TKey1 key,
             NonSerializedAppaLookup2<TKey2, TKey3, TValue> value)
         {
-            return key.ToString();
+            return Color.white;
         }
 
         protected override string GetDisplaySubtitle(
@@ -23,11 +23,11 @@ namespace Appalachia.Core.Collections.NonSerialized
             return $"{value.Count} sub-values";
         }
 
-        protected override Color GetDisplayColor(
+        protected override string GetDisplayTitle(
             TKey1 key,
             NonSerializedAppaLookup2<TKey2, TKey3, TValue> value)
         {
-            return Color.white;
+            return key.ToString();
         }
     }
 }

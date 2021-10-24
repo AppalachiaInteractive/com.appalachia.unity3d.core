@@ -1,16 +1,16 @@
-using Appalachia.CI.Integration.Assets;
-using Appalachia.Core.Behaviours;
-using Appalachia.Utility.Reflection.Extensions;
-
 #region
 
 using System;
 using System.Collections.Generic;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Behaviours;
+using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 using UnityEngine;
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
+
 #endif
 
 #endregion
@@ -57,11 +57,11 @@ namespace Appalachia.Core.Aspects.Criticality
                 var foundTypes = new HashSet<Type>();
 
                 var allTypes = ReflectionExtensions.GetAllTypes();
- 
+
                 for (var i = 0; i < allTypes.Length; i++)
                 {
                     var type = allTypes[i];
-                    
+
                     if (type.GetAttributes_CACHE<CriticalAttribute>(true).Length > 0)
                     {
                         foundTypes.Add(type);

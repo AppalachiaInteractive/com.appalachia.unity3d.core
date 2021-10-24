@@ -12,11 +12,6 @@ namespace Appalachia.Core.Preferences
 {
     public class PREF_STATE<T> : PREF_STATE_BASE
     {
-        internal readonly List<PREF<T>> _sortedValues = new();
-        private readonly Dictionary<string, PREF<T>> _values = new();
-
-        private bool _sorted;
-
         public PREF_STATE()
         {
             var typeT = typeof(T);
@@ -84,13 +79,38 @@ namespace Appalachia.Core.Preferences
             }
         }
 
+        internal readonly List<PREF<T>> _sortedValues = new();
+        private readonly Dictionary<string, PREF<T>> _values = new();
+
+        private bool _sorted;
+
+        public IEditorPreferenceAPI<T> API { get; }
+
+        public PrefComparer Comparer { get; } = new();
+
         public IReadOnlyDictionary<string, PREF<T>> Values => _values;
 
         public IReadOnlyList<PREF<T>> SortedValues => _sortedValues;
 
-        public PrefComparer Comparer { get; } = new();
+        public void Add(string key, PREF<T> value)
+        {
+            if (allPreferences == null)
+            {
+                allPreferences = new List<PREF_BASE>();
+            }
 
-        public IEditorPreferenceAPI<T> API { get; }
+            if (_values.ContainsKey(key))
+            {
+                _values[key] = value;
+            }
+            else
+            {
+                _values.Add(key, value);
+                allPreferences.Add(value);
+            }
+
+            _sorted = false;
+        }
 
         public void Sort()
         {
@@ -113,26 +133,6 @@ namespace Appalachia.Core.Preferences
             }
 
             _sortedValues.Sort(Comparer);
-        }
-
-        public void Add(string key, PREF<T> value)
-        {
-            if (allPreferences == null)
-            {
-                allPreferences = new List<PREF_BASE>();
-            }
-            
-            if (_values.ContainsKey(key))
-            {
-                _values[key] = value;
-            }
-            else
-            {
-                _values.Add(key, value);
-                allPreferences.Add(value);
-            }
-
-            _sorted = false;
         }
 
         public override void Awake()

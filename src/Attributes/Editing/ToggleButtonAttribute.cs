@@ -2,7 +2,7 @@
 
 using System;
 using System.Diagnostics;
-using Appalachia.Utility.src.Colors;
+using Appalachia.Utility.Colors;
 using Sirenix.OdinInspector;
 
 #endregion

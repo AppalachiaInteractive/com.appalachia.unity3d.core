@@ -25,8 +25,8 @@
     "com.unity.mathematics": "1.2.4",
     "com.unity.collections": "1.0.0-pre.6",
     "com.unity.burst": "1.6.0",
-    "com.appalachia.unity3d.utility": "0.1.0",
-    "com.appalachia.unity3d.ci": "0.1.0"
+    "com.appalachia.unity3d.utility": "0.1.1",
+    "com.appalachia.unity3d.ci": "0.1.1"
   },
   "scripts": {
     "preversion": "bash ~/com.appalachia/appa/appa package unity3d preversion",

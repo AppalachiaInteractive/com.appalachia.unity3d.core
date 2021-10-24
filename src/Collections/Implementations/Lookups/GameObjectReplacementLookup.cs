@@ -12,9 +12,9 @@ namespace Appalachia.Core.Collections.Implementations.Lookups
     public class GameObjectReplacementLookup : AppaLookup<GameObject, GameObject,
         AppaList_GameObject, AppaList_GameObject>
     {
-        protected override string GetDisplayTitle(GameObject key, GameObject value)
+        protected override Color GetDisplayColor(GameObject key, GameObject value)
         {
-            return $"Replacing: {key.name}";
+            return Color.white;
         }
 
         protected override string GetDisplaySubtitle(GameObject key, GameObject value)
@@ -22,9 +22,9 @@ namespace Appalachia.Core.Collections.Implementations.Lookups
             return $"Replacement: {value.name}";
         }
 
-        protected override Color GetDisplayColor(GameObject key, GameObject value)
+        protected override string GetDisplayTitle(GameObject key, GameObject value)
         {
-            return Color.white;
+            return $"Replacing: {key.name}";
         }
     }
 }

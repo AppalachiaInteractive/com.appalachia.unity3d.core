@@ -8,12 +8,11 @@ namespace Appalachia.Core.ObjectPooling
     public class ObjectPool<T> : IDisposable
         where T : class
     {
-        private static readonly ProfilerMarker _PRF_ObjectPool_ObjectPool =
-            new("ObjectPool.ObjectPool");
-
         private static readonly ProfilerMarker _PRF_ObjectPool_Dispose = new("ObjectPool.Dispose");
         private static readonly ProfilerMarker _PRF_ObjectPool_Get = new("ObjectPool.Get");
-        private static readonly ProfilerMarker _PRF_ObjectPool_Return = new("ObjectPool.Return");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Get_CustomPreGet =
+            new("ObjectPool.Get.CustomPreGet");
 
         private static readonly ProfilerMarker _PRF_ObjectPool_Get_DisposalCheck =
             new("ObjectPool.Get.DisposalCheck");
@@ -30,11 +29,9 @@ namespace Appalachia.Core.ObjectPooling
         private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck_RemoveLast =
             new("ObjectPool.Get.ListCheck.RemoveLast");
 
-        private static readonly ProfilerMarker _PRF_ObjectPool_Get_CustomPreGet =
-            new("ObjectPool.Get.CustomPreGet");
+        private static readonly ProfilerMarker _PRF_ObjectPool_ObjectPool = new("ObjectPool.ObjectPool");
 
-        private static readonly ProfilerMarker _PRF_ObjectPool_Return_SelfPoolReset =
-            new("ObjectPool.Return.SelfPoolReset");
+        private static readonly ProfilerMarker _PRF_ObjectPool_Return = new("ObjectPool.Return");
 
         private static readonly ProfilerMarker _PRF_ObjectPool_Return_CustomReset =
             new("ObjectPool.Return.CustomReset");
@@ -42,26 +39,14 @@ namespace Appalachia.Core.ObjectPooling
         private static readonly ProfilerMarker _PRF_ObjectPool_Return_OnReset =
             new("ObjectPool.Return.CustomReset");
 
-        private readonly Func<T> _customAdd;
-        private readonly Action<T> _customPreGet;
-
-        private readonly Action<T> _customReset;
-
-        private protected readonly AppaList<T> _list;
-
-        private readonly bool _selfPooling;
-
-        protected volatile bool _isDisposed;
+        private static readonly ProfilerMarker _PRF_ObjectPool_Return_SelfPoolReset =
+            new("ObjectPool.Return.SelfPoolReset");
 
         public ObjectPool(Func<T> customAdd) : this(customAdd, null)
         {
         }
 
-        public ObjectPool(Func<T> customAdd, Action<T> customReset) : this(
-            customAdd,
-            customReset,
-            null
-        )
+        public ObjectPool(Func<T> customAdd, Action<T> customReset) : this(customAdd, customReset, null)
         {
         }
 
@@ -80,25 +65,18 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
+        protected volatile bool _isDisposed;
+
+        private protected readonly AppaList<T> _list;
+        private readonly Action<T> _customPreGet;
+
+        private readonly Action<T> _customReset;
+
+        private readonly bool _selfPooling;
+
+        private readonly Func<T> _customAdd;
+
         public bool IsDisposed => _isDisposed;
-
-        public void Dispose()
-        {
-            using (_PRF_ObjectPool_Dispose.Auto())
-            {
-                _isDisposed = true;
-
-                OnDispose();
-            }
-        }
-
-        protected virtual void OnInitialize()
-        {
-        }
-
-        protected virtual void OnDispose()
-        {
-        }
 
         public T Get()
         {
@@ -168,6 +146,24 @@ namespace Appalachia.Core.ObjectPooling
                     OnReset(obj);
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            using (_PRF_ObjectPool_Dispose.Auto())
+            {
+                _isDisposed = true;
+
+                OnDispose();
+            }
+        }
+
+        protected virtual void OnDispose()
+        {
+        }
+
+        protected virtual void OnInitialize()
+        {
         }
 
         protected virtual void OnReset(T obj)

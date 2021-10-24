@@ -44,11 +44,7 @@ namespace Appalachia.Core.Collections.Native
                 dependsOn,
                 ScheduleMode.Parallel
             );
-            return JobsUtility.ScheduleParallelFor(
-                ref scheduleParams,
-                valuesLength,
-                innerloopBatchCount
-            );
+            return JobsUtility.ScheduleParallelFor(ref scheduleParams, valuesLength, innerloopBatchCount);
         }
 
         /// <summary>
@@ -143,12 +139,7 @@ namespace Appalachia.Core.Collections.Native
             {
                 int startIndex;
                 int endIndex;
-                while (JobsUtility.GetWorkStealingRange(
-                    ref ranges,
-                    jobIndex,
-                    out startIndex,
-                    out endIndex
-                ))
+                while (JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out startIndex, out endIndex))
                 {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                     JobsUtility.PatchBufferMinMaxRanges(

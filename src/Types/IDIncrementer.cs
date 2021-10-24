@@ -10,12 +10,12 @@ namespace Appalachia.Core.Types
     [Serializable]
     public sealed class IDIncrementer
     {
-        [SerializeField] private int _nextID;
-
         public IDIncrementer(bool startsAt0)
         {
             _nextID = startsAt0 ? 0 : 1;
         }
+
+        [SerializeField] private int _nextID;
 
         public int GetNextIdAndIncrement()
         {

@@ -61,9 +61,6 @@ namespace Appalachia.Core.Math.Geometry
             (u >= 0.0f) && (u <= 1.0f) && (v >= 0.0f) && (v <= 1.0f) && (w >= 0.0f); //(w <= 1.0f)
 
         public bool IsInsideUV =>
-            (u >= 0.0f) &&
-            (u <= 1.0f) &&
-            (v >= 0.0f) &&
-            (v <= 1.0f) /*&& (w >= 0.0f)*/; //(w <= 1.0f)
+            (u >= 0.0f) && (u <= 1.0f) && (v >= 0.0f) && (v <= 1.0f) /*&& (w >= 0.0f)*/; //(w <= 1.0f)
     }
 }

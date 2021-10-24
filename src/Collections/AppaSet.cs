@@ -24,17 +24,12 @@ namespace Appalachia.Core.Collections
         private const string _PRF_PFX = nameof(AppaSet<TValue, TValueList>) + ".";
 
         private static readonly ProfilerMarker _PRF_Remove = new(_PRF_PFX + nameof(Remove));
-
         private static readonly ProfilerMarker _PRF_CopyTo = new(_PRF_PFX + nameof(CopyTo));
-
         private static readonly ProfilerMarker _PRF_Count = new(_PRF_PFX + nameof(Count));
-
         private static readonly ProfilerMarker _PRF_Add = new(_PRF_PFX + nameof(Add));
 
         private static readonly ProfilerMarker _PRF_Indexer = new(_PRF_PFX + "Indexer");
-
         private static readonly ProfilerMarker _PRF_RemoveAt = new(_PRF_PFX + nameof(RemoveAt));
-
         private static readonly ProfilerMarker _PRF_AddRange = new(_PRF_PFX + nameof(AddRange));
 
         private static readonly ProfilerMarker _PRF_Clear = new(_PRF_PFX + nameof(Clear));
@@ -47,8 +42,7 @@ namespace Appalachia.Core.Collections
 
         private static readonly ProfilerMarker _PRF_SumCounts = new(_PRF_PFX + nameof(SumCounts));
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_CLEAR =
-            new(_PRF_PFX + nameof(INTERNAL_CLEAR));
+        private static readonly ProfilerMarker _PRF_INTERNAL_CLEAR = new(_PRF_PFX + nameof(INTERNAL_CLEAR));
 
         private static readonly ProfilerMarker _PRF_INTERNAL_GET_VALUE_BY_INDEX =
             new(_PRF_PFX + nameof(INTERNAL_GET_VALUE_BY_INDEX));
@@ -56,11 +50,9 @@ namespace Appalachia.Core.Collections
         private static readonly ProfilerMarker _PRF_INTERNAL_CONTAINS =
             new(_PRF_PFX + nameof(INTERNAL_CONTAINS));
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_REMOVE =
-            new(_PRF_PFX + nameof(INTERNAL_REMOVE));
+        private static readonly ProfilerMarker _PRF_INTERNAL_REMOVE = new(_PRF_PFX + nameof(INTERNAL_REMOVE));
 
-        private static readonly ProfilerMarker _PRF_INTERNAL_ADD =
-            new(_PRF_PFX + nameof(INTERNAL_ADD));
+        private static readonly ProfilerMarker _PRF_INTERNAL_ADD = new(_PRF_PFX + nameof(INTERNAL_ADD));
 
         private static readonly ProfilerMarker _PRF_INTERNAL_INITIALIZE =
             new(_PRF_PFX + nameof(INTERNAL_INITIALIZE));
@@ -74,6 +66,19 @@ namespace Appalachia.Core.Collections
         private static readonly ProfilerMarker _PRF_INTERNAL_REBUILD =
             new(_PRF_PFX + nameof(INTERNAL_REBUILD));
 
+        protected AppaSet()
+        {
+            INTERNAL_INITIALIZE(false);
+        }
+
+        [NonSerialized] private Action _setDirtyAction;
+
+        [NonSerialized] private bool _isValueUnityObjectChecked;
+
+        [NonSerialized] private bool isValueUnityObject;
+
+        [NonSerialized] private Dictionary<TValue, int> _indices;
+
         [SerializeField]
         [HideInInspector]
         private int initializerCount = 64;
@@ -82,20 +87,9 @@ namespace Appalachia.Core.Collections
         [HideInInspector]
         private TValueList values;
 
-        [NonSerialized] private Dictionary<TValue, int> _indices;
-
-        [NonSerialized] private bool _isValueUnityObjectChecked;
-
-        [NonSerialized] private Action _setDirtyAction;
-
-        [NonSerialized] private bool isValueUnityObject;
-
-        protected AppaSet()
-        {
-            INTERNAL_INITIALIZE(false);
-        }
-
         public bool NoTracking { get; set; } = false;
+
+        [field: NonSerialized] public int LastFrameCheck { get; private set; } = -1;
 
         public int Count
         {
@@ -110,12 +104,33 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public void Add(TValue value)
+        public IReadOnlyList<TValue> Values => values;
+
+        public int InitializerCount
         {
-            using (_PRF_Add.Auto())
+            get => initializerCount;
+            set => initializerCount = value;
+        }
+
+        public bool IsReadOnly => false;
+
+        public TValue this[int index]
+        {
+            get
             {
-                INTERNAL_INITIALIZE();
-                INTERNAL_ADD(value);
+                using (_PRF_Indexer.Auto())
+                {
+                    INTERNAL_INITIALIZE();
+                    return INTERNAL_GET_VALUE_BY_INDEX(index);
+                }
+            }
+        }
+
+        public void RemoveNulls()
+        {
+            if (values.RemoveNulls())
+            {
+                INTERNAL_REBUILD();
             }
         }
 
@@ -137,18 +152,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public TValue this[int index]
-        {
-            get
-            {
-                using (_PRF_Indexer.Auto())
-                {
-                    INTERNAL_INITIALIZE();
-                    return INTERNAL_GET_VALUE_BY_INDEX(index);
-                }
-            }
-        }
-
         public TValue RemoveAt(int targetIndex)
         {
             using (_PRF_RemoveAt.Auto())
@@ -156,6 +159,15 @@ namespace Appalachia.Core.Collections
                 INTERNAL_INITIALIZE();
 
                 return INTERNAL_REMOVE(targetIndex);
+            }
+        }
+
+        public void Add(TValue value)
+        {
+            using (_PRF_Add.Auto())
+            {
+                INTERNAL_INITIALIZE();
+                INTERNAL_ADD(value);
             }
         }
 
@@ -192,6 +204,25 @@ namespace Appalachia.Core.Collections
             }
         }
 
+        public int SumCounts(Func<TValue, int> counter)
+        {
+            using (_PRF_SumCounts.Auto())
+            {
+                INTERNAL_INITIALIZE();
+
+                var sum = 0;
+
+                var count = Count;
+
+                for (var i = 0; i < count; i++)
+                {
+                    sum += counter(INTERNAL_GET_VALUE_BY_INDEX(i));
+                }
+
+                return sum;
+            }
+        }
+
         public TValue GetByIndex(int i)
         {
             using (_PRF_GetByIndex.Auto())
@@ -219,51 +250,10 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public int SumCounts(Func<TValue, int> counter)
-        {
-            using (_PRF_SumCounts.Auto())
-            {
-                INTERNAL_INITIALIZE();
-
-                var sum = 0;
-
-                var count = Count;
-
-                for (var i = 0; i < count; i++)
-                {
-                    sum += counter(INTERNAL_GET_VALUE_BY_INDEX(i));
-                }
-
-                return sum;
-            }
-        }
-
-        public IReadOnlyList<TValue> Values => values;
-
-        [field: NonSerialized] public int LastFrameCheck { get; private set; } = -1;
-
-        public int InitializerCount
-        {
-            get => initializerCount;
-            set => initializerCount = value;
-        }
-
         public void SetDirtyAction(Action a)
         {
             _setDirtyAction = a;
         }
-
-        bool ICollection<TValue>.Remove(TValue item)
-        {
-            using (_PRF_Remove.Auto())
-            {
-                INTERNAL_INITIALIZE();
-
-                return Remove(item);
-            }
-        }
-
-        public bool IsReadOnly => false;
 
         public void CopyTo(TValue[] array, int arrayIndex)
         {
@@ -278,43 +268,45 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool INTERNAL_CONTAINS(TValue value)
         {
-            INTERNAL_INITIALIZE();
-            return values.GetEnumerator();
-        }
-
-        IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
-        {
-            INTERNAL_INITIALIZE();
-            return values.GetEnumerator();
-        }
-
-        void ISerializationCallbackReceiver.OnBeforeSerialize()
-        {
-        }
-
-        void ISerializationCallbackReceiver.OnAfterDeserialize()
-        {
-            INTERNAL_INITIALIZE(false);
-        }
-
-        public void RemoveNulls()
-        {
-            if (values.RemoveNulls())
+            using (_PRF_INTERNAL_CONTAINS.Auto())
             {
-                INTERNAL_REBUILD();
+                return _indices.ContainsKey(value);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void INTERNAL_CLEAR()
+        private bool INTERNAL_REQUIRES_REBUILD()
         {
-            using (_PRF_INTERNAL_CLEAR.Auto())
+            using (_PRF_INTERNAL_REQUIRES_REBUILD.Auto())
             {
-                values.Clear();
-                _indices.Clear();
-                _setDirtyAction?.Invoke();
+                var valueCount = values.Count;
+
+                if (valueCount == 0)
+                {
+                    _indices.Clear();
+                    _setDirtyAction?.Invoke();
+                    return false;
+                }
+
+                if (isValueUnityObject)
+                {
+                    if (values.RemoveNulls())
+                    {
+                        return true;
+                    }
+                }
+
+                var indexCount = _indices.Count;
+
+                if (indexCount != valueCount)
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
 
@@ -324,15 +316,6 @@ namespace Appalachia.Core.Collections
             using (_PRF_INTERNAL_GET_VALUE_BY_INDEX.Auto())
             {
                 return values[index];
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool INTERNAL_CONTAINS(TValue value)
-        {
-            using (_PRF_INTERNAL_CONTAINS.Auto())
-            {
-                return _indices.ContainsKey(value);
             }
         }
 
@@ -382,6 +365,25 @@ namespace Appalachia.Core.Collections
 
                 _indices.Add(value, _indices.Count);
                 values.Add(value);
+                _setDirtyAction?.Invoke();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void INTERNAL_CHECK_FATAL()
+        {
+            using (_PRF_INTERNAL_CHECK_FATAL.Auto())
+            {
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void INTERNAL_CLEAR()
+        {
+            using (_PRF_INTERNAL_CLEAR.Auto())
+            {
+                values.Clear();
+                _indices.Clear();
                 _setDirtyAction?.Invoke();
             }
         }
@@ -440,47 +442,6 @@ namespace Appalachia.Core.Collections
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void INTERNAL_CHECK_FATAL()
-        {
-            using (_PRF_INTERNAL_CHECK_FATAL.Auto())
-            {
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool INTERNAL_REQUIRES_REBUILD()
-        {
-            using (_PRF_INTERNAL_REQUIRES_REBUILD.Auto())
-            {
-                var valueCount = values.Count;
-
-                if (valueCount == 0)
-                {
-                    _indices.Clear();
-                    _setDirtyAction?.Invoke();
-                    return false;
-                }
-
-                if (isValueUnityObject)
-                {
-                    if (values.RemoveNulls())
-                    {
-                        return true;
-                    }
-                }
-
-                var indexCount = _indices.Count;
-
-                if (indexCount != valueCount)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void INTERNAL_REBUILD()
         {
             using (_PRF_INTERNAL_REBUILD.Auto())
@@ -500,6 +461,37 @@ namespace Appalachia.Core.Collections
 
                 _setDirtyAction?.Invoke();
             }
+        }
+
+        bool ICollection<TValue>.Remove(TValue item)
+        {
+            using (_PRF_Remove.Auto())
+            {
+                INTERNAL_INITIALIZE();
+
+                return Remove(item);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            INTERNAL_INITIALIZE();
+            return values.GetEnumerator();
+        }
+
+        IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
+        {
+            INTERNAL_INITIALIZE();
+            return values.GetEnumerator();
+        }
+
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            INTERNAL_INITIALIZE(false);
+        }
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
         }
     }
 }

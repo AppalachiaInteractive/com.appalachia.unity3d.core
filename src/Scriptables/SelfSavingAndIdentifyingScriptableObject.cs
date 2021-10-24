@@ -13,10 +13,9 @@ using UnityEngine;
 namespace Appalachia.Core.Scriptables
 {
     [Serializable]
-    public abstract class
-        SelfSavingAndIdentifyingScriptableObject<T> : SelfSavingScriptableObject<T>,
-                                                      IComparable<T>,
-                                                      IComparable
+    public abstract class SelfSavingAndIdentifyingScriptableObject<T> : SelfSavingScriptableObject<T>,
+                                                                        IComparable<T>,
+                                                                        IComparable
         where T : SelfSavingAndIdentifyingScriptableObject<T>
     {
         private const string _PRF_PFX = nameof(SelfSavingAndIdentifyingScriptableObject<T>) + ".";
@@ -71,44 +70,28 @@ namespace Appalachia.Core.Scriptables
             SelfSavingAndIdentifyingScriptableObject<T> left,
             SelfSavingAndIdentifyingScriptableObject<T> right)
         {
-            return Comparer<SelfSavingAndIdentifyingScriptableObject<T>>.Default.Compare(
-                       left,
-                       right
-                   ) <
-                   0;
+            return Comparer<SelfSavingAndIdentifyingScriptableObject<T>>.Default.Compare(left, right) < 0;
         }
 
         public static bool operator >(
             SelfSavingAndIdentifyingScriptableObject<T> left,
             SelfSavingAndIdentifyingScriptableObject<T> right)
         {
-            return Comparer<SelfSavingAndIdentifyingScriptableObject<T>>.Default.Compare(
-                       left,
-                       right
-                   ) >
-                   0;
+            return Comparer<SelfSavingAndIdentifyingScriptableObject<T>>.Default.Compare(left, right) > 0;
         }
 
         public static bool operator <=(
             SelfSavingAndIdentifyingScriptableObject<T> left,
             SelfSavingAndIdentifyingScriptableObject<T> right)
         {
-            return Comparer<SelfSavingAndIdentifyingScriptableObject<T>>.Default.Compare(
-                       left,
-                       right
-                   ) <=
-                   0;
+            return Comparer<SelfSavingAndIdentifyingScriptableObject<T>>.Default.Compare(left, right) <= 0;
         }
 
         public static bool operator >=(
             SelfSavingAndIdentifyingScriptableObject<T> left,
             SelfSavingAndIdentifyingScriptableObject<T> right)
         {
-            return Comparer<SelfSavingAndIdentifyingScriptableObject<T>>.Default.Compare(
-                       left,
-                       right
-                   ) >=
-                   0;
+            return Comparer<SelfSavingAndIdentifyingScriptableObject<T>>.Default.Compare(left, right) >= 0;
         }
 
 #endregion
@@ -121,8 +104,7 @@ namespace Appalachia.Core.Scriptables
 
         [NonSerialized] private static bool checkedEnabled;
 
-        private static readonly ProfilerMarker _PRF_UpdateAllIDs =
-            new(_PRF_PFX + nameof(UpdateAllIDs));
+        private static readonly ProfilerMarker _PRF_UpdateAllIDs = new(_PRF_PFX + nameof(UpdateAllIDs));
 
         private static readonly ProfilerMarker _PRF_UpdateAllIDs_SaveAssets =
             new(_PRF_PFX + nameof(UpdateAllIDs) + ".SaveAssets");
@@ -230,8 +212,7 @@ namespace Appalachia.Core.Scriptables
             NewID();
         }
 
-        private static readonly ProfilerMarker _PRF_CheckForBadIDs =
-            new(_PRF_PFX + nameof(CheckForBadIDs));
+        private static readonly ProfilerMarker _PRF_CheckForBadIDs = new(_PRF_PFX + nameof(CheckForBadIDs));
 
         [ShowInInspector]
         [Button]

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Appalachia.Core.Preferences;
 using UnityEditor;
 
@@ -9,6 +10,7 @@ using UnityEditor;
 
 namespace Appalachia.Core.Aspects.Tracing
 {
+    [DebuggerStepThrough]
     public static class TRACE
     {
 #if UNITY_EDITOR
@@ -19,11 +21,7 @@ namespace Appalachia.Core.Aspects.Tracing
         public const string MENU_BASE = "Tools/Trace Logging/";
 
         [NonSerialized]
-        private static readonly PREF<bool> _enabled = PREFS.REG(
-            _TRACE_LOG_GROUPING,
-            _TRACE_LOG_LABEL,
-            false
-        );
+        private static readonly PREF<bool> _enabled = PREFS.REG(_TRACE_LOG_GROUPING, _TRACE_LOG_LABEL, false);
 
         private const string ENABLED = MENU_BASE + "Enabled";
 

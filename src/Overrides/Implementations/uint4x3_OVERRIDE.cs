@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public uint4x3_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, uint4x3 value) :
-            base(overrideEnabled, value)
+        public uint4x3_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, uint4x3 value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

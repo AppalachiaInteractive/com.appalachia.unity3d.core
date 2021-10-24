@@ -13,12 +13,6 @@ namespace Appalachia.Core.Shading
 {
     public static class GSPL
     {
-        private static HashSet<string> _hashedShaders;
-
-        private static Dictionary<string, int> _propertyIDsByName;
-
-        private static object _addLock = new();
-
         public static Dictionary<string, int> propertyIDsByName
         {
             get
@@ -35,6 +29,32 @@ namespace Appalachia.Core.Shading
 
                 return _propertyIDsByName;
             }
+        }
+
+        private static Dictionary<string, int> _propertyIDsByName;
+        private static HashSet<string> _hashedShaders;
+
+        private static object _addLock = new();
+
+        public static int Get(string property)
+        {
+            if (_addLock == null)
+            {
+                _addLock = new object();
+            }
+
+            if (!propertyIDsByName.ContainsKey(property))
+            {
+                lock (_addLock)
+                {
+                    if (!propertyIDsByName.ContainsKey(property))
+                    {
+                        propertyIDsByName.Add(property, Shader.PropertyToID(property));
+                    }
+                }
+            }
+
+            return propertyIDsByName[property];
         }
 
         public static void Include(Shader s)
@@ -92,27 +112,5 @@ namespace Appalachia.Core.Shading
                 Include(m.shader);
             }
         }
-
-        public static int Get(string property)
-        {
-            if (_addLock == null)
-            {
-                _addLock = new object();
-            }
-
-            if (!propertyIDsByName.ContainsKey(property))
-            {
-                lock (_addLock)
-                {
-                    if (!propertyIDsByName.ContainsKey(property))
-                    {
-                        propertyIDsByName.Add(property, Shader.PropertyToID(property));
-                    }
-                }
-            }
-
-            return propertyIDsByName[property];
-        }
-
     }
 }

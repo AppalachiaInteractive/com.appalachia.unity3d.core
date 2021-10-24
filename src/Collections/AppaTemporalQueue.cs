@@ -15,35 +15,15 @@ namespace Appalachia.Core.Collections
 
         private static readonly ProfilerMarker _PRF_Dequeue = new(_PRF_PFX + nameof(Dequeue));
 
-        private static readonly ProfilerMarker _PRF_ResetCurrent =
-            new(_PRF_PFX + nameof(ResetCurrent));
+        private static readonly ProfilerMarker _PRF_ResetCurrent = new(_PRF_PFX + nameof(ResetCurrent));
 
-        private static readonly ProfilerMarker _PRF_CurrentOrNext =
-            new(_PRF_PFX + nameof(CurrentOrNext));
+        private static readonly ProfilerMarker _PRF_CurrentOrNext = new(_PRF_PFX + nameof(CurrentOrNext));
 
         [SerializeField] private T _current;
 
-        public T Current => _current;
-
         public bool HasCurrent => _current?.Equals(default) ?? false;
 
-        public override T Dequeue()
-        {
-            using (_PRF_Dequeue.Auto())
-            {
-                _current = base.Dequeue();
-
-                return _current;
-            }
-        }
-
-        public void ResetCurrent()
-        {
-            using (_PRF_ResetCurrent.Auto())
-            {
-                _current = default;
-            }
-        }
+        public T Current => _current;
 
         public T CurrentOrNext()
         {
@@ -60,6 +40,24 @@ namespace Appalachia.Core.Collections
                 }
 
                 return Dequeue();
+            }
+        }
+
+        public void ResetCurrent()
+        {
+            using (_PRF_ResetCurrent.Auto())
+            {
+                _current = default;
+            }
+        }
+
+        public override T Dequeue()
+        {
+            using (_PRF_Dequeue.Auto())
+            {
+                _current = base.Dequeue();
+
+                return _current;
             }
         }
     }

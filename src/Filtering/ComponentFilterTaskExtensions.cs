@@ -9,27 +9,34 @@ namespace Appalachia.Core.Filtering
         private static readonly ProfilerMarker _PRF_ComponentExtensions_FilterComponents =
             new("ComponentExtensions.FilterComponents");
 
+        public static IComponentFilterTask<T> FilterComponents<T>(this Component c, bool includeChildren)
+            where T : Component
+        {
+            using (_PRF_ComponentExtensions_FilterComponents.Auto())
+            {
+                var input = includeChildren ? c.GetComponentsInChildren<T>(true) : c.GetComponents<T>();
+
+                return new ComponentFilterTask<T>(input);
+            }
+        }
+
+        public static IComponentFilterTask<T> FilterComponents<T>(this GameObject go, bool includeChildren)
+            where T : Component
+        {
+            using (_PRF_ComponentExtensions_FilterComponents.Auto())
+            {
+                var input = includeChildren ? go.GetComponentsInChildren<T>(true) : go.GetComponents<T>();
+
+                return new ComponentFilterTask<T>(input);
+            }
+        }
+
         public static IComponentFilterTask<T> FilterComponentsFromChildren<T>(this Component c)
             where T : Component
         {
             using (_PRF_ComponentExtensions_FilterComponents.Auto())
             {
                 var input = c.GetComponentsInChildren<T>(true);
-
-                return new ComponentFilterTask<T>(input);
-            }
-        }
-
-        public static IComponentFilterTask<T> FilterComponents<T>(
-            this Component c,
-            bool includeChildren)
-            where T : Component
-        {
-            using (_PRF_ComponentExtensions_FilterComponents.Auto())
-            {
-                var input = includeChildren
-                    ? c.GetComponentsInChildren<T>(true)
-                    : c.GetComponents<T>();
 
                 return new ComponentFilterTask<T>(input);
             }
@@ -46,38 +53,21 @@ namespace Appalachia.Core.Filtering
             }
         }
 
-        public static IComponentFilterTask<T> FilterComponents<T>(
-            this GameObject go,
-            bool includeChildren)
-            where T : Component
+        public static IComponentFilterTask<T> NoTriggers<T>(this IComponentFilterTask<T> task)
+            where T : Collider
         {
-            using (_PRF_ComponentExtensions_FilterComponents.Auto())
-            {
-                var input = includeChildren
-                    ? go.GetComponentsInChildren<T>(true)
-                    : go.GetComponents<T>();
+            return task.ExcludeIf(c => c.isTrigger);
+        }
 
-                return new ComponentFilterTask<T>(input);
-            }
+        public static IComponentFilterTask<T> OnlyTriggers<T>(this IComponentFilterTask<T> task)
+            where T : Collider
+        {
+            return task.IncludeOnlyIf(c => c.isTrigger);
         }
 
         public static Mesh BestMesh(this IComponentFilterTask<MeshFilter> task)
         {
             var result = task.SortBy(ComponentComparisons.BestMeshMeshFilterComparer.Instance)
-                             .LimitResults(1)
-                             .RunFilter();
-
-            if (result.Length > 0)
-            {
-                return result[0].sharedMesh;
-            }
-
-            return null;
-        }
-
-        public static Mesh CheapestMesh(this IComponentFilterTask<MeshFilter> task)
-        {
-            var result = task.SortBy(ComponentComparisons.WorstMeshMeshFilterComparer.Instance)
                              .LimitResults(1)
                              .RunFilter();
 
@@ -99,6 +89,20 @@ namespace Appalachia.Core.Filtering
             if (result.Length > 0)
             {
                 return result[0].GetSharedMesh();
+            }
+
+            return null;
+        }
+
+        public static Mesh CheapestMesh(this IComponentFilterTask<MeshFilter> task)
+        {
+            var result = task.SortBy(ComponentComparisons.WorstMeshMeshFilterComparer.Instance)
+                             .LimitResults(1)
+                             .RunFilter();
+
+            if (result.Length > 0)
+            {
+                return result[0].sharedMesh;
             }
 
             return null;
@@ -168,18 +172,6 @@ namespace Appalachia.Core.Filtering
             }
 
             return result[result.Length - 1];
-        }
-
-        public static IComponentFilterTask<T> NoTriggers<T>(this IComponentFilterTask<T> task)
-            where T : Collider
-        {
-            return task.ExcludeIf(c => c.isTrigger);
-        }
-
-        public static IComponentFilterTask<T> OnlyTriggers<T>(this IComponentFilterTask<T> task)
-            where T : Collider
-        {
-            return task.IncludeOnlyIf(c => c.isTrigger);
         }
     }
 }

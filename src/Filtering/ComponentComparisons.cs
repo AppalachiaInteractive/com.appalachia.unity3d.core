@@ -13,8 +13,7 @@ namespace Appalachia.Core.Filtering
             public abstract int Compare(TC x, TC y);
         }
 
-        public class
-            BestMeshMeshFilterComparer : SimpleComparer<BestMeshMeshFilterComparer, MeshFilter>
+        public class BestMeshMeshFilterComparer : SimpleComparer<BestMeshMeshFilterComparer, MeshFilter>
         {
             public override int Compare(MeshFilter x, MeshFilter y)
             {
@@ -52,48 +51,6 @@ namespace Appalachia.Core.Filtering
                 }
 
                 return -smx.vertexCount.CompareTo(smy.vertexCount);
-            }
-        }
-
-        public class
-            WorstMeshMeshFilterComparer : SimpleComparer<WorstMeshMeshFilterComparer, MeshFilter>
-        {
-            public override int Compare(MeshFilter x, MeshFilter y)
-            {
-                if ((x == null) && (y == null))
-                {
-                    return 0;
-                }
-
-                if ((x == null) && (y != null))
-                {
-                    return 1;
-                }
-
-                if ((x != null) && (y == null))
-                {
-                    return -1;
-                }
-
-                var smx = x.sharedMesh;
-                var smy = y.sharedMesh;
-
-                if ((smx == null) && (smy == null))
-                {
-                    return 0;
-                }
-
-                if ((smx == null) && (smy != null))
-                {
-                    return 1;
-                }
-
-                if ((smx != null) && (smy == null))
-                {
-                    return -1;
-                }
-
-                return smx.vertexCount.CompareTo(smy.vertexCount);
             }
         }
 
@@ -153,6 +110,47 @@ namespace Appalachia.Core.Filtering
                 }
 
                 return -smx.vertexCount.CompareTo(smy.vertexCount);
+            }
+        }
+
+        public class WorstMeshMeshFilterComparer : SimpleComparer<WorstMeshMeshFilterComparer, MeshFilter>
+        {
+            public override int Compare(MeshFilter x, MeshFilter y)
+            {
+                if ((x == null) && (y == null))
+                {
+                    return 0;
+                }
+
+                if ((x == null) && (y != null))
+                {
+                    return 1;
+                }
+
+                if ((x != null) && (y == null))
+                {
+                    return -1;
+                }
+
+                var smx = x.sharedMesh;
+                var smy = y.sharedMesh;
+
+                if ((smx == null) && (smy == null))
+                {
+                    return 0;
+                }
+
+                if ((smx == null) && (smy != null))
+                {
+                    return 1;
+                }
+
+                if ((smx != null) && (smy == null))
+                {
+                    return -1;
+                }
+
+                return smx.vertexCount.CompareTo(smy.vertexCount);
             }
         }
 

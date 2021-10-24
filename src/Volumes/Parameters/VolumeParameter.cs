@@ -27,12 +27,17 @@ namespace Appalachia.Core.Volumes.Parameters
 
         internal abstract void Interp(VolumeParameter from, VolumeParameter to, float t);
 
+        internal abstract void SetValue(VolumeParameter parameter);
+
         public T GetValue<T>()
         {
             return ((VolumeParameter<T>) this).value;
         }
 
-        internal abstract void SetValue(VolumeParameter parameter);
+        // Called when the parent VolumeComponent OnDisabled is called
+        protected internal virtual void OnDisable()
+        {
+        }
 
         // This is used in case you need to access fields/properties that can't be accessed in the
         // constructor of a ScriptableObject (VolumeParameter are generally declared and inited in
@@ -43,15 +48,9 @@ namespace Appalachia.Core.Volumes.Parameters
         {
         }
 
-        // Called when the parent VolumeComponent OnDisabled is called
-        protected internal virtual void OnDisable()
-        {
-        }
-
         public static bool IsObjectParameter(Type type)
         {
-            if (type.IsGenericType &&
-                (type.GetGenericTypeDefinition() == typeof(ObjectParameter<>)))
+            if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(ObjectParameter<>)))
             {
                 return true;
             }
@@ -66,8 +65,6 @@ namespace Appalachia.Core.Volumes.Parameters
     {
         protected const float k_DefaultInterpSwap = 0f;
 
-        [SerializeField] protected T m_Value;
-
         public VolumeParameter() : this(default, false)
         {
         }
@@ -80,10 +77,24 @@ namespace Appalachia.Core.Volumes.Parameters
             this.overrideState = overrideState;
         }
 
+        [SerializeField] protected T m_Value;
+
         public virtual T value
         {
             get => m_Value;
             set => m_Value = value;
+        }
+
+        public virtual void Interp(T from, T to, float t)
+        {
+            // Default interpolation is naive
+            m_Value = t > k_DefaultInterpSwap ? to : from;
+        }
+
+        public void Override(T x)
+        {
+            overrideState = true;
+            m_Value = x;
         }
 
         public bool Equals(VolumeParameter<T> other)
@@ -101,27 +112,24 @@ namespace Appalachia.Core.Volumes.Parameters
             return EqualityComparer<T>.Default.Equals(m_Value, other.m_Value);
         }
 
-        internal override void Interp(VolumeParameter from, VolumeParameter to, float t)
+        public override bool Equals(object obj)
         {
-            // Note: this is relatively unsafe (assumes that from and to are both holding type T)
-            Interp(from.GetValue<T>(), to.GetValue<T>(), t);
-        }
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
 
-        public virtual void Interp(T from, T to, float t)
-        {
-            // Default interpolation is naive
-            m_Value = t > k_DefaultInterpSwap ? to : from;
-        }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
 
-        public void Override(T x)
-        {
-            overrideState = true;
-            m_Value = x;
-        }
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
 
-        internal override void SetValue(VolumeParameter parameter)
-        {
-            m_Value = parameter.GetValue<T>();
+            return Equals((VolumeParameter<T>) obj);
         }
 
         public override int GetHashCode()
@@ -144,6 +152,17 @@ namespace Appalachia.Core.Volumes.Parameters
             return string.Format("{0} ({1})", value, overrideState);
         }
 
+        internal override void Interp(VolumeParameter from, VolumeParameter to, float t)
+        {
+            // Note: this is relatively unsafe (assumes that from and to are both holding type T)
+            Interp(from.GetValue<T>(), to.GetValue<T>(), t);
+        }
+
+        internal override void SetValue(VolumeParameter parameter)
+        {
+            m_Value = parameter.GetValue<T>();
+        }
+
         public static bool operator ==(VolumeParameter<T> lhs, T rhs)
         {
             return (lhs != null) && (lhs.value != null) && lhs.value.Equals(rhs);
@@ -152,26 +171,6 @@ namespace Appalachia.Core.Volumes.Parameters
         public static bool operator !=(VolumeParameter<T> lhs, T rhs)
         {
             return !(lhs == rhs);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != GetType())
-            {
-                return false;
-            }
-
-            return Equals((VolumeParameter<T>) obj);
         }
 
         //

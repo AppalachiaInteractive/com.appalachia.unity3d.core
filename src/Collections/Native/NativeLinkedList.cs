@@ -1,9 +1,3 @@
-//-----------------------------------------------------------------------
-// <copyright file="NativeLinkedList.cs" company="Jackson Dunstan">
-//     Copyright (c) Jackson Dunstan. See LICENSE.md.
-// </copyright>
-//-----------------------------------------------------------------------
-
 #region
 
 using System;
@@ -115,11 +109,7 @@ namespace Appalachia.Core.Collections.Native
                         {
                             // Return the next node
                             m_List.RequireParallelForAccess(m_Index);
-                            return new Enumerator(
-                                m_List,
-                                m_List.m_State->m_NextIndexes[m_Index],
-                                m_Version
-                            );
+                            return new Enumerator(m_List, m_List.m_State->m_NextIndexes[m_Index], m_Version);
                         }
 
                         // Not within the list. Return the head.
@@ -159,11 +149,7 @@ namespace Appalachia.Core.Collections.Native
                         {
                             // Return the previous node
                             m_List.RequireParallelForAccess(m_Index);
-                            return new Enumerator(
-                                m_List,
-                                m_List.m_State->m_PrevIndexes[m_Index],
-                                m_Version
-                            );
+                            return new Enumerator(m_List, m_List.m_State->m_PrevIndexes[m_Index], m_Version);
                         }
 
                         // Not within the list. Return the tail.
@@ -595,9 +581,7 @@ namespace Appalachia.Core.Collections.Native
 	        ///     job but set lower by ParallelFor jobs.
 	        /// </param>
 	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetParallelForSafetyCheckRange(
-                int minIndex = -1,
-                int maxIndex = -1)
+            public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
                 m_List.m_MinIndex = minIndex;
@@ -618,10 +602,7 @@ namespace Appalachia.Core.Collections.Native
             public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(
-                    m_List.m_Safety,
-                    allowReadOrWriteAccess
-                );
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
 #endif
             }
 
@@ -907,11 +888,7 @@ namespace Appalachia.Core.Collections.Native
 
             // Create the backing arrays.
             var valuesSize = UnsafeUtility.SizeOf<T>() * capacity;
-            m_State->m_Values = UnsafeUtility.Malloc(
-                valuesSize,
-                UnsafeUtility.AlignOf<T>(),
-                allocator
-            );
+            m_State->m_Values = UnsafeUtility.Malloc(valuesSize, UnsafeUtility.AlignOf<T>(), allocator);
             m_State->m_NextIndexes = (int*) UnsafeUtility.Malloc(
                 sizeof(int) * capacity,
                 UnsafeUtility.AlignOf<int>(),
@@ -1714,11 +1691,7 @@ namespace Appalachia.Core.Collections.Native
 	    ///     enumerator is invalid.
 	    /// </returns>
 	    [WriteAccessRequired]
-        public Enumerator InsertAfter(
-            Enumerator enumerator,
-            NativeArray<T> array,
-            int startIndex,
-            int length)
+        public Enumerator InsertAfter(Enumerator enumerator, NativeArray<T> array, int startIndex, int length)
         {
             CheckReadAccess();
             CheckWriteAccess();
@@ -2894,10 +2867,7 @@ namespace Appalachia.Core.Collections.Native
                 // is already in order.
                 if (curIndex > startIndex)
                 {
-                    var startValue = UnsafeUtility.ReadArrayElement<T>(
-                        m_State->m_Values,
-                        startIndex
-                    );
+                    var startValue = UnsafeUtility.ReadArrayElement<T>(m_State->m_Values, startIndex);
                     UnsafeUtility.WriteArrayElement(
                         m_State->m_Values,
                         startIndex,
@@ -3524,10 +3494,7 @@ namespace Appalachia.Core.Collections.Native
 	    /// <param name="copiedTailIndex">
 	    ///     Index that the list's tail node was copied to
 	    /// </param>
-	    private void CopyToEnd(
-            NativeLinkedList<T> list,
-            out int copiedHeadIndex,
-            out int copiedTailIndex)
+	    private void CopyToEnd(NativeLinkedList<T> list, out int copiedHeadIndex, out int copiedTailIndex)
         {
             // Copy the list's node values at the end. Copying with stride is
             // the same way NativeSlice<T> copies.
@@ -3650,10 +3617,7 @@ namespace Appalachia.Core.Collections.Native
 	    /// <param name="copiedTailIndex">
 	    ///     Index that the list's tail node was copied to
 	    /// </param>
-	    private void CopyToEnd(
-            NativeArray<T> array,
-            out int copiedHeadIndex,
-            out int copiedTailIndex)
+	    private void CopyToEnd(NativeArray<T> array, out int copiedHeadIndex, out int copiedTailIndex)
         {
             // Compute the indices of the head and tail of the copied portion of
             // the list
@@ -3916,11 +3880,7 @@ namespace Appalachia.Core.Collections.Native
                     UnsafeUtility.AlignOf<int>(),
                     m_State->m_AllocatorLabel
                 );
-                UnsafeUtility.MemCpy(
-                    newNextIndexes,
-                    m_State->m_NextIndexes,
-                    m_State->m_Length * sizeof(int)
-                );
+                UnsafeUtility.MemCpy(newNextIndexes, m_State->m_NextIndexes, m_State->m_Length * sizeof(int));
                 UnsafeUtility.Free(m_State->m_NextIndexes, m_State->m_AllocatorLabel);
                 m_State->m_NextIndexes = newNextIndexes;
 
@@ -3930,11 +3890,7 @@ namespace Appalachia.Core.Collections.Native
                     UnsafeUtility.AlignOf<int>(),
                     m_State->m_AllocatorLabel
                 );
-                UnsafeUtility.MemCpy(
-                    newPrevIndexes,
-                    m_State->m_PrevIndexes,
-                    m_State->m_Length * sizeof(int)
-                );
+                UnsafeUtility.MemCpy(newPrevIndexes, m_State->m_PrevIndexes, m_State->m_Length * sizeof(int));
                 UnsafeUtility.Free(m_State->m_PrevIndexes, m_State->m_AllocatorLabel);
                 m_State->m_PrevIndexes = newPrevIndexes;
 
@@ -4085,8 +4041,7 @@ namespace Appalachia.Core.Collections.Native
             if (startIndex < 0)
             {
                 throw new IndexOutOfRangeException(
-                    "Invalid range start index specified. Range start " +
-                    "indices must be non-negative."
+                    "Invalid range start index specified. Range start " + "indices must be non-negative."
                 );
             }
 
@@ -4127,8 +4082,7 @@ namespace Appalachia.Core.Collections.Native
             if (startIndex < 0)
             {
                 throw new IndexOutOfRangeException(
-                    "Invalid range start index specified. Range start " +
-                    "indices must be non-negative."
+                    "Invalid range start index specified. Range start " + "indices must be non-negative."
                 );
             }
 

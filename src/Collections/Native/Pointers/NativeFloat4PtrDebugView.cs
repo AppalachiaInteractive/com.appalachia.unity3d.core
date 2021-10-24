@@ -8,11 +8,6 @@ namespace Appalachia.Core.Collections.Native.Pointers
     internal sealed class NativeFloat4PtrDebugView
     {
         /// <summary>
-        ///     The object to provide a debugger view for
-        /// </summary>
-        private NativeFloat4Ptr m_Ptr;
-
-        /// <summary>
         ///     Create the debugger view
         /// </summary>
         /// <param name="ptr">
@@ -22,6 +17,11 @@ namespace Appalachia.Core.Collections.Native.Pointers
         {
             m_Ptr = ptr;
         }
+
+        /// <summary>
+        ///     The object to provide a debugger view for
+        /// </summary>
+        private NativeFloat4Ptr m_Ptr;
 
         /// <summary>
         ///     Get the viewed object's value

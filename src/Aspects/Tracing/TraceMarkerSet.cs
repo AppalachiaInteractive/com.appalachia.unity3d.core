@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Preferences;
 using Unity.Profiling;
 
@@ -8,15 +9,12 @@ using Unity.Profiling;
 
 namespace Appalachia.Core.Aspects.Tracing
 {
+    [DebuggerStepThrough]
     public class TraceMarkerSet : DisposableAspectSet<TraceMarker>
     {
         public const bool _TRACE_BEFORE_PREFS_READY = false;
-        private static PREF<bool> _enabled;
 
-        public static bool InternalDisable;
-
-        private static readonly ProfilerMarker _PRF_TraceMarkerSet_Create =
-            new("TraceMarkerSet.Create");
+        private static readonly ProfilerMarker _PRF_TraceMarkerSet_Create = new("TraceMarkerSet.Create");
 
         public static bool Enabled
         {
@@ -40,6 +38,14 @@ namespace Appalachia.Core.Aspects.Tracing
             }
         }
 
+        public static bool InternalDisable;
+        private static PREF<bool> _enabled;
+
+        public override IDisposable Initiate(TraceMarker instance)
+        {
+            return instance.Auto();
+        }
+
         protected override TraceMarker Create(
             string typePrefix,
             string memberName,
@@ -55,11 +61,6 @@ namespace Appalachia.Core.Aspects.Tracing
 
                 return marker;
             }
-        }
-
-        public override IDisposable Initiate(TraceMarker instance)
-        {
-            return instance.Auto();
         }
     }
 }

@@ -1,9 +1,3 @@
-//-----------------------------------------------------------------------
-// <copyright file="NativeLongPtr.cs" company="Jackson Dunstan">
-//     Copyright (c) Jackson Dunstan. See LICENSE.md.
-// </copyright>
-//-----------------------------------------------------------------------
-
 #region
 
 using System;
@@ -181,11 +175,7 @@ namespace Appalachia.Core.Collections.Native.Pointers
             }
 
             // Allocate the memory for the value
-            m_Buffer = (long*) UnsafeUtility.Malloc(
-                sizeof(long),
-                UnsafeUtility.AlignOf<long>(),
-                allocator
-            );
+            m_Buffer = (long*) UnsafeUtility.Malloc(sizeof(long), UnsafeUtility.AlignOf<long>(), allocator);
 
             // Store the allocator to use when deallocating
             m_AllocatorLabelLabel = allocator;

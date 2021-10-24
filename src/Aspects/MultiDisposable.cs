@@ -11,7 +11,7 @@ namespace Appalachia.Core.Base.Aspects
 {
     public sealed partial class AspectSets
     {
-        
+
 #pragma warning disable 612
     public class MultiDisposable : SelfPoolingObject<MultiDisposable>, IDisposable
 #pragma warning restore 612
@@ -36,8 +36,8 @@ namespace Appalachia.Core.Base.Aspects
             {
                 DisposeReverse();
                 return;
-            }            
-            
+            }
+
             if (_count == 0)
             {
                 OnDisposal();
@@ -55,8 +55,8 @@ namespace Appalachia.Core.Base.Aspects
                 if (i == 6) _6?.Dispose();
                 if (i == 7) _7?.Dispose();
                 if (i == 8) _8?.Dispose();
-                if (i == 9) _9?.Dispose();                
-            }                      
+                if (i == 9) _9?.Dispose();
+            }
 
             OnDisposal();
         }
@@ -72,7 +72,7 @@ namespace Appalachia.Core.Base.Aspects
             for (var index = 0; index < _count; index++)
             {
                 var i = _count - index - 1;
-                
+
                 if (i == 0) _0?.Dispose();
                 if (i == 1) _1?.Dispose();
                 if (i == 2) _2?.Dispose();
@@ -82,10 +82,10 @@ namespace Appalachia.Core.Base.Aspects
                 if (i == 6) _6?.Dispose();
                 if (i == 7) _7?.Dispose();
                 if (i == 8) _8?.Dispose();
-                if (i == 9) _9?.Dispose();                
-            }             
-            
-            OnDisposal();   
+                if (i == 9) _9?.Dispose();
+            }
+
+            OnDisposal();
         }
 
         public void Set(
@@ -285,7 +285,7 @@ namespace Appalachia.Core.Base.Aspects
                 {
                     throw new NotSupportedException("Too many.  Implement chaining.");
                 }
-            
+
                 if (length > 0) _0 = args[0];
                 if (length > 1) _1 = args[1];
                 if (length > 2) _2 = args[2];
@@ -296,7 +296,7 @@ namespace Appalachia.Core.Base.Aspects
                 if (length > 7) _7 = args[7];
                 if (length > 8) _8 = args[8];
                 if (length > 9) _9 = args[9];
-            
+
                 _count = args.Length;
                 _reverseOrder = reverseOrder;
             }
@@ -323,11 +323,11 @@ namespace Appalachia.Core.Base.Aspects
         public override void Initialize()
         {
         }
-        
+
         protected virtual void OnDisposal()
-        {            
+        {
             AspectSets._currentDepth -= 1;
-                  
+
             Return();
         }
     }

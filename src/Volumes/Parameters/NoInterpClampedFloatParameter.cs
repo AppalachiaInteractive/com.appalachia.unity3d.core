@@ -8,18 +8,15 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class NoInterpClampedFloatParameter : VolumeParameter<float>
     {
-        public float min;
-        public float max;
-
-        public NoInterpClampedFloatParameter(
-            float value,
-            float min,
-            float max,
-            bool overrideState = false) : base(value, overrideState)
+        public NoInterpClampedFloatParameter(float value, float min, float max, bool overrideState = false) :
+            base(value, overrideState)
         {
             this.min = min;
             this.max = max;
         }
+
+        public float max;
+        public float min;
 
         public override float value
         {

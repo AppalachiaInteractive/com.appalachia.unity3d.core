@@ -20,13 +20,7 @@ namespace Appalachia.Core.Collections.Native
             where T : struct, IJobParallelFor2D
             where TE : struct
         {
-            return Schedule2D(
-                jobData,
-                array.Length0,
-                array.Length1,
-                innerloopBatchCount,
-                dependsOn
-            );
+            return Schedule2D(jobData, array.Length0, array.Length1, innerloopBatchCount, dependsOn);
         }
 
         public static unsafe JobHandle Schedule2D<T>(
@@ -43,11 +37,7 @@ namespace Appalachia.Core.Collections.Native
                 dependsOn,
                 ScheduleMode.Parallel
             );
-            return JobsUtility.ScheduleParallelFor(
-                ref parameters,
-                length0 * length1,
-                innerloopBatchCount
-            );
+            return JobsUtility.ScheduleParallelFor(ref parameters, length0 * length1, innerloopBatchCount);
         }
 
         public static unsafe void Run2D<T>(this T jobData, int length0, int length1)
@@ -91,12 +81,7 @@ namespace Appalachia.Core.Collections.Native
                 label_5:
                 int beginIndex;
                 int endIndex;
-                if (!JobsUtility.GetWorkStealingRange(
-                    ref ranges,
-                    jobIndex,
-                    out beginIndex,
-                    out endIndex
-                ))
+                if (!JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out beginIndex, out endIndex))
                 {
                     return;
                 }

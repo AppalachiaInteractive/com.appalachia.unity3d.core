@@ -31,29 +31,21 @@ namespace Appalachia.Core.Execution.Hooks
         private const string _ENABLE_QUIT_ = MENU_BASE_ + "Log Quit";
         private const string _ENABLE_DESTROY_ = MENU_BASE_ + "Log Destroy";
 
-        [NonSerialized]
-        public static readonly PREF<bool> _ENABLE_SUB = PREFS.REG(G_, "Subscribe", false);
+        [NonSerialized] public static readonly PREF<bool> _ENABLE_SUB = PREFS.REG(G_, "Subscribe", false);
 
-        [NonSerialized]
-        public static readonly PREF<bool> _ENABLE_UNSUB = PREFS.REG(G_, "Unsubscribe", false);
+        [NonSerialized] public static readonly PREF<bool> _ENABLE_UNSUB = PREFS.REG(G_, "Unsubscribe", false);
 
-        [NonSerialized]
-        public static readonly PREF<bool> _ENABLE_AWAKE = PREFS.REG(G_, "Awake", false);
+        [NonSerialized] public static readonly PREF<bool> _ENABLE_AWAKE = PREFS.REG(G_, "Awake", false);
 
-        [NonSerialized]
-        public static readonly PREF<bool> _ENABLE_START = PREFS.REG(G_, "Start", false);
+        [NonSerialized] public static readonly PREF<bool> _ENABLE_START = PREFS.REG(G_, "Start", false);
 
-        [NonSerialized]
-        public static readonly PREF<bool> _ENABLE_ENABLE = PREFS.REG(G_, "Enable", false);
+        [NonSerialized] public static readonly PREF<bool> _ENABLE_ENABLE = PREFS.REG(G_, "Enable", false);
 
-        [NonSerialized]
-        public static readonly PREF<bool> _ENABLE_DISABLE = PREFS.REG(G_, "Disable", false);
+        [NonSerialized] public static readonly PREF<bool> _ENABLE_DISABLE = PREFS.REG(G_, "Disable", false);
 
-        [NonSerialized]
-        public static readonly PREF<bool> _ENABLE_QUIT = PREFS.REG(G_, "Quit", false);
+        [NonSerialized] public static readonly PREF<bool> _ENABLE_QUIT = PREFS.REG(G_, "Quit", false);
 
-        [NonSerialized]
-        public static readonly PREF<bool> _ENABLE_DESTROY = PREFS.REG(G_, "Destroy", false);
+        [NonSerialized] public static readonly PREF<bool> _ENABLE_DESTROY = PREFS.REG(G_, "Destroy", false);
 
         [MenuItem(_ENABLE_SUB_, true)]
         private static bool ENABLE_SUBv()

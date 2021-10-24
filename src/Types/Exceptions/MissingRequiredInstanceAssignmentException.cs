@@ -7,8 +7,7 @@ using System.Runtime.Serialization;
 
 namespace Appalachia.Core.Types.Exceptions
 {
-    public class
-        MissingRequiredInstanceAssignmentException<T> : MissingRequiredInstanceAssignmentException
+    public class MissingRequiredInstanceAssignmentException<T> : MissingRequiredInstanceAssignmentException
     {
         public MissingRequiredInstanceAssignmentException(string fieldName) : base(
             $"Failed to initialize instance of {typeof(T).Name}: [{fieldName}] was not initialized properly."
@@ -19,18 +18,19 @@ namespace Appalachia.Core.Types.Exceptions
 
     public class MissingRequiredInstanceAssignmentException : Exception
     {
+        public MissingRequiredInstanceAssignmentException(string message, Exception innerException) : base(
+            message,
+            innerException
+        )
+        {
+        }
+
         protected MissingRequiredInstanceAssignmentException(string message) : base(message)
         {
         }
 
-        public MissingRequiredInstanceAssignmentException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-
-        protected MissingRequiredInstanceAssignmentException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
+        protected MissingRequiredInstanceAssignmentException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

@@ -5,8 +5,6 @@ namespace Appalachia.Core.Collections.Observable
 {
     public class ObservableList<T> : IList<T>
     {
-        private readonly IList<T> m_List;
-
         public ObservableList() : this(0)
         {
         }
@@ -21,6 +19,12 @@ namespace Appalachia.Core.Collections.Observable
             m_List = new List<T>(collection);
         }
 
+        private readonly IList<T> m_List;
+
+        public bool IsReadOnly => false;
+
+        public int Count => m_List.Count;
+
         public T this[int index]
         {
             get => m_List[index];
@@ -32,30 +36,39 @@ namespace Appalachia.Core.Collections.Observable
             }
         }
 
-        public int Count => m_List.Count;
+        public event ListChangedEventHandler<T> ItemAdded;
+        public event ListChangedEventHandler<T> ItemRemoved;
 
-        public bool IsReadOnly => false;
+        public int Remove(params T[] items)
+        {
+            if (items == null)
+            {
+                return 0;
+            }
+
+            var count = 0;
+
+            for (var index = 0; index < items.Length; index++)
+            {
+                var i = items[index];
+                count += Remove(i) ? 1 : 0;
+            }
+
+            return count;
+        }
+
+        public void Add(params T[] items)
+        {
+            for (var index = 0; index < items.Length; index++)
+            {
+                var i = items[index];
+                Add(i);
+            }
+        }
 
         public bool Contains(T item)
         {
             return m_List.Contains(item);
-        }
-
-        public int IndexOf(T item)
-        {
-            return m_List.IndexOf(item);
-        }
-
-        public void Add(T item)
-        {
-            m_List.Add(item);
-            OnEvent(ItemAdded, m_List.IndexOf(item), item);
-        }
-
-        public void Insert(int index, T item)
-        {
-            m_List.Insert(index, item);
-            OnEvent(ItemAdded, index, item);
         }
 
         public bool Remove(T item)
@@ -70,11 +83,10 @@ namespace Appalachia.Core.Collections.Observable
             return ret;
         }
 
-        public void RemoveAt(int index)
+        public void Add(T item)
         {
-            var item = m_List[index];
-            m_List.RemoveAt(index);
-            OnEvent(ItemRemoved, index, item);
+            m_List.Add(item);
+            OnEvent(ItemAdded, m_List.IndexOf(item), item);
         }
 
         public void Clear()
@@ -95,13 +107,23 @@ namespace Appalachia.Core.Collections.Observable
             return m_List.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public int IndexOf(T item)
         {
-            return GetEnumerator();
+            return m_List.IndexOf(item);
         }
 
-        public event ListChangedEventHandler<T> ItemAdded;
-        public event ListChangedEventHandler<T> ItemRemoved;
+        public void Insert(int index, T item)
+        {
+            m_List.Insert(index, item);
+            OnEvent(ItemAdded, index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            var item = m_List[index];
+            m_List.RemoveAt(index);
+            OnEvent(ItemRemoved, index, item);
+        }
 
         private void OnEvent(ListChangedEventHandler<T> e, int index, T item)
         {
@@ -111,31 +133,9 @@ namespace Appalachia.Core.Collections.Observable
             }
         }
 
-        public void Add(params T[] items)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            for (var index = 0; index < items.Length; index++)
-            {
-                var i = items[index];
-                Add(i);
-            }
-        }
-
-        public int Remove(params T[] items)
-        {
-            if (items == null)
-            {
-                return 0;
-            }
-
-            var count = 0;
-
-            for (var index = 0; index < items.Length; index++)
-            {
-                var i = items[index];
-                count += Remove(i) ? 1 : 0;
-            }
-
-            return count;
+            return GetEnumerator();
         }
     }
 }

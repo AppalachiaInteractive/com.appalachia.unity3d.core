@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Appalachia.Core.Extensions;
 using Appalachia.Core.Layers;
-
 using Unity.Profiling;
 using UnityEngine;
 
@@ -18,14 +17,17 @@ namespace Appalachia.Core.Filtering
                                                  IComponentFilterLimitedTask<T>
         where T : Component
     {
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ComponentFilterTask =
-            new("ComponentFilterTask.ComponentFilterTask");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_CheckValidity =
+            new("ComponentFilterTask.CheckValidity");
 
         private static readonly ProfilerMarker _PRF_ComponentFilterTask_Complete =
             new("ComponentFilterTask.Complete");
 
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_CheckValidity =
-            new("ComponentFilterTask.CheckValidity");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ComponentFilterTask =
+            new("ComponentFilterTask.ComponentFilterTask");
+
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExcludeTags =
+            new("ComponentFilterTask.ExcludeTags");
 
         private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters =
             new("ComponentFilterTask.ExecuteFilters");
@@ -33,45 +35,23 @@ namespace Appalachia.Core.Filtering
         private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_Activity =
             new("ComponentFilterTask.ExecuteFilters.Activity");
 
-        private static readonly ProfilerMarker
-            _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyPredicates =
-                new("ComponentFilterTask.ExecuteFilters.IncludeOnlyPredicates");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfLayers =
+            new("ComponentFilterTask.ExecuteFilters.ExcludeIfLayers");
 
-        private static readonly ProfilerMarker
-            _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyTags =
-                new("ComponentFilterTask.ExecuteFilters.IncludeOnlyTags");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfPredicates =
+            new("ComponentFilterTask.ExecuteFilters.ExcludeIfPredicates");
 
-        private static readonly ProfilerMarker
-            _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyLayers =
-                new("ComponentFilterTask.ExecuteFilters.IncludeOnlyLayers");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfTags =
+            new("ComponentFilterTask.ExecuteFilters.ExcludeIfTags");
 
-        private static readonly ProfilerMarker
-            _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfPredicates =
-                new("ComponentFilterTask.ExecuteFilters.ExcludeIfPredicates");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyLayers =
+            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyLayers");
 
-        private static readonly ProfilerMarker
-            _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfTags =
-                new("ComponentFilterTask.ExecuteFilters.ExcludeIfTags");
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyPredicates =
+            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyPredicates");
 
-        private static readonly ProfilerMarker
-            _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfLayers =
-                new("ComponentFilterTask.ExecuteFilters.ExcludeIfLayers");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExcludeTags =
-            new("ComponentFilterTask.ExcludeTags");
-
-        private readonly List<Predicate<T>> _excludeIfPredicates = new();
-        private readonly HashSet<int> _excludeLayers = new();
-        private readonly HashSet<string> _excludeTags = new();
-        private readonly HashSet<int> _includeOnlyLayers = new();
-        private readonly List<Predicate<T>> _includeOnlyPredicates = new();
-        private readonly HashSet<string> _includeOnlyTags = new();
-        private readonly T[] _input;
-        private readonly bool[] _validity;
-        private bool? _active;
-        private int _resultLimit;
-        private IComparer<T> _sortComparer;
-        private Comparison<T> _sortComparison;
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyTags =
+            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyTags");
 
         public ComponentFilterTask(T[] input)
         {
@@ -80,6 +60,103 @@ namespace Appalachia.Core.Filtering
                 _input = input;
                 _validity = new bool[_input.Length];
             }
+        }
+
+        private readonly bool[] _validity;
+        private readonly HashSet<int> _excludeLayers = new();
+        private readonly HashSet<int> _includeOnlyLayers = new();
+        private readonly HashSet<string> _excludeTags = new();
+        private readonly HashSet<string> _includeOnlyTags = new();
+
+        private readonly List<Predicate<T>> _excludeIfPredicates = new();
+        private readonly List<Predicate<T>> _includeOnlyPredicates = new();
+        private readonly T[] _input;
+        private bool? _active;
+        private Comparison<T> _sortComparison;
+        private IComparer<T> _sortComparer;
+        private int _resultLimit;
+
+        public IComponentFilterLimitedTask<T> LimitResults(int count)
+        {
+            _resultLimit = count;
+
+            return this;
+        }
+
+        public IComponentFilterSortedTask<T> SortBy(IComparer<T> comparer)
+        {
+            _sortComparer = comparer;
+
+            return this;
+        }
+
+        public IComponentFilterSortedTask<T> SortBy(Comparison<T> comparison)
+        {
+            _sortComparison = comparison;
+
+            return this;
+        }
+
+        public IComponentFilterTask<T> ActiveOnly()
+        {
+            _active = true;
+
+            return this;
+        }
+
+        public IComponentFilterTask<T> ExcludeIf(Predicate<T> predicate)
+        {
+            _excludeIfPredicates.Add(predicate);
+
+            return this;
+        }
+
+        public IComponentFilterTask<T> ExcludeLayers(params LayerInfo[] layers)
+        {
+            for (var i = 0; i < layers.Length; i++)
+            {
+                _excludeLayers.Add(layers[i].Id);
+            }
+
+            return this;
+        }
+
+        public IComponentFilterTask<T> ExcludeTags(params string[] tags)
+        {
+            _excludeTags.AddRange(tags);
+
+            return this;
+        }
+
+        public IComponentFilterTask<T> InactiveOnly()
+        {
+            _active = false;
+
+            return this;
+        }
+
+        public IComponentFilterTask<T> IncludeOnlyIf(Predicate<T> predicate)
+        {
+            _includeOnlyPredicates.Add(predicate);
+
+            return this;
+        }
+
+        public IComponentFilterTask<T> IncludeOnlyLayers(params LayerInfo[] layers)
+        {
+            for (var i = 0; i < layers.Length; i++)
+            {
+                _includeOnlyLayers.Add(layers[i].Id);
+            }
+
+            return this;
+        }
+
+        public IComponentFilterTask<T> IncludeOnlyTags(params string[] tags)
+        {
+            _includeOnlyTags.AddRange(tags);
+
+            return this;
         }
 
         public T[] RunFilter()
@@ -122,89 +199,6 @@ namespace Appalachia.Core.Filtering
 
                 return output;
             }
-        }
-
-        public IComponentFilterTask<T> ActiveOnly()
-        {
-            _active = true;
-
-            return this;
-        }
-
-        public IComponentFilterTask<T> InactiveOnly()
-        {
-            _active = false;
-
-            return this;
-        }
-
-        public IComponentFilterTask<T> IncludeOnlyIf(Predicate<T> predicate)
-        {
-            _includeOnlyPredicates.Add(predicate);
-
-            return this;
-        }
-
-        public IComponentFilterTask<T> ExcludeIf(Predicate<T> predicate)
-        {
-            _excludeIfPredicates.Add(predicate);
-
-            return this;
-        }
-
-        public IComponentFilterTask<T> IncludeOnlyTags(params string[] tags)
-        {
-            _includeOnlyTags.AddRange(tags);
-
-            return this;
-        }
-
-        public IComponentFilterTask<T> ExcludeTags(params string[] tags)
-        {
-            _excludeTags.AddRange(tags);
-
-            return this;
-        }
-
-        public IComponentFilterTask<T> IncludeOnlyLayers(params LayerInfo[] layers)
-        {
-            for (var i = 0; i < layers.Length; i++)
-            {
-                _includeOnlyLayers.Add(layers[i].Id);
-            }
-
-            return this;
-        }
-
-        public IComponentFilterTask<T> ExcludeLayers(params LayerInfo[] layers)
-        {
-            for (var i = 0; i < layers.Length; i++)
-            {
-                _excludeLayers.Add(layers[i].Id);
-            }
-
-            return this;
-        }
-
-        public IComponentFilterSortedTask<T> SortBy(IComparer<T> comparer)
-        {
-            _sortComparer = comparer;
-
-            return this;
-        }
-
-        public IComponentFilterSortedTask<T> SortBy(Comparison<T> comparison)
-        {
-            _sortComparison = comparison;
-
-            return this;
-        }
-
-        public IComponentFilterLimitedTask<T> LimitResults(int count)
-        {
-            _resultLimit = count;
-
-            return this;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

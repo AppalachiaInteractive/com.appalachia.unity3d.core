@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public bool2x4_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, bool2x4 value) :
-            base(overrideEnabled, value)
+        public bool2x4_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, bool2x4 value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

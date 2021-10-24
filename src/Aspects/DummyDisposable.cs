@@ -8,18 +8,6 @@ namespace Appalachia.Core.Aspects
 {
     public class DummyDisposable : IDisposable
     {
-        private static DummyDisposable _instance;
-        private static Func<IDisposable> _provider;
-
-        public void Dispose()
-        {
-        }
-
-        public IDisposable Start()
-        {
-            return this;
-        }
-
         public static DummyDisposable instance
         {
             get
@@ -44,6 +32,18 @@ namespace Appalachia.Core.Aspects
 
                 return _provider;
             }
+        }
+
+        private static DummyDisposable _instance;
+        private static Func<IDisposable> _provider;
+
+        public IDisposable Start()
+        {
+            return this;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

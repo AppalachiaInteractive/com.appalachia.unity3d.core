@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Appalachia.CI.Integration;
 using Appalachia.CI.Integration.FileSystem;
 using Unity.Profiling;
 
@@ -15,25 +14,20 @@ namespace Appalachia.Core.Aspects
     {
         private const int _INITIAL_ASPECT_CAPACITY = 30;
 
-        public static DummyDisposable _dummy = new();
-
         private static readonly ProfilerMarker _PRF_DisposableAspectSet =
             new("DisposableAspectSet.Constructor");
 
         private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute =
             new("DisposableAspectSet.Execute");
 
+        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Create =
+            new("DisposableAspectSet.Execute.Create");
+
         private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Format =
             new("DisposableAspectSet.Execute.Format");
 
         private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Markers =
             new("DisposableAspectSet.Execute.Markers");
-
-        private static readonly ProfilerMarker _PRF_DisposableAspectSet_Execute_Create =
-            new("DisposableAspectSet.Execute.Create");
-
-        protected Dictionary<int, T> _instances;
-        protected string _typePrefix;
 
         protected DisposableAspectSet()
         {
@@ -47,6 +41,19 @@ namespace Appalachia.Core.Aspects
                 _instances = new Dictionary<int, T>(_INITIAL_ASPECT_CAPACITY);
             }
         }
+
+        public static DummyDisposable _dummy = new();
+
+        protected Dictionary<int, T> _instances;
+        protected string _typePrefix;
+
+        public abstract IDisposable Initiate(T instance);
+
+        protected abstract T Create(
+            string typePrefix,
+            string memberName,
+            string additive,
+            int sourceLineNumber);
 
         public T Execute(
             out bool dummy,
@@ -100,13 +107,5 @@ namespace Appalachia.Core.Aspects
             dummy = false;
             return instance;
         }
-
-        protected abstract T Create(
-            string typePrefix,
-            string memberName,
-            string additive,
-            int sourceLineNumber);
-
-        public abstract IDisposable Initiate(T instance);
     }
 }

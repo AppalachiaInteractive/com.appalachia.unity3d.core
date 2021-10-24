@@ -8,8 +8,6 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class NoInterpMinIntParameter : VolumeParameter<int>
     {
-        public int min;
-
         public NoInterpMinIntParameter(int value, int min, bool overrideState = false) : base(
             value,
             overrideState
@@ -17,6 +15,8 @@ namespace Appalachia.Core.Volumes.Parameters
         {
             this.min = min;
         }
+
+        public int min;
 
         public override int value
         {

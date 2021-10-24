@@ -1,12 +1,3 @@
-//
-// Perlin noise generator for Unity
-// Keijiro Takahashi, 2013, 2015
-// https://github.com/keijiro/PerlinNoise
-//
-// Based on the original implementation by Ken Perlin
-// http://mrl.nyu.edu/~perlin/noise/
-//
-
 #region
 
 using UnityEngine;
@@ -75,12 +66,8 @@ namespace Appalachia.Core.Math.Noise
                 ),
                 Lerp(
                     v,
-                    Lerp(u, Grad(perm[AA + 1], x, y, z - 1), Grad(perm[BA + 1], x - 1, y, z - 1)),
-                    Lerp(
-                        u,
-                        Grad(perm[AB + 1], x,     y - 1, z - 1),
-                        Grad(perm[BB + 1], x - 1, y - 1, z - 1)
-                    )
+                    Lerp(u, Grad(perm[AA + 1], x, y,     z - 1), Grad(perm[BA + 1], x - 1, y,     z - 1)),
+                    Lerp(u, Grad(perm[AB + 1], x, y - 1, z - 1), Grad(perm[BB + 1], x - 1, y - 1, z - 1))
                 )
             );
         }

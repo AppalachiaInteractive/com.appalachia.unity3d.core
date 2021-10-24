@@ -16,19 +16,6 @@ namespace Appalachia.Core.Behaviours
         private Bounds ___renderingBounds;
         private Transform ___transform;
 
-        protected Transform _transform
-        {
-            get
-            {
-                if (___transform == null)
-                {
-                    ___transform = transform;
-                }
-
-                return ___transform;
-            }
-        }
-
         public Bounds renderingBounds
         {
             get
@@ -42,19 +29,17 @@ namespace Appalachia.Core.Behaviours
             }
         }
 
-        protected void RecalculateBounds()
+        protected Transform _transform
         {
-            ___renderingBounds = default;
-        }
+            get
+            {
+                if (___transform == null)
+                {
+                    ___transform = transform;
+                }
 
-        protected float3 LocalToWorldPoint(float3 point)
-        {
-            return _transform.TransformPoint(point);
-        }
-
-        protected float3 WorldToLocalPoint(float3 point)
-        {
-            return _transform.InverseTransformPoint(point);
+                return ___transform;
+            }
         }
 
         protected float3 LocalToWorldDirection(float3 direction)
@@ -62,9 +47,9 @@ namespace Appalachia.Core.Behaviours
             return _transform.TransformDirection(direction);
         }
 
-        protected float3 WorldToLocalDirection(float3 direction)
+        protected float3 LocalToWorldPoint(float3 point)
         {
-            return _transform.InverseTransformDirection(direction);
+            return _transform.TransformPoint(point);
         }
 
         protected float3 LocalToWorldVector(float3 vector)
@@ -72,9 +57,24 @@ namespace Appalachia.Core.Behaviours
             return _transform.TransformVector(vector);
         }
 
+        protected float3 WorldToLocalDirection(float3 direction)
+        {
+            return _transform.InverseTransformDirection(direction);
+        }
+
+        protected float3 WorldToLocalPoint(float3 point)
+        {
+            return _transform.InverseTransformPoint(point);
+        }
+
         protected float3 WorldToLocalVector(float3 vector)
         {
             return _transform.InverseTransformVector(vector);
+        }
+
+        protected void RecalculateBounds()
+        {
+            ___renderingBounds = default;
         }
 
 #if UNITY_EDITOR

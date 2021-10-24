@@ -8,10 +8,7 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class Vector3Parameter : VolumeParameter<Vector3>
     {
-        public Vector3Parameter(Vector3 value, bool overrideState = false) : base(
-            value,
-            overrideState
-        )
+        public Vector3Parameter(Vector3 value, bool overrideState = false) : base(value, overrideState)
         {
         }
 

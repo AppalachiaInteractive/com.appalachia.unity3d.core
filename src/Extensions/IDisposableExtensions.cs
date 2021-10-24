@@ -9,24 +9,6 @@ namespace Appalachia.Core.Extensions
 
         /// <summary>
         ///     Extension method for IDisposable.
-        ///     Increments the refCount for the given IDisposable object.
-        ///     Note: newly instantiated objects don't automatically have a refCount of 1!
-        ///     If you wish to use ref-counting, always call retain() whenever you want
-        ///     to take ownership of an object.
-        /// </summary>
-        /// <remarks>This method is thread-safe.</remarks>
-        /// <param name="disposable">The disposable that should be retained.</param>
-        public static void Retain(this IDisposable disposable)
-        {
-            lock (RefCounts)
-            {
-                var refCount = RefCounts.GetOrCreateValue(disposable);
-                refCount.refCount++;
-            }
-        }
-
-        /// <summary>
-        ///     Extension method for IDisposable.
         ///     Decrements the refCount for the given disposable.
         /// </summary>
         /// <remarks>This method is thread-safe.</remarks>
@@ -54,6 +36,24 @@ namespace Appalachia.Core.Extensions
                     // one reference, which is now calling Release()
                     disposable.Dispose();
                 }
+            }
+        }
+
+        /// <summary>
+        ///     Extension method for IDisposable.
+        ///     Increments the refCount for the given IDisposable object.
+        ///     Note: newly instantiated objects don't automatically have a refCount of 1!
+        ///     If you wish to use ref-counting, always call retain() whenever you want
+        ///     to take ownership of an object.
+        /// </summary>
+        /// <remarks>This method is thread-safe.</remarks>
+        /// <param name="disposable">The disposable that should be retained.</param>
+        public static void Retain(this IDisposable disposable)
+        {
+            lock (RefCounts)
+            {
+                var refCount = RefCounts.GetOrCreateValue(disposable);
+                refCount.refCount++;
             }
         }
 

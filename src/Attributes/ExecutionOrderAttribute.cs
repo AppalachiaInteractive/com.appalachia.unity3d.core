@@ -8,11 +8,11 @@ namespace Appalachia.Core.Attributes
 {
     public class ExecutionOrderAttribute : Attribute
     {
-        public short Order;
-
         public ExecutionOrderAttribute(short order)
         {
             Order = order;
         }
+
+        public short Order;
     }
 }

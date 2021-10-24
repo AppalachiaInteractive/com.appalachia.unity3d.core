@@ -23,32 +23,14 @@ namespace Appalachia.Core.Scriptables
         [SmartLabel]
         public string profileName;
 
-        protected virtual void OnEnable()
+        public void UpdateName()
         {
-            if (string.IsNullOrWhiteSpace(profileName))
+            if (name != profileName)
             {
-                profileName = name;
-                UpdateName();
-            }
-        }
+                Rename(profileName);
 
-        int IComparable.CompareTo(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return 1;
+                UpdateAllIDs();
             }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return 0;
-            }
-
-            return obj is SelfNamingSavingAndIdentifyingScriptableObject<T> other
-                ? CompareTo(other)
-                : throw new ArgumentException(
-                    $"Object must be of type {nameof(SelfNamingSavingAndIdentifyingScriptableObject<T>)}"
-                );
         }
 
         public int CompareTo(SelfNamingSavingAndIdentifyingScriptableObject<T> other)
@@ -72,13 +54,12 @@ namespace Appalachia.Core.Scriptables
             return string.Compare(profileName, other.profileName, StringComparison.Ordinal);
         }
 
-        public void UpdateName()
+        protected virtual void OnEnable()
         {
-            if (name != profileName)
+            if (string.IsNullOrWhiteSpace(profileName))
             {
-                Rename(profileName);
-
-                UpdateAllIDs();
+                profileName = name;
+                UpdateName();
             }
         }
 
@@ -90,36 +71,30 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        public static bool operator <(
-            SelfNamingSavingAndIdentifyingScriptableObject<T> left,
-            SelfNamingSavingAndIdentifyingScriptableObject<T> right)
+        int IComparable.CompareTo(object obj)
         {
-            return Comparer<SelfNamingSavingAndIdentifyingScriptableObject<T>>.Default.Compare(
-                       left,
-                       right
-                   ) <
-                   0;
+            if (ReferenceEquals(null, obj))
+            {
+                return 1;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return 0;
+            }
+
+            return obj is SelfNamingSavingAndIdentifyingScriptableObject<T> other
+                ? CompareTo(other)
+                : throw new ArgumentException(
+                    $"Object must be of type {nameof(SelfNamingSavingAndIdentifyingScriptableObject<T>)}"
+                );
         }
 
         public static bool operator >(
             SelfNamingSavingAndIdentifyingScriptableObject<T> left,
             SelfNamingSavingAndIdentifyingScriptableObject<T> right)
         {
-            return Comparer<SelfNamingSavingAndIdentifyingScriptableObject<T>>.Default.Compare(
-                       left,
-                       right
-                   ) >
-                   0;
-        }
-
-        public static bool operator <=(
-            SelfNamingSavingAndIdentifyingScriptableObject<T> left,
-            SelfNamingSavingAndIdentifyingScriptableObject<T> right)
-        {
-            return Comparer<SelfNamingSavingAndIdentifyingScriptableObject<T>>.Default.Compare(
-                       left,
-                       right
-                   ) <=
+            return Comparer<SelfNamingSavingAndIdentifyingScriptableObject<T>>.Default.Compare(left, right) >
                    0;
         }
 
@@ -127,10 +102,23 @@ namespace Appalachia.Core.Scriptables
             SelfNamingSavingAndIdentifyingScriptableObject<T> left,
             SelfNamingSavingAndIdentifyingScriptableObject<T> right)
         {
-            return Comparer<SelfNamingSavingAndIdentifyingScriptableObject<T>>.Default.Compare(
-                       left,
-                       right
-                   ) >=
+            return Comparer<SelfNamingSavingAndIdentifyingScriptableObject<T>>.Default.Compare(left, right) >=
+                   0;
+        }
+
+        public static bool operator <(
+            SelfNamingSavingAndIdentifyingScriptableObject<T> left,
+            SelfNamingSavingAndIdentifyingScriptableObject<T> right)
+        {
+            return Comparer<SelfNamingSavingAndIdentifyingScriptableObject<T>>.Default.Compare(left, right) <
+                   0;
+        }
+
+        public static bool operator <=(
+            SelfNamingSavingAndIdentifyingScriptableObject<T> left,
+            SelfNamingSavingAndIdentifyingScriptableObject<T> right)
+        {
+            return Comparer<SelfNamingSavingAndIdentifyingScriptableObject<T>>.Default.Compare(left, right) <=
                    0;
         }
     }

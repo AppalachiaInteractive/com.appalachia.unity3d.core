@@ -28,22 +28,7 @@ namespace Appalachia.Core.Volumes
         //>>> System.Lazy<T> is broken in Unity (legacy runtime) so we'll have to do it ourselves :|
         private static readonly VolumeManager s_Instance = new();
 
-        // Internal list of default state for each component type - this is used to reset component
-        // states on update instead of having to implement a Reset method on all components (which
-        // would be error-prone)
-        private readonly List<VolumeComponent> m_ComponentsDefaultState;
-
-        // Cached lists of all volumes (sorted by priority) by layer mask
-        private readonly Dictionary<int, List<Volume>> m_SortedVolumes;
-
-        // Keep track of sorting states for layer masks
-        private readonly Dictionary<int, bool> m_SortNeeded;
-
-        // Recycled list used for volume traversal
-        private readonly List<Collider> m_TempColliders;
-
-        // Holds all the registered volumes
-        private readonly List<Volume> m_Volumes;
+        public static VolumeManager instance => s_Instance;
 
         // Explicit static constructor to tell the C# compiler not to mark type as beforefieldinit
         static VolumeManager()
@@ -63,7 +48,22 @@ namespace Appalachia.Core.Volumes
             stack = CreateStack();
         }
 
-        public static VolumeManager instance => s_Instance;
+        // Keep track of sorting states for layer masks
+        private readonly Dictionary<int, bool> m_SortNeeded;
+
+        // Cached lists of all volumes (sorted by priority) by layer mask
+        private readonly Dictionary<int, List<Volume>> m_SortedVolumes;
+
+        // Recycled list used for volume traversal
+        private readonly List<Collider> m_TempColliders;
+
+        // Holds all the registered volumes
+        private readonly List<Volume> m_Volumes;
+
+        // Internal list of default state for each component type - this is used to reset component
+        // states on update instead of having to implement a Reset method on all components (which
+        // would be error-prone)
+        private readonly List<VolumeComponent> m_ComponentsDefaultState;
 
         //<<<
 
@@ -72,67 +72,6 @@ namespace Appalachia.Core.Volumes
 
         // Current list of tracked component types
         public IEnumerable<Type> baseComponentTypes { get; private set; }
-
-        public VolumeStack CreateStack()
-        {
-            var s = new VolumeStack();
-            s.Reload(baseComponentTypes);
-            return s;
-        }
-
-        // This will be called only once at runtime and everytime script reload kicks-in in the
-        // editor as we need to keep track of any compatible component in the project
-        private void ReloadBaseTypes()
-        {
-            m_ComponentsDefaultState.Clear();
-
-            // Grab all the component types we can find
-            baseComponentTypes = ReflectionExtensions.GetAllTypes()
-                                          .Where(
-                                               t => t.IsSubclassOf(typeof(VolumeComponent)) &&
-                                                    !t.IsAbstract
-                                           );
-
-            // Keep an instance of each type to be used in a virtual lowest priority global volume
-            // so that we have a default state to fallback to when exiting volumes
-            foreach (var type in baseComponentTypes)
-            {
-                var inst = (VolumeComponent) ScriptableObject.CreateInstance(type);
-                m_ComponentsDefaultState.Add(inst);
-            }
-        }
-
-        public void Register(Volume volume, int layer)
-        {
-            m_Volumes.Add(volume);
-
-            // Look for existing cached layer masks and add it there if needed
-            foreach (var kvp in m_SortedVolumes)
-            {
-                if ((kvp.Key & (1 << layer)) != 0)
-                {
-                    kvp.Value.Add(volume);
-                }
-            }
-
-            SetLayerDirty(layer);
-        }
-
-        public void Unregister(Volume volume, int layer)
-        {
-            m_Volumes.Remove(volume);
-
-            foreach (var kvp in m_SortedVolumes)
-            {
-                // Skip layer masks this volume doesn't belong to
-                if ((kvp.Key & (1 << layer)) == 0)
-                {
-                    continue;
-                }
-
-                kvp.Value.Remove(volume);
-            }
-        }
 
         public bool IsComponentActiveInMask<T>(LayerMask layerMask)
             where T : VolumeComponent
@@ -164,59 +103,42 @@ namespace Appalachia.Core.Volumes
             return false;
         }
 
-        internal void SetLayerDirty(int layer)
+//custom-begin: malte: debugging/visualizing volumes
+        public List<Volume> GrabVolumes(LayerMask mask)
+
+//custom-end
         {
-            Assert.IsTrue((layer >= 0) && (layer <= k_MaxLayerCount), "Invalid layer bit");
+            List<Volume> list;
 
-            foreach (var kvp in m_SortedVolumes)
+            if (!m_SortedVolumes.TryGetValue(mask, out list))
             {
-                var mask = kvp.Key;
+                // New layer mask detected, create a new list and cache all the volumes that belong
+                // to this mask in it
+                list = new List<Volume>();
 
-                if ((mask & (1 << layer)) != 0)
+                foreach (var volume in m_Volumes)
                 {
+                    if ((mask & (1 << volume.gameObject.layer)) == 0)
+                    {
+                        continue;
+                    }
+
+                    list.Add(volume);
                     m_SortNeeded[mask] = true;
                 }
+
+                m_SortedVolumes.Add(mask, list);
             }
-        }
 
-        internal void UpdateVolumeLayer(Volume volume, int prevLayer, int newLayer)
-        {
-            Assert.IsTrue((prevLayer >= 0) && (prevLayer <= k_MaxLayerCount), "Invalid layer bit");
-            Unregister(volume, prevLayer);
-            Register(volume, newLayer);
-        }
-
-        // Go through all listed components and lerp overriden values in the global state
-        private void OverrideData(
-            VolumeStack s,
-            List<VolumeComponent> components,
-            float interpFactor)
-        {
-            foreach (var component in components)
+            // Check sorting state
+            bool sortNeeded;
+            if (m_SortNeeded.TryGetValue(mask, out sortNeeded) && sortNeeded)
             {
-                if (!component.active)
-                {
-                    continue;
-                }
-
-                var state = s.GetComponent(component.GetType());
-                component.Override(state, interpFactor);
+                m_SortNeeded[mask] = false;
+                SortByPriority(list);
             }
-        }
 
-        // Faster version of OverrideData to force replace values in the global state
-        private void ReplaceData(VolumeStack s, List<VolumeComponent> components)
-        {
-            foreach (var component in components)
-            {
-                var target = s.GetComponent(component.GetType());
-                var count = component.parameters.Count;
-
-                for (var i = 0; i < count; i++)
-                {
-                    target.parameters[i].SetValue(component.parameters[i]);
-                }
-            }
+            return list;
         }
 
         [Conditional("UNITY_EDITOR")]
@@ -250,6 +172,38 @@ namespace Appalachia.Core.Volumes
                     s.Reload(baseComponentTypes);
                     return;
                 }
+            }
+        }
+
+        public void Register(Volume volume, int layer)
+        {
+            m_Volumes.Add(volume);
+
+            // Look for existing cached layer masks and add it there if needed
+            foreach (var kvp in m_SortedVolumes)
+            {
+                if ((kvp.Key & (1 << layer)) != 0)
+                {
+                    kvp.Value.Add(volume);
+                }
+            }
+
+            SetLayerDirty(layer);
+        }
+
+        public void Unregister(Volume volume, int layer)
+        {
+            m_Volumes.Remove(volume);
+
+            foreach (var kvp in m_SortedVolumes)
+            {
+                // Skip layer masks this volume doesn't belong to
+                if ((kvp.Key & (1 << layer)) == 0)
+                {
+                    continue;
+                }
+
+                kvp.Value.Remove(volume);
             }
         }
 
@@ -350,50 +304,89 @@ namespace Appalachia.Core.Volumes
                 //custom-end
 
                 // No need to clamp01 the interpolation factor as it'll always be in [0;1[ range
-                OverrideData(
-                    s,
-                    volume.profileRef.components,
-                    interpFactor * Mathf.Clamp01(volume.weight)
-                );
+                OverrideData(s, volume.profileRef.components, interpFactor * Mathf.Clamp01(volume.weight));
             }
         }
 
-//custom-begin: malte: debugging/visualizing volumes
-        public List<Volume> GrabVolumes(LayerMask mask)
-
-//custom-end
+        public VolumeStack CreateStack()
         {
-            List<Volume> list;
+            var s = new VolumeStack();
+            s.Reload(baseComponentTypes);
+            return s;
+        }
 
-            if (!m_SortedVolumes.TryGetValue(mask, out list))
+        internal void SetLayerDirty(int layer)
+        {
+            Assert.IsTrue((layer >= 0) && (layer <= k_MaxLayerCount), "Invalid layer bit");
+
+            foreach (var kvp in m_SortedVolumes)
             {
-                // New layer mask detected, create a new list and cache all the volumes that belong
-                // to this mask in it
-                list = new List<Volume>();
+                var mask = kvp.Key;
 
-                foreach (var volume in m_Volumes)
+                if ((mask & (1 << layer)) != 0)
                 {
-                    if ((mask & (1 << volume.gameObject.layer)) == 0)
-                    {
-                        continue;
-                    }
-
-                    list.Add(volume);
                     m_SortNeeded[mask] = true;
                 }
-
-                m_SortedVolumes.Add(mask, list);
             }
+        }
 
-            // Check sorting state
-            bool sortNeeded;
-            if (m_SortNeeded.TryGetValue(mask, out sortNeeded) && sortNeeded)
+        internal void UpdateVolumeLayer(Volume volume, int prevLayer, int newLayer)
+        {
+            Assert.IsTrue((prevLayer >= 0) && (prevLayer <= k_MaxLayerCount), "Invalid layer bit");
+            Unregister(volume, prevLayer);
+            Register(volume, newLayer);
+        }
+
+        // Go through all listed components and lerp overriden values in the global state
+        private void OverrideData(VolumeStack s, List<VolumeComponent> components, float interpFactor)
+        {
+            foreach (var component in components)
             {
-                m_SortNeeded[mask] = false;
-                SortByPriority(list);
-            }
+                if (!component.active)
+                {
+                    continue;
+                }
 
-            return list;
+                var state = s.GetComponent(component.GetType());
+                component.Override(state, interpFactor);
+            }
+        }
+
+        // This will be called only once at runtime and everytime script reload kicks-in in the
+        // editor as we need to keep track of any compatible component in the project
+        private void ReloadBaseTypes()
+        {
+            m_ComponentsDefaultState.Clear();
+
+            // Grab all the component types we can find
+            baseComponentTypes = ReflectionExtensions.GetAllTypes()
+                                                     .Where(
+                                                          t => t.IsSubclassOf(typeof(VolumeComponent)) &&
+                                                               !t.IsAbstract
+                                                      );
+
+            // Keep an instance of each type to be used in a virtual lowest priority global volume
+            // so that we have a default state to fallback to when exiting volumes
+            foreach (var type in baseComponentTypes)
+            {
+                var inst = (VolumeComponent) ScriptableObject.CreateInstance(type);
+                m_ComponentsDefaultState.Add(inst);
+            }
+        }
+
+        // Faster version of OverrideData to force replace values in the global state
+        private void ReplaceData(VolumeStack s, List<VolumeComponent> components)
+        {
+            foreach (var component in components)
+            {
+                var target = s.GetComponent(component.GetType());
+                var count = component.parameters.Count;
+
+                for (var i = 0; i < count; i++)
+                {
+                    target.parameters[i].SetValue(component.parameters[i]);
+                }
+            }
         }
 
         // Stable insertion sort. Faster than List<T>.Sort() for our needs.

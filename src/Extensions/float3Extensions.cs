@@ -2,7 +2,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using Appalachia.Utility.src.Constants;
+using Appalachia.Utility.Constants;
 using Unity.Mathematics;
 
 #endregion
@@ -33,7 +33,7 @@ namespace Appalachia.Core.Extensions
                 return quaternion.identity;
             }
 
-            if (Math.Abs(dotFT - (-1f)) < float.Epsilon)
+            if (Math.Abs(dotFT - -1f) < float.Epsilon)
             {
                 return quaternion.EulerXYZ(180f * float3c.up_forward);
             }

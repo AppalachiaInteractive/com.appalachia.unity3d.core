@@ -20,7 +20,7 @@ namespace Appalachia.Core.Preferences
             var splits = label.Split('_');
             label = splits[splits.Length - 1];
             grouping = grouping.Trim('/').Trim();
-            
+
             var key =
                 $"{grouping.ToLower().Replace(" ", string.Empty).Trim()}.{label.ToLower().Replace(" ", string.Empty).Trim()}";
 
@@ -250,7 +250,8 @@ namespace Appalachia.Core.Preferences
                 var trLow = (TR) Convert.ChangeType(low,   typeof(TR));
                 var trHigh = (TR) Convert.ChangeType(high, typeof(TR));
 
-                var instance = new PREF<TR>(key, grouping, label, dv, trLow, trHigh, order, reset);
+                var api = PREF_STATES.Get<TR>().API;
+                var instance = new PREF<TR>(key, grouping, label, dv, trLow, trHigh, order, reset, api);
 
                 if (PREF_STATES._safeToAwaken)
                 {
@@ -285,16 +286,8 @@ namespace Appalachia.Core.Preferences
                     return true;
                 }
 
-                var instance = new PREF<TR>(
-                    key,
-                    grouping,
-                    label,
-                    dv,
-                    default,
-                    default,
-                    order,
-                    reset
-                );
+                var api = PREF_STATES.Get<TR>().API;
+                var instance = new PREF<TR>(key, grouping, label, dv, default, default, order, reset, api);
 
                 if (PREF_STATES._safeToAwaken)
                 {

@@ -10,19 +10,17 @@ namespace Appalachia.Core.ObjectPooling
     public class DisposingObjectPool<T> : ObjectPool<T>
         where T : class, IDisposable
     {
-        private static readonly ProfilerMarker _PRF_DisposingObjectPool_DisposingObjectPool =
-            new("DisposingObjectPool.DisposingObjectPool");
-
         private static readonly ProfilerMarker _PRF_DisposingObjectPool_DisposeItem =
             new("DisposingObjectPool.DisposeItem");
 
-        private static readonly ProfilerMarker _PRF_DisposingObjectPool_OnReset =
-            new("DisposingObjectPool.OnReset");
+        private static readonly ProfilerMarker _PRF_DisposingObjectPool_DisposingObjectPool =
+            new("DisposingObjectPool.DisposingObjectPool");
 
         private static readonly ProfilerMarker _PRF_DisposingObjectPool_OnDispose =
             new("DisposingObjectPool.OnDispose");
 
-        protected readonly bool _disposeElements;
+        private static readonly ProfilerMarker _PRF_DisposingObjectPool_OnReset =
+            new("DisposingObjectPool.OnReset");
 
         public DisposingObjectPool(Func<T> customAdd) : base(customAdd)
         {
@@ -35,9 +33,21 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
-        public DisposingObjectPool(Func<T> customAdd, Action<T> customReset) : base(
+        public DisposingObjectPool(Func<T> customAdd, Action<T> customReset) : base(customAdd, customReset)
+        {
+            using (_PRF_DisposingObjectPool_DisposingObjectPool.Auto())
+            {
+                if (typeof(IDisposable).IsAssignableFrom(typeof(T)))
+                {
+                    _disposeElements = true;
+                }
+            }
+        }
+
+        public DisposingObjectPool(Func<T> customAdd, Action<T> customReset, Action<T> customPreGet) : base(
             customAdd,
-            customReset
+            customReset,
+            customPreGet
         )
         {
             using (_PRF_DisposingObjectPool_DisposingObjectPool.Auto())
@@ -49,17 +59,7 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
-        public DisposingObjectPool(Func<T> customAdd, Action<T> customReset, Action<T> customPreGet)
-            : base(customAdd, customReset, customPreGet)
-        {
-            using (_PRF_DisposingObjectPool_DisposingObjectPool.Auto())
-            {
-                if (typeof(IDisposable).IsAssignableFrom(typeof(T)))
-                {
-                    _disposeElements = true;
-                }
-            }
-        }
+        protected readonly bool _disposeElements;
 
         protected override void OnDispose()
         {
@@ -78,17 +78,6 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
-        private void DisposeItem(T item)
-        {
-            using (_PRF_DisposingObjectPool_DisposeItem.Auto())
-            {
-                if (item is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
-            }
-        }
-
         protected override void OnReset(T obj)
         {
             using (_PRF_DisposingObjectPool_OnReset.Auto())
@@ -100,6 +89,17 @@ namespace Appalachia.Core.ObjectPooling
                 else
                 {
                     _list.Add(obj);
+                }
+            }
+        }
+
+        private void DisposeItem(T item)
+        {
+            using (_PRF_DisposingObjectPool_DisposeItem.Auto())
+            {
+                if (item is IDisposable disposable)
+                {
+                    disposable.Dispose();
                 }
             }
         }

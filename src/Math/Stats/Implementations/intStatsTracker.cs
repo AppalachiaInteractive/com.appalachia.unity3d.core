@@ -25,18 +25,6 @@ namespace Appalachia.Core.Math.Stats.Implementations
         protected override Comparison<int> Comparer => _comparison;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override int Add(int a, int b)
-        {
-            return a + b;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override int Divide(int dividend, int divisor)
-        {
-            return dividend / divisor;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string Format(int value, FormatType format)
         {
             using (_PRF_Format.Auto())
@@ -55,6 +43,18 @@ namespace Appalachia.Core.Math.Stats.Implementations
                         throw new ArgumentOutOfRangeException(nameof(format), format, null);
                 }
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override int Add(int a, int b)
+        {
+            return a + b;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override int Divide(int dividend, int divisor)
+        {
+            return dividend / divisor;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

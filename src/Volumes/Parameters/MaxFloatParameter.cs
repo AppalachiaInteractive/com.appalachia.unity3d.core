@@ -8,8 +8,6 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class MaxFloatParameter : FloatParameter
     {
-        public float max;
-
         public MaxFloatParameter(float value, float max, bool overrideState = false) : base(
             value,
             overrideState
@@ -17,6 +15,8 @@ namespace Appalachia.Core.Volumes.Parameters
         {
             this.max = max;
         }
+
+        public float max;
 
         public override float value
         {

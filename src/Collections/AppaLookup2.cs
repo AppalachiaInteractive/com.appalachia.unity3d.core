@@ -5,9 +5,8 @@ using UnityEngine;
 namespace Appalachia.Core.Collections
 {
     [Serializable]
-    public abstract class AppaLookup2<TKey1, TKey2, TValue, TKey1List, TKey2List, TValueList,
-                                      TNested, TNestedList> : AppaLookup<TKey1, TNested, TKey1List,
-        TNestedList>
+    public abstract class AppaLookup2<TKey1, TKey2, TValue, TKey1List, TKey2List, TValueList, TNested,
+                                      TNestedList> : AppaLookup<TKey1, TNested, TKey1List, TNestedList>
         where TKey1List : AppaList<TKey1>, new()
         where TKey2List : AppaList<TKey2>, new()
         where TValueList : AppaList<TValue>, new()
@@ -19,29 +18,21 @@ namespace Appalachia.Core.Collections
                 TNestedList>) +
             ".";
 
-        private static readonly ProfilerMarker _PRF_AddOrUpdate =
-            new(_PRF_PFX + nameof(AddOrUpdate));
+        private static readonly ProfilerMarker _PRF_AddOrUpdate = new(_PRF_PFX + nameof(AddOrUpdate));
 
-        private static readonly ProfilerMarker _PRF_TryGetValue =
-            new(_PRF_PFX + nameof(TryGetValue));
+        private static readonly ProfilerMarker _PRF_TryGetValue = new(_PRF_PFX + nameof(TryGetValue));
 
         private static readonly ProfilerMarker _PRF_TryGetValueWithFallback =
             new(_PRF_PFX + nameof(TryGetValueWithFallback));
 
-        public void AddOrUpdate(TKey1 primary, TKey2 secondary, TValue value)
+        public bool ContainsKeys(TKey1 key1, TKey2 key2)
         {
-            using (_PRF_AddOrUpdate.Auto())
+            if (!ContainsKey(key1))
             {
-                if (!TryGetValue(primary, out var sub))
-                {
-                    sub = new TNested();
-
-                    Add(primary, sub);
-                    ;
-                }
-
-                sub.AddOrUpdate(secondary, value);
+                return false;
             }
+
+            return this[key1].ContainsKey(key2);
         }
 
         public bool TryGetValue(TKey1 primary, TKey2 secondary, out TValue value)
@@ -101,14 +92,20 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public bool ContainsKeys(TKey1 key1, TKey2 key2)
+        public void AddOrUpdate(TKey1 primary, TKey2 secondary, TValue value)
         {
-            if (!ContainsKey(key1))
+            using (_PRF_AddOrUpdate.Auto())
             {
-                return false;
-            }
+                if (!TryGetValue(primary, out var sub))
+                {
+                    sub = new TNested();
 
-            return this[key1].ContainsKey(key2);
+                    Add(primary, sub);
+                    ;
+                }
+
+                sub.AddOrUpdate(secondary, value);
+            }
         }
     }
 }

@@ -14,10 +14,8 @@ namespace Appalachia.Core.Collections.Implementations.Lists
         {
         }
 
-        public AppaList_Camera(
-            int capacity,
-            float capacityIncreaseMultiplier = 2,
-            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
+        public AppaList_Camera(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) :
+            base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

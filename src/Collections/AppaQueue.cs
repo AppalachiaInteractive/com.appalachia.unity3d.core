@@ -11,9 +11,7 @@ using UnityEngine;
 namespace Appalachia.Core.Collections
 {
     [Serializable]
-    public abstract class AppaQueue<T> : ISerializationCallbackReceiver,
-                                         ICollection,
-                                         IReadOnlyCollection<T>
+    public abstract class AppaQueue<T> : ISerializationCallbackReceiver, ICollection, IReadOnlyCollection<T>
     {
         private const string _PRF_PFX = nameof(AppaQueue<T>) + ".";
 
@@ -24,100 +22,71 @@ namespace Appalachia.Core.Collections
             new(_PRF_PFX + nameof(OnAfterDeserialize));
 
         private static readonly ProfilerMarker _PRF_Initialize = new(_PRF_PFX + nameof(Initialize));
-
         private static readonly ProfilerMarker _PRF_Clear = new(_PRF_PFX + nameof(Clear));
 
         private static readonly ProfilerMarker _PRF_CopyTo = new(_PRF_PFX + nameof(CopyTo));
-
         private static readonly ProfilerMarker _PRF_Enqueue = new(_PRF_PFX + nameof(Enqueue));
-
         private static readonly ProfilerMarker _PRF_Dequeue = new(_PRF_PFX + nameof(Dequeue));
-
         private static readonly ProfilerMarker _PRF_Peek = new(_PRF_PFX + nameof(Peek));
-
         private static readonly ProfilerMarker _PRF_Contains = new(_PRF_PFX + nameof(Contains));
 
         private static readonly ProfilerMarker _PRF_ToArray = new(_PRF_PFX + nameof(ToArray));
 
         private static readonly ProfilerMarker _PRF_TrimExcess = new(_PRF_PFX + nameof(TrimExcess));
 
-        [SerializeField]
-        [HideInInspector]
-        private T[] _array;
-
-        private Queue<T> _queue;
-
         public AppaQueue()
         {
             _queue = new Queue<T>();
         }
 
+        private Queue<T> _queue;
+
+        [SerializeField]
+        [HideInInspector]
+        private T[] _array;
+
         public int Count => _queue.Count;
-
-        public void CopyTo(Array array, int index)
-        {
-            using (_PRF_CopyTo.Auto())
-            {
-                ((ICollection) _queue).CopyTo(array, index);
-            }
-        }
-
-        int ICollection.Count => _queue.Count;
 
         public bool IsSynchronized => ((ICollection) _queue).IsSynchronized;
 
         public object SyncRoot => ((ICollection) _queue).SyncRoot;
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _queue.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable) _queue).GetEnumerator();
-        }
+        int ICollection.Count => _queue.Count;
 
         int IReadOnlyCollection<T>.Count => _queue.Count;
 
-        public void OnBeforeSerialize()
+        public virtual bool Contains(T item)
         {
-            using (_PRF_OnBeforeSerialize.Auto())
+            using (_PRF_Contains.Auto())
             {
-                var length = _queue.Count;
-
-                _array = new T[length];
-
-                for (var i = 0; i < length; i++)
-                {
-                    _array[i] = _queue.Dequeue();
-                }
+                Initialize();
+                return _queue.Contains(item);
             }
         }
 
-        public void OnAfterDeserialize()
+        public virtual T Dequeue()
         {
-            using (_PRF_OnAfterDeserialize.Auto())
+            using (_PRF_Dequeue.Auto())
             {
-                _queue = new Queue<T>();
-
-                for (var i = 0; i < _array.Length; i++)
-                {
-                    _queue.Enqueue(_array[i]);
-                }
-
-                _array = null;
+                Initialize();
+                return _queue.Dequeue();
             }
         }
 
-        private void Initialize()
+        public virtual T Peek()
         {
-            using (_PRF_Initialize.Auto())
+            using (_PRF_Peek.Auto())
             {
-                if (_queue == null)
-                {
-                    _queue = new Queue<T>();
-                }
+                Initialize();
+                return _queue.Peek();
+            }
+        }
+
+        public virtual T[] ToArray()
+        {
+            using (_PRF_ToArray.Auto())
+            {
+                return _queue.ToArray();
             }
         }
 
@@ -147,47 +116,71 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public virtual T Dequeue()
-        {
-            using (_PRF_Dequeue.Auto())
-            {
-                Initialize();
-                return _queue.Dequeue();
-            }
-        }
-
-        public virtual T Peek()
-        {
-            using (_PRF_Peek.Auto())
-            {
-                Initialize();
-                return _queue.Peek();
-            }
-        }
-
-        public virtual bool Contains(T item)
-        {
-            using (_PRF_Contains.Auto())
-            {
-                Initialize();
-                return _queue.Contains(item);
-            }
-        }
-
-        public virtual T[] ToArray()
-        {
-            using (_PRF_ToArray.Auto())
-            {
-                return _queue.ToArray();
-            }
-        }
-
         public virtual void TrimExcess()
         {
             using (_PRF_TrimExcess.Auto())
             {
                 _queue.TrimExcess();
             }
+        }
+
+        public void CopyTo(Array array, int index)
+        {
+            using (_PRF_CopyTo.Auto())
+            {
+                ((ICollection) _queue).CopyTo(array, index);
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _queue.GetEnumerator();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            using (_PRF_OnAfterDeserialize.Auto())
+            {
+                _queue = new Queue<T>();
+
+                for (var i = 0; i < _array.Length; i++)
+                {
+                    _queue.Enqueue(_array[i]);
+                }
+
+                _array = null;
+            }
+        }
+
+        public void OnBeforeSerialize()
+        {
+            using (_PRF_OnBeforeSerialize.Auto())
+            {
+                var length = _queue.Count;
+
+                _array = new T[length];
+
+                for (var i = 0; i < length; i++)
+                {
+                    _array[i] = _queue.Dequeue();
+                }
+            }
+        }
+
+        private void Initialize()
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                if (_queue == null)
+                {
+                    _queue = new Queue<T>();
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable) _queue).GetEnumerator();
         }
     }
 }

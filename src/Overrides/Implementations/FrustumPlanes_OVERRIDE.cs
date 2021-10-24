@@ -14,15 +14,12 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public FrustumPlanes_OVERRIDE(
-            bool isOverridingAllowed,
-            bool overrideEnabled,
-            FrustumPlanes value) : base(overrideEnabled, value)
+        public FrustumPlanes_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, FrustumPlanes value) :
+            base(overrideEnabled, value)
         {
         }
 
-        public FrustumPlanes_OVERRIDE(
-            Overridable<FrustumPlanes, FrustumPlanes_OVERRIDE> value) : base(value)
+        public FrustumPlanes_OVERRIDE(Overridable<FrustumPlanes, FrustumPlanes_OVERRIDE> value) : base(value)
         {
         }
     }

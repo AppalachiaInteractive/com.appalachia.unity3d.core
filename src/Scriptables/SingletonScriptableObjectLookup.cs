@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
-using Appalachia.Core.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEditor;
@@ -27,8 +26,7 @@ namespace Appalachia.Core.Scriptables
 {
     [Critical]
     [Serializable]
-    public class
-        SingletonScriptableObjectLookup : AppalachiaScriptableObject<SingletonScriptableObjectLookup>
+    public class SingletonScriptableObjectLookup : AppalachiaScriptableObject<SingletonScriptableObjectLookup>
     {
         private const string _PRF_PFX = nameof(SingletonScriptableObjectLookup) + ".";
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
@@ -56,8 +54,7 @@ namespace Appalachia.Core.Scriptables
 
         private static readonly ProfilerMarker _PRF_Scan = new(_PRF_PFX + nameof(Scan));
 
-        private static readonly ProfilerMarker _PRF_Scan_Search =
-            new(_PRF_PFX + nameof(Scan) + ".Search");
+        private static readonly ProfilerMarker _PRF_Scan_Search = new(_PRF_PFX + nameof(Scan) + ".Search");
 
         private static readonly ProfilerMarker _PRF_Scan_AssemblyLookup =
             new(_PRF_PFX + nameof(Scan) + ".AssemblyLookup");
@@ -208,8 +205,7 @@ namespace Appalachia.Core.Scriptables
                     }
                 }
 
-                if (givenType.IsGenericType &&
-                    (givenType.GetGenericTypeDefinition() == genericType))
+                if (givenType.IsGenericType && (givenType.GetGenericTypeDefinition() == genericType))
                 {
                     return true;
                 }
@@ -226,28 +222,27 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        private static readonly ProfilerMarker _PRF_ScanExternal =
-            new(_PRF_PFX + nameof(ScanExternal));
+        private static readonly ProfilerMarker _PRF_ScanExternal = new(_PRF_PFX + nameof(ScanExternal));
 
         public static void ScanExternal()
         {
             using (_PRF_ScanExternal.Auto())
             {
                 var path = AssetDatabaseManager.FindAssetPaths("t: SingletonScriptableObjectLookup")
-                                        .FirstOrDefault();
+                                               .FirstOrDefault();
 
                 if (path == null)
                 {
                     return;
                 }
-                
+
                 var instance = AssetDatabaseManager.LoadAssetAtPath<SingletonScriptableObjectLookup>(path);
 
                 if (instance == null)
                 {
                     return;
                 }
-                
+
                 instance.Scan();
             }
         }

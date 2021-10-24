@@ -15,8 +15,7 @@ namespace Appalachia.Core.Scriptables
         private const string _PRF_PFX = nameof(SelfSavingScriptableObject<T>) + ".";
         private static readonly ProfilerMarker _PRF_CreateNew = new(_PRF_PFX + nameof(CreateNew));
 
-        private static readonly ProfilerMarker _PRF_LoadOrCreateNew =
-            new(_PRF_PFX + nameof(LoadOrCreateNew));
+        private static readonly ProfilerMarker _PRF_LoadOrCreateNew = new(_PRF_PFX + nameof(LoadOrCreateNew));
 
         private static readonly ProfilerMarker _PRF_Rename = new(_PRF_PFX + nameof(Rename));
 
@@ -44,12 +43,7 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return ScriptableObjectFactory.LoadOrCreateNew<T>(
-                    name,
-                    prependType,
-                    appendType,
-                    dataFolder
-                );
+                return ScriptableObjectFactory.LoadOrCreateNew<T>(name, prependType, appendType, dataFolder);
             }
         }
 

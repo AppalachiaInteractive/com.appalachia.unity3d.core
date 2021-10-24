@@ -11,23 +11,24 @@ namespace Appalachia.Core.Overrides
 {
     public abstract class Restorable : InternalBase<Restorable>, IDisposable
     {
-        private static readonly ProfilerMarker _PRF_Restorable_Restore = new("Restorable.Restore");
+        private static readonly ProfilerMarker _PRF_Restorable_CombineWith = new("Restorable.CombineWith");
 
         private static readonly ProfilerMarker _PRF_Restorable_DisableTracing =
             new("Restorable.DisableTracing");
 
-        private static readonly ProfilerMarker _PRF_Restorable_CombineWith =
-            new("Restorable.CombineWith");
+        private static readonly ProfilerMarker _PRF_Restorable_Restore = new("Restorable.Restore");
 
         public Restorable next;
 
         public abstract void Dispose();
 
-        public static Restorable Restore<TR>(TR initial, TR newValue, Action<TR> assignment)
+        public Restorable CombineWith(Restorable next)
         {
-            using (_PRF_Restorable_Restore.Auto())
+            using (_PRF_Restorable_CombineWith.Auto())
             {
-                return new Restorable<TR>(initial, newValue, assignment);
+                this.next = next;
+
+                return next;
             }
         }
 
@@ -43,25 +44,20 @@ namespace Appalachia.Core.Overrides
             }
         }
 
-        public Restorable CombineWith(Restorable next)
+        public static Restorable Restore<TR>(TR initial, TR newValue, Action<TR> assignment)
         {
-            using (_PRF_Restorable_CombineWith.Auto())
+            using (_PRF_Restorable_Restore.Auto())
             {
-                this.next = next;
-
-                return next;
+                return new Restorable<TR>(initial, newValue, assignment);
             }
         }
     }
 
     public class Restorable<T> : Restorable
     {
-        private static readonly ProfilerMarker _PRF_Restorable_Restorable =
-            new("Restorable.Restorable");
-
         private static readonly ProfilerMarker _PRF_Restorable_Dispose = new("Restorable.Dispose");
-        private Action<T> _assignment;
-        private T _initial;
+
+        private static readonly ProfilerMarker _PRF_Restorable_Restorable = new("Restorable.Restorable");
 
         public Restorable(T initial, T newValue, Action<T> assignment)
         {
@@ -73,6 +69,9 @@ namespace Appalachia.Core.Overrides
                 _assignment(newValue);
             }
         }
+
+        private Action<T> _assignment;
+        private T _initial;
 
         public override void Dispose()
         {

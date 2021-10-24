@@ -3,8 +3,6 @@ namespace Appalachia.Core.Math.Stats
     public sealed class StatsTrackerCollection<TS, T>
         where TS : StatsTracker<T>, new()
     {
-        private readonly TS[] _stats;
-
         public StatsTrackerCollection(int size)
         {
             _stats = new TS[size];
@@ -13,6 +11,8 @@ namespace Appalachia.Core.Math.Stats
                 _stats[i] = new TS();
             }
         }
+
+        private readonly TS[] _stats;
 
         public TS this[int index] => _stats[index];
     }

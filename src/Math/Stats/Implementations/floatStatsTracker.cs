@@ -23,26 +23,11 @@ namespace Appalachia.Core.Math.Stats.Implementations
         {
         }
 
-        public floatStatsTracker(bool trackMedian = false, int limit = 256) : base(
-            trackMedian,
-            limit
-        )
+        public floatStatsTracker(bool trackMedian = false, int limit = 256) : base(trackMedian, limit)
         {
         }
 
         protected override Comparison<float> Comparer => _comparer;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override float Add(float a, float b)
-        {
-            return a + b;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override float Divide(float dividend, int divisor)
-        {
-            return dividend / divisor;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string Format(float value, FormatType format)
@@ -63,6 +48,18 @@ namespace Appalachia.Core.Math.Stats.Implementations
                         throw new ArgumentOutOfRangeException(nameof(format), format, null);
                 }
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override float Add(float a, float b)
+        {
+            return a + b;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override float Divide(float dividend, int divisor)
+        {
+            return dividend / divisor;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

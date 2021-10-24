@@ -7,10 +7,7 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class NoInterpIntParameter : VolumeParameter<int>
     {
-        public NoInterpIntParameter(int value, bool overrideState = false) : base(
-            value,
-            overrideState
-        )
+        public NoInterpIntParameter(int value, bool overrideState = false) : base(value, overrideState)
         {
         }
     }

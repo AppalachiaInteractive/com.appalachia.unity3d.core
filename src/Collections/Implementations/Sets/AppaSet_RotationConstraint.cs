@@ -9,8 +9,7 @@ using UnityEngine.Animations;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class
-        AppaSet_RotationConstraint : AppaSet<RotationConstraint, AppaList_RotationConstraint>
+    public sealed class AppaSet_RotationConstraint : AppaSet<RotationConstraint, AppaList_RotationConstraint>
     {
     }
 }

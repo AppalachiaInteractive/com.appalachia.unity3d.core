@@ -9,30 +9,15 @@ namespace Appalachia.Core.Behaviours
 {
     public abstract class AppalachiaInstancedMonoBehaviour : AppalachiaMonoBehaviour
     {
-        [SerializeField]
-        [HideInInspector]
-        private MeshRenderer[] _meshRenderers;
+        protected bool checkedForRenderers;
 
         [SerializeField]
         [HideInInspector]
         private MaterialPropertyBlock[] _materialPropertyBlocks;
 
-        protected bool checkedForRenderers;
-
-        protected MeshRenderer[] meshRenderers
-        {
-            get
-            {
-                if ((_meshRenderers == null) ||
-                    ((_meshRenderers.Length == 0) && !checkedForRenderers))
-                {
-                    _meshRenderers = GetComponentsInChildren<MeshRenderer>();
-                    checkedForRenderers = true;
-                }
-
-                return _meshRenderers;
-            }
-        }
+        [SerializeField]
+        [HideInInspector]
+        private MeshRenderer[] _meshRenderers;
 
         protected MaterialPropertyBlock[] materialPropertyBlocks
         {
@@ -56,6 +41,22 @@ namespace Appalachia.Core.Behaviours
                 return _materialPropertyBlocks;
             }
         }
+
+        protected MeshRenderer[] meshRenderers
+        {
+            get
+            {
+                if ((_meshRenderers == null) || ((_meshRenderers.Length == 0) && !checkedForRenderers))
+                {
+                    _meshRenderers = GetComponentsInChildren<MeshRenderer>();
+                    checkedForRenderers = true;
+                }
+
+                return _meshRenderers;
+            }
+        }
+
+        protected abstract void UpdateInstancedProperties(MaterialPropertyBlock block, Material m);
 
         [Button]
         public void UpdateAllInstancedProperties()
@@ -97,7 +98,5 @@ namespace Appalachia.Core.Behaviours
                 _materialPropertyBlocks = null;
             }
         }
-
-        protected abstract void UpdateInstancedProperties(MaterialPropertyBlock block, Material m);
     }
 }

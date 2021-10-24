@@ -9,10 +9,7 @@ namespace Appalachia.Core.Collections.Extensions
         public static unsafe void ClearMemory<T>(this NativeList<T> native)
             where T : unmanaged
         {
-            UnsafeUtility.MemClear(
-                native.GetUnsafePtr(),
-                native.Length * UnsafeUtility.SizeOf<T>()
-            );
+            UnsafeUtility.MemClear(native.GetUnsafePtr(), native.Length * UnsafeUtility.SizeOf<T>());
         }
 
         public static void CompactMemory<T>(this NativeList<T> native)

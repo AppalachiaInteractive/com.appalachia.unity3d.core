@@ -14,16 +14,6 @@ namespace Appalachia.Core.Attributes.Editing
     [Conditional("UNITY_EDITOR")]
     public class SmartLabelAttribute : Attribute
     {
-        private readonly string _text;
-        private bool _bold;
-        private int _hue;
-        private bool _postfix;
-
-        private string _propertyColor;
-        private int _saturation;
-        private bool _shallowColor;
-        private int _value;
-
         public SmartLabelAttribute()
         {
         }
@@ -58,12 +48,29 @@ namespace Appalachia.Core.Attributes.Editing
             Padding = sla.Padding;
         }
 
-        public string AlignWith { get; set; }
+        private readonly string _text;
+        private bool _bold;
+        private bool _postfix;
+        private bool _shallowColor;
+        private int _hue;
+        private int _saturation;
+        private int _value;
 
-        public string Text { get; set; }
+        private string _propertyColor;
+        public bool HasHue { get; private set; }
+
+        public bool HasPropertyColor { get; private set; }
+
+        public bool HasSaturation { get; private set; }
+
+        public bool HasValue { get; private set; }
         public float Padding { get; set; } = 4f;
 
         public float PixelsPerCharacter { get; set; } = 8.25f;
+
+        public string AlignWith { get; set; }
+
+        public string Text { get; set; }
 
         public bool Bold
         {
@@ -75,6 +82,12 @@ namespace Appalachia.Core.Attributes.Editing
         {
             get => _postfix;
             set => _postfix = value;
+        }
+
+        public bool ShallowColor
+        {
+            get => _shallowColor;
+            set => _shallowColor = value;
         }
 
         public int Hue
@@ -116,18 +129,5 @@ namespace Appalachia.Core.Attributes.Editing
                 HasPropertyColor = true;
             }
         }
-
-        public bool ShallowColor
-        {
-            get => _shallowColor;
-            set => _shallowColor = value;
-        }
-
-        public bool HasPropertyColor { get; private set; }
-        public bool HasHue { get; private set; }
-
-        public bool HasSaturation { get; private set; }
-
-        public bool HasValue { get; private set; }
     }
 }

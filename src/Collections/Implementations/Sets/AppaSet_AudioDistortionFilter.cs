@@ -10,8 +10,7 @@ namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
     public sealed class
-        AppaSet_AudioDistortionFilter : AppaSet<AudioDistortionFilter,
-            AppaList_AudioDistortionFilter>
+        AppaSet_AudioDistortionFilter : AppaSet<AudioDistortionFilter, AppaList_AudioDistortionFilter>
     {
     }
 }

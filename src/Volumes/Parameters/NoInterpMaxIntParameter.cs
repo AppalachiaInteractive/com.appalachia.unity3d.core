@@ -8,8 +8,6 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class NoInterpMaxIntParameter : VolumeParameter<int>
     {
-        public int max;
-
         public NoInterpMaxIntParameter(int value, int max, bool overrideState = false) : base(
             value,
             overrideState
@@ -17,6 +15,8 @@ namespace Appalachia.Core.Volumes.Parameters
         {
             this.max = max;
         }
+
+        public int max;
 
         public override int value
         {

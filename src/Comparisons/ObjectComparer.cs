@@ -7,8 +7,6 @@ namespace Appalachia.Core.Comparisons
     public class ObjectComparer<T> : IEqualityComparer<T>, IComparer<T>
         where T : Object
     {
-        private static ObjectComparer<T> _instance;
-
         public static ObjectComparer<T> Instance
         {
             get
@@ -21,6 +19,8 @@ namespace Appalachia.Core.Comparisons
                 return _instance;
             }
         }
+
+        private static ObjectComparer<T> _instance;
 
         public int Compare(T x, T y)
         {

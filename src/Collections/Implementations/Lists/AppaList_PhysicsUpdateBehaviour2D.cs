@@ -21,9 +21,7 @@ namespace Appalachia.Core.Collections.Implementations.Lists
         {
         }
 
-        public AppaList_PhysicsUpdateBehaviour2D(AppaList<PhysicsUpdateBehaviour2D> list) : base(
-            list
-        )
+        public AppaList_PhysicsUpdateBehaviour2D(AppaList<PhysicsUpdateBehaviour2D> list) : base(list)
         {
         }
 

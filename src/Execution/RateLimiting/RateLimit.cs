@@ -5,13 +5,13 @@ namespace Appalachia.Core.Execution.RateLimiting
 {
     public class RateLimit
     {
-        public float periodMilliseconds;
-        public AppaList<float> timings;
-
         public RateLimit(int maxCalls, float periodMilliseconds)
         {
             this.periodMilliseconds = periodMilliseconds;
             timings = new AppaList_float(maxCalls);
         }
+
+        public AppaList<float> timings;
+        public float periodMilliseconds;
     }
 }

@@ -7,15 +7,15 @@ using UnityEngine.Serialization;
 namespace Appalachia.Core.Scriptables
 {
     [Serializable]
-    public abstract class
-        SelfCategorizingAndSavingScriptableObject<T> : SelfSavingScriptableObject<T>, ICategorizable
+    public abstract class SelfCategorizingAndSavingScriptableObject<T> : SelfSavingScriptableObject<T>,
+        ICategorizable
         where T : SelfCategorizingAndSavingScriptableObject<T>
     {
         [FormerlySerializedAs("category")]
         [SerializeField]
         [SmartLabel]
 #if UNITY_EDITOR
-        [SmartInlineButton(nameof(Prefix), "Prefix", false, false, null, nameof(_disablePrefix))]
+        [SmartInlineButton(nameof(Prefix),              "Prefix", false, false, null, nameof(_disablePrefix))]
         [SmartInlineButton(nameof(SelectUncategorized), "Select Uncat.", false)]
         [SmartInlineButton(
             nameof(SelectCategory),

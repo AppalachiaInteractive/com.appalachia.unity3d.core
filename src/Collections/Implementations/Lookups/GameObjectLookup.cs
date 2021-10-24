@@ -11,9 +11,9 @@ namespace Appalachia.Core.Collections.Implementations.Lookups
     [Serializable]
     public class GameObjectLookup : AppaLookup<int, GameObject, AppaList_int, AppaList_GameObject>
     {
-        protected override string GetDisplayTitle(int key, GameObject value)
+        protected override Color GetDisplayColor(int key, GameObject value)
         {
-            return value == null ? "MISSING" : value.name;
+            return Color.white;
         }
 
         protected override string GetDisplaySubtitle(int key, GameObject value)
@@ -21,9 +21,9 @@ namespace Appalachia.Core.Collections.Implementations.Lookups
             return $"InstancedID {key})";
         }
 
-        protected override Color GetDisplayColor(int key, GameObject value)
+        protected override string GetDisplayTitle(int key, GameObject value)
         {
-            return Color.white;
+            return value == null ? "MISSING" : value.name;
         }
     }
 }

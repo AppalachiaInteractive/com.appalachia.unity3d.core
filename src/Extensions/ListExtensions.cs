@@ -23,26 +23,12 @@ namespace Appalachia.Core.Extensions
         private static readonly ProfilerMarker _PRF_GetInternalArray =
             new(_PRF_PFX + nameof(GetInternalArray));
 
-        private static readonly ProfilerMarker _PRF_RemoveNulls =
-            new(_PRF_PFX + nameof(RemoveNulls));
+        private static readonly ProfilerMarker _PRF_RemoveNulls = new(_PRF_PFX + nameof(RemoveNulls));
 
         private static readonly ProfilerMarker _PRF_RemoveUnityNulls =
             new(_PRF_PFX + nameof(RemoveUnityNulls));
 
-        private static readonly ProfilerMarker _PRF_RemoveWhere =
-            new(_PRF_PFX + nameof(RemoveWhere));
-
-        public static T[] GetInternalArray<T>(this List<T> list)
-        {
-            using (_PRF_GetInternalArray.Auto())
-            {
-#if ENABLE_IL2CPP || NET_STANDARD_2_0
-                return (T[]) ArrayAccessor<T>.AotGetter(list);
-#else
-            return ArrayAccessor<T>.Getter(list);
-#endif
-            }
-        }
+        private static readonly ProfilerMarker _PRF_RemoveWhere = new(_PRF_PFX + nameof(RemoveWhere));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool RemoveNulls<T>(this IList<T> list)
@@ -85,6 +71,18 @@ namespace Appalachia.Core.Extensions
                 }
 
                 return hadNulls;
+            }
+        }
+
+        public static T[] GetInternalArray<T>(this List<T> list)
+        {
+            using (_PRF_GetInternalArray.Auto())
+            {
+#if ENABLE_IL2CPP || NET_STANDARD_2_0
+                return (T[]) ArrayAccessor<T>.AotGetter(list);
+#else
+            return ArrayAccessor<T>.Getter(list);
+#endif
             }
         }
 

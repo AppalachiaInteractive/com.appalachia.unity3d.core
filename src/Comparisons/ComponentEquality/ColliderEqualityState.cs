@@ -5,28 +5,27 @@ using UnityEngine;
 namespace Appalachia.Core.Comparisons.ComponentEquality
 {
     [Serializable]
-    public class
-        ColliderEqualityState : ComponentContentEqualityState<ColliderEqualityState, Collider>
+    public class ColliderEqualityState : ComponentContentEqualityState<ColliderEqualityState, Collider>
     {
-        public ColliderType colliderType;
-
-        //public MeshCollider mc;
-        public Mesh mesh;
         public bool convex;
-
-        //public BoxCollider bc;
-        public Vector3 center;
-        public Vector3 size;
-
-        //public SphereCollider sc;
-        //public Vector3 center;
-        public float radius;
+        public ColliderType colliderType;
 
         //public CapsuleCollider cc;
         //public Vector3 center;
         //public float radius;
         public float height;
+
+        //public SphereCollider sc;
+        //public Vector3 center;
+        public float radius;
         public int direction;
+
+        //public MeshCollider mc;
+        public Mesh mesh;
+
+        //public BoxCollider bc;
+        public Vector3 center;
+        public Vector3 size;
 
         public override void Record(Collider c)
         {
@@ -65,7 +64,9 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
             return (other is MeshCollider mc && (mesh == mc.sharedMesh) && (convex == mc.convex)) ||
                    (other is BoxCollider bc && (center == bc.center) && (size == bc.size)) ||
-                   (other is SphereCollider sc && (center == sc.center) && (Math.Abs(radius - sc.radius) < float.Epsilon)) ||
+                   (other is SphereCollider sc &&
+                    (center == sc.center) &&
+                    (Math.Abs(radius - sc.radius) < float.Epsilon)) ||
                    (other is CapsuleCollider cc &&
                     (center == cc.center) &&
                     (Math.Abs(radius - cc.radius) < float.Epsilon) &&

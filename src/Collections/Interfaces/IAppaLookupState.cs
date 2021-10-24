@@ -8,8 +8,8 @@ namespace Appalachia.Core.Collections.Interfaces
 {
     public interface IAppaLookupState<TKey, TValue> : IIndexedCollectionState<TValue>
     {
-        IReadOnlyList<TKey> Keys { get; }
-        IReadOnlyDictionary<TKey, TValue> Lookup { get; }
         IReadOnlyDictionary<TKey, int> Indices { get; }
+        IReadOnlyDictionary<TKey, TValue> Lookup { get; }
+        IReadOnlyList<TKey> Keys { get; }
     }
 }

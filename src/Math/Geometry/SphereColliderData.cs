@@ -6,7 +6,7 @@ namespace Appalachia.Core.Math.Geometry
     [Serializable]
     public class SphereColliderData
     {
-        public Vector3 center;
         public float radius;
+        public Vector3 center;
     }
 }

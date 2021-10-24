@@ -21,9 +21,7 @@ namespace Appalachia.Core.Collections.Implementations.Lists
         {
         }
 
-        public AppaList_ParticleSystemForceField(AppaList<ParticleSystemForceField> list) : base(
-            list
-        )
+        public AppaList_ParticleSystemForceField(AppaList<ParticleSystemForceField> list) : base(list)
         {
         }
 

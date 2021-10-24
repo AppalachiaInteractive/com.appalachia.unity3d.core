@@ -12,47 +12,13 @@ namespace Appalachia.Core.ObjectPooling
 {
     public static class ObjectPoolProvider
     {
-        public static ObjectPool<T> Create<T>()
+        public static LeakTrackingObjectPool<T> CreateLeakTrackingPool<T>()
             where T : class, new()
         {
-            return new(() => new T());
+            return new(Create<T>());
         }
 
-        public static ObjectPool<T> Create<T>(Action<T> customReset)
-            where T : class, new()
-        {
-            return new(() => new T(), customReset);
-        }
-
-        public static ObjectPool<T> Create<T>(Action<T> customReset, Action<T> customPreGet)
-            where T : class, new()
-        {
-            return new(() => new T(), customReset, customPreGet);
-        }
-
-        public static ObjectPool<T> Create<T>(Func<T> customAdd)
-            where T : class
-        {
-            return new(customAdd);
-        }
-
-        public static ObjectPool<T> Create<T>(Func<T> customAdd, Action<T> customReset)
-            where T : class
-        {
-            return new(customAdd, customReset);
-        }
-
-        public static ObjectPool<T> Create<T>(
-            Func<T> customAdd,
-            Action<T> customReset,
-            Action<T> customPreGet)
-            where T : class
-        {
-            return new(customAdd, customReset, customPreGet);
-        }
-
-        public static ObjectPool<GameObject> CreateGameObjectPool(
-            HideFlags hideFlags = HideFlags.DontSave)
+        public static ObjectPool<GameObject> CreateGameObjectPool(HideFlags hideFlags = HideFlags.DontSave)
         {
             var resetAction = new Action<GameObject>(
                 obj =>
@@ -141,10 +107,43 @@ namespace Appalachia.Core.ObjectPooling
             return new ObjectPool<GameObject>(addAction, resetAction, preGetAction);
         }
 
-        public static LeakTrackingObjectPool<T> CreateLeakTrackingPool<T>()
+        public static ObjectPool<T> Create<T>()
             where T : class, new()
         {
-            return new(Create<T>());
+            return new(() => new T());
+        }
+
+        public static ObjectPool<T> Create<T>(Action<T> customReset)
+            where T : class, new()
+        {
+            return new(() => new T(), customReset);
+        }
+
+        public static ObjectPool<T> Create<T>(Action<T> customReset, Action<T> customPreGet)
+            where T : class, new()
+        {
+            return new(() => new T(), customReset, customPreGet);
+        }
+
+        public static ObjectPool<T> Create<T>(Func<T> customAdd)
+            where T : class
+        {
+            return new(customAdd);
+        }
+
+        public static ObjectPool<T> Create<T>(Func<T> customAdd, Action<T> customReset)
+            where T : class
+        {
+            return new(customAdd, customReset);
+        }
+
+        public static ObjectPool<T> Create<T>(
+            Func<T> customAdd,
+            Action<T> customReset,
+            Action<T> customPreGet)
+            where T : class
+        {
+            return new(customAdd, customReset, customPreGet);
         }
     }
 }

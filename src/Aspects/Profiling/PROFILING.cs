@@ -1,7 +1,7 @@
 #region
 
 using Appalachia.Core.Attributes;
-using Appalachia.Utility.src.Constants;
+using Appalachia.Utility.Constants;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -108,7 +108,7 @@ public static IProfile Profile(
         var hashCode = 0;
 
         using (META_PRF_Hashing.Auto())
-        {                    
+        {
             unchecked
             {
                 hashCode = additive?.GetHashCode() ?? 79;
@@ -765,7 +765,7 @@ public class DummyDisposable : IProfile
     {
         return this;
     }
-        
+
     public void Dispose()
     {
     }

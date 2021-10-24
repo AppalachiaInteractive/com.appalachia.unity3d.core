@@ -134,14 +134,7 @@ namespace Appalachia.Core.Collections.Native
         {
             get
             {
-                SafetyUtility.RequireIndexInBounds(
-                    index0,
-                    Length0,
-                    Capacity0,
-                    index1,
-                    Length1,
-                    Capacity1
-                );
+                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
 
                 var index = GetIndex(index0, index1);
                 SafetyUtility.CheckElementReadAccess(
@@ -158,14 +151,7 @@ namespace Appalachia.Core.Collections.Native
             [WriteAccessRequired]
             set
             {
-                SafetyUtility.RequireIndexInBounds(
-                    index0,
-                    Length0,
-                    Capacity0,
-                    index1,
-                    Length1,
-                    Capacity1
-                );
+                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
 
                 var index = GetIndex(index0, index1);
                 SafetyUtility.CheckElementWriteAccess(
@@ -239,9 +225,7 @@ namespace Appalachia.Core.Collections.Native
 
             if (totalCapacity <= 0)
             {
-                throw new InvalidOperationException(
-                    "Total number of elements must be greater than zero"
-                );
+                throw new InvalidOperationException("Total number of elements must be greater than zero");
             }
 
             array = new NativeArray2D<T>
@@ -458,9 +442,7 @@ namespace Appalachia.Core.Collections.Native
 
             if (sourceLength != thisLength)
             {
-                throw new ArgumentException(
-                    "Array length must match the TotalCapacity of this array."
-                );
+                throw new ArgumentException("Array length must match the TotalCapacity of this array.");
             }
 
             for (var i = 0; i < src.Length; i++)

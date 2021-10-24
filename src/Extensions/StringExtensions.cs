@@ -11,11 +11,35 @@ namespace Appalachia.Core.Extensions
 {
     public static class StringExtensions
     {
-        public static void CopyToClipboard(this string s)
+        public static bool Contains(this string source, string toCheck, StringComparison comparisonType)
         {
-            var te = new TextEditor {text = s};
-            te.SelectAll();
-            te.Copy();
+            return source.IndexOf(toCheck, comparisonType) >= 0;
+        }
+
+        public static bool Contains(this string str, char ch)
+        {
+            if (str == null)
+            {
+                return false;
+            }
+
+            return str.IndexOf(ch) != -1;
+        }
+
+        public static bool IsNullOrWhitespace(this string str)
+        {
+            if (!string.IsNullOrEmpty(str))
+            {
+                for (var index = 0; index < str.Length; ++index)
+                {
+                    if (!char.IsWhiteSpace(str[index]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         public static string Cut(this string s, int chars)
@@ -23,16 +47,6 @@ namespace Appalachia.Core.Extensions
             var length = Mathf.Clamp(s.Length - chars, 0, s.Length);
 
             return s.Substring(0, length);
-        }
-
-        public static StringBuilder Cut(this StringBuilder s, int chars)
-        {
-            var length = s.Length;
-            var targetLength = length - chars;
-
-            targetLength = Mathf.Clamp(targetLength, 0, length);
-
-            return s.Remove(targetLength - 1, chars);
         }
 
         public static string SeperateWords(this string value)
@@ -72,40 +86,6 @@ namespace Appalachia.Core.Extensions
             return new string(chars);
         }
 
-        public static string ToTitleCase(this string input)
-        {
-            var stringBuilder = new StringBuilder();
-            for (var index = 0; index < input.Length; ++index)
-            {
-                var ch = input[index];
-                if ((ch == '_') && ((index + 1) < input.Length))
-                {
-                    var upper = input[index + 1];
-                    if (char.IsLower(upper))
-                    {
-                        upper = char.ToUpper(upper, CultureInfo.InvariantCulture);
-                    }
-
-                    stringBuilder.Append(upper);
-                    ++index;
-                }
-                else
-                {
-                    stringBuilder.Append(ch);
-                }
-            }
-
-            return stringBuilder.ToString();
-        }
-
-        public static bool Contains(
-            this string source,
-            string toCheck,
-            StringComparison comparisonType)
-        {
-            return source.IndexOf(toCheck, comparisonType) >= 0;
-        }
-
         public static string SplitPascalCase(this string input)
         {
             switch (input)
@@ -139,30 +119,47 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static bool IsNullOrWhitespace(this string str)
+        public static string ToTitleCase(this string input)
         {
-            if (!string.IsNullOrEmpty(str))
+            var stringBuilder = new StringBuilder();
+            for (var index = 0; index < input.Length; ++index)
             {
-                for (var index = 0; index < str.Length; ++index)
+                var ch = input[index];
+                if ((ch == '_') && ((index + 1) < input.Length))
                 {
-                    if (!char.IsWhiteSpace(str[index]))
+                    var upper = input[index + 1];
+                    if (char.IsLower(upper))
                     {
-                        return false;
+                        upper = char.ToUpper(upper, CultureInfo.InvariantCulture);
                     }
+
+                    stringBuilder.Append(upper);
+                    ++index;
+                }
+                else
+                {
+                    stringBuilder.Append(ch);
                 }
             }
 
-            return true;
+            return stringBuilder.ToString();
         }
 
-        public static bool Contains(this string str, char ch)
+        public static StringBuilder Cut(this StringBuilder s, int chars)
         {
-            if (str == null)
-            {
-                return false;
-            }
+            var length = s.Length;
+            var targetLength = length - chars;
 
-            return str.IndexOf(ch) != -1;
+            targetLength = Mathf.Clamp(targetLength, 0, length);
+
+            return s.Remove(targetLength - 1, chars);
+        }
+
+        public static void CopyToClipboard(this string s)
+        {
+            var te = new TextEditor {text = s};
+            te.SelectAll();
+            te.Copy();
         }
     }
 }

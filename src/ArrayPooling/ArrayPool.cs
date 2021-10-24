@@ -23,13 +23,10 @@ namespace Appalachia.Core.ArrayPooling
     /// </remarks>
     public abstract class ArrayPool<T>
     {
-        /// <summary>The lazily-initialized shared pool instance.</summary>
-        private static volatile ArrayPool<T> s_sharedInstance;
+        private static readonly ProfilerMarker _PRF_ArrayPool_Create = new("ArrayPool.Create");
 
         private static readonly ProfilerMarker _PRF_ArrayPool_EnsureSharedCreated =
             new("ArrayPool.EnsureSharedCreated");
-
-        private static readonly ProfilerMarker _PRF_ArrayPool_Create = new("ArrayPool.Create");
 
         /// <summary>
         ///     Retrieves a shared <see cref="ArrayPool{T}" /> instance.
@@ -44,49 +41,8 @@ namespace Appalachia.Core.ArrayPooling
         /// </remarks>
         public static ArrayPool<T> Shared => s_sharedInstance ?? EnsureSharedCreated();
 
-        /// <summary>Ensures that <see cref="s_sharedInstance" /> has been initialized to a pool and returns it.</summary>
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static ArrayPool<T> EnsureSharedCreated()
-        {
-            using (_PRF_ArrayPool_EnsureSharedCreated.Auto())
-            {
-                Interlocked.CompareExchange(ref s_sharedInstance, Create(), null);
-                return s_sharedInstance;
-            }
-        }
-
-        /// <summary>
-        ///     Creates a new <see cref="ArrayPool{T}" /> instance using default configuration options.
-        /// </summary>
-        /// <returns>A new <see cref="ArrayPool{T}" /> instance.</returns>
-        public static ArrayPool<T> Create()
-        {
-            using (_PRF_ArrayPool_Create.Auto())
-            {
-                return new DefaultArrayPool<T>();
-            }
-        }
-
-        /// <summary>
-        ///     Creates a new <see cref="ArrayPool{T}" /> instance using custom configuration options.
-        /// </summary>
-        /// <param name="maxArrayLength">The maximum length of array instances that may be stored in the pool.</param>
-        /// <param name="maxArraysPerBucket">
-        ///     The maximum number of array instances that may be stored in each bucket in the pool.  The pool
-        ///     groups arrays of similar lengths into buckets for faster access.
-        /// </param>
-        /// <returns>A new <see cref="ArrayPool{T}" /> instance with the specified configuration options.</returns>
-        /// <remarks>
-        ///     The created pool will group arrays into buckets, with no more than <paramref name="maxArraysPerBucket" />
-        ///     in each bucket and with those arrays not exceeding <paramref name="maxArrayLength" /> in length.
-        /// </remarks>
-        public static ArrayPool<T> Create(int maxArrayLength, int maxArraysPerBucket)
-        {
-            using (_PRF_ArrayPool_Create.Auto())
-            {
-                return new DefaultArrayPool<T>(maxArrayLength, maxArraysPerBucket);
-            }
-        }
+        /// <summary>The lazily-initialized shared pool instance.</summary>
+        private static volatile ArrayPool<T> s_sharedInstance;
 
         /// <summary>
         ///     Retrieves a buffer that is at least the requested length.
@@ -125,5 +81,49 @@ namespace Appalachia.Core.ArrayPooling
         ///     if it's determined that the pool already has enough buffers stored.
         /// </remarks>
         public abstract void Return(T[] array, bool clearArray = false);
+
+        /// <summary>
+        ///     Creates a new <see cref="ArrayPool{T}" /> instance using default configuration options.
+        /// </summary>
+        /// <returns>A new <see cref="ArrayPool{T}" /> instance.</returns>
+        public static ArrayPool<T> Create()
+        {
+            using (_PRF_ArrayPool_Create.Auto())
+            {
+                return new DefaultArrayPool<T>();
+            }
+        }
+
+        /// <summary>
+        ///     Creates a new <see cref="ArrayPool{T}" /> instance using custom configuration options.
+        /// </summary>
+        /// <param name="maxArrayLength">The maximum length of array instances that may be stored in the pool.</param>
+        /// <param name="maxArraysPerBucket">
+        ///     The maximum number of array instances that may be stored in each bucket in the pool.  The pool
+        ///     groups arrays of similar lengths into buckets for faster access.
+        /// </param>
+        /// <returns>A new <see cref="ArrayPool{T}" /> instance with the specified configuration options.</returns>
+        /// <remarks>
+        ///     The created pool will group arrays into buckets, with no more than <paramref name="maxArraysPerBucket" />
+        ///     in each bucket and with those arrays not exceeding <paramref name="maxArrayLength" /> in length.
+        /// </remarks>
+        public static ArrayPool<T> Create(int maxArrayLength, int maxArraysPerBucket)
+        {
+            using (_PRF_ArrayPool_Create.Auto())
+            {
+                return new DefaultArrayPool<T>(maxArrayLength, maxArraysPerBucket);
+            }
+        }
+
+        /// <summary>Ensures that <see cref="s_sharedInstance" /> has been initialized to a pool and returns it.</summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static ArrayPool<T> EnsureSharedCreated()
+        {
+            using (_PRF_ArrayPool_EnsureSharedCreated.Auto())
+            {
+                Interlocked.CompareExchange(ref s_sharedInstance, Create(), null);
+                return s_sharedInstance;
+            }
+        }
     }
 }

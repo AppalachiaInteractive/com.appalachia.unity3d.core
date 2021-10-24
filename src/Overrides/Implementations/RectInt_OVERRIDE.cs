@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public RectInt_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, RectInt value) :
-            base(overrideEnabled, value)
+        public RectInt_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, RectInt value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

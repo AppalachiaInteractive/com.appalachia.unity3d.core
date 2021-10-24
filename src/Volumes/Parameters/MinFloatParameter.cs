@@ -8,8 +8,6 @@ namespace Appalachia.Core.Volumes.Parameters
     [DebuggerDisplay(k_DebuggerDisplay)]
     public sealed class MinFloatParameter : FloatParameter
     {
-        public float min;
-
         public MinFloatParameter(float value, float min, bool overrideState = false) : base(
             value,
             overrideState
@@ -17,6 +15,8 @@ namespace Appalachia.Core.Volumes.Parameters
         {
             this.min = min;
         }
+
+        public float min;
 
         public override float value
         {

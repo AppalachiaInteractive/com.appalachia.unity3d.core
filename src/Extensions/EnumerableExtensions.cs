@@ -11,34 +11,18 @@ namespace Appalachia.Core.Extensions
 {
     public static class EnumerableExtensions
     {
-        public static void Slice<T>(
-            this IList<T> values,
-            int slices,
-            int sliceCount,
-            Action<T> sliceAction)
+        /// <summary>
+        ///     Returns <c>true</c> if the list is either null or empty. Otherwise <c>false</c>.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        public static bool IsNullOrEmpty<T>(this IList<T> list)
         {
-            for (var i = 0; i < values.Count; i++)
+            if (list != null)
             {
-                if ((i % slices) == sliceCount)
-                {
-                    sliceAction(values[i]);
-                }
+                return list.Count == 0;
             }
-        }
 
-        public static void Slice<T>(
-            this T[] values,
-            int slices,
-            int sliceCount,
-            Action<T> sliceAction)
-        {
-            for (var i = 0; i < values.Length; i++)
-            {
-                if ((i % slices) == sliceCount)
-                {
-                    sliceAction(values[i]);
-                }
-            }
+            return true;
         }
 
         public static Dictionary<TKey, TValue> BuildLookup<TKey, TValue>(
@@ -56,8 +40,7 @@ namespace Appalachia.Core.Extensions
             return dictionary;
         }
 
-        public static Dictionary<TValue, int> BuildReverseIndexLookup<TValue>(
-            this IEnumerable<TValue> values)
+        public static Dictionary<TValue, int> BuildReverseIndexLookup<TValue>(this IEnumerable<TValue> values)
         {
             var dictionary = new Dictionary<TValue, int>();
 
@@ -72,6 +55,200 @@ namespace Appalachia.Core.Extensions
             return dictionary;
         }
 
+        /*/// <summary>Convert a colletion to a HashSet.</summary>
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
+        {
+            return new(source);
+        }*/
+
+        /// <summary>Convert a colletion to a HashSet.</summary>
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source, IEqualityComparer<T> comparer)
+        {
+            return new(source, comparer);
+        }
+
+        /// <summary>
+        ///     Add an item to the end of a collection if a condition is met.
+        /// </summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="condition">The condition.</param>
+        /// <param name="append">Func to create the item to append.</param>
+        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, bool condition, Func<T> append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            if (condition)
+            {
+                yield return append();
+            }
+        }
+
+        /// <summary>
+        ///     Add an item to the end of a collection if a condition is met.
+        /// </summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="condition">The condition.</param>
+        /// <param name="append">The item to append.</param>
+        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, bool condition, T append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            if (condition)
+            {
+                yield return append;
+            }
+        }
+
+        /// <summary>
+        ///     Add a collection to the end of another collection if a condition is met.
+        /// </summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="condition">The condition.</param>
+        /// <param name="append">The collection to append.</param>
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            bool condition,
+            IEnumerable<T> append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            if (condition)
+            {
+                foreach (var obj in append)
+                {
+                    yield return obj;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Add an item to the end of a collection if a condition is met.
+        /// </summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="condition">The condition.</param>
+        /// <param name="append">Func to create the item to append.</param>
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            Func<bool> condition,
+            Func<T> append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            if (condition())
+            {
+                yield return append();
+            }
+        }
+
+        /// <summary>
+        ///     Add an item to the end of a collection if a condition is met.
+        /// </summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="condition">The condition.</param>
+        /// <param name="append">The item to append.</param>
+        public static IEnumerable<T> AppendIf<T>(this IEnumerable<T> source, Func<bool> condition, T append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            if (condition())
+            {
+                yield return append;
+            }
+        }
+
+        /// <summary>
+        ///     Add a collection to the end of another collection if a condition is met.
+        /// </summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="condition">The condition.</param>
+        /// <param name="append">The collection to append.</param>
+        public static IEnumerable<T> AppendIf<T>(
+            this IEnumerable<T> source,
+            Func<bool> condition,
+            IEnumerable<T> append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            if (condition())
+            {
+                foreach (var obj in append)
+                {
+                    yield return obj;
+                }
+            }
+        }
+
+        /// <summary>Add an item to the end of a collection.</summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="append">Func to create the item to append.</param>
+        public static IEnumerable<T> AppendWith<T>(this IEnumerable<T> source, Func<T> append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            yield return append();
+        }
+
+        /// <summary>Add an item to the end of a collection.</summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="append">The item to append.</param>
+        public static IEnumerable<T> AppendWith<T>(this IEnumerable<T> source, T append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            yield return append;
+        }
+
+        /// <summary>Add a collection to the end of another collection.</summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="append">The collection to append.</param>
+        public static IEnumerable<T> AppendWith<T>(this IEnumerable<T> source, IEnumerable<T> append)
+        {
+            foreach (var obj in source)
+            {
+                yield return obj;
+            }
+
+            foreach (var obj in append)
+            {
+                yield return obj;
+            }
+        }
+
+        /// <summary>Convert each item in the collection.</summary>
+        /// <param name="source">The collection.</param>
+        /// <param name="converter">Func to convert the items.</param>
+        public static IEnumerable<T> Convert<T>(this IEnumerable source, Func<object, T> converter)
+        {
+            foreach (var obj in source)
+            {
+                yield return converter(obj);
+            }
+        }
+
         /// <summary>Calls an action on each item before yielding them.</summary>
         /// <param name="source">The collection.</param>
         /// <param name="action">The action to call for each item.</param>
@@ -82,6 +259,30 @@ namespace Appalachia.Core.Extensions
                 action(obj);
                 yield return obj;
             }
+        }
+
+        /// <summary>
+        ///     Returns and casts only the items of type <typeparamref name="T" />.
+        /// </summary>
+        /// <param name="source">The collection.</param>
+        public static IEnumerable<T> FilterCast<T>(this IEnumerable source)
+        {
+            foreach (var obj in source)
+            {
+                if (obj is T)
+                {
+                    yield return (T) obj;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Returns and casts only the items of type <typeparamref name="T" />.
+        /// </summary>
+        /// <param name="source">The collection.</param>
+        public static IEnumerable<T> FilterCast2<T>(this IEnumerable source)
+        {
+            return source.FilterCast<T>();
         }
 
         /// <summary>Perform an action on each item.</summary>
@@ -110,32 +311,6 @@ namespace Appalachia.Core.Extensions
 
             return source;
         }
-
-        /// <summary>Convert each item in the collection.</summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="converter">Func to convert the items.</param>
-        public static IEnumerable<T> Convert<T>(this IEnumerable source, Func<object, T> converter)
-        {
-            foreach (var obj in source)
-            {
-                yield return converter(obj);
-            }
-        }
-
-        /*/// <summary>Convert a colletion to a HashSet.</summary>
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
-        {
-            return new(source);
-        }*/
-
-        /// <summary>Convert a colletion to a HashSet.</summary>
-        public static HashSet<T> ToHashSet<T>(
-            this IEnumerable<T> source,
-            IEqualityComparer<T> comparer)
-        {
-            return new(source, comparer);
-        }
-
 
         /// <summary>Add an item to the beginning of a collection.</summary>
         /// <param name="source">The collection.</param>
@@ -185,10 +360,7 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">Func to create the item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(
-            this IEnumerable<T> source,
-            bool condition,
-            Func<T> prepend)
+        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, bool condition, Func<T> prepend)
         {
             if (condition)
             {
@@ -207,10 +379,7 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">The item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(
-            this IEnumerable<T> source,
-            bool condition,
-            T prepend)
+        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, bool condition, T prepend)
         {
             if (condition)
             {
@@ -276,10 +445,7 @@ namespace Appalachia.Core.Extensions
         /// <param name="source">The collection.</param>
         /// <param name="condition">The condition.</param>
         /// <param name="prepend">The item to prepend.</param>
-        public static IEnumerable<T> PrependIf<T>(
-            this IEnumerable<T> source,
-            Func<bool> condition,
-            T prepend)
+        public static IEnumerable<T> PrependIf<T>(this IEnumerable<T> source, Func<bool> condition, T prepend)
         {
             if (condition())
             {
@@ -386,210 +552,60 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        /// <summary>Add an item to the end of a collection.</summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="append">Func to create the item to append.</param>
-        public static IEnumerable<T> AppendWith<T>(this IEnumerable<T> source, Func<T> append)
+        public static IEnumerable<TValue> OrderByFrequencyDescending<TList, TValue>(
+            this IEnumerable<TList> list,
+            Func<TList, TValue> selector)
         {
-            foreach (var obj in source)
+            var counts = new Dictionary<TValue, int>();
+
+            foreach (var value in list)
             {
-                yield return obj;
-            }
+                var selection = selector(value);
 
-            yield return append();
-        }
-
-        /// <summary>Add an item to the end of a collection.</summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="append">The item to append.</param>
-        public static IEnumerable<T> AppendWith<T>(this IEnumerable<T> source, T append)
-        {
-            foreach (var obj in source)
-            {
-                yield return obj;
-            }
-
-            yield return append;
-        }
-
-        /// <summary>Add a collection to the end of another collection.</summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="append">The collection to append.</param>
-        public static IEnumerable<T> AppendWith<T>(
-            this IEnumerable<T> source,
-            IEnumerable<T> append)
-        {
-            foreach (var obj in source)
-            {
-                yield return obj;
-            }
-
-            foreach (var obj in append)
-            {
-                yield return obj;
-            }
-        }
-
-        /// <summary>
-        ///     Add an item to the end of a collection if a condition is met.
-        /// </summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="condition">The condition.</param>
-        /// <param name="append">Func to create the item to append.</param>
-        public static IEnumerable<T> AppendIf<T>(
-            this IEnumerable<T> source,
-            bool condition,
-            Func<T> append)
-        {
-            foreach (var obj in source)
-            {
-                yield return obj;
-            }
-
-            if (condition)
-            {
-                yield return append();
-            }
-        }
-
-        /// <summary>
-        ///     Add an item to the end of a collection if a condition is met.
-        /// </summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="condition">The condition.</param>
-        /// <param name="append">The item to append.</param>
-        public static IEnumerable<T> AppendIf<T>(
-            this IEnumerable<T> source,
-            bool condition,
-            T append)
-        {
-            foreach (var obj in source)
-            {
-                yield return obj;
-            }
-
-            if (condition)
-            {
-                yield return append;
-            }
-        }
-
-        /// <summary>
-        ///     Add a collection to the end of another collection if a condition is met.
-        /// </summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="condition">The condition.</param>
-        /// <param name="append">The collection to append.</param>
-        public static IEnumerable<T> AppendIf<T>(
-            this IEnumerable<T> source,
-            bool condition,
-            IEnumerable<T> append)
-        {
-            foreach (var obj in source)
-            {
-                yield return obj;
-            }
-
-            if (condition)
-            {
-                foreach (var obj in append)
+                if (selection == null)
                 {
-                    yield return obj;
+                    continue;
+                }
+
+                if (!counts.ContainsKey(selection))
+                {
+                    counts.Add(selection, 1);
+                }
+                else
+                {
+                    counts[selection] += 1;
                 }
             }
+
+            return counts.OrderByDescending(c => c.Value).Select(c => c.Key);
         }
 
-        /// <summary>
-        ///     Add an item to the end of a collection if a condition is met.
-        /// </summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="condition">The condition.</param>
-        /// <param name="append">Func to create the item to append.</param>
-        public static IEnumerable<T> AppendIf<T>(
-            this IEnumerable<T> source,
-            Func<bool> condition,
-            Func<T> append)
+        public static TValue MostFrequent<TList, TValue>(
+            this IEnumerable<TList> list,
+            Func<TList, TValue> selector)
         {
-            foreach (var obj in source)
-            {
-                yield return obj;
-            }
+            var counts = new Dictionary<TValue, int>();
 
-            if (condition())
+            foreach (var value in list)
             {
-                yield return append();
-            }
-        }
+                var selection = selector(value);
 
-        /// <summary>
-        ///     Add an item to the end of a collection if a condition is met.
-        /// </summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="condition">The condition.</param>
-        /// <param name="append">The item to append.</param>
-        public static IEnumerable<T> AppendIf<T>(
-            this IEnumerable<T> source,
-            Func<bool> condition,
-            T append)
-        {
-            foreach (var obj in source)
-            {
-                yield return obj;
-            }
-
-            if (condition())
-            {
-                yield return append;
-            }
-        }
-
-        /// <summary>
-        ///     Add a collection to the end of another collection if a condition is met.
-        /// </summary>
-        /// <param name="source">The collection.</param>
-        /// <param name="condition">The condition.</param>
-        /// <param name="append">The collection to append.</param>
-        public static IEnumerable<T> AppendIf<T>(
-            this IEnumerable<T> source,
-            Func<bool> condition,
-            IEnumerable<T> append)
-        {
-            foreach (var obj in source)
-            {
-                yield return obj;
-            }
-
-            if (condition())
-            {
-                foreach (var obj in append)
+                if (selection == null)
                 {
-                    yield return obj;
+                    continue;
+                }
+
+                if (!counts.ContainsKey(selection))
+                {
+                    counts.Add(selection, 1);
+                }
+                else
+                {
+                    counts[selection] += 1;
                 }
             }
-        }
 
-        /// <summary>
-        ///     Returns and casts only the items of type <typeparamref name="T" />.
-        /// </summary>
-        /// <param name="source">The collection.</param>
-        public static IEnumerable<T> FilterCast<T>(this IEnumerable source)
-        {
-            foreach (var obj in source)
-            {
-                if (obj is T)
-                {
-                    yield return (T) obj;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Returns and casts only the items of type <typeparamref name="T" />.
-        /// </summary>
-        /// <param name="source">The collection.</param>
-        public static IEnumerable<T> FilterCast2<T>(this IEnumerable source)
-        {
-            return source.FilterCast<T>();
+            return counts.OrderByDescending(c => c.Value).FirstOrDefault().Key;
         }
 
         /// <summary>Adds a collection to a hashset.</summary>
@@ -600,54 +616,6 @@ namespace Appalachia.Core.Extensions
             foreach (var obj in range)
             {
                 hashSet.Add(obj);
-            }
-        }
-
-        /// <summary>Adds a collection to a hashset.</summary>
-        /// <param name="hashSet">The hashset.</param>
-        /// <param name="range">The collection.</param>
-        public static void AddRange2<T>(this HashSet<T> hashSet, IEnumerable<T> range)
-        {
-            foreach (var obj in range)
-            {
-                hashSet.Add(obj);
-            }
-        }
-
-        /// <summary>Adds a collection to a hashset.</summary>
-        /// <param name="hashSet">The hashset.</param>
-        /// <param name="range">The collection.</param>
-        public static void RemoveRange<T>(this HashSet<T> hashSet, IEnumerable<T> range)
-        {
-            foreach (var obj in range)
-            {
-                hashSet.Remove(obj);
-            }
-        }
-
-        /// <summary>
-        ///     Returns <c>true</c> if the list is either null or empty. Otherwise <c>false</c>.
-        /// </summary>
-        /// <param name="list">The list.</param>
-        public static bool IsNullOrEmpty<T>(this IList<T> list)
-        {
-            if (list != null)
-            {
-                return list.Count == 0;
-            }
-
-            return true;
-        }
-
-        /// <summary>Sets all items in the list to the given value.</summary>
-        /// <param name="list">The list.</param>
-        /// <param name="item">The value.</param>
-        public static void Populate<T>(this IList<T> list, T item)
-        {
-            var count = list.Count;
-            for (var index = 0; index < count; ++index)
-            {
-                list[index] = item;
             }
         }
 
@@ -665,6 +633,62 @@ namespace Appalachia.Core.Extensions
                 foreach (var obj in collection)
                 {
                     list.Add(obj);
+                }
+            }
+        }
+
+        /// <summary>Adds a collection to a hashset.</summary>
+        /// <param name="hashSet">The hashset.</param>
+        /// <param name="range">The collection.</param>
+        public static void AddRange2<T>(this HashSet<T> hashSet, IEnumerable<T> range)
+        {
+            foreach (var obj in range)
+            {
+                hashSet.Add(obj);
+            }
+        }
+
+        /// <summary>Sets all items in the list to the given value.</summary>
+        /// <param name="list">The list.</param>
+        /// <param name="item">The value.</param>
+        public static void Populate<T>(this IList<T> list, T item)
+        {
+            var count = list.Count;
+            for (var index = 0; index < count; ++index)
+            {
+                list[index] = item;
+            }
+        }
+
+        /// <summary>Adds a collection to a hashset.</summary>
+        /// <param name="hashSet">The hashset.</param>
+        /// <param name="range">The collection.</param>
+        public static void RemoveRange<T>(this HashSet<T> hashSet, IEnumerable<T> range)
+        {
+            foreach (var obj in range)
+            {
+                hashSet.Remove(obj);
+            }
+        }
+
+        public static void Slice<T>(this IList<T> values, int slices, int sliceCount, Action<T> sliceAction)
+        {
+            for (var i = 0; i < values.Count; i++)
+            {
+                if ((i % slices) == sliceCount)
+                {
+                    sliceAction(values[i]);
+                }
+            }
+        }
+
+        public static void Slice<T>(this T[] values, int slices, int sliceCount, Action<T> sliceAction)
+        {
+            for (var i = 0; i < values.Length; i++)
+            {
+                if ((i % slices) == sliceCount)
+                {
+                    sliceAction(values[i]);
                 }
             }
         }
@@ -703,62 +727,6 @@ namespace Appalachia.Core.Extensions
                     list[index] = objList[index];
                 }
             }
-        }
-
-        public static TValue MostFrequent<TList, TValue>(
-            this IEnumerable<TList> list,
-            Func<TList, TValue> selector)
-        {
-            var counts = new Dictionary<TValue, int>();
-
-            foreach (var value in list)
-            {
-                var selection = selector(value);
-
-                if (selection == null)
-                {
-                    continue;
-                }
-
-                if (!counts.ContainsKey(selection))
-                {
-                    counts.Add(selection, 1);
-                }
-                else
-                {
-                    counts[selection] += 1;
-                }
-            }
-
-            return counts.OrderByDescending(c => c.Value).FirstOrDefault().Key;
-        }
-
-        public static IEnumerable<TValue> OrderByFrequencyDescending<TList, TValue>(
-            this IEnumerable<TList> list,
-            Func<TList, TValue> selector)
-        {
-            var counts = new Dictionary<TValue, int>();
-
-            foreach (var value in list)
-            {
-                var selection = selector(value);
-
-                if (selection == null)
-                {
-                    continue;
-                }
-
-                if (!counts.ContainsKey(selection))
-                {
-                    counts.Add(selection, 1);
-                }
-                else
-                {
-                    counts[selection] += 1;
-                }
-            }
-
-            return counts.OrderByDescending(c => c.Value).Select(c => c.Key);
         }
     }
 }

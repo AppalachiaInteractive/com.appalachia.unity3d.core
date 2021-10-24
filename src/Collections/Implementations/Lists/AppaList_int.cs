@@ -13,10 +13,8 @@ namespace Appalachia.Core.Collections.Implementations.Lists
         {
         }
 
-        public AppaList_int(
-            int capacity,
-            float capacityIncreaseMultiplier = 2,
-            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
+        public AppaList_int(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) :
+            base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

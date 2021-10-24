@@ -16,13 +16,13 @@ namespace Appalachia.Core.Math.Smoothing
         [SmartLabel]
         public int windowSize = 16;
 
+        private readonly Queue<T> _samples = new();
+
         [SerializeField]
         [ShowInInspector]
         [HorizontalGroup("BBB")]
         [SmartLabel]
         private T _average;
-
-        private readonly Queue<T> _samples = new();
 
         private T _sampleAccumulator;
 
@@ -31,6 +31,12 @@ namespace Appalachia.Core.Math.Smoothing
             get => _average;
             private set => _average = value;
         }
+
+        protected abstract T Add(T a, T b);
+
+        protected abstract T Divide(T a, int divisor);
+
+        protected abstract T Subtract(T a, T b);
 
         /// <summary>
         ///     Computes a new windowed average each time a new sample arrives
@@ -49,11 +55,5 @@ namespace Appalachia.Core.Math.Smoothing
 
             Average = Divide(_sampleAccumulator, _samples.Count);
         }
-
-        protected abstract T Add(T a, T b);
-
-        protected abstract T Subtract(T a, T b);
-
-        protected abstract T Divide(T a, int divisor);
     }
 }

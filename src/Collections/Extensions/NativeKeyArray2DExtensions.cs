@@ -53,14 +53,7 @@ namespace Appalachia.Core.Collections.Extensions
             where TK : struct
             where TV : struct
         {
-            EnsureCapacityAndLength(
-                ref native,
-                capacity0,
-                capacity1,
-                capacity0,
-                capacity1,
-                allocator
-            );
+            EnsureCapacityAndLength(ref native, capacity0, capacity1, capacity0, capacity1, allocator);
         }
     }
 }

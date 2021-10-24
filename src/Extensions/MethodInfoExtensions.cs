@@ -1,13 +1,11 @@
 #region
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Appalachia.Utility.Reflection.Extensions;
-
 
 #endregion
 
@@ -17,6 +15,42 @@ namespace Appalachia.Core.Extensions
     public static class MethodInfoExtensions
     {
         private static Dictionary<MethodBase, string> _cache;
+
+        /// <summary>Tests if a method is an extension method.</summary>
+        public static bool IsExtensionMethod(this MethodBase method)
+        {
+            var declaringType = method.DeclaringType;
+            return declaringType.IsSealed &&
+                   !declaringType.IsGenericType &&
+                   !declaringType.IsNested &&
+                   method.IsDefined(typeof(ExtensionAttribute), false);
+        }
+
+        /// <summary>
+        ///     Returns a string representing the passed method parameters names. Ex "int num, float damage, Transform target"
+        /// </summary>
+        public static string GetParamsNames(this MethodBase method)
+        {
+            var parameterInfoArray = method.IsExtensionMethod()
+                ? method.GetParameters().Skip(1).ToArray()
+                : method.GetParameters();
+            var stringBuilder = new StringBuilder();
+            var index = 0;
+            for (var length = parameterInfoArray.Length; index < length; ++index)
+            {
+                var parameterInfo = parameterInfoArray[index];
+                var niceName = parameterInfo.ParameterType.GetReadableName();
+                stringBuilder.Append(niceName);
+                stringBuilder.Append(" ");
+                stringBuilder.Append(parameterInfo.Name);
+                if (index < (length - 1))
+                {
+                    stringBuilder.Append(", ");
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
 
         /// <summary>
         ///     Returns the specified method's full name "methodName(argType1 arg1, argType2 arg2, etc)"
@@ -68,49 +102,10 @@ namespace Appalachia.Core.Extensions
             return result;
         }
 
-        /// <summary>
-        ///     Returns a string representing the passed method parameters names. Ex "int num, float damage, Transform target"
-        /// </summary>
-        public static string GetParamsNames(this MethodBase method)
-        {
-            var parameterInfoArray = method.IsExtensionMethod()
-                ? method.GetParameters().Skip(1).ToArray()
-                : method.GetParameters();
-            var stringBuilder = new StringBuilder();
-            var index = 0;
-            for (var length = parameterInfoArray.Length; index < length; ++index)
-            {
-                var parameterInfo = parameterInfoArray[index];
-                var niceName = parameterInfo.ParameterType.GetReadableName();
-                stringBuilder.Append(niceName);
-                stringBuilder.Append(" ");
-                stringBuilder.Append(parameterInfo.Name);
-                if (index < (length - 1))
-                {
-                    stringBuilder.Append(", ");
-                }
-            }
-
-            return stringBuilder.ToString();
-        }
-
         /// <summary>Returns the specified method's full name.</summary>
         public static string GetReadableName(this MethodBase method)
         {
             return method.GetReadableName("[ext] ");
         }
-
-        /// <summary>Tests if a method is an extension method.</summary>
-        public static bool IsExtensionMethod(this MethodBase method)
-        {
-            var declaringType = method.DeclaringType;
-            return declaringType.IsSealed &&
-                   !declaringType.IsGenericType &&
-                   !declaringType.IsNested &&
-                   method.IsDefined(typeof(ExtensionAttribute), false);
-        }
-
-
-      
     }
 }

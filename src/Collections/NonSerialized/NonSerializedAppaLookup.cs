@@ -10,7 +10,7 @@ namespace Appalachia.Core.Collections.NonSerialized
     public sealed class NonSerializedAppaLookup<TKey, TValue> : AppaLookup<TKey, TValue,
         NonSerializedList<TKey>, NonSerializedList<TValue>>
     {
-        protected override string GetDisplayTitle(TKey key, TValue value)
+        protected override Color GetDisplayColor(TKey key, TValue value)
         {
             throw new NotImplementedException();
         }
@@ -20,7 +20,7 @@ namespace Appalachia.Core.Collections.NonSerialized
             throw new NotImplementedException();
         }
 
-        protected override Color GetDisplayColor(TKey key, TValue value)
+        protected override string GetDisplayTitle(TKey key, TValue value)
         {
             throw new NotImplementedException();
         }

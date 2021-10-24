@@ -11,9 +11,6 @@ namespace Appalachia.Core.ObjectPooling
     public class LeakTrackingObjectPool<T>
         where T : class, new()
     {
-        private readonly ObjectPool<T> _inner;
-        private readonly ConditionalWeakTable<T, Tracker> _trackers = new();
-
         public LeakTrackingObjectPool(ObjectPool<T> inner)
         {
             if (inner == null)
@@ -23,6 +20,9 @@ namespace Appalachia.Core.ObjectPooling
 
             _inner = inner;
         }
+
+        private readonly ConditionalWeakTable<T, Tracker> _trackers = new();
+        private readonly ObjectPool<T> _inner;
 
         public T Get()
         {
@@ -45,28 +45,26 @@ namespace Appalachia.Core.ObjectPooling
 
         private class Tracker : IDisposable
         {
-            private readonly string _stack;
-            private bool _disposed;
-
             public Tracker()
             {
                 _stack = Environment.StackTrace;
-            }
-
-            public void Dispose()
-            {
-                _disposed = true;
-                GC.SuppressFinalize(this);
             }
 
             ~Tracker()
             {
                 if (!_disposed && !Environment.HasShutdownStarted)
                 {
-                    Debug.Fail(
-                        $"{typeof(T).Name} was leaked. Created at: {Environment.NewLine}{_stack}"
-                    );
+                    Debug.Fail($"{typeof(T).Name} was leaked. Created at: {Environment.NewLine}{_stack}");
                 }
+            }
+
+            private readonly string _stack;
+            private bool _disposed;
+
+            public void Dispose()
+            {
+                _disposed = true;
+                GC.SuppressFinalize(this);
             }
         }
     }

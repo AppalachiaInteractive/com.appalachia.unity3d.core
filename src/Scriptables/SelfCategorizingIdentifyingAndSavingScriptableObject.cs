@@ -8,16 +8,15 @@ namespace Appalachia.Core.Scriptables
 {
     [Serializable]
     public abstract class
-        SelfCategorizingIdentifyingAndSavingScriptableObject<T> :
-            SelfSavingAndIdentifyingScriptableObject<T>,
-            ICategorizable
+        SelfCategorizingIdentifyingAndSavingScriptableObject<T> : SelfSavingAndIdentifyingScriptableObject<T>,
+                                                                  ICategorizable
         where T : SelfCategorizingIdentifyingAndSavingScriptableObject<T>
     {
         [FormerlySerializedAs("category")]
         [SerializeField]
         [SmartLabel]
 #if UNITY_EDITOR
-        [SmartInlineButton(nameof(Prefix), "Prefix", false, false, null, nameof(_disablePrefix))]
+        [SmartInlineButton(nameof(Prefix),              "Prefix", false, false, null, nameof(_disablePrefix))]
         [SmartInlineButton(nameof(SelectUncategorized), "Select Uncat.", false)]
         [SmartInlineButton(
             nameof(SelectCategory),

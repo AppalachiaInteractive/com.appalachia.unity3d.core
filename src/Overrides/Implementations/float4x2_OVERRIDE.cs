@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public float4x2_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, float4x2 value) :
-            base(overrideEnabled, value)
+        public float4x2_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, float4x2 value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

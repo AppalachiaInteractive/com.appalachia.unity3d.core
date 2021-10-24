@@ -16,20 +16,12 @@ namespace Appalachia.Core.ArrayPooling
         /// <summary>The default maximum number of arrays per bucket that are available for rent.</summary>
         private const int DefaultMaxNumberOfArraysPerBucket = 50;
 
-        /// <summary>Lazily-allocated empty array used when arrays of length 0 are requested.</summary>
-        private static T[]
-            s_emptyArray; // we support contracts earlier than those with Array.Empty<T>()
-
         private static readonly ProfilerMarker _PRF_DefaultArrayPool_DefaultArrayPool =
             new("DefaultArrayPool.DefaultArrayPool");
 
-        private static readonly ProfilerMarker _PRF_DefaultArrayPool_Rent =
-            new("DefaultArrayPool.Rent");
+        private static readonly ProfilerMarker _PRF_DefaultArrayPool_Rent = new("DefaultArrayPool.Rent");
 
-        private static readonly ProfilerMarker _PRF_DefaultArrayPool_Return =
-            new("DefaultArrayPool.Return");
-
-        private readonly Bucket[] _buckets;
+        private static readonly ProfilerMarker _PRF_DefaultArrayPool_Return = new("DefaultArrayPool.Return");
 
         public DefaultArrayPool() : this(DefaultMaxArrayLength, DefaultMaxNumberOfArraysPerBucket)
         {
@@ -67,16 +59,17 @@ namespace Appalachia.Core.ArrayPooling
                 var buckets = new Bucket[maxBuckets + 1];
                 for (var i = 0; i < buckets.Length; i++)
                 {
-                    buckets[i] = new Bucket(
-                        Utilities.GetMaxSizeForBucket(i),
-                        maxArraysPerBucket,
-                        poolId
-                    );
+                    buckets[i] = new Bucket(Utilities.GetMaxSizeForBucket(i), maxArraysPerBucket, poolId);
                 }
 
                 _buckets = buckets;
             }
         }
+
+        /// <summary>Lazily-allocated empty array used when arrays of length 0 are requested.</summary>
+        private static T[] s_emptyArray; // we support contracts earlier than those with Array.Empty<T>()
+
+        private readonly Bucket[] _buckets;
 
         /// <summary>Gets an ID for the pool to use with events.</summary>
         private int Id => GetHashCode();
@@ -185,13 +178,6 @@ namespace Appalachia.Core.ArrayPooling
         /// <summary>Provides a thread-safe bucket containing buffers that can be Rent'd and Return'd.</summary>
         private sealed class Bucket
         {
-            internal readonly int _bufferLength;
-            private readonly T[][] _buffers;
-            private readonly int _poolId;
-            private int _index;
-
-            private readonly object _lock; // do not make this readonly; it's a mutable struct
-
             /// <summary>
             ///     Creates the pool with numberOfBuffers arrays where each buffer is of bufferLength length.
             /// </summary>
@@ -202,6 +188,13 @@ namespace Appalachia.Core.ArrayPooling
                 _bufferLength = bufferLength;
                 _poolId = poolId;
             }
+
+            internal readonly int _bufferLength;
+            private readonly int _poolId;
+
+            private readonly object _lock; // do not make this readonly; it's a mutable struct
+            private readonly T[][] _buffers;
+            private int _index;
 
             /// <summary>Gets an ID for the bucket to use with events.</summary>
             internal int Id => GetHashCode();

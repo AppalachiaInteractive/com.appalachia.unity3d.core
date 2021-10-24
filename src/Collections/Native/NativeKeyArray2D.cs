@@ -16,8 +16,7 @@ namespace Appalachia.Core.Collections.Native
     [NativeContainer]
     [NativeContainerSupportsDeallocateOnJobCompletion]
     [NativeContainerSupportsMinMaxWriteRestriction]
-    public unsafe struct NativeKeyArray2D<TK, TV> : IDisposable,
-                                                    IEquatable<NativeKeyArray2D<TK, TV>>
+    public unsafe struct NativeKeyArray2D<TK, TV> : IDisposable, IEquatable<NativeKeyArray2D<TK, TV>>
         where TK : struct
         where TV : struct
     {
@@ -117,14 +116,7 @@ namespace Appalachia.Core.Collections.Native
         {
             get
             {
-                SafetyUtility.RequireIndexInBounds(
-                    index0,
-                    Length0,
-                    Capacity0,
-                    0,
-                    Length1,
-                    Capacity1
-                );
+                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, 0, Length1, Capacity1);
 
                 var index = GetIndex(index0, 0);
                 SafetyUtility.CheckElementReadAccess(
@@ -141,14 +133,7 @@ namespace Appalachia.Core.Collections.Native
             [WriteAccessRequired]
             set
             {
-                SafetyUtility.RequireIndexInBounds(
-                    index0,
-                    Length0,
-                    Capacity0,
-                    0,
-                    Length1,
-                    Capacity1
-                );
+                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, 0, Length1, Capacity1);
 
                 var index = GetIndex(index0, 0);
                 SafetyUtility.CheckElementWriteAccess(
@@ -167,14 +152,7 @@ namespace Appalachia.Core.Collections.Native
         {
             get
             {
-                SafetyUtility.RequireIndexInBounds(
-                    index0,
-                    Length0,
-                    Capacity0,
-                    index1,
-                    Length1,
-                    Capacity1
-                );
+                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
 
                 var index = GetIndex(index0, index1);
                 SafetyUtility.CheckElementReadAccess(
@@ -191,14 +169,7 @@ namespace Appalachia.Core.Collections.Native
             [WriteAccessRequired]
             set
             {
-                SafetyUtility.RequireIndexInBounds(
-                    index0,
-                    Length0,
-                    Capacity0,
-                    index1,
-                    Length1,
-                    Capacity1
-                );
+                SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
 
                 var index = GetIndex(index0, index1);
                 SafetyUtility.CheckElementWriteAccess(
@@ -274,9 +245,7 @@ namespace Appalachia.Core.Collections.Native
 
             if (totalCapacity <= 0)
             {
-                throw new InvalidOperationException(
-                    "Total number of elements must be greater than zero"
-                );
+                throw new InvalidOperationException("Total number of elements must be greater than zero");
             }
 
             array = new NativeKeyArray2D<TK, TV>

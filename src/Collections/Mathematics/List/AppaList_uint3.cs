@@ -14,10 +14,8 @@ namespace Appalachia.Core.Collections.Mathematics.List
         {
         }
 
-        public AppaList_uint3(
-            int capacity,
-            float capacityIncreaseMultiplier = 2,
-            bool noTracking = false) : base(capacity, capacityIncreaseMultiplier, noTracking)
+        public AppaList_uint3(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) :
+            base(capacity, capacityIncreaseMultiplier, noTracking)
         {
         }
 

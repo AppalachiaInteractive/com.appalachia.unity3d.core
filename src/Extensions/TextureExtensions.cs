@@ -12,12 +12,16 @@ namespace Appalachia.Core.Extensions
 {
     public static class TextureExtensions
     {
+        private static Type spriteType =>
+            type == null ? type = Type.GetType("UnityEditor.Sprites.SpriteUtility, UnityEditor") : type;
+
         private static Type type;
 
-        private static Type spriteType =>
-            type == null
-                ? type = Type.GetType("UnityEditor.Sprites.SpriteUtility, UnityEditor")
-                : type;
+        public static TextureImporter GetTextureImporter(this Texture2D texture)
+        {
+            var path = AssetDatabaseManager.GetAssetPath(texture);
+            return (TextureImporter) AssetImporter.GetAtPath(path);
+        }
 
         public static Vector2[][] GenerateOutline(
             this Texture texture,
@@ -28,10 +32,7 @@ namespace Appalachia.Core.Extensions
         {
             var opaths = new Vector2[0][];
             object[] parameters = {texture, rect, detail, alphaTolerance, holeDetection, opaths};
-            var method = spriteType.GetMethod(
-                "GenerateOutline",
-                ReflectionExtensions.PrivateStatic
-            );
+            var method = spriteType.GetMethod("GenerateOutline", ReflectionExtensions.PrivateStatic);
             method.Invoke(null, parameters);
             var paths = (Vector2[][]) parameters[5];
 
@@ -50,12 +51,6 @@ namespace Appalachia.Core.Extensions
             importer.isReadable = true;
 
             importer.SaveAndReimport();
-        }
-
-        public static TextureImporter GetTextureImporter(this Texture2D texture)
-        {
-            var path = AssetDatabaseManager.GetAssetPath(texture);
-            return (TextureImporter) AssetImporter.GetAtPath(path);
         }
     }
 }

@@ -6,10 +6,10 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
     [Serializable]
     public class MeshEqualityState : ComponentContentEqualityState<MeshEqualityState, Mesh>
     {
-        [SerializeField] public Mesh mesh;
-        [SerializeField] public int vertexCount;
-        [SerializeField] public int triangleCount;
         [SerializeField] public Bounds bounds;
+        [SerializeField] public int triangleCount;
+        [SerializeField] public int vertexCount;
+        [SerializeField] public Mesh mesh;
 
         public override void Record(Mesh m)
         {

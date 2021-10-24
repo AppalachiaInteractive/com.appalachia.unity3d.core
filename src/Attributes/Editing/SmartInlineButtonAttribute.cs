@@ -13,17 +13,6 @@ namespace Appalachia.Core.Attributes.Editing
     [Conditional("UNITY_EDITOR")]
     public sealed class SmartInlineButtonAttribute : Attribute
     {
-        public bool Before;
-
-        public bool Bold;
-
-        public string Color;
-
-        public string DisableIf;
-
-        public string Label;
-        public string MemberMethod;
-
         public SmartInlineButtonAttribute(
             string memberMethod,
             string label = null,
@@ -39,5 +28,16 @@ namespace Appalachia.Core.Attributes.Editing
             Label = label;
             DisableIf = disableIf;
         }
+
+        public bool Before;
+
+        public bool Bold;
+
+        public string Color;
+
+        public string DisableIf;
+
+        public string Label;
+        public string MemberMethod;
     }
 }

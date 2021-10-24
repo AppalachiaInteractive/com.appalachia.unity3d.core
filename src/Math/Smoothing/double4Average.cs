@@ -11,14 +11,14 @@ namespace Appalachia.Core.Math.Smoothing
             return a + b;
         }
 
-        protected override double4 Subtract(double4 a, double4 b)
-        {
-            return a - b;
-        }
-
         protected override double4 Divide(double4 a, int divisor)
         {
             return a / divisor;
+        }
+
+        protected override double4 Subtract(double4 a, double4 b)
+        {
+            return a - b;
         }
     }
 }

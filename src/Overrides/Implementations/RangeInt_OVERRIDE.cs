@@ -14,8 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public RangeInt_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, RangeInt value) :
-            base(overrideEnabled, value)
+        public RangeInt_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, RangeInt value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

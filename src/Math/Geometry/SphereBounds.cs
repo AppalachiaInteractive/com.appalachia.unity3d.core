@@ -1,6 +1,6 @@
 #region
 
-using Appalachia.Utility.src.Constants;
+using Appalachia.Utility.Constants;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -118,17 +118,9 @@ namespace Appalachia.Core.Math.Geometry
             return true;
         }
 
-        public bool DoesIntersectPlane(
-            Plane p,
-            out float3 intersectionPoint,
-            out float radiusAtIntersection)
+        public bool DoesIntersectPlane(Plane p, out float3 intersectionPoint, out float radiusAtIntersection)
         {
-            return DoesIntersectPlane(
-                p.normal,
-                p.distance,
-                out intersectionPoint,
-                out radiusAtIntersection
-            );
+            return DoesIntersectPlane(p.normal, p.distance, out intersectionPoint, out radiusAtIntersection);
         }
 
         public bool DoesIntersectPlane(
@@ -149,125 +141,67 @@ namespace Appalachia.Core.Math.Geometry
             float3 intersectionPoint;
             float radiusAtIntersection;
 
-            if (DoesIntersectPlane(
-                float3c.up,
-                b.max.y,
-                out intersectionPoint,
-                out radiusAtIntersection
-            ))
+            if (DoesIntersectPlane(float3c.up, b.max.y, out intersectionPoint, out radiusAtIntersection))
             {
-                if ((DistanceToPlane(float3c.left, b.min.x, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.right, b.max.x, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.forward, b.max.z, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.back, b.min.z, intersectionPoint) <=
-                     radiusAtIntersection))
+                if ((DistanceToPlane(float3c.left,    b.min.x, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.right,   b.max.x, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.forward, b.max.z, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.back,    b.min.z, intersectionPoint) <= radiusAtIntersection))
                 {
                     return true;
                 }
             }
 
-            if (DoesIntersectPlane(
-                float3c.down,
-                b.min.y,
-                out intersectionPoint,
-                out radiusAtIntersection
-            ))
+            if (DoesIntersectPlane(float3c.down, b.min.y, out intersectionPoint, out radiusAtIntersection))
             {
-                if ((DistanceToPlane(float3c.left, b.min.x, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.right, b.max.x, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.up, b.max.z, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.back, b.min.z, intersectionPoint) <=
-                     radiusAtIntersection))
+                if ((DistanceToPlane(float3c.left,  b.min.x, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.right, b.max.x, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.up,    b.max.z, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.back,  b.min.z, intersectionPoint) <= radiusAtIntersection))
                 {
                     return true;
                 }
             }
 
-            if (DoesIntersectPlane(
-                float3c.left,
-                b.max.x,
-                out intersectionPoint,
-                out radiusAtIntersection
-            ))
+            if (DoesIntersectPlane(float3c.left, b.max.x, out intersectionPoint, out radiusAtIntersection))
             {
-                if (
-                    (DistanceToPlane(float3c.up, b.max.y, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.down, b.min.y, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.forward, b.max.z, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.back, b.min.z, intersectionPoint) <=
-                     radiusAtIntersection))
+                if ((DistanceToPlane(float3c.up,      b.max.y, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.down,    b.min.y, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.forward, b.max.z, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.back,    b.min.z, intersectionPoint) <= radiusAtIntersection))
                 {
                     return true;
                 }
             }
 
-            if (DoesIntersectPlane(
-                float3c.right,
-                b.max.x,
-                out intersectionPoint,
-                out radiusAtIntersection
-            ))
+            if (DoesIntersectPlane(float3c.right, b.max.x, out intersectionPoint, out radiusAtIntersection))
             {
-                if (
-                    (DistanceToPlane(float3c.up, b.max.y, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.down, b.min.y, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.forward, b.max.z, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.back, b.min.z, intersectionPoint) <=
-                     radiusAtIntersection))
+                if ((DistanceToPlane(float3c.up,      b.max.y, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.down,    b.min.y, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.forward, b.max.z, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.back,    b.min.z, intersectionPoint) <= radiusAtIntersection))
                 {
                     return true;
                 }
             }
 
-            if (DoesIntersectPlane(
-                float3c.forward,
-                b.max.z,
-                out intersectionPoint,
-                out radiusAtIntersection
-            ))
+            if (DoesIntersectPlane(float3c.forward, b.max.z, out intersectionPoint, out radiusAtIntersection))
             {
-                if (
-                    (DistanceToPlane(float3c.up, b.max.y, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.down, b.min.y, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.left, b.min.x, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.right, b.max.x, intersectionPoint) <=
-                     radiusAtIntersection))
+                if ((DistanceToPlane(float3c.up,    b.max.y, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.down,  b.min.y, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.left,  b.min.x, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.right, b.max.x, intersectionPoint) <= radiusAtIntersection))
                 {
                     return true;
                 }
             }
 
-            if (DoesIntersectPlane(
-                float3c.back,
-                b.max.z,
-                out intersectionPoint,
-                out radiusAtIntersection
-            ))
+            if (DoesIntersectPlane(float3c.back, b.max.z, out intersectionPoint, out radiusAtIntersection))
             {
-                if (
-                    (DistanceToPlane(float3c.up, b.max.y, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.down, b.min.y, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.left, b.max.x, intersectionPoint) <=
-                     radiusAtIntersection) &&
-                    (DistanceToPlane(float3c.right, b.max.x, intersectionPoint) <=
-                     radiusAtIntersection))
+                if ((DistanceToPlane(float3c.up,    b.max.y, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.down,  b.min.y, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.left,  b.max.x, intersectionPoint) <= radiusAtIntersection) &&
+                    (DistanceToPlane(float3c.right, b.max.x, intersectionPoint) <= radiusAtIntersection))
                 {
                     return true;
                 }

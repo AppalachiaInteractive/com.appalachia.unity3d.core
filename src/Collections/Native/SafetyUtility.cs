@@ -15,29 +15,102 @@ namespace Appalachia.Core.Collections.Native
     {
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         [BurstDiscard]
-        public static void RequireLengthWithinCapacity(int length, int capacity, int v)
+        public static void CheckElementReadAccess(
+            AtomicSafetyHandle safety,
+            int index,
+            int minimum,
+            int maximum,
+            int length,
+            int capacity)
+        {
+            if ((index < minimum) || (index > maximum))
+            {
+                FailOutOfRangeError(index, minimum, maximum, length, capacity);
+            }
+
+            /*if (this.m_Safety.version == (*(int*) (void*) this.m_Safety.versionNode & -7))
+                return;*/
+            AtomicSafetyHandle.CheckReadAndThrow(safety);
+        }
+
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        [BurstDiscard]
+        public static void CheckElementWriteAccess(
+            AtomicSafetyHandle safety,
+            int index,
+            int minimum,
+            int maximum,
+            int length,
+            int capacity)
+        {
+            if ((index < minimum) || (index > maximum))
+            {
+                FailOutOfRangeError(index, minimum, maximum, length, capacity);
+            }
+
+            /*if (this.m_Safety.version == (*(int*) (void*) this.m_Safety.versionNode & -6))
+                return;*/
+            AtomicSafetyHandle.CheckWriteAndThrow(safety);
+        }
+
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        [BurstDiscard]
+        public static void CheckReadAccess(AtomicSafetyHandle safety)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            if ((length < 0) || (length > capacity))
-            {
-                if (v >= 0)
-                {
-                    throw new IndexOutOfRangeException(
-                        string.Format(
-                            "Length{0} [{1}] out of bounds.  Capacity{2}: [{3}].",
-                            v,
-                            length,
-                            v,
-                            capacity
-                        )
-                    );
-                }
+            AtomicSafetyHandle.CheckReadAndThrow(safety);
+#endif
+        }
 
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        [BurstDiscard]
+        public static void CheckWriteAccess(AtomicSafetyHandle safety)
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle.CheckWriteAndThrow(safety);
+#endif
+        }
+
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        [BurstDiscard]
+        public static void FailOutOfRangeError(int index, int minimum, int maximum, int length, int capacity)
+        {
+            if ((index < length) && ((minimum != 0) || (maximum != (capacity - 1))))
+            {
                 throw new IndexOutOfRangeException(
-                    string.Format("Length [{0}] out of bounds.  Capacity: [{1}].", length, capacity)
+                    string.Format(
+                        "Index {0} is out of restricted IJobParallelFor range [{1}...{2}] in ReadWriteBuffer.\nReadWriteBuffers are restricted to only read & write the element at the job index. You can use double buffering strategies to avoid race conditions due to reading & writing in parallel to the same elements from a job.",
+                        index,
+                        minimum,
+                        maximum
+                    )
                 );
             }
-#endif
+
+            RequireIndexInBounds(index, length, capacity);
+            RequireLengthWithinCapacity(length, capacity, -1);
+        }
+
+        [BurstDiscard]
+        public static void IsUnmanagedAndThrow<TC, TE1, TE2>()
+        {
+            IsUnmanagedAndThrow<TC, TE1>();
+            IsUnmanagedAndThrow<TC, TE2>();
+        }
+
+        [BurstDiscard]
+        public static void IsUnmanagedAndThrow<TC, TE>()
+        {
+            if (!UnsafeUtility.IsValidNativeContainerElementType<TE>())
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        "{0} used in {1} must be unmanaged (contain no managed types) and cannot itself be a native container type.",
+                        typeof(TE).GetReadableName(),
+                        typeof(TC).GetReadableName()
+                    )
+                );
+            }
         }
 
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
@@ -136,6 +209,33 @@ namespace Appalachia.Core.Collections.Native
 
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         [BurstDiscard]
+        public static void RequireLengthWithinCapacity(int length, int capacity, int v)
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if ((length < 0) || (length > capacity))
+            {
+                if (v >= 0)
+                {
+                    throw new IndexOutOfRangeException(
+                        string.Format(
+                            "Length{0} [{1}] out of bounds.  Capacity{2}: [{3}].",
+                            v,
+                            length,
+                            v,
+                            capacity
+                        )
+                    );
+                }
+
+                throw new IndexOutOfRangeException(
+                    string.Format("Length [{0}] out of bounds.  Capacity: [{1}].", length, capacity)
+                );
+            }
+#endif
+        }
+
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        [BurstDiscard]
         public static void RequireValidAllocator<T>(Allocator allocator)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -149,111 +249,6 @@ namespace Appalachia.Core.Collections.Native
                 );
             }
 #endif
-        }
-
-        [BurstDiscard]
-        public static void IsUnmanagedAndThrow<TC, TE1, TE2>()
-        {
-            IsUnmanagedAndThrow<TC, TE1>();
-            IsUnmanagedAndThrow<TC, TE2>();
-        }
-
-        [BurstDiscard]
-        public static void IsUnmanagedAndThrow<TC, TE>()
-        {
-            if (!UnsafeUtility.IsValidNativeContainerElementType<TE>())
-            {
-                throw new InvalidOperationException(
-                    string.Format(
-                        "{0} used in {1} must be unmanaged (contain no managed types) and cannot itself be a native container type.",
-                        typeof(TE).GetReadableName(),
-                        typeof(TC).GetReadableName()
-                    )
-                );
-            }
-        }
-
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        [BurstDiscard]
-        public static void CheckElementReadAccess(
-            AtomicSafetyHandle safety,
-            int index,
-            int minimum,
-            int maximum,
-            int length,
-            int capacity)
-        {
-            if ((index < minimum) || (index > maximum))
-            {
-                FailOutOfRangeError(index, minimum, maximum, length, capacity);
-            }
-
-            /*if (this.m_Safety.version == (*(int*) (void*) this.m_Safety.versionNode & -7))
-                return;*/
-            AtomicSafetyHandle.CheckReadAndThrow(safety);
-        }
-
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        [BurstDiscard]
-        public static void CheckElementWriteAccess(
-            AtomicSafetyHandle safety,
-            int index,
-            int minimum,
-            int maximum,
-            int length,
-            int capacity)
-        {
-            if ((index < minimum) || (index > maximum))
-            {
-                FailOutOfRangeError(index, minimum, maximum, length, capacity);
-            }
-
-            /*if (this.m_Safety.version == (*(int*) (void*) this.m_Safety.versionNode & -6))
-                return;*/
-            AtomicSafetyHandle.CheckWriteAndThrow(safety);
-        }
-
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        [BurstDiscard]
-        public static void CheckReadAccess(AtomicSafetyHandle safety)
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckReadAndThrow(safety);
-#endif
-        }
-
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        [BurstDiscard]
-        public static void CheckWriteAccess(AtomicSafetyHandle safety)
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckWriteAndThrow(safety);
-#endif
-        }
-
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        [BurstDiscard]
-        public static void FailOutOfRangeError(
-            int index,
-            int minimum,
-            int maximum,
-            int length,
-            int capacity)
-        {
-            if ((index < length) && ((minimum != 0) || (maximum != (capacity - 1))))
-            {
-                throw new IndexOutOfRangeException(
-                    string.Format(
-                        "Index {0} is out of restricted IJobParallelFor range [{1}...{2}] in ReadWriteBuffer.\nReadWriteBuffers are restricted to only read & write the element at the job index. You can use double buffering strategies to avoid race conditions due to reading & writing in parallel to the same elements from a job.",
-                        index,
-                        minimum,
-                        maximum
-                    )
-                );
-            }
-
-            RequireIndexInBounds(index, length, capacity);
-            RequireLengthWithinCapacity(length, capacity, -1);
         }
     }
 }

@@ -14,10 +14,10 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public Quaternion_OVERRIDE(
-            bool isOverridingAllowed,
-            bool overrideEnabled,
-            Quaternion value) : base(overrideEnabled, value)
+        public Quaternion_OVERRIDE(bool isOverridingAllowed, bool overrideEnabled, Quaternion value) : base(
+            overrideEnabled,
+            value
+        )
         {
         }
 

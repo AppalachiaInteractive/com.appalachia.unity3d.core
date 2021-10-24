@@ -8,8 +8,7 @@ using UnityEngine;
 namespace Appalachia.Core.Overrides.Implementations
 {
     [Serializable]
-    public sealed class
-        BoundingSphere_OVERRIDE : Overridable<BoundingSphere, BoundingSphere_OVERRIDE>
+    public sealed class BoundingSphere_OVERRIDE : Overridable<BoundingSphere, BoundingSphere_OVERRIDE>
     {
         public BoundingSphere_OVERRIDE() : base(false, default)
         {
@@ -22,8 +21,9 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public BoundingSphere_OVERRIDE(
-            Overridable<BoundingSphere, BoundingSphere_OVERRIDE> value) : base(value)
+        public BoundingSphere_OVERRIDE(Overridable<BoundingSphere, BoundingSphere_OVERRIDE> value) : base(
+            value
+        )
         {
         }
     }

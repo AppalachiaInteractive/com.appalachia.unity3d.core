@@ -1,73 +1,83 @@
 #region
 
-using Appalachia.Utility.src.Colors;
+using Appalachia.Utility.Colors;
 using UnityEngine;
 
 #endregion
 
 namespace Appalachia.Core.Preferences.Globals
 {
-    
     [UnityEditor.InitializeOnLoad]
     public sealed class ColorPrefs
     {
-        static ColorPrefs()
-        {
-            _instance = new ColorPrefs();
-        }
-        
+        private const string _B = "Appalachia/Colors/Buoyancy/";
+        private const string _BF = "Appalachia/Colors/Buoyancy/Force";
+
         private const string _G = "Appalachia/Colors";
+
+        private const string _GRAD = _G + "/Gradients";
         private const string _GSC = _G + "/Status Codes";
 
         private const string _GSM = _G + "/Solo & Mute";
 
-        private const string _GRAD = _G + "/Gradients";
-        private const string _QUALITY = _GRAD + "/Quality";
-
         private const string _GZ = _G + "/Gizmos";
-
-        private const string _GZ_MB = _GZ + "/Mesh Burial";
 
         private const string _GZ_DC = _GZ + "/Decomposed Collider";
 
+        private const string _GZ_MB = _GZ + "/Mesh Burial";
+
         private const string _GZPRI = _GZ + "/Prefab Rendering Instance";
         private const string _GZPRI_I = _GZPRI + "/Interaction";
+        private const string _GZPRI_IC = _GZPRI + "/Instance Code";
         private const string _GZPRI_P = _GZPRI + "/Physics";
         private const string _GZPRI_R = _GZPRI + "/Rendering";
-        private const string _GZPRI_IC = _GZPRI + "/Instance Code";
-
-        private const string _SELECTORS = "Appalachia/Selectors";
-        private const string _SELECT_PHYSICS = _SELECTORS + "/Physics Materials";
-        private const string _SELECT_DENSITY = _SELECTORS + "/Densities";
-        private const string _SELECT_WOOD = _SELECTORS + "/Wood Simulation";
-        private const string _SELECT_GENERIC = _SELECTORS + "/Generic";
-
-        private const string _B = "Appalachia/Colors/Buoyancy/";
-        private const string _BF = "Appalachia/Colors/Buoyancy/Force";
 
         private const string _O = "Appalachia/Octree";
-        private const string _OV = _O + "/Voxel";
-        private const string _OP = _O + "/Point";
         private const string _OB = _O + "/Bounds";
+        private const string _OP = _O + "/Point";
         private const string _OS = _O + "/Sphere";
-        private static ColorPrefs _instance;
+        private const string _OV = _O + "/Voxel";
+        private const string _QUALITY = _GRAD + "/Quality";
+        private const string _SELECT_DENSITY = _SELECTORS + "/Densities";
+        private const string _SELECT_GENERIC = _SELECTORS + "/Generic";
+        private const string _SELECT_PHYSICS = _SELECTORS + "/Physics Materials";
+        private const string _SELECT_WOOD = _SELECTORS + "/Wood Simulation";
+
+        private const string _SELECTORS = "Appalachia/Selectors";
 
         private static readonly Gradient _default_Gradient = new()
         {
-            alphaKeys =
-                new[] {new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f)},
+            alphaKeys = new[] {new GradientAlphaKey(1.0f, 0.0f), new GradientAlphaKey(1.0f, 1.0f)},
             colorKeys = new[]
             {
-                new GradientColorKey(Color.black, 0.0f),
-                new GradientColorKey(Color.white, 1.0f)
+                new GradientColorKey(Color.black, 0.0f), new GradientColorKey(Color.white, 1.0f)
             }
         };
 
-        public PREF<Color> BackgroundInfo = PREFS.REG(
-            _GSC,
-            nameof(BackgroundInfo),
-            Colors.Turquoise
-        );
+        public static Color ButtonFade10 => Colors.Gray10;
+        public static Color ButtonFade20 => Colors.Gray20;
+        public static Color ButtonFade30 => Colors.Gray30;
+        public static Color ButtonFade40 => Colors.Gray40;
+        public static Color ButtonFade50 => Colors.Gray50;
+        public static Color ButtonFade60 => Colors.Gray60;
+        public static Color ButtonFade70 => Colors.Gray70;
+        public static Color ButtonFade75 => Colors.Gray75;
+        public static Color ButtonFade80 => Colors.Gray80;
+        public static Color ButtonFade85 => Colors.Gray85;
+        public static Color ButtonFade90 => Colors.Gray90;
+
+        public static Color ButtonFade95 => Colors.Gray95;
+
+        public static ColorPrefs Instance => _instance ?? (_instance = new ColorPrefs());
+
+        static ColorPrefs()
+        {
+            _instance = new ColorPrefs();
+        }
+
+        private static ColorPrefs _instance;
+
+        public PREF<Color> BackgroundInfo = PREFS.REG(_GSC, nameof(BackgroundInfo), Colors.Turquoise);
 
         public PREF<Color> Buoyancy_airResisForceLines = PREFS.REG(
             _BF,
@@ -173,40 +183,10 @@ namespace Appalachia.Core.Preferences.Globals
             Colors.PowderBlue
         );
 
-        public PREF<float> DecomposedColliderAlpha = PREFS.REG(
-            _GZ_DC,
-            nameof(DecomposedColliderAlpha),
-            1.0f,
-            0.0f,
-            1.0f
-        );
-
         public PREF<Color> DecomposedColliderInBounds = PREFS.REG(
             _GZ_DC,
             nameof(DecomposedColliderInBounds),
             Colors.Cyan
-        );
-
-        public PREF<float> DecomposedColliderInBoundsScale = PREFS.REG(
-            _GZ_DC,
-            nameof(DecomposedColliderInBoundsScale),
-            .96f
-        );
-
-        public PREF<float> DecomposedColliderLabelBackgroundAlpha = PREFS.REG(
-            _GZ_DC,
-            nameof(DecomposedColliderLabelBackgroundAlpha),
-            1.0f,
-            0.0f,
-            1.0f
-        );
-
-        public PREF<float> DecomposedColliderLabelForegroundAlpha = PREFS.REG(
-            _GZ_DC,
-            nameof(DecomposedColliderLabelForegroundAlpha),
-            1.0f,
-            0.0f,
-            1.0f
         );
 
         public PREF<Color> DecomposedColliderLimitationColors = PREFS.REG(
@@ -275,12 +255,6 @@ namespace Appalachia.Core.Preferences.Globals
             Colors.Cyan
         );
 
-        public PREF<float> DecomposedColliderSelectedScale = PREFS.REG(
-            _GZ_DC,
-            nameof(DecomposedColliderSelectedScale),
-            .98f
-        );
-
         public PREF<Color> DecomposedColliderSelectorAssign = PREFS.REG(
             _GZ_DC,
             nameof(DecomposedColliderSelectorAssign),
@@ -317,12 +291,6 @@ namespace Appalachia.Core.Preferences.Globals
             Colors.Cyan
         );
 
-        public PREF<float> DensitySelectorColorDrop = PREFS.REG(
-            _SELECT_DENSITY,
-            nameof(DensitySelectorColorDrop),
-            .96f
-        );
-
         public PREF<Color> Disabled = PREFS.REG(_GSM, nameof(Disabled), Colors.Gray50);
 
         public PREF<Color> DisabledImportant = PREFS.REG(
@@ -345,11 +313,7 @@ namespace Appalachia.Core.Preferences.Globals
 
         public PREF<Color> Enabled = PREFS.REG(_GSC, nameof(Enabled), Colors.ForestGreen);
 
-        public PREF<Color> EnabledDisabled = PREFS.REG(
-            _GSC,
-            nameof(EnabledDisabled),
-            Colors.ForestGreen
-        );
+        public PREF<Color> EnabledDisabled = PREFS.REG(_GSC, nameof(EnabledDisabled), Colors.ForestGreen);
 
         public PREF<Color> EnabledDisabledElsewhere = PREFS.REG(
             _GSC,
@@ -369,17 +333,7 @@ namespace Appalachia.Core.Preferences.Globals
             Colors.LightSteelBlue1
         );
 
-        public PREF<float> GenericSelectorColorDrop = PREFS.REG(
-            _SELECT_GENERIC,
-            nameof(GenericSelectorColorDrop),
-            .96f
-        );
-
-        public PREF<Color> MeshBurialBounds = PREFS.REG(
-            _GZ_MB,
-            nameof(MeshBurialBounds),
-            Colors.Cyan
-        );
+        public PREF<Color> MeshBurialBounds = PREFS.REG(_GZ_MB, nameof(MeshBurialBounds), Colors.Cyan);
 
         public PREF<Color> MuteAny = PREFS.REG(_GSM, nameof(MuteAny), Colors.IndianRed1);
 
@@ -403,14 +357,6 @@ namespace Appalachia.Core.Preferences.Globals
             Colors.Cyan
         );
 
-        public PREF<float> Octree_Voxel_NodeScale = PREFS.REG(
-            _OV,
-            nameof(Octree_Voxel_NodeScale),
-            .8f,
-            .01f,
-            1.1f
-        );
-
         public PREF<Color> Pending = PREFS.REG(_GSC, nameof(Pending), Colors.DodgerBlue1);
 
         public PREF<Color> PhysicMaterialSelectorButton = PREFS.REG(
@@ -419,62 +365,24 @@ namespace Appalachia.Core.Preferences.Globals
             Colors.Cyan
         );
 
-        public PREF<float> PhysicMaterialSelectorColorDrop = PREFS.REG(
-            _SELECT_PHYSICS,
-            nameof(PhysicMaterialSelectorColorDrop),
-            .96f
-        );
+        public PREF<Color> PRI_INT_Disabled = PREFS.REG(_GZPRI_I, nameof(PRI_INT_Disabled), Colors.Cyan);
 
-        public PREF<Color> PRI_INT_Disabled = PREFS.REG(
-            _GZPRI_I,
-            nameof(PRI_INT_Disabled),
-            Colors.Cyan
-        );
+        public PREF<Color> PRI_INT_Enabled = PREFS.REG(_GZPRI_I, nameof(PRI_INT_Enabled), Colors.Cyan);
 
-        public PREF<Color> PRI_INT_Enabled = PREFS.REG(
-            _GZPRI_I,
-            nameof(PRI_INT_Enabled),
-            Colors.Cyan
-        );
+        public PREF<Color> PRI_INT_NotSet = PREFS.REG(_GZPRI_I, nameof(PRI_INT_NotSet), Colors.Cyan);
 
-        public PREF<Color> PRI_INT_NotSet = PREFS.REG(
-            _GZPRI_I,
-            nameof(PRI_INT_NotSet),
-            Colors.Cyan
-        );
+        public PREF<Color> PRI_PHYS_Disabled = PREFS.REG(_GZPRI_P, nameof(PRI_PHYS_Disabled), Colors.Cyan);
 
-        public PREF<Color> PRI_PHYS_Disabled = PREFS.REG(
-            _GZPRI_P,
-            nameof(PRI_PHYS_Disabled),
-            Colors.Cyan
-        );
+        public PREF<Color> PRI_PHYS_Enabled = PREFS.REG(_GZPRI_P, nameof(PRI_PHYS_Enabled), Colors.Cyan);
 
-        public PREF<Color> PRI_PHYS_Enabled = PREFS.REG(
-            _GZPRI_P,
-            nameof(PRI_PHYS_Enabled),
-            Colors.Cyan
-        );
+        public PREF<Color> PRI_PHYS_NotSet = PREFS.REG(_GZPRI_P, nameof(PRI_PHYS_NotSet), Colors.Cyan);
 
-        public PREF<Color> PRI_PHYS_NotSet = PREFS.REG(
-            _GZPRI_P,
-            nameof(PRI_PHYS_NotSet),
-            Colors.Cyan
-        );
-
-        public PREF<Color> PRI_REND_Disabled = PREFS.REG(
-            _GZPRI_R,
-            nameof(PRI_REND_Disabled),
-            Colors.Cyan
-        );
+        public PREF<Color> PRI_REND_Disabled = PREFS.REG(_GZPRI_R, nameof(PRI_REND_Disabled), Colors.Cyan);
 
         public PREF<Color> PRI_REND_GPU = PREFS.REG(_GZPRI_R,  nameof(PRI_REND_GPU),  Colors.Cyan);
         public PREF<Color> PRI_REND_Mesh = PREFS.REG(_GZPRI_R, nameof(PRI_REND_Mesh), Colors.Cyan);
 
-        public PREF<Color> PRI_REND_NotSet = PREFS.REG(
-            _GZPRI_R,
-            nameof(PRI_REND_NotSet),
-            Colors.Cyan
-        );
+        public PREF<Color> PRI_REND_NotSet = PREFS.REG(_GZPRI_R, nameof(PRI_REND_NotSet), Colors.Cyan);
 
         public PREF<Color> PRIIC_Delayed = PREFS.REG(_GZPRI_IC, nameof(PRIIC_Delayed), Colors.Cyan);
 
@@ -494,6 +402,92 @@ namespace Appalachia.Core.Preferences.Globals
             Colors.Cyan
         );
 
+        public PREF<Color> SoloAny = PREFS.REG(_GSM, nameof(SoloAny), Colors.DarkSeaGreen1);
+
+        public PREF<Color> SoloDisabled = PREFS.REG(
+            _GSM,
+            nameof(SoloDisabled),
+            Colors.DarkSeaGreen1.UpdateS(.1f)
+        );
+
+        public PREF<Color> SoloEnabled = PREFS.REG(_GSM, nameof(SoloEnabled), Colors.DarkSeaGreen4);
+
+        public PREF<Color> SubdivisionBounds = PREFS.REG(_GZ_DC, nameof(SubdivisionBounds), Colors.Cyan);
+
+        public PREF<Color> WoodSimulationDataSelectorButton = PREFS.REG(
+            _SELECT_WOOD,
+            nameof(WoodSimulationDataSelectorButton),
+            Colors.Cyan
+        );
+
+        public PREF<float> DecomposedColliderAlpha = PREFS.REG(
+            _GZ_DC,
+            nameof(DecomposedColliderAlpha),
+            1.0f,
+            0.0f,
+            1.0f
+        );
+
+        public PREF<float> DecomposedColliderInBoundsScale = PREFS.REG(
+            _GZ_DC,
+            nameof(DecomposedColliderInBoundsScale),
+            .96f
+        );
+
+        public PREF<float> DecomposedColliderLabelBackgroundAlpha = PREFS.REG(
+            _GZ_DC,
+            nameof(DecomposedColliderLabelBackgroundAlpha),
+            1.0f,
+            0.0f,
+            1.0f
+        );
+
+        public PREF<float> DecomposedColliderLabelForegroundAlpha = PREFS.REG(
+            _GZ_DC,
+            nameof(DecomposedColliderLabelForegroundAlpha),
+            1.0f,
+            0.0f,
+            1.0f
+        );
+
+        public PREF<float> DecomposedColliderSelectedScale = PREFS.REG(
+            _GZ_DC,
+            nameof(DecomposedColliderSelectedScale),
+            .98f
+        );
+
+        public PREF<float> DensitySelectorColorDrop = PREFS.REG(
+            _SELECT_DENSITY,
+            nameof(DensitySelectorColorDrop),
+            .96f
+        );
+
+        public PREF<float> GenericSelectorColorDrop = PREFS.REG(
+            _SELECT_GENERIC,
+            nameof(GenericSelectorColorDrop),
+            .96f
+        );
+
+        public PREF<float> Octree_Voxel_NodeScale = PREFS.REG(
+            _OV,
+            nameof(Octree_Voxel_NodeScale),
+            .8f,
+            .01f,
+            1.1f
+        );
+
+        public PREF<float> PhysicMaterialSelectorColorDrop = PREFS.REG(
+            _SELECT_PHYSICS,
+            nameof(PhysicMaterialSelectorColorDrop),
+            .96f
+        );
+
+        public PREF<float> WoodSimulationDataSelectorColorDrop = PREFS.REG(
+            _SELECT_WOOD,
+            nameof(WoodSimulationDataSelectorColorDrop),
+            .96f
+        );
+
         public PREF<Gradient> Quality_BadToGood = PREFS.REG(
             _QUALITY,
             nameof(Quality_BadToGood),
@@ -511,51 +505,5 @@ namespace Appalachia.Core.Preferences.Globals
             nameof(Quality_NeutralToGood),
             _default_Gradient
         );
-
-        public PREF<Color> SoloAny = PREFS.REG(_GSM, nameof(SoloAny), Colors.DarkSeaGreen1);
-
-        public PREF<Color> SoloDisabled = PREFS.REG(
-            _GSM,
-            nameof(SoloDisabled),
-            Colors.DarkSeaGreen1.UpdateS(.1f)
-        );
-
-        public PREF<Color> SoloEnabled = PREFS.REG(_GSM, nameof(SoloEnabled), Colors.DarkSeaGreen4);
-
-        public PREF<Color> SubdivisionBounds = PREFS.REG(
-            _GZ_DC,
-            nameof(SubdivisionBounds),
-            Colors.Cyan
-        );
-
-        public PREF<Color> WoodSimulationDataSelectorButton = PREFS.REG(
-            _SELECT_WOOD,
-            nameof(WoodSimulationDataSelectorButton),
-            Colors.Cyan
-        );
-
-        public PREF<float> WoodSimulationDataSelectorColorDrop = PREFS.REG(
-            _SELECT_WOOD,
-            nameof(WoodSimulationDataSelectorColorDrop),
-            .96f
-        );
-
-        public static Color ButtonFade95 => Colors.Gray95;
-        public static Color ButtonFade90 => Colors.Gray90;
-        public static Color ButtonFade85 => Colors.Gray85;
-        public static Color ButtonFade80 => Colors.Gray80;
-        public static Color ButtonFade75 => Colors.Gray75;
-        public static Color ButtonFade70 => Colors.Gray70;
-        public static Color ButtonFade60 => Colors.Gray60;
-        public static Color ButtonFade50 => Colors.Gray50;
-        public static Color ButtonFade40 => Colors.Gray40;
-        public static Color ButtonFade30 => Colors.Gray30;
-        public static Color ButtonFade20 => Colors.Gray20;
-        public static Color ButtonFade10 => Colors.Gray10;
-
-        public static ColorPrefs Instance
-        {
-            get => _instance ?? (_instance = new ColorPrefs());
-        }
     }
 }
