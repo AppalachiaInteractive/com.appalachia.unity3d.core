@@ -132,8 +132,7 @@ namespace Appalachia.Core.Context.Contexts
 
                     yield return p.Get($"{AppaProgress.CHECKING}: {instance.Name}", progress);
 
-                    var analysis = new TA();
-                    analysis.SetAnalysisTarget(instance);
+                    var analysis = AnalysisGroup<TA, TT, TE>.Create(instance);
 
                     items.Add(analysis);
                 }

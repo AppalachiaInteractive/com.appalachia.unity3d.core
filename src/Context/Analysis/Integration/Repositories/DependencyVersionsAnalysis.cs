@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Repositories;
 using Appalachia.Core.Context.Analysis.Core;
@@ -56,7 +57,21 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
 
             foreach (var dependency in target.dependencies)
             {
+                if (dependency.repository == null)
+                {
+                    target.PopulateDependencies();
+                    break;
+                }
+            }
+
+            foreach (var dependency in target.dependencies)
+            {
                 var refRepo = dependency.repository;
+
+                if (refRepo == null)
+                {
+                    throw new NotSupportedException($"{dependency.name} has not repository set!");
+                }
                 
                 var packageName = refRepo.PackageName;
                 var packageVersion = refRepo.PackageVersion;

@@ -18,6 +18,7 @@ namespace Appalachia.Core.Context.Analysis.Core
             Analyze();
         }
 
+        [NonSerialized] private bool _initialized;
         [NonSerialized] private bool _analyzed;
         [NonSerialized] private bool _analyzing;
 
@@ -185,6 +186,7 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         protected void ClearAnalysisResults()
         {
+            _initialized = false;
             _analyzed = false;
             _analyzing = false;
 
@@ -209,6 +211,13 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         private void Initialize()
         {
+            if (_initialized)
+            {
+                return;
+            }
+
+            _initialized = true;
+            
             _allTypes = new List<AnalysisType<TA, TT, TE>>();
 
             RegisterAllAnalysis();
@@ -219,6 +228,8 @@ namespace Appalachia.Core.Context.Analysis.Core
             var instance = new TA();
             instance.SetAnalysisTarget(target);
 
+            instance.Initialize();
+            
             return instance;
         }
     }
