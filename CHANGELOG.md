@@ -14,7 +14,13 @@
 |------|------|--------|---------|
 
 
- ## Tag: `v0.1.6, origin/main`
+ ## Tag: `v0.1.7, origin/main`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
+| 2d2bbeceb8d25185644ca5503ed277a7fb36b6df | 2021-10-24 | Chris Schubert | Automatic dependency updates |
+
+
+ ## Tag: `v0.1.6`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
 
