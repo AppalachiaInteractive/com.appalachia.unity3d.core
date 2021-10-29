@@ -56,7 +56,7 @@ namespace Appalachia.Core.Aspects.Criticality
 
                 var foundTypes = new HashSet<Type>();
 
-                var allTypes = ReflectionExtensions.GetAllTypes();
+                var allTypes = ReflectionExtensions.GetAllTypes_CACHED();
 
                 for (var i = 0; i < allTypes.Length; i++)
                 {

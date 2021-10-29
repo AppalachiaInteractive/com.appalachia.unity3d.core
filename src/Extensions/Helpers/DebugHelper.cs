@@ -12,7 +12,7 @@ namespace Appalachia.Core.Extensions.Helpers
 {
     public static class DebugHelper
     {
-        [MenuItem("Tools/Clear Log Entries" + SHC.CTRL_ALT_SHFT_C)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Clear Log Entries" + SHC.CTRL_ALT_SHFT_C)]
         private static void ClearLogEntries()
         {
             Debug.ClearDeveloperConsole();

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Appalachia.CI.Integration.Assemblies;
 using Appalachia.Core.Context.Analysis.Core;
@@ -13,6 +14,11 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
 
         protected void WriteReferences(AssemblyDefinitionMetadata target)
         {
+            if (target.references.Count < target.referenceStrings.Count)
+            {
+                throw new NotSupportedException("Make sure to not lose references!");
+            }
+            
             target.referenceStrings.Clear();
             target.references.Sort();
             target.references = target.references.Distinct().ToList();

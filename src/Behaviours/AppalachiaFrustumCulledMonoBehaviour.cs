@@ -2,7 +2,7 @@ using Unity.Profiling;
 
 namespace Appalachia.Core.Behaviours
 {
-    public class AppalachiaFrustumCulledMonoBehaviour<T> : AppalachiaMonoBehaviour
+    public abstract class AppalachiaFrustumCulledMonoBehaviour<T> : AppalachiaMonoBehaviour
         where T : AppalachiaFrustumCulledMonoBehaviour<T>
     {
         private const string _PRF_PFX = nameof(AppalachiaFrustumCulledMonoBehaviour<T>) + ".";

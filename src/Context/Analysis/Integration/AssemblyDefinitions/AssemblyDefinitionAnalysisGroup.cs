@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Appalachia.CI.Integration.Assemblies;
-using Appalachia.CI.Integration.Repositories;
 using Appalachia.Core.Context.Analysis.Core;
 using Object = UnityEngine.Object;
 
@@ -39,7 +37,6 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         public ReferenceStyleAnalysis ReferenceStyle;
         public ReferenceValidityAnalysis ReferenceValidity;
         public SortingAnalysis Sorting;
-
 
         public override Object Asset => Target.asset;
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Appalachia.Core.Extensions;
 using Appalachia.Utility.Colors;
 using Appalachia.Utility.Enums;
 using UnityEngine;
@@ -28,6 +27,8 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         private TA _group;
 
+        public abstract bool IsAutoCorrectable { get; }
+
         public abstract string ShortName { get; }
 
         public abstract TE Type { get; }
@@ -39,6 +40,16 @@ namespace Appalachia.Core.Context.Analysis.Core
                 CheckIssue();
 
                 return _messages.Count(m => m.isIssue) > 0;
+            }
+        }
+        
+        public bool HasAutoCorrectableIssues
+        {
+            get
+            {
+                CheckIssue();
+
+                return IsAutoCorrectable && (_messages.Count(m => m.isIssue) > 0);
             }
         }
 
@@ -77,7 +88,7 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         protected abstract void CorrectIssue(TA group, TT target, bool useTestFiles, bool reimport);
 
-        public void ClearResults()
+        public virtual void ClearResults(TA group, TT target)
         {
             _messages?.Clear();
         }

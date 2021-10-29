@@ -1,3 +1,4 @@
+using System.Reflection;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Execution.Hooks;
 using Appalachia.Utility.Reflection.Delegated;
@@ -30,40 +31,50 @@ namespace Appalachia.Core.Execution
         {
             using var scope0 = _PRF_HookAttributeSubscriberManager.Auto();
 
-            var allTypes = ReflectionExtensions.GetAllTypes();
+            var assemblies = ReflectionExtensions.GetAssemblies_CACHED();
 
-            for (var typeIndex = 0; typeIndex < allTypes.Length; typeIndex++)
+            foreach (var assembly in assemblies)
             {
-                var type = allTypes[typeIndex];
-                using var scope2 = _PRF_HookAttributeSubscriberManager_ProcessType.Auto();
+                var shortName = assembly.GetName().Name;
 
-                var methods = type.GetMethods_CACHE();
-
-                for (var methodIndex = 0; methodIndex < methods.Length; methodIndex++)
+                if (!shortName.StartsWith("Appalachia"))
                 {
-                    var method = methods[methodIndex];
-                    using var scope3 = _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod.Auto();
+                    continue;
+                }
 
-                    if (!method.IsStatic_CACHE())
+                var assemblyTypes = assembly.GetTypes_CACHED();
+
+                for (var typeIndex = 0; typeIndex < assemblyTypes.Length; typeIndex++)
+                {
+                    var type = assemblyTypes[typeIndex];
+
+                    using var scope5 = _PRF_HookAttributeSubscriberManager_ProcessType.Auto();
+
+                    var methods = type.GetMethods_CACHE(
+                        BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic
+                    );
+
+                    for (var methodIndex = 0; methodIndex < methods.Length; methodIndex++)
                     {
-                        continue;
-                    }
+                        var method = methods[methodIndex];
+                        using var scope20 =
+                            _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod.Auto();
 
-                    var attributes = method.GetAttributes_CACHE(false);
+                        /*if (!method.IsStatic_CACHE())
+                        {
+                            continue;
+                        }*/
 
-                    for (var attributeIndex = 0; attributeIndex < attributes.Length; attributeIndex++)
-                    {
-                        var attribute = attributes[attributeIndex];
-                        using var scope4 =
-                            _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod_ProcessAttribute
-                               .Auto();
+                        var attribute = method.GetAttribute_CACHE<ExecuteEventBaseAttribute>(true);
 
-                        var attributeType = attribute.GetType();
-
-                        if (!attributeType.InheritsFrom<ExecuteEventBaseAttribute>())
+                        if (attribute == null)
                         {
                             continue;
                         }
+
+                        using var scope4 =
+                            _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod_ProcessAttribute
+                               .Auto();
 
                         if (attribute is ExecuteOnAwakeAttribute)
                         {

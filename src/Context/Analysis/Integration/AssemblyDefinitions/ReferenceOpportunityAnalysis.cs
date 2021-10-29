@@ -11,6 +11,8 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         {
         }
 
+        public override bool IsAutoCorrectable => true;
+
         public override string ShortName => "Ref. Opportunity";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>
@@ -40,18 +42,32 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
                     break;
                 }
 
-                if (!instance.Name.StartsWith("Appalachia"))
+                var validReferenceToAutoAdd = instance.Name.StartsWith("Appalachia");
+
+                var unityAutoAdds = new HashSet<string>
+                {
+                    "Unity.Addressables",
+                    "Unity.Collections",
+                    "Unity.Mathematics",
+                    "Unity.RenderPipelines.Core.Runtime",
+                    "Unity.ResourceManager",
+                    "Unity.Timeline",
+                };
+
+                validReferenceToAutoAdd |= unityAutoAdds.Contains(instance.Name);
+
+                if (!validReferenceToAutoAdd)
                 {
                     continue;
                 }
 
                 var instanceLevel = instance.GetAssemblyReferenceLevel();
                 var oportunityCutoffLevel = instance.GetOpportunityCutoffLevel();
-                
+
                 if (uniqueReferences.Contains(instance) || uniqueOpportunities.Contains(instance))
                 {
                     messages.Add(false, AnalysisMessagePart.Center(instance.Name, goodColor));
-                    
+
                     continue;
                 }
 
@@ -62,7 +78,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
                     var oppReff = new AssemblyDefinitionReference(instance);
 
                     target.opportunities.Add(oppReff);
-                    
+
                     messages.Add(true, AnalysisMessagePart.Center(instance.Name, IssueColor));
 
                     SetColor(group, target, oppReff, this);

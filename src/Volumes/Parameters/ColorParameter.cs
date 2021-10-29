@@ -6,7 +6,7 @@ namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]
-    public sealed class ColorParameter : VolumeParameter<Color>
+    public sealed class ColorParameter : AppaVolumeParameter<Color>
     {
         public ColorParameter(Color value, bool overrideState = false) : base(value, overrideState)
         {

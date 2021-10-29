@@ -117,6 +117,7 @@ namespace Appalachia.Core.Scriptables
         [EnableIf(nameof(badID))]
         [HorizontalGroup("Metadata/ID")]
         [ShowIf(nameof(ShowIDProperties))]
+        [LabelText("Update")]
         public static void UpdateAllIDs()
         {
             if (Application.isPlaying)
@@ -219,6 +220,7 @@ namespace Appalachia.Core.Scriptables
         [PropertyOrder(-99)]
         [HorizontalGroup("Metadata/ID")]
         [ShowIf(nameof(ShowIDProperties))]
+        [LabelText("Check")]
         public static void CheckForBadIDs()
         {
             if (Application.isPlaying)

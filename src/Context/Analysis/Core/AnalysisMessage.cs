@@ -8,7 +8,8 @@ namespace Appalachia.Core.Context.Analysis.Core
             this.parts = parts;
         }
 
-        public readonly bool isIssue;
         public readonly AnalysisMessagePart[] parts;
+
+        public readonly bool isIssue;
     }
 }

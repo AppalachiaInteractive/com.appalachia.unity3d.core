@@ -46,6 +46,7 @@ namespace Appalachia.Core.Layers
         public static LayerInfo Water => Layers._LAYERS[04];
     }
 
+    
     public static class Layers
     {
         private const string _PRF_PFX = nameof(Layers) + ".";

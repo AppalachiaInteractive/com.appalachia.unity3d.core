@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Appalachia.Core.Extensions;
+using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEditor;
@@ -11,7 +12,7 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Core.Behaviours
 {
     [Serializable]
-    public class AppalachiaMonoBehaviour : MonoBehaviour
+    public abstract class AppalachiaMonoBehaviour : MonoBehaviour
     {
         private Bounds ___renderingBounds;
         private Transform ___transform;
@@ -84,9 +85,24 @@ namespace Appalachia.Core.Behaviours
             EditorSceneManager.MarkSceneDirty(gameObject.scene);
         }
 
+        private bool? _showButtons;
+        private bool ShowButtons
+        {
+            get
+            {
+                if (!_showButtons.HasValue)
+                {
+                    _showButtons = !GetType().InheritsFrom(typeof(SingletonMonoBehaviour<>));                    
+                }
+
+                return _showButtons.Value;
+            }
+        }
+
         [Button(ButtonSizes.Small)]
         [HorizontalGroup("base_A")]
         [PropertyOrder(-1000)]
+        [ShowIf(nameof(ShowButtons))]
         private void SelectAllInScene()
         {
             var type = GetType();
@@ -99,6 +115,7 @@ namespace Appalachia.Core.Behaviours
         [Button(ButtonSizes.Small)]
         [HorizontalGroup("base_A")]
         [PropertyOrder(-1000)]
+        [ShowIf(nameof(ShowButtons))]
         private void SelectObjectsInScene()
         {
             var type = GetType();

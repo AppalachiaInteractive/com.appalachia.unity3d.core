@@ -1,7 +1,6 @@
 #region
 
 using System;
-using Appalachia.CI.Constants;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Preferences;
 using UnityEditor;
@@ -21,16 +20,16 @@ namespace Appalachia.Core.Collections
             _UI_DEBUG.WakeUp();
         }
 
-#region MENU_ENABLE_
-
-        private const string G_ = "Appalachia/Indexed Collections";
-        private const string MENU_BASE_ = "Tools/" + G_ + "/";
-        private const string MENU_UI_DEBUG_ = MENU_BASE_ + "Show All Fields";
+        #region MENU_ENABLE_
 
         [NonSerialized]
-        public static readonly PREF<bool> _UI_DEBUG = PREFS.REG(G_, "Show Debugging Fields", false);
+        public static readonly PREF<bool> _UI_DEBUG = PREFS.REG(
+            PKG.Prefs.Group,
+            "Show Debugging Fields",
+            false
+        );
 
-        [MenuItem(MENU_UI_DEBUG_, true)]
+        [MenuItem(PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields", true, PKG.Menu.Appalachia.Tools.Priority)]
         private static bool MENU_UI_DEBUG_VALIDATE()
         {
             if (!_UI_DEBUG.IsAwake)
@@ -38,11 +37,14 @@ namespace Appalachia.Core.Collections
                 return false;
             }
 
-            Menu.SetChecked(MENU_UI_DEBUG_, _UI_DEBUG.Value);
+            Menu.SetChecked(
+                PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields",
+                _UI_DEBUG.Value
+            );
             return true;
         }
 
-        [MenuItem(MENU_UI_DEBUG_, false, APPA_MENU.TOOLS.MESH_BURY.ENABLE)]
+        [MenuItem(PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields", false, PKG.Menu.Appalachia.Tools.Priority)]
         private static void MENU_UI_DEBUG()
         {
             if (!_UI_DEBUG.IsAwake)
@@ -53,7 +55,7 @@ namespace Appalachia.Core.Collections
             _UI_DEBUG.Value = !_UI_DEBUG.Value;
         }
 
-#endregion
+        #endregion
     }
 
 #endif

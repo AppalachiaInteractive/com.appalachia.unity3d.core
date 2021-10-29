@@ -11,6 +11,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
         }
 
+        public override bool IsAutoCorrectable => true;
         public override string ShortName => "Dep. Validity";
 
         public override RepositoryAnalysisGroup.Types Type =>
@@ -51,8 +52,6 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             bool useTestFiles,
             bool reimport)
         {
-            var changed = false;
-
             var npmPackage = target.npmPackage;
 
             var deps = target.dependencies.ToArray();
@@ -61,16 +60,12 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             {
                 if (!dependency.IsValid)
                 {
-                    changed = true;
                     target.dependencies.Remove(dependency);
                     npmPackage.Dependencies.Remove(dependency.name);
                 }
             }
 
-            if (changed)
-            {
-                target.SavePackageJson(useTestFiles, reimport);
-            }
+            target.SavePackageJson(useTestFiles, reimport);
         }
     }
 }

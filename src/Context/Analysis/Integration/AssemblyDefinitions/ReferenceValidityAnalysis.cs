@@ -10,6 +10,8 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         {
         }
 
+        public override bool IsAutoCorrectable => false;
+
         public override string ShortName => "Ref. Validity";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>

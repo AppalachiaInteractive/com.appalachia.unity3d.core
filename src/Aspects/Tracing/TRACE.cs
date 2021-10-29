@@ -25,7 +25,7 @@ namespace Appalachia.Core.Aspects.Tracing
 
         private const string ENABLED = MENU_BASE + "Enabled";
 
-        [MenuItem(ENABLED, true)]
+        [UnityEditor.MenuItem(ENABLED, true)]
         private static bool ENABLED_TOGGLE_V()
         {
             if (!_enabled.IsAwake)
@@ -37,7 +37,7 @@ namespace Appalachia.Core.Aspects.Tracing
             return true;
         }
 
-        [MenuItem(ENABLED, priority = -4000)]
+        [UnityEditor.MenuItem(ENABLED, priority = -4000)]
         private static void ENABLED_TOGGLE()
         {
             if (!_enabled.IsAwake)

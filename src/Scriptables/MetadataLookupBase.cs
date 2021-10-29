@@ -75,6 +75,18 @@ namespace Appalachia.Core.Scriptables
             {
                 defaultValue = all_internal.FirstOrDefault_NoAlloc();
             }
+
+#if UNITY_EDITOR
+            using (new AssetEditingScope())
+            {
+                RegisterNecessaryInstances();                
+            }
+#endif
+        }
+
+        protected virtual void RegisterNecessaryInstances()
+        {
+            
         }
     }
 }

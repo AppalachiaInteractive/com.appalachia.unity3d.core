@@ -11,6 +11,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Packages
         {
         }
 
+        public override bool IsAutoCorrectable => true;
         public override string ShortName => "Package Versions";
 
         public override PackageAnalysisGroup.Types Type => PackageAnalysisGroup.Types.PackageVersions;

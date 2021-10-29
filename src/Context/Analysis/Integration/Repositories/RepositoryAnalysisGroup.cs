@@ -29,12 +29,18 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         protected override void OnAnalyze()
         {
             uniqueDependencies = new Dictionary<string, RepositoryDependency>();
-            
+
             foreach (var dependency in Target.dependencies)
             {
-                uniqueDependencies.Add(dependency.name, dependency);
+                if (!uniqueDependencies.ContainsKey(dependency.name))
+                {
+                    uniqueDependencies.Add(dependency.name, dependency);
+                }
 
-                dependency.repository = RepositoryMetadata.FindByName(dependency.name);
+                if (dependency.repository == null)
+                {
+                    dependency.repository = RepositoryMetadata.FindByName(dependency.name);
+                }
             }
         }
 

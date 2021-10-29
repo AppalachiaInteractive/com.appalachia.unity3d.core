@@ -5,7 +5,7 @@ namespace Appalachia.Core.Preferences
     [DebuggerStepThrough]
     public abstract class PREF_BASE
     {
-        protected PREF_BASE(string key, string grouping, string label, int order)
+        protected PREF_BASE(string key, string grouping, string label, int order, string header)
         {
             _key = key;
             _grouping = grouping;

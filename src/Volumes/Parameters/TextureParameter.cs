@@ -6,7 +6,7 @@ namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]
-    public sealed class TextureParameter : VolumeParameter<Texture>
+    public sealed class TextureParameter : AppaVolumeParameter<Texture>
     {
         public TextureParameter(Texture value, bool overrideState = false) : base(value, overrideState)
         {

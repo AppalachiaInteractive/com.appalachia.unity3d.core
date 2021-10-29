@@ -6,7 +6,7 @@ namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]
-    public sealed class Vector2Parameter : VolumeParameter<Vector2>
+    public sealed class Vector2Parameter : AppaVolumeParameter<Vector2>
     {
         public Vector2Parameter(Vector2 value, bool overrideState = false) : base(value, overrideState)
         {

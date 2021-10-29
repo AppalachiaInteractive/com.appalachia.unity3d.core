@@ -10,6 +10,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         {
         }
 
+        public override bool IsAutoCorrectable => false;
         public override string ShortName => "Assembly Name";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>
@@ -26,7 +27,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
             }
 
             var isIssue = false;
-            
+
             if (target.AssemblyCurrent != target.assemblyIdeal)
             {
                 isIssue = true;

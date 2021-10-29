@@ -10,6 +10,8 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         {
         }
 
+        public override bool IsAutoCorrectable => true;
+
         public override string ShortName => "Ref. Duplicates";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>

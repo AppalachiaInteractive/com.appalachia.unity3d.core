@@ -1,3 +1,4 @@
+/*
 using System;
 
 namespace Appalachia.Core.Types.Enums
@@ -12,3 +13,4 @@ namespace Appalachia.Core.Types.Enums
         All = Depth | Color
     }
 }
+*/

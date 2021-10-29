@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Core;
 using Appalachia.Core.Context.Elements;
 using Appalachia.Core.Context.Elements.Progress;

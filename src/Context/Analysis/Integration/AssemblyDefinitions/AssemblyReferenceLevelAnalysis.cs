@@ -11,6 +11,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         {
         }
 
+        public override bool IsAutoCorrectable => false;
         public override string ShortName => "Ref. Level";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>
@@ -45,7 +46,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
                     reference.HasReferenceLevelIssue = true;
                     SetColor(group, target, reference, this);
                 }
-                
+
                 messages.Add(
                     isIssue,
                     AnalysisMessagePart.Paired(

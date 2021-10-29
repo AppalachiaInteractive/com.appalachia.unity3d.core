@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
-    public sealed class GradientParameter : VolumeParameter<Gradient>
+    public sealed class GradientParameter : AppaVolumeParameter<Gradient>
     {
         public GradientParameter(Gradient value, bool overrideState = false) : base(value, overrideState)
         {

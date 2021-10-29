@@ -10,6 +10,8 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         {
         }
 
+        public override bool IsAutoCorrectable => true;
+
         public override string ShortName => "Ref. Sorting";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>
@@ -20,6 +22,8 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
             AssemblyDefinitionMetadata target,
             List<AnalysisMessage> messages)
         {
+            target.SetReferences();
+            
             for (var i = 0; i < (target.references.Count - 1); i++)
             {
                 var ref1 = target.references[i];

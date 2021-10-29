@@ -17,16 +17,14 @@ namespace Appalachia.Core.Aspects.Profiling
 
 #if UNITY_EDITOR
 
-        public const string MENU_BASE = "Tools/Profiling/";
-
-        [MenuItem("Profiling/Enabled" + SHC.CTRL_ALT_SHFT_P, true)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Profiling/Enabled" + SHC.CTRL_ALT_SHFT_P, true)]
         private static bool Profiling_ToggleProfilerValidate()
         {
             Menu.SetChecked("Profiling/Enabled", ProfilerDriver.enabled);
             return true;
         }
 
-        [MenuItem("Profiling/Enabled" + SHC.CTRL_ALT_SHFT_P, priority = 0)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Profiling/Enabled" + SHC.CTRL_ALT_SHFT_P, priority = 0)]
         public static void Profiling_ToggleProfiler()
         {
             if (ProfilerDriver.enabled)
@@ -55,7 +53,7 @@ namespace Appalachia.Core.Aspects.Profiling
             //Profiler.enabled = false;
         }
 
-        [MenuItem("Profiling/Clear" + SHC.CTRL_ALT_SHFT_O, priority = 0)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Profiling/Clear" + SHC.CTRL_ALT_SHFT_O, priority = 0)]
         public static void Profiling_Clear()
         {
             ProfilerDriver.ClearAllFrames();

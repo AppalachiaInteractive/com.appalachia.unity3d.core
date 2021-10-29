@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Extensions.Helpers;
 using Appalachia.Core.Volumes.Components;
 using Unity.Profiling;
 using UnityEngine;
@@ -42,7 +41,7 @@ namespace Appalachia.Core.Volumes
         private static readonly ProfilerMarker _PRF_UpdateProperties =
             new(_PRF_PFX + nameof(UpdateProperties));
 
-        [Space(9)] public bool updateVolumes;
+        [Space(9)] public bool updateAppaVolumes;
         public LayerMask volumeLayerMask = 0;
         public Transform volumeTrigger;
 
@@ -60,17 +59,17 @@ namespace Appalachia.Core.Volumes
         {
             using (_PRF_UpdateProperties.Auto())
             {
-                var manager = VolumeManager.instance;
+                var manager = AppaVolumeManager.instance;
                 var stack = manager.stack;
 
-                if (updateVolumes && volumeTrigger && (volumeLayerMask != 0))
+                if (updateAppaVolumes && volumeTrigger && (volumeLayerMask != 0))
                 {
                     manager.Update(volumeTrigger, volumeLayerMask);
                 }
 
                 foreach (var type in componentTypes)
                 {
-                    var component = (PropertyVolumeComponentBase) stack.GetComponent(type);
+                    var component = (PropertyAppaVolumeComponentBase) stack.GetComponent(type);
 
                     if (component.active)
                     {

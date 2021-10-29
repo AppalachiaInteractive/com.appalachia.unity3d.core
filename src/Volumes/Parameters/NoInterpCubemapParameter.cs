@@ -6,7 +6,7 @@ namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]
-    public sealed class NoInterpCubemapParameter : VolumeParameter<Cubemap>
+    public sealed class NoInterpCubemapParameter : AppaVolumeParameter<Cubemap>
     {
         public NoInterpCubemapParameter(Cubemap value, bool overrideState = false) : base(
             value,

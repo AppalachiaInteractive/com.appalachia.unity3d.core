@@ -6,7 +6,7 @@ namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]
-    public sealed class NoInterpFloatRangeParameter : VolumeParameter<Vector2>
+    public sealed class NoInterpFloatRangeParameter : AppaVolumeParameter<Vector2>
     {
         public NoInterpFloatRangeParameter(Vector2 value, float min, float max, bool overrideState = false) :
             base(value, overrideState)

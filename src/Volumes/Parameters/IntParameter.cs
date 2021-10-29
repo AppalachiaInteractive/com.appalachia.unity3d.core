@@ -5,7 +5,7 @@ namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]
-    public class IntParameter : VolumeParameter<int>
+    public class IntParameter : AppaVolumeParameter<int>
     {
         public IntParameter(int value, bool overrideState = false) : base(value, overrideState)
         {

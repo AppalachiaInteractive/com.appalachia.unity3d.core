@@ -20,13 +20,6 @@ namespace Appalachia.Core.Scriptables
                                                                    ISingletonScriptableObject
         where T : SelfSavingSingletonScriptableObject<T>
     {
-        /*
-        [MenuItem(APPA_MENU.BASE_AppalachiaData + "Ping/" + nameof(T))]
-        private static void PingImportSettings()
-        {
-            EditorGUIUtility.PingObject(instance);
-        }
-        */
 
         private const string _PRF_PFX = nameof(SelfSavingSingletonScriptableObject<T>) + ".";
 
@@ -144,7 +137,12 @@ namespace Appalachia.Core.Scriptables
 
                 var inst = CreateInstance(typeof(T)) as T;
 
-                return CreateNew(name, inst);
+                var i = CreateNew(name, inst);
+
+                AssetDatabaseManager.SaveAssets();
+                AssetDatabaseManager.Refresh();
+
+                return i;
             }
         }
 

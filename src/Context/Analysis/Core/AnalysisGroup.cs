@@ -15,12 +15,11 @@ namespace Appalachia.Core.Context.Analysis.Core
         protected AnalysisGroup()
         {
             Initialize();
-            Analyze();
         }
 
-        [NonSerialized] private bool _initialized;
-        [NonSerialized] private bool _analyzed;
         [NonSerialized] private bool _analyzing;
+
+        [NonSerialized] private bool _initialized;
 
         private Dictionary<object, Color> _colors;
 
@@ -36,6 +35,8 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         public abstract Object Asset { get; }
         public bool AnyIssues => AllTypes.Any(a => a.HasIssues);
+        
+        public bool AnyAutoCorrectableIssues => AllTypes.Any(a => a.HasAutoCorrectableIssues);
 
         public IReadOnlyList<AnalysisType<TA, TT, TE>> AllTypes => _allTypes;
 
@@ -57,7 +58,15 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         public void Analyze()
         {
-            if (_analyzed || _analyzing)
+            if (_target == null)
+            {
+                throw new NotSupportedException("Target has not been set!");
+            }
+            
+            ClearAnalysisResults();
+            Initialize();
+            
+            if (_analyzing)
             {
                 return;
             }
@@ -80,7 +89,6 @@ namespace Appalachia.Core.Context.Analysis.Core
                 result.CheckIssue();
             }
 
-            _analyzed = true;
             _analyzing = false;
         }
 
@@ -151,8 +159,11 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         public void Reanalyze()
         {
-            ClearAnalysisResults();
-            Initialize();
+            if (_target == null)
+            {
+                throw new NotSupportedException("Target has not been set!");
+            }
+
             Analyze();
         }
 
@@ -181,23 +192,32 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         public void SetAnalysisTarget(TT target)
         {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+            
             _target = target;
         }
 
         protected void ClearAnalysisResults()
         {
+            if (_target == null)
+            {
+                throw new NotSupportedException("Target has not been set!");
+            }
+
             _initialized = false;
-            _analyzed = false;
             _analyzing = false;
 
             _colors?.Clear();
             _typeMetadata = null;
-            
+
             foreach (var analysisType in _allTypes)
             {
-                analysisType.ClearResults();
+                analysisType.ClearResults((TA) this, _target);
             }
-            
+
             _allTypes = null;
         }
 
@@ -217,7 +237,7 @@ namespace Appalachia.Core.Context.Analysis.Core
             }
 
             _initialized = true;
-            
+
             _allTypes = new List<AnalysisType<TA, TT, TE>>();
 
             RegisterAllAnalysis();
@@ -225,11 +245,16 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         public static TA Create(TT target)
         {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+            
             var instance = new TA();
             instance.SetAnalysisTarget(target);
 
             instance.Initialize();
-            
+
             return instance;
         }
     }

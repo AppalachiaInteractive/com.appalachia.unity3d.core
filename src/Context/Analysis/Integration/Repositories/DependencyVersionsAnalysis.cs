@@ -11,6 +11,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
         }
 
+        public override bool IsAutoCorrectable => true;
         public override string ShortName => "Dep. Versions";
 
         public override RepositoryAnalysisGroup.Types Type =>
@@ -24,11 +25,11 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             foreach (var dependency in target.dependencies)
             {
                 var isIssue = false;
-                
+
                 if (dependency.IsOutOfDate)
                 {
                     isIssue = true;
-                    
+
                     SetColor(group, target, dependency, this);
                 }
 
@@ -51,8 +52,6 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             bool useTestFiles,
             bool reimport)
         {
-            var changed = false;
-
             var npmPackage = target.npmPackage;
 
             foreach (var dependency in target.dependencies)
@@ -72,10 +71,10 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
                 {
                     throw new NotSupportedException($"{dependency.name} has not repository set!");
                 }
-                
+
                 var packageName = refRepo.PackageName;
                 var packageVersion = refRepo.PackageVersion;
-                
+
                 npmPackage.Dependencies[packageName] = packageVersion;
             }
 

@@ -24,7 +24,8 @@ namespace Appalachia.Core.Preferences
             T high,
             int order,
             bool reset,
-            IEditorPreferenceAPI<T> api) : base(key, grouping, label, order)
+            IEditorPreferenceAPI<T> api,
+            string header) : base(key, grouping, label, order, header)
         {
             _defaultValue = defaultValue;
             _low = low;

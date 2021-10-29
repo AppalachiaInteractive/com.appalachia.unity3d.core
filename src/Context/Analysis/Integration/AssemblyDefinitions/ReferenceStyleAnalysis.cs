@@ -11,6 +11,8 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         {
         }
 
+        public override bool IsAutoCorrectable => false;
+
         public override string ShortName => "Ref. Style";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>
@@ -88,8 +90,8 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
                     }
                 }
 
-                reference.guid = reference.assembly?.guid;
-                target.referenceStrings.Add(reference.assembly?.guid);
+                reference.guid = reference.assembly?.Id;
+                target.referenceStrings.Add(reference.assembly?.Id);
             }
 
             WriteReferences(target);

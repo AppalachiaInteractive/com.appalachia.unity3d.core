@@ -8,7 +8,7 @@ namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]
-    public class ObjectParameter<T> : VolumeParameter<T>
+    public class ObjectParameter<T> : AppaVolumeParameter<T>
     {
         public ObjectParameter(T value)
         {
@@ -18,7 +18,7 @@ namespace Appalachia.Core.Volumes.Parameters
             this.value = value;
         }
 
-        internal ReadOnlyCollection<VolumeParameter> parameters { get; private set; }
+        internal ReadOnlyCollection<AppaVolumeParameter> parameters { get; private set; }
 
         // Force override state to true for container objects
         public override bool overrideState
@@ -42,18 +42,18 @@ namespace Appalachia.Core.Volumes.Parameters
                     return;
                 }
 
-                // Automatically grab all fields of type VolumeParameter contained in this instance
+                // Automatically grab all fields of type AppaVolumeParameter contained in this instance
                 parameters = m_Value.GetType()
                                     .GetFields_CACHE(ReflectionExtensions.PublicInstance)
-                                    .Where(t => t.FieldType.IsSubclassOf(typeof(VolumeParameter)))
+                                    .Where(t => t.FieldType.IsSubclassOf(typeof(AppaVolumeParameter)))
                                     .OrderBy(t => t.MetadataToken) // Guaranteed order
-                                    .Select(t => (VolumeParameter) t.GetValue(m_Value))
+                                    .Select(t => (AppaVolumeParameter) t.GetValue(m_Value))
                                     .ToList()
                                     .AsReadOnly();
             }
         }
 
-        internal override void Interp(VolumeParameter from, VolumeParameter to, float t)
+        internal override void Interp(AppaVolumeParameter from, AppaVolumeParameter to, float t)
         {
             if (m_Value == null)
             {

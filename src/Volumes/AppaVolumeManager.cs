@@ -1,0 +1,406 @@
+#region
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Appalachia.Core.Volumes.Components;
+using Appalachia.Utility.Reflection.Extensions;
+using UnityEngine;
+using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
+
+#endregion
+
+namespace Appalachia.Core.Volumes
+{
+#region
+
+#endregion
+
+    public sealed class AppaVolumeManager
+    {
+        // Max amount of layers available in Unity
+        private const int k_MaxLayerCount = 32;
+
+        //>>> System.Lazy<T> is broken in Unity (legacy runtime) so we'll have to do it ourselves :|
+        private static readonly AppaVolumeManager s_Instance = new();
+
+        public static AppaVolumeManager instance => s_Instance;
+
+        // Explicit static constructor to tell the C# compiler not to mark type as beforefieldinit
+        static AppaVolumeManager()
+        {
+        }
+
+        private AppaVolumeManager()
+        {
+            m_SortedAppaVolumes = new Dictionary<int, List<AppaVolume>>();
+            m_AppaVolumes = new List<AppaVolume>();
+            m_SortNeeded = new Dictionary<int, bool>();
+            m_TempColliders = new List<Collider>(8);
+            m_ComponentsDefaultState = new List<AppaVolumeComponent>();
+
+            ReloadBaseTypes();
+
+            stack = CreateStack();
+        }
+
+        // Keep track of sorting states for layer masks
+        private readonly Dictionary<int, bool> m_SortNeeded;
+
+        // Cached lists of all volumes (sorted by priority) by layer mask
+        private readonly Dictionary<int, List<AppaVolume>> m_SortedAppaVolumes;
+
+        // Recycled list used for volume traversal
+        private readonly List<Collider> m_TempColliders;
+
+        // Holds all the registered volumes
+        private readonly List<AppaVolume> m_AppaVolumes;
+
+        // Internal list of default state for each component type - this is used to reset component
+        // states on update instead of having to implement a Reset method on all components (which
+        // would be error-prone)
+        private readonly List<AppaVolumeComponent> m_ComponentsDefaultState;
+
+        //<<<
+
+        // Internal stack
+        public AppaVolumeStack stack { get; }
+
+        // Current list of tracked component types
+        public IEnumerable<Type> baseComponentTypes { get; private set; }
+
+        public bool IsComponentActiveInMask<T>(LayerMask layerMask)
+            where T : AppaVolumeComponent
+        {
+            var mask = layerMask.value;
+
+            foreach (var kvp in m_SortedAppaVolumes)
+            {
+                if ((kvp.Key & mask) == 0)
+                {
+                    continue;
+                }
+
+                foreach (var volume in kvp.Value)
+                {
+                    if (!volume.enabled || (volume.profileRef == null))
+                    {
+                        continue;
+                    }
+
+                    T component;
+                    if (volume.profileRef.TryGet(out component) && component.active)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+//custom-begin: malte: debugging/visualizing volumes
+        public List<AppaVolume> GrabAppaVolumes(LayerMask mask)
+
+//custom-end
+        {
+            List<AppaVolume> list;
+
+            if (!m_SortedAppaVolumes.TryGetValue(mask, out list))
+            {
+                // New layer mask detected, create a new list and cache all the volumes that belong
+                // to this mask in it
+                list = new List<AppaVolume>();
+
+                foreach (var volume in m_AppaVolumes)
+                {
+                    if ((mask & (1 << volume.gameObject.layer)) == 0)
+                    {
+                        continue;
+                    }
+
+                    list.Add(volume);
+                    m_SortNeeded[mask] = true;
+                }
+
+                m_SortedAppaVolumes.Add(mask, list);
+            }
+
+            // Check sorting state
+            bool sortNeeded;
+            if (m_SortNeeded.TryGetValue(mask, out sortNeeded) && sortNeeded)
+            {
+                m_SortNeeded[mask] = false;
+                SortByPriority(list);
+            }
+
+            return list;
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public void CheckBaseTypes()
+        {
+            // Editor specific hack to work around serialization doing funky things when exiting
+            if ((m_ComponentsDefaultState == null) ||
+                ((m_ComponentsDefaultState.Count > 0) && (m_ComponentsDefaultState[0] == null)))
+            {
+                ReloadBaseTypes();
+            }
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public void CheckStack(AppaVolumeStack s)
+        {
+            // The editor doesn't reload the domain when exiting play mode but still kills every
+            // object created while in play mode, like stacks' component states
+            var components = s.components;
+
+            if (components == null)
+            {
+                s.Reload(baseComponentTypes);
+                return;
+            }
+
+            foreach (var kvp in components)
+            {
+                if ((kvp.Key == null) || (kvp.Value == null))
+                {
+                    s.Reload(baseComponentTypes);
+                    return;
+                }
+            }
+        }
+
+        public void Register(AppaVolume volume, int layer)
+        {
+            m_AppaVolumes.Add(volume);
+
+            // Look for existing cached layer masks and add it there if needed
+            foreach (var kvp in m_SortedAppaVolumes)
+            {
+                if ((kvp.Key & (1 << layer)) != 0)
+                {
+                    kvp.Value.Add(volume);
+                }
+            }
+
+            SetLayerDirty(layer);
+        }
+
+        public void Unregister(AppaVolume volume, int layer)
+        {
+            m_AppaVolumes.Remove(volume);
+
+            foreach (var kvp in m_SortedAppaVolumes)
+            {
+                // Skip layer masks this volume doesn't belong to
+                if ((kvp.Key & (1 << layer)) == 0)
+                {
+                    continue;
+                }
+
+                kvp.Value.Remove(volume);
+            }
+        }
+
+        // Update the global state - should be called once per frame per transform/layer mask combo
+        // in the update loop before rendering
+        public void Update(Transform trigger, LayerMask layerMask)
+        {
+            Update(stack, trigger, layerMask);
+        }
+
+        // Update a specific stack - can be used to manage your own stack and store it for later use
+        public void Update(AppaVolumeStack s, Transform trigger, LayerMask layerMask)
+        {
+            Assert.IsNotNull(s);
+
+            CheckBaseTypes();
+            CheckStack(s);
+
+            // Start by resetting the global state to default values
+            ReplaceData(s, m_ComponentsDefaultState);
+
+            var onlyGlobal = trigger == null;
+            var triggerPos = onlyGlobal ? Vector3.zero : trigger.position;
+
+            // Sort the cached volume list(s) for the given layer mask if needed and return it
+            var volumes = GrabAppaVolumes(layerMask);
+
+            // Traverse all volumes
+            foreach (var volume in volumes)
+            {
+                // Skip disabled volumes and volumes without any data or weight
+                if (!volume.enabled || (volume.profileRef == null) || (volume.weight <= 0f))
+                {
+                    continue;
+                }
+
+                // Global volumes always have influence
+                if (volume.isGlobal)
+                {
+                    OverrideData(s, volume.profileRef.components, Mathf.Clamp01(volume.weight));
+                    continue;
+                }
+
+                if (onlyGlobal)
+                {
+                    continue;
+                }
+
+                // If volume isn't global and has no collider, skip it as it's useless
+                var colliders = m_TempColliders;
+                volume.GetComponents(colliders);
+                if (colliders.Count == 0)
+                {
+                    continue;
+                }
+
+                // Find closest distance to volume, 0 means it's inside it
+                var closestDistanceSqr = float.PositiveInfinity;
+
+                foreach (var collider in colliders)
+                {
+                    if (!collider.enabled)
+                    {
+                        continue;
+                    }
+
+                    var closestPoint = collider.ClosestPoint(triggerPos);
+                    var d = (closestPoint - triggerPos).sqrMagnitude;
+
+                    if (d < closestDistanceSqr)
+                    {
+                        closestDistanceSqr = d;
+                    }
+                }
+
+                colliders.Clear();
+                var blendDistSqr = volume.blendDistance * volume.blendDistance;
+
+                // AppaVolume has no influence, ignore it
+                // Note: AppaVolume doesn't do anything when `closestDistanceSqr = blendDistSqr` but we
+                //       can't use a >= comparison as blendDistSqr could be set to 0 in which case
+                //       volume would have total influence
+                if (closestDistanceSqr > blendDistSqr)
+                {
+                    continue;
+                }
+
+                // AppaVolume has influence
+                var interpFactor = 1f;
+
+                if (blendDistSqr > 0f)
+
+//custom-begin: malte: smoothstep blend
+                {
+                    interpFactor = Mathf.SmoothStep(1f, 0f, closestDistanceSqr / blendDistSqr);
+                }
+
+                //custom-end
+
+                // No need to clamp01 the interpolation factor as it'll always be in [0;1[ range
+                OverrideData(s, volume.profileRef.components, interpFactor * Mathf.Clamp01(volume.weight));
+            }
+        }
+
+        public AppaVolumeStack CreateStack()
+        {
+            var s = new AppaVolumeStack();
+            s.Reload(baseComponentTypes);
+            return s;
+        }
+
+        internal void SetLayerDirty(int layer)
+        {
+            Assert.IsTrue((layer >= 0) && (layer <= k_MaxLayerCount), "Invalid layer bit");
+
+            foreach (var kvp in m_SortedAppaVolumes)
+            {
+                var mask = kvp.Key;
+
+                if ((mask & (1 << layer)) != 0)
+                {
+                    m_SortNeeded[mask] = true;
+                }
+            }
+        }
+
+        internal void UpdateAppaVolumeLayer(AppaVolume volume, int prevLayer, int newLayer)
+        {
+            Assert.IsTrue((prevLayer >= 0) && (prevLayer <= k_MaxLayerCount), "Invalid layer bit");
+            Unregister(volume, prevLayer);
+            Register(volume, newLayer);
+        }
+
+        // Go through all listed components and lerp overriden values in the global state
+        private void OverrideData(AppaVolumeStack s, List<AppaVolumeComponent> components, float interpFactor)
+        {
+            foreach (var component in components)
+            {
+                if (!component.active)
+                {
+                    continue;
+                }
+
+                var state = s.GetComponent(component.GetType());
+                component.Override(state, interpFactor);
+            }
+        }
+
+        // This will be called only once at runtime and everytime script reload kicks-in in the
+        // editor as we need to keep track of any compatible component in the project
+        private void ReloadBaseTypes()
+        {
+            m_ComponentsDefaultState.Clear();
+
+            // Grab all the component types we can find
+            baseComponentTypes = ReflectionExtensions.GetAllConcreteInheritors<AppaVolumeComponent>();
+
+            // Keep an instance of each type to be used in a virtual lowest priority global volume
+            // so that we have a default state to fallback to when exiting volumes
+            foreach (var type in baseComponentTypes)
+            {
+                var inst = (AppaVolumeComponent) ScriptableObject.CreateInstance(type);
+                m_ComponentsDefaultState.Add(inst);
+            }
+        }
+
+        // Faster version of OverrideData to force replace values in the global state
+        private void ReplaceData(AppaVolumeStack s, List<AppaVolumeComponent> components)
+        {
+            foreach (var component in components)
+            {
+                var target = s.GetComponent(component.GetType());
+                var count = component.parameters.Count;
+
+                for (var i = 0; i < count; i++)
+                {
+                    target.parameters[i].SetValue(component.parameters[i]);
+                }
+            }
+        }
+
+        // Stable insertion sort. Faster than List<T>.Sort() for our needs.
+        private static void SortByPriority(List<AppaVolume> volumes)
+        {
+            Assert.IsNotNull(volumes, "Trying to sort volumes of non-initialized layer");
+
+            for (var i = 1; i < volumes.Count; i++)
+            {
+                var temp = volumes[i];
+                var j = i - 1;
+
+                // Sort order is ascending
+                while ((j >= 0) && (volumes[j].priority > temp.priority))
+                {
+                    volumes[j + 1] = volumes[j];
+                    j--;
+                }
+
+                volumes[j + 1] = temp;
+            }
+        }
+    }
+}

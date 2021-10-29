@@ -6,7 +6,7 @@ namespace Appalachia.Core.Volumes.Parameters
 {
     [Serializable]
     [DebuggerDisplay(k_DebuggerDisplay)]
-    public sealed class NoInterpClampedIntParameter : VolumeParameter<int>
+    public sealed class NoInterpClampedIntParameter : AppaVolumeParameter<int>
     {
         public NoInterpClampedIntParameter(int value, int min, int max, bool overrideState = false) : base(
             value,
