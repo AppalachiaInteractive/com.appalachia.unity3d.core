@@ -8,7 +8,7 @@ namespace Appalachia.Core.Comparisons
 {
     internal static partial class PKG
     {
-        public const int Priority = -401000;
+        public const int Priority = -483000;
         public const string Name = "Comparisons";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";
