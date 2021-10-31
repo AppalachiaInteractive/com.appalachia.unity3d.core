@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Volumes
 {
-    public class PropertyInspector : AppalachiaMonoBehaviour
+    public class PropertyInspector : AppalachiaBehaviour
     {
         public LayerMask layerMask;
     }

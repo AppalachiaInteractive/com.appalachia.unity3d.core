@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Core.Volumes
 {
     [ExecuteAlways]
-    public class AppaVolume : AppalachiaMonoBehaviour
+    public class AppaVolume : AppalachiaBehaviour
     {
         private const string _PRF_PFX = nameof(AppaVolume) + ".";
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");

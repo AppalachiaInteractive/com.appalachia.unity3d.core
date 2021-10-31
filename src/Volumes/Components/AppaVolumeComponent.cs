@@ -14,7 +14,7 @@ using Unity.Profiling;
 namespace Appalachia.Core.Volumes.Components
 {
     [Serializable]
-    public class AppaVolumeComponent : AppalachiaScriptableObject<AppaVolumeComponent>
+    public class AppaVolumeComponent : AppalachiaObject<AppaVolumeComponent>
     {
         private const string _PRF_PFX = nameof(AppaVolumeComponent) + ".";
 

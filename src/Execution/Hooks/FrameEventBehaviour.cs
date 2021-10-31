@@ -9,14 +9,12 @@ using UnityEngine;
 namespace Appalachia.Core.Execution.Hooks
 {
     [ExecuteAlways]
-    public abstract class FrameEventBehaviour<T> : SingletonMonoBehaviour<FrameEventBehaviour<T>>
+    public abstract class FrameEventBehaviour<T> : SingletonAppalachiaBehaviour<FrameEventBehaviour<T>>
         where T : FrameEventBehaviour<T>
     {
-#region Profiling
+        #region Profiling And Tracing Markers
 
         private const string _PRF_PFX = nameof(FrameEventBehaviour<T>) + ".";
-
-#endregion
 
         // ReSharper disable once StaticMemberInGenericType
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
@@ -25,13 +23,16 @@ namespace Appalachia.Core.Execution.Hooks
         private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
         private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
         private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + nameof(Update));
-
         private static readonly ProfilerMarker _PRF_FixedUpdate = new(_PRF_PFX + nameof(FixedUpdate));
 
         private static readonly ProfilerMarker _PRF_OnApplicationQuit =
             new(_PRF_PFX + nameof(OnApplicationQuit));
 
         private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
+
+        #endregion
+        
+        private static FrameEventDelegates<T> _eventDelegates;
 
         public static FrameEventDelegates<T> EventDelegates
         {
@@ -46,10 +47,6 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        private static FrameEventDelegates<T> _eventDelegates;
-
-        protected abstract string GetReadableName();
-
         protected virtual void Awake()
         {
             using (_PRF_Awake.Auto())
@@ -60,86 +57,6 @@ namespace Appalachia.Core.Execution.Hooks
                 }
 
                 EventDelegates.InvokeAwake();
-            }
-        }
-
-        protected virtual void FixedUpdate()
-        {
-            using (_PRF_FixedUpdate.Auto())
-            {
-                if (FrameEventSettings._ENABLE_DISABLE.v)
-                {
-                    Debug.Log($"[{GetReadableName()}]: [FixedUpdate]");
-                }
-
-                EventDelegates.InvokeFixedUpdate();
-            }
-        }
-
-        protected virtual void OnApplicationQuit()
-        {
-            using (_PRF_OnApplicationQuit.Auto())
-            {
-                if (FrameEventSettings._ENABLE_QUIT.v)
-                {
-                    Debug.Log($"[{GetReadableName()}]: [OnApplicationQuit]");
-                }
-
-                EventDelegates.InvokeOnApplicationQuit();
-            }
-        }
-
-        protected virtual void OnDestroy()
-        {
-            using (_PRF_OnDestroy.Auto())
-            {
-                if (FrameEventSettings._ENABLE_DESTROY.v)
-                {
-                    Debug.Log($"[{GetReadableName()}]: [OnDestroy]");
-                }
-
-                EventDelegates.InvokeOnDestroy();
-            }
-        }
-
-        protected virtual void OnDisable()
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                if (FrameEventSettings._ENABLE_DISABLE.v)
-                {
-                    Debug.Log($"[{GetReadableName()}]: [OnDisable]");
-                }
-
-                EventDelegates.InvokeOnDisable();
-            }
-        }
-
-        protected virtual void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                StaticApplicationState.HasOnEnableExecuted = true;
-
-                if (FrameEventSettings._ENABLE_ENABLE.v)
-                {
-                    Debug.Log($"[{GetReadableName()}]: [OnEnable]");
-                }
-
-                EventDelegates.InvokeOnEnable();
-            }
-        }
-
-        protected virtual void OnPreCull()
-        {
-            using (_PRF_FixedUpdate.Auto())
-            {
-                if (FrameEventSettings._ENABLE_DISABLE.v)
-                {
-                    Debug.Log($"[{GetReadableName()}]: [OnPreCull]");
-                }
-
-                EventDelegates.InvokeOnPreCull(Camera.current);
             }
         }
 
@@ -168,5 +85,87 @@ namespace Appalachia.Core.Execution.Hooks
                 EventDelegates.InvokeUpdate();
             }
         }
+
+        protected virtual void FixedUpdate()
+        {
+            using (_PRF_FixedUpdate.Auto())
+            {
+                if (FrameEventSettings._ENABLE_DISABLE.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [FixedUpdate]");
+                }
+
+                EventDelegates.InvokeFixedUpdate();
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                StaticApplicationState.HasOnEnableExecuted = true;
+
+                if (FrameEventSettings._ENABLE_ENABLE.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [OnEnable]");
+                }
+
+                EventDelegates.InvokeOnEnable();
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                if (FrameEventSettings._ENABLE_DISABLE.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [OnDisable]");
+                }
+
+                EventDelegates.InvokeOnDisable();
+            }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            using (_PRF_OnDestroy.Auto())
+            {
+                if (FrameEventSettings._ENABLE_DESTROY.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [OnDestroy]");
+                }
+
+                EventDelegates.InvokeOnDestroy();
+            }
+        }
+
+        protected virtual void OnApplicationQuit()
+        {
+            using (_PRF_OnApplicationQuit.Auto())
+            {
+                if (FrameEventSettings._ENABLE_QUIT.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [OnApplicationQuit]");
+                }
+
+                EventDelegates.InvokeOnApplicationQuit();
+            }
+        }
+
+        protected virtual void OnPreCull()
+        {
+            using (_PRF_FixedUpdate.Auto())
+            {
+                if (FrameEventSettings._ENABLE_DISABLE.v)
+                {
+                    Debug.Log($"[{GetReadableName()}]: [OnPreCull]");
+                }
+
+                EventDelegates.InvokeOnPreCull(Camera.current);
+            }
+        }
+
+        protected abstract string GetReadableName();
     }
 }

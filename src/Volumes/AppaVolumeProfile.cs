@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Appalachia.Core.Scriptables;
 using Appalachia.Core.Volumes.Components;
 using Unity.Profiling;
 using UnityEngine;
@@ -11,8 +12,7 @@ using UnityEngine.Assertions;
 
 namespace Appalachia.Core.Volumes
 {
-    [CreateAssetMenu(menuName = "Internal/AppaVolumes/AppaVolumeProfile", order = 0)]
-    public sealed class AppaVolumeProfile : ScriptableObject
+    public sealed class AppaVolumeProfile : AppalachiaObject<AppaVolumeProfile>
     {
         private const string _PRF_PFX = nameof(AppaVolumeProfile) + ".";
 
@@ -217,6 +217,12 @@ namespace Appalachia.Core.Volumes
                 // frame) before the recompilation step.
                 components.RemoveAll(x => x == null);
             }
+        }
+
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(AppaVolumeProfile), priority = PKG.Menu.Assets.Priority)]
+        public static void CreateAsset()
+        {
+            CreateNew();
         }
     }
 }

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
-using Appalachia.Core.Extensions.Helpers;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 using UnityEditor;
@@ -16,6 +15,10 @@ namespace Appalachia.Core.Extensions
 {
     public static class GameObjectExtensions
     {
+        #region Profiling And Tracing Markers
+
+        private const string _PRF_PFX = nameof(GameObjectExtensions) + ".";
+
         private static readonly ProfilerMarker _PRF_GameObjectExtensions_DestroySafely =
             new("GameObjectExtensions.DestroySafely");
 
@@ -37,7 +40,15 @@ namespace Appalachia.Core.Extensions
         private static readonly ProfilerMarker _PRF_GameObjectExtensions_RecoverLayersRecursive =
             new("GameObjectExtensions.RecoverLayersRecursive");
 
+        private static readonly ProfilerMarker _PRF_GetOrCreateComponent =
+            new ProfilerMarker(_PRF_PFX + nameof(GetOrCreateComponent));
+
         private static Dictionary<int, string> _assetGUIDLookup = new();
+
+        private static readonly ProfilerMarker _PRF_GetAssetGUID =
+            new ProfilerMarker(_PRF_PFX + nameof(GetAssetGUID));
+
+        #endregion
 
         public static Dictionary<Transform, int> MoveToLayerRecursiveRecoverable(
             this GameObject go,
@@ -128,26 +139,29 @@ namespace Appalachia.Core.Extensions
 
         public static string GetAssetGUID(this GameObject go)
         {
-            if (_assetGUIDLookup == null)
+            using (_PRF_GetAssetGUID.Auto())
             {
-                _assetGUIDLookup = new Dictionary<int, string>();
+                if (_assetGUIDLookup == null)
+                {
+                    _assetGUIDLookup = new Dictionary<int, string>();
+                }
+
+                var hashCode = go.GetHashCode();
+
+                if (_assetGUIDLookup.ContainsKey(hashCode))
+                {
+                    return _assetGUIDLookup[hashCode];
+                }
+
+                if (AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(go, out var assetGUID, out var _))
+                {
+                    _assetGUIDLookup.Add(hashCode, assetGUID);
+
+                    return assetGUID;
+                }
+
+                return null;
             }
-
-            var hashCode = go.GetHashCode();
-
-            if (_assetGUIDLookup.ContainsKey(hashCode))
-            {
-                return _assetGUIDLookup[hashCode];
-            }
-
-            if (AssetDatabaseManager.TryGetGUIDAndLocalFileIdentifier(go, out var assetGUID, out var _))
-            {
-                _assetGUIDLookup.Add(hashCode, assetGUID);
-
-                return assetGUID;
-            }
-
-            return null;
         }
 
         public static T GetComponentInImmediateChildren<T>(this GameObject go)
@@ -208,7 +222,7 @@ namespace Appalachia.Core.Extensions
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogError($"Exception while destroying object.", o);
+                            Debug.LogError("Exception while destroying object.", o);
                             Debug.LogException(ex, o);
                         }
                     }
@@ -233,7 +247,10 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError( $"Not able to dispose of [{typeof(T).GetReadableName()} before destroying.", o);
+                    Debug.LogError(
+                        $"Not able to dispose of [{typeof(T).GetReadableName()} before destroying.",
+                        o
+                    );
                     Debug.LogException(ex, o);
                 }
                 finally
@@ -253,7 +270,7 @@ namespace Appalachia.Core.Extensions
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogError($"Exception while destroying object", o);
+                            Debug.LogError("Exception while destroying object", o);
                             Debug.LogException(ex, o);
                         }
                     }
@@ -281,7 +298,7 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Exception while destroying GameObject.", o);
+                    Debug.LogError("Exception while destroying GameObject.", o);
                     Debug.LogException(ex, o);
                 }
             }
@@ -310,8 +327,42 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Exception while destroying transform.", o);
+                    Debug.LogError("Exception while destroying transform.", o);
                     Debug.LogException(ex, o);
+                }
+            }
+        }
+
+        public static void GetOrCreateComponent<T>(this Component obj, ref T component)
+            where T : Component
+        {
+            using (_PRF_GetOrCreateComponent.Auto())
+            {
+                if (component == null)
+                {
+                    component = obj.gameObject.GetComponent<T>();
+
+                    if (component == null)
+                    {
+                        component = obj.gameObject.AddComponent<T>();
+                    }
+                }
+            }
+        }
+
+        public static void GetOrCreateComponent<T>(this GameObject obj, ref T component)
+            where T : Component
+        {
+            using (_PRF_GetOrCreateComponent.Auto())
+            {
+                if (component == null)
+                {
+                    component = obj.GetComponent<T>();
+
+                    if (component == null)
+                    {
+                        component = obj.AddComponent<T>();
+                    }
                 }
             }
         }

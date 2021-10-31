@@ -177,8 +177,8 @@ namespace Appalachia.Core.Assets
         ///         either a try..catch block, or a try..finally block as needed.
         ///     </para>
         /// </summary>
-        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + "Start Asset Editing", false, PKG.Menu.Assets.Priority)]
-        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Assets/Start Asset Editing", false, PKG.Menu.Assets.Priority)]
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + "Start Asset Editing", priority = PKG.Menu.Assets.Priority)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Assets/Start Asset Editing", priority = PKG.Menu.Assets.Priority)]
         public static void StartAssetEditing()
         {
             using (_PRF_StartAssetEditing.Auto())
@@ -189,8 +189,8 @@ namespace Appalachia.Core.Assets
             }
         }
 
-        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + "Stop Asset Editing", false, PKG.Menu.Assets.Priority)]
-        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Assets/Stop Asset Editing", false, PKG.Menu.Assets.Priority)]
+        [UnityEditor.MenuItem(PKG.Menu.Assets.Base + "Stop Asset Editing", priority = PKG.Menu.Assets.Priority)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Assets/Stop Asset Editing", priority = PKG.Menu.Assets.Priority)]
         public static void StopAssetEditing()
         {
             using (_PRF_StopAssetEditing.Auto())

@@ -30,7 +30,8 @@
     "com.unity.addressables": "1.19.9",
     "com.unity.editorcoroutines": "1.0.0",
     "com.unity.render-pipelines.core": "12.1.0",
-    "com.unity.timeline": "1.6.2"
+    "com.unity.timeline": "1.6.2",
+    "com.unity.inputsystem": "1.1.1"
   },
   "scripts": {
     "preversion": "bash ~/com.appalachia/appa/appa package unity3d preversion",

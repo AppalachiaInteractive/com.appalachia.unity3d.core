@@ -9,7 +9,7 @@ using Unity.Profiling;
 
 namespace Appalachia.Core.Overrides
 {
-    public abstract class Restorable : InternalBase<Restorable>, IDisposable
+    public abstract class Restorable : AppalachiaBase<Restorable>, IDisposable
     {
         private static readonly ProfilerMarker _PRF_Restorable_CombineWith = new("Restorable.CombineWith");
 

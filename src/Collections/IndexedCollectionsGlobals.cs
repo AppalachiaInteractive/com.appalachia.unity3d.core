@@ -44,7 +44,7 @@ namespace Appalachia.Core.Collections
             return true;
         }
 
-        [MenuItem(PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields", false, PKG.Menu.Appalachia.Tools.Priority)]
+        [MenuItem(PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields", priority = PKG.Menu.Appalachia.Tools.Priority)]
         private static void MENU_UI_DEBUG()
         {
             if (!_UI_DEBUG.IsAwake)

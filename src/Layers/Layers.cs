@@ -1,123 +1,55 @@
 #region
 
 using System;
+using System.Collections.Generic;
+using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Unity.Profiling;
+using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+
+#endif
 
 #endregion
 
 namespace Appalachia.Core.Layers
 {
-    public static class LAYERS
-    {
-        public static LayerInfo _03 => Layers._LAYERS[03];
-        public static LayerInfo _06 => Layers._LAYERS[06];
-        public static LayerInfo _07 => Layers._LAYERS[07];
-        public static LayerInfo _11 => Layers._LAYERS[11];
-        public static LayerInfo _12 => Layers._LAYERS[12];
-        public static LayerInfo _13 => Layers._LAYERS[13];
-        public static LayerInfo _14 => Layers._LAYERS[14];
-        public static LayerInfo _17 => Layers._LAYERS[17];
-        public static LayerInfo _18 => Layers._LAYERS[18];
-        public static LayerInfo _19 => Layers._LAYERS[19];
-        public static LayerInfo _20 => Layers._LAYERS[20];
-        public static LayerInfo _21 => Layers._LAYERS[21];
-        public static LayerInfo _24 => Layers._LAYERS[24];
-        public static LayerInfo _25 => Layers._LAYERS[25];
-        public static LayerInfo _26 => Layers._LAYERS[26];
-        public static LayerInfo AreaVolume => Layers._LAYERS[10];
-        public static LayerInfo Default => Layers._LAYERS[00];
-        public static LayerInfo Environment => Layers._LAYERS[16];
-        public static LayerInfo IgnoreRaycast => Layers._LAYERS[02];
-        public static LayerInfo Interaction => Layers._LAYERS[28];
-#if UNITY_EDITOR
-        public static LayerInfo LOCKED_EDITOR_ONLY => Layers._LAYERS[31];
-#endif
-        public static LayerInfo OcclusionBake => Layers._LAYERS[27];
-        public static LayerInfo Player => Layers._LAYERS[08];
-        public static LayerInfo PostProcessing => Layers._LAYERS[09];
-        public static LayerInfo Scatter => Layers._LAYERS[23];
-        public static LayerInfo Terrain => Layers._LAYERS[15];
-        public static LayerInfo TouchBend => Layers._LAYERS[29];
-        public static LayerInfo TransparentFX => Layers._LAYERS[01];
-        public static LayerInfo TransparentFX_Generation => Layers._LAYERS[30];
-        public static LayerInfo UI => Layers._LAYERS[05];
-        public static LayerInfo Undergrowth => Layers._LAYERS[22];
-        public static LayerInfo Water => Layers._LAYERS[04];
-    }
-
-    
     public static class Layers
     {
-        private const string _PRF_PFX = nameof(Layers) + ".";
+        #region Profiling And Tracing Markers
 
-        private static LayerInfo[] __layers;
+        private const string _PRF_PFX = nameof(Layers) + ".";
 
         private static readonly ProfilerMarker _PRF_InitializeLayers =
             new(_PRF_PFX + nameof(InitializeLayers));
 
         private static readonly ProfilerMarker _PRF_GetMask = new(_PRF_PFX + nameof(GetMask));
 
-        public static int Animal => 17;
-        public static int Borders => 12;
+        #endregion
 
-        public static int CAMERA_FAR => 25;
-        public static int CAMERA_MID => 24;
-        public static int CAMERA_NEAR => 23;
+        private const int MAX_LAYERS = 31;
 
-        //public static int Layer6               => 06;
-        //public static int Layer7               => 07;
-        public static int Character => 08;
+        private const int MAX_TAGS = 10000;
+        
+        private static List<LayerInfo> _layerInfos;
+        private static List<string> _layerNames;
 
-        public static int CharacterRagdoll => 09;
-
-        public static int Default => 00;
-
-        //public static int Layer10              => 10;
-        public static int Ground => 11;
-        public static int Heat => 29;
-
-        public static int IgnoreRaycast => 02;
-        public static int InGround => 13;
-
-        public static int Interactable => 18;
-#if UNITY_EDITOR
-        public static int LOCKED_EDITOR_ONLY => 31;
-#endif
-        public static int Management => 30;
-
-        //public static int Layer19              => 19; 
-        public static int Reticle => 21;
-        public static int Rock => 15;
-
-        //public static int Layer26 => 26;
-        //public static int Layer27 => 27;
-        public static int Sky => 28;
-        public static int TouchReact => 22;
-        public static int TransparentFX => 01;
-        public static int Tree => 16;
-
-        public static int UI => 05;
-        public static int Vegetation => 14;
-
-        //public static int Layer3               => 03;
-        public static int Water => 04;
-
-        public static LayerInfo[] _LAYERS
+        public static IReadOnlyList<LayerInfo> ByID
         {
             get
             {
-                if (__layers == null)
+                if (_layerInfos == null)
                 {
-                    __layers = new LayerInfo[32];
+                    _layerInfos = new List<LayerInfo>(32);
                 }
 
-                if (__layers[31].Id == 0)
+                if (_layerInfos[31].Id == 0)
                 {
                     InitializeLayers();
                 }
 
-                return __layers;
+                return _layerInfos;
             }
         }
 
@@ -155,13 +87,182 @@ namespace Appalachia.Core.Layers
         {
             using (_PRF_InitializeLayers.Auto())
             {
-                __layers = new LayerInfo[32];
-
+                if (_layerNames == null)
+                {
+                    _layerNames = new List<string>(32);
+                }
+                
+                _layerNames.Add(nameof(IDs.Default));
+                _layerNames.Add(nameof(IDs.TransparentFX));
+                _layerNames.Add("Ignore Raycast");
+                _layerNames.Add(nameof(IDs.Terrain));
+                _layerNames.Add(nameof(IDs.Water));
+                _layerNames.Add(nameof(IDs.UI));
+                _layerNames.Add(nameof(IDs.HUD));
+                _layerNames.Add(""/*nameof(IDs.Layer7)*/);
+                _layerNames.Add(nameof(IDs.Character));
+                _layerNames.Add(nameof(IDs.CharacterRagdoll));
+                _layerNames.Add(""/*nameof(IDs.Layer10)*/);
+                _layerNames.Add(nameof(IDs.Ground));
+                _layerNames.Add(nameof(IDs.Borders));
+                _layerNames.Add(nameof(IDs.InGround));
+                _layerNames.Add(nameof(IDs.Vegetation));
+                _layerNames.Add(nameof(IDs.Rock));
+                _layerNames.Add(nameof(IDs.Tree));
+                _layerNames.Add(nameof(IDs.Animal));
+                _layerNames.Add(nameof(IDs.Interactable));
+                _layerNames.Add(""/*nameof(IDs.Layer19)*/); 
+                _layerNames.Add(""/*nameof(IDs.Layer20)*/); 
+                _layerNames.Add(""/*nameof(IDs.Layer21)*/); 
+                _layerNames.Add(nameof(IDs.TouchReact));
+                _layerNames.Add(nameof(IDs.CAMERA_NEAR));
+                _layerNames.Add(nameof(IDs.CAMERA_MID));
+                _layerNames.Add(nameof(IDs.CAMERA_FAR));
+                _layerNames.Add(""/*nameof(IDs.Layer26)*/);
+                _layerNames.Add(""/*nameof(IDs.Layer27)*/);
+                _layerNames.Add(nameof(IDs.Sky));
+                _layerNames.Add(nameof(IDs.Heat));
+                _layerNames.Add(nameof(IDs.Management));
+#if UNITY_EDITOR
+                _layerNames.Add(nameof(IDs.LOCKED_EDITOR_ONLY));
+#endif
+                
+                if (_layerInfos == null)
+                {
+                    _layerInfos = new List<LayerInfo>(32);
+                }
+                
                 for (var i = 0; i < 32; i++)
                 {
-                    __layers[i] = new LayerInfo(i);
+                    _layerInfos[i] = new LayerInfo(i);                    
+                }
+
+#if UNITY_EDITOR
+                CheckLayers();
+#endif
+            }
+        }
+
+        public static class IDs
+        {
+            #region Unity Layers
+
+            public const int Default = 00;
+            public const int TransparentFX = 01;
+            public const int IgnoreRaycast = 02;
+            public const int Water = 04;
+            public const int UI = 05;
+
+            #endregion
+
+            public const int Terrain = 03;
+            public const int HUD = 06;
+            //public const int Layer7 = 07;
+            public const int Character = 08;
+            public const int CharacterRagdoll = 09;
+            //public const int Layer10 = 10;
+            public const int Ground = 11;
+            public const int Borders = 12;
+            public const int InGround = 13;
+            public const int Vegetation = 14;
+            public const int Rock = 15;
+            public const int Tree = 16;
+            public const int Animal = 17;
+            public const int Interactable = 18;
+            //public const int Layer19 = 19;
+            //public const int Layer20 = 20;
+            //public const int Layer21 = 21;
+            public const int TouchReact = 22;
+            public const int CAMERA_NEAR = 23;
+            public const int CAMERA_MID = 24;
+            public const int CAMERA_FAR = 25;
+            //public const int Layer26 = 26;
+            //public const int Layer27 = 27;
+            public const int Sky = 28;
+            public const int Heat = 29;
+            public const int Management = 30;
+#if UNITY_EDITOR
+            public const int LOCKED_EDITOR_ONLY = 31;
+#endif
+        }
+
+        public static class ByName
+        {
+            #region Unity Layers
+
+            public static LayerInfo Default => ByID[IDs.Default];
+            public static LayerInfo TransparentFX => ByID[IDs.TransparentFX];
+            public static LayerInfo IgnoreRaycast => ByID[IDs.IgnoreRaycast];
+            public static LayerInfo Water => ByID[IDs.Water];
+            public static LayerInfo UI => ByID[IDs.UI];
+
+            #endregion
+
+            public static LayerInfo Terrain => ByID[IDs.Terrain];
+            public static LayerInfo HUD => ByID[IDs.HUD];
+            //public static LayerInfo Layer6 => ByID[IDs.Layer6];
+            //public static LayerInfo Layer7 => ByID[IDs.Layer7];
+            public static LayerInfo Character => ByID[IDs.Character];
+            public static LayerInfo CharacterRagdoll => ByID[IDs.CharacterRagdoll];
+            //public static LayerInfo Layer10 => ByID[IDs.Layer10];
+            public static LayerInfo Ground => ByID[IDs.Ground];
+            public static LayerInfo Borders => ByID[IDs.Borders];
+            public static LayerInfo InGround => ByID[IDs.InGround];
+            public static LayerInfo Vegetation => ByID[IDs.Vegetation];
+            public static LayerInfo Rock => ByID[IDs.Rock];
+            public static LayerInfo Tree => ByID[IDs.Tree];
+            public static LayerInfo Animal => ByID[IDs.Animal];
+            public static LayerInfo Interactable => ByID[IDs.Interactable];
+            //public static LayerInfo Layer19 => ByID[IDs.Layer19];
+            //public static LayerInfo Layer20 => ByID[IDs.Layer20];
+            //public static LayerInfo Layer21 => ByID[IDs.Layer21];
+            public static LayerInfo TouchReact => ByID[IDs.TouchReact];
+            public static LayerInfo CAMERA_NEAR => ByID[IDs.CAMERA_NEAR];
+            public static LayerInfo CAMERA_MID => ByID[IDs.CAMERA_MID];
+            public static LayerInfo CAMERA_FAR => ByID[IDs.CAMERA_FAR];
+            //public static LayerInfo Layer26 => ByID[IDs.Layer26];
+            //public static LayerInfo Layer27 => ByID[IDs.Layer27];
+            public static LayerInfo Sky => ByID[IDs.Sky];
+            public static LayerInfo Heat => ByID[IDs.Heat];
+            public static LayerInfo Management => ByID[IDs.Management];
+
+#if UNITY_EDITOR
+            public static LayerInfo LOCKED_EDITOR_ONLY => ByID[IDs.LOCKED_EDITOR_ONLY];
+#endif
+        }
+
+#if UNITY_EDITOR
+
+        private static void CheckLayers()
+        {
+            // Open tag manager
+            var tagManager = new SerializedObject(
+                AssetDatabaseManager.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]
+            );
+
+            // Layers Property
+            var layersProp = tagManager.FindProperty("layers");
+
+            SerializedProperty sp;
+
+            // Start at layer 9th index -> 8 (zero based) => first 8 reserved for unity / greyed out
+            for (int i = 8, j = MAX_LAYERS; i < j; i++)
+            {
+                var layerInfo = _layerInfos[i];
+                var targetName = _layerNames[i];
+
+                sp = layersProp.GetArrayElementAtIndex(i);
+
+                if (sp.stringValue != targetName)
+                {
+                    Debug.LogWarning($"Layer [{i}] should be named [{targetName}]");
+
+                    // Save settings
+                    // tagManager.ApplyModifiedProperties();
+                    // return true;
                 }
             }
         }
+#endif
     }
 }

@@ -48,6 +48,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
                 {
                     "Unity.Addressables",
                     "Unity.Collections",
+                    "Unity.InputSystem",
                     "Unity.Mathematics",
                     "Unity.RenderPipelines.Core.Runtime",
                     "Unity.ResourceManager",

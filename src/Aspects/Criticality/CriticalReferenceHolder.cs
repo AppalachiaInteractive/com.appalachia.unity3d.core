@@ -21,7 +21,7 @@ using Sirenix.OdinInspector;
 
 namespace Appalachia.Core.Aspects.Criticality
 {
-    public class CriticalReferenceHolder : AppalachiaMonoBehaviour
+    public class CriticalReferenceHolder : AppalachiaBehaviour
     {
         private const string _PRF_PFX = nameof(CriticalReferenceHolder) + ".";
         public List<ScriptableObject> references = new();

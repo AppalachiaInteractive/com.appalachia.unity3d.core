@@ -47,6 +47,11 @@ namespace Appalachia.Core.Timing
             _worldAgeInSecondsSetAt = Now;
         }
 
+        public static void TickWorldClock(double worldSeconds)
+        {
+            _worldAgeInSeconds += worldSeconds;
+        }
+
         public static void Tick()
         {
             using (_PRF_Tick.Auto())

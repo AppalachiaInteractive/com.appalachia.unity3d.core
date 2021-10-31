@@ -157,7 +157,7 @@ namespace Appalachia.Core.Preferences
         private static Dictionary<Type, MethodInfo> _DoDrawUILookup;
         private static Dictionary<Type, MethodInfo> _GetEnumStateLookup;
 
-        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Preferences/Awaken", false)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Preferences/Awaken", priority = PKG.Priority)]
         [ExecuteOnEnable]
         public static void Awake()
         {
