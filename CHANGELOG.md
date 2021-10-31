@@ -14,7 +14,14 @@
 |------|------|--------|---------|
 
 
- ## Tag: `v0.1.7, origin/main`
+ ## Tag: `v0.1.8, origin/main`
+| Hash | Date | Author | Changes |
+|------|------|--------|---------|
+| 64e1e2df4418e21b28ba37f9b7cb2e392f3e8c90 | 2021-10-31 | Chris Schubert | Refactoring menus and adding application manager setup |
+| d343741d3414a905d295fd82d091b05de919dc14 | 2021-10-29 | Chris Schubert | Updating to support VFX on builtin renderer |
+
+
+ ## Tag: `v0.1.7`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
 | 2d2bbeceb8d25185644ca5503ed277a7fb36b6df | 2021-10-24 | Chris Schubert | Automatic dependency updates |
