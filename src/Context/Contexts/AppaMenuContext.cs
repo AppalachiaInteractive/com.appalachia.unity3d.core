@@ -138,5 +138,12 @@ namespace Appalachia.Core.Context.Contexts
                 }
             }
         }
+        
+        public virtual bool NeedsProgressDraw { get; }
+
+        public virtual AppaProgress GetProgress()
+        {
+            return default;
+        }
     }
 }

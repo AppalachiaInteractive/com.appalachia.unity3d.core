@@ -9,7 +9,32 @@ namespace Appalachia.Core.Context.Contexts
         private AppaProgress _initializationProgress;
         private bool _initialized;
         private bool _initializing;
+#pragma warning disable 649
+        private bool _forceLock;
+#pragma warning restore 649
 
+        protected virtual bool ShouldBeLocked => false;
+
+        public bool IsLocked
+        {
+            get
+            {
+                if (ShouldBeLocked || _forceLock)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        /*
+        public void ForceLock()
+        {
+            _forceLock = !_forceLock;
+        }
+        */
+        
         public bool ShouldInitialize => !Initialized && !Initializing;
 
         public AppaProgress InitializationProgress
@@ -32,6 +57,7 @@ namespace Appalachia.Core.Context.Contexts
 
         protected abstract IEnumerable<AppaProgress> OnInitialize(AppaProgressCounter p);
 
+        // ReSharper disable once UnusedParameter.Global
         protected virtual IEnumerable<AppaProgress> OnPostInitialize(AppaProgressCounter p)
         {
             yield break;
