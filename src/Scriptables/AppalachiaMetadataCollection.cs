@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
-using Appalachia.Core.Extensions;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;

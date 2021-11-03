@@ -8,7 +8,7 @@ namespace Appalachia.Core.Preferences.Globals
 {
     internal static partial class PKG
     {
-        public const int Priority = -396000;
+        public const int Priority = -398000;
         public const string Name = "Preferences/Globals";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";

@@ -22,7 +22,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
             AssemblyDefinitionMetadata target,
             List<AnalysisMessage> messages)
         {
-            if (!target.IsAppalachia)
+            if (!target.IsAppalachiaManaged)
             {
                 return;
             }

@@ -94,7 +94,7 @@ namespace Appalachia.Core.Assets
 
                 if (!ImportDeferred && ImportSuspended)
                 {
-                    Log("Flushing import pauses.  ");
+                    Log("Removing import suspension.");
 
                     while (ImportSuspended)
                     {
@@ -211,7 +211,7 @@ namespace Appalachia.Core.Assets
                 }
 
                 Debug.LogWarning(
-                    $"{prefix}| Deferral depth: {_deferralDepth:000} | Suspension depth: {_suspensionDepth:000}"
+                    $"{prefix} | Deferral depth: {_deferralDepth:000} | Suspension depth: {_suspensionDepth:000}"
                 );
             }
         }
@@ -225,7 +225,7 @@ namespace Appalachia.Core.Assets
                     AssetDatabase.StartAssetEditing();
                     _suspensionDepth += 1;
                     _deferralDepth += 1;
-                    Log("Suspending import pause. ");
+                    Log("Suspending import.");
                 }
                 else
                 {

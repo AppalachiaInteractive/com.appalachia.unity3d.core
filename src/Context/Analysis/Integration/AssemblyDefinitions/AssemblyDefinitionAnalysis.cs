@@ -14,7 +14,12 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
 
         protected void WriteReferences(AssemblyDefinitionMetadata target)
         {
-            if (target.references.Count < target.referenceStrings.Count)
+            var refStringCount = target.referenceStrings.Count;
+            var refCount = target.references.Count;
+
+            var referenceDiff = refStringCount - refCount;
+            
+            if (referenceDiff > 1)
             {
                 throw new NotSupportedException("Make sure to not lose references!");
             }
@@ -26,6 +31,13 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
             for (var i = 0; i < target.references.Count; i++)
             {
                 var reference = target.references[i];
+
+                if (reference == null)
+                {
+                    throw new ArgumentException(
+                        $"Cannot write a null reference for index [{i}] of [{target.Name}]."
+                    );
+                }
 
                 target.referenceStrings.Add(reference.guid);
             }

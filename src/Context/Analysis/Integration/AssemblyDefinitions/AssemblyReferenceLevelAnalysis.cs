@@ -38,7 +38,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
                 var isIssue = false;
                 var messageText = $"{refLevel.ToString().Bold()} <= {thisLevel.ToString().Italic()}";
 
-                if (target.IsAppalachia && (refLevel > thisLevel))
+                if (target.IsAppalachiaManaged && (refLevel > thisLevel))
                 {
                     isIssue = true;
                     messageText = $"{refLevel.ToString().Bold()} > {thisLevel.ToString().Italic()}";

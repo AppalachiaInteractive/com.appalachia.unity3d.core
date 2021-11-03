@@ -36,8 +36,10 @@ namespace Appalachia.Core.Context.Contexts
         #region Preferences
 
         private PREF<bool> _appalachiaOnly;
+        private PREF<bool> _appalachiaManagedOnly;
         private PREF<bool> _assetsOnly;
         public PREF<bool> AppalachiaOnly => _appalachiaOnly;
+        public PREF<bool> AppalachiaManagedOnly => _appalachiaManagedOnly;
         public PREF<bool> AssetsOnly => _assetsOnly;
 
         #endregion
@@ -60,6 +62,11 @@ namespace Appalachia.Core.Context.Contexts
                     return false;
                 }
 
+                if (_appalachiaManagedOnly.Value && !analysis.Target.IsAppalachiaManaged)
+                {
+                    return false;
+                }
+
                 if (_appalachiaOnly.Value && !analysis.Target.IsAppalachia)
                 {
                     return false;
@@ -76,6 +83,7 @@ namespace Appalachia.Core.Context.Contexts
 
         public override IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
         {
+            drawer.RegisterFilterPref(AppalachiaManagedOnly);
             drawer.RegisterFilterPref(AppalachiaOnly);
 
             yield return null;
@@ -196,6 +204,10 @@ namespace Appalachia.Core.Context.Contexts
             yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Appalachia_Only}", 1);
 
             _appalachiaOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Appalachia_Only, true);
+
+            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Appalachia_Managed_Only}", 1);
+
+            _appalachiaManagedOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Appalachia_Managed_Only, true);
 
             yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Assets_Only}", 1);
 

@@ -9,6 +9,7 @@ using Appalachia.Core.Collections.Exceptions;
 using Appalachia.Core.Collections.Interfaces;
 using Appalachia.Core.Collections.NonSerialized;
 using Appalachia.Core.Extensions;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;

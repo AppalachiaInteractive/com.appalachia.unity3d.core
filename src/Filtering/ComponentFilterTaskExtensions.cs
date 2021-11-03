@@ -1,4 +1,5 @@
 using Appalachia.Core.Extensions;
+using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 using UnityEngine;
 

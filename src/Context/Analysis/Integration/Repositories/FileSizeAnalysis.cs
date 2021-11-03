@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.Repositories;
 using Appalachia.Core.Context.Analysis.Core;
@@ -19,8 +17,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         public override bool IsCorrectable => false;
         public override string ShortName => "File Size";
 
-        public override RepositoryAnalysisGroup.Types Type =>
-            RepositoryAnalysisGroup.Types.FileSize;
+        public override RepositoryAnalysisGroup.Types Type => RepositoryAnalysisGroup.Types.FileSize;
 
         protected override void AnalyzeIssue(
             RepositoryAnalysisGroup group,
@@ -46,9 +43,25 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
 
                 messages.Add(
                     isIssue,
-                    AnalysisMessagePart.PairedWithButton(file.RelativePath, file.Length.ToFileSize(), color,
-                        "Select", color, () => AssetDatabaseManager.OpenFolderInExplorer(file.WindowsDirectoryPath)
-                        )
+                    AnalysisMessagePart.PairedWith3Buttons(
+                        file.RelativePath,
+                        file.Length.ToFileSize(),
+                        color,
+                        "Select",
+                        color,
+                        () => AssetDatabaseManager.SetSelection(file.RelativePath),
+                        "Show",
+                        color,
+                        () => AssetDatabaseManager.OpenFolderInExplorer(file.WindowsDirectoryPath),
+                        "Open",
+                        color,
+                        () => AssetDatabaseManager.OpenAssetAtPath(file.RelativePath),
+                        expandWidthRight: false,
+                        widthRight: 95f,
+                        widthButton1: 55f,
+                        widthButton2: 45f,
+                        widthButton3: 45f
+                    )
                 );
             }
         }
@@ -59,7 +72,6 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             bool useTestFiles,
             bool reimport)
         {
-           
         }
     }
 }

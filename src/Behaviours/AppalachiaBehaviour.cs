@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Appalachia.Core.Extensions;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
