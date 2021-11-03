@@ -17,6 +17,9 @@ namespace Appalachia.Core.Context.Contexts
 
         private AppaMenuSelection[] _menuSelections;
 
+        public string ProgressVerb { get; set; }
+        public virtual float MenuWidth => 300f;
+        
         public abstract int RequiredMenuCount { get; }
 
         public abstract int GetMenuItemCount(int menuIndex);

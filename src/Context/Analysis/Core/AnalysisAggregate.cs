@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Profiling;
 
 namespace Appalachia.Core.Context.Analysis.Core
 {
@@ -8,70 +9,226 @@ namespace Appalachia.Core.Context.Analysis.Core
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
+        #region Profiling And Tracing Markers
+
+        private const string _PRF_PFX = nameof(AnalysisAggregate<TA, TT, TE>) + ".";
+
+        private static readonly ProfilerMarker _PRF_AnyIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(AnyIssues));
+
+        private static readonly ProfilerMarker _PRF_Add = new ProfilerMarker(_PRF_PFX + nameof(Add));
+
+        private static readonly ProfilerMarker _PRF_GetIssueCount =
+            new ProfilerMarker(_PRF_PFX + nameof(GetIssueCount));
+
+        private static readonly ProfilerMarker _PRF_GetSubissueCount =
+            new ProfilerMarker(_PRF_PFX + nameof(GetSubissueCount));
+
+        private static readonly ProfilerMarker _PRF_HasIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(HasIssues));
+
+        private static readonly ProfilerMarker _PRF_Reset = new ProfilerMarker(_PRF_PFX + nameof(Reset));
+
+        private static readonly ProfilerMarker _PRF_AnyCorrectableIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(AnyCorrectableIssues));
+
+        private static readonly ProfilerMarker _PRF_AnyAutoCorrectableIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(AnyAutoCorrectableIssues));
+
+        #endregion
+
         public AnalysisAggregate()
         {
             _issueCounts = new Dictionary<TE, int>();
             _subissueCounts = new Dictionary<TE, int>();
+            _correctableIssueCounts = new Dictionary<TE, int>();
+            _autoCorrectableIssueCounts = new Dictionary<TE, int>();
         }
 
-        private Dictionary<TE, int> _issueCounts;
-        private Dictionary<TE, int> _subissueCounts;
+        private readonly Dictionary<TE, int> _autoCorrectableIssueCounts;
+        private readonly Dictionary<TE, int> _correctableIssueCounts;
 
-        public bool AnyIssues => _issueCounts.Values.Any(v => v > 0);
+        private readonly Dictionary<TE, int> _issueCounts;
+        private readonly Dictionary<TE, int> _subissueCounts;
 
-        public void Add(IEnumerable<AnalysisType<TA, TT, TE>> results)
+        public bool AnyAutoCorrectableIssues
         {
-            foreach (var issue in results)
+            get
             {
-                if (!_issueCounts.ContainsKey(issue.Type))
+                using (_PRF_AnyAutoCorrectableIssues.Auto())
                 {
-                    _issueCounts.Add(issue.Type, 0);
+                    return _autoCorrectableIssueCounts.Values.Any(v => v > 0);
+                }
+            }
+        }
+
+        public bool AnyCorrectableIssues
+        {
+            get
+            {
+                using (_PRF_AnyCorrectableIssues.Auto())
+                {
+                    return _correctableIssueCounts.Values.Any(v => v > 0);
+                }
+            }
+        }
+
+        public bool AnyIssues
+        {
+            get
+            {
+                using (_PRF_AnyIssues.Auto())
+                {
+                    return _issueCounts.Values.Any(v => v > 0);
+                }
+            }
+        }
+
+        public bool HasAutoCorrectableIssues(TE type)
+        {
+            using (_PRF_HasIssues.Auto())
+            {
+                return GetAutoCorrectableIssueCount(type) > 0;
+            }
+        }
+
+        public bool HasCorrectableIssues(TE type)
+        {
+            using (_PRF_HasIssues.Auto())
+            {
+                return GetCorrectableIssueCount(type) > 0;
+            }
+        }
+
+        public bool HasIssues(TE type)
+        {
+            using (_PRF_HasIssues.Auto())
+            {
+                return GetIssueCount(type) > 0;
+            }
+        }
+
+        public int GetAutoCorrectableIssueCount(TE type)
+        {
+            using (_PRF_GetIssueCount.Auto())
+            {
+                if (!_autoCorrectableIssueCounts.ContainsKey(type))
+                {
+                    _autoCorrectableIssueCounts.Add(type, 0);
                 }
 
-                if (!_subissueCounts.ContainsKey(issue.Type))
+                return _autoCorrectableIssueCounts[type];
+            }
+        }
+
+        public int GetCorrectableIssueCount(TE type)
+        {
+            using (_PRF_GetIssueCount.Auto())
+            {
+                if (!_correctableIssueCounts.ContainsKey(type))
                 {
-                    _subissueCounts.Add(issue.Type, 0);
+                    _correctableIssueCounts.Add(type, 0);
                 }
 
-                if (!issue.HasIssues)
-                {
-                    continue;
-                }
-
-                _issueCounts[issue.Type] += 1;
-                _subissueCounts[issue.Type] += issue.IssueCount;
+                return _correctableIssueCounts[type];
             }
         }
 
         public int GetIssueCount(TE type)
         {
-            if (!_issueCounts.ContainsKey(type))
+            using (_PRF_GetIssueCount.Auto())
             {
-                _issueCounts.Add(type, 0);
-            }
+                if (!_issueCounts.ContainsKey(type))
+                {
+                    _issueCounts.Add(type, 0);
+                }
 
-            return _issueCounts[type];
+                return _issueCounts[type];
+            }
         }
 
         public int GetSubissueCount(TE type)
         {
-            if (!_subissueCounts.ContainsKey(type))
+            using (_PRF_GetSubissueCount.Auto())
             {
-                _subissueCounts.Add(type, 0);
-            }
+                if (!_subissueCounts.ContainsKey(type))
+                {
+                    _subissueCounts.Add(type, 0);
+                }
 
-            return _subissueCounts[type];
+                return _subissueCounts[type];
+            }
         }
 
-        public bool HasIssues(TE type)
+        public void Add(IEnumerable<AnalysisType<TA, TT, TE>> results)
         {
-            return GetIssueCount(type) > 0;
+            using (_PRF_Add.Auto())
+            {
+                if (results == null)
+                {
+                    return;
+                }
+
+                foreach (var issue in results)
+                {
+                    if (!_issueCounts.ContainsKey(issue.Type))
+                    {
+                        _issueCounts.Add(issue.Type, 0);
+                    }
+
+                    if (!_subissueCounts.ContainsKey(issue.Type))
+                    {
+                        _subissueCounts.Add(issue.Type, 0);
+                    }
+
+                    if (!_correctableIssueCounts.ContainsKey(issue.Type))
+                    {
+                        _correctableIssueCounts.Add(issue.Type, 0);
+                    }
+
+                    if (!_autoCorrectableIssueCounts.ContainsKey(issue.Type))
+                    {
+                        _autoCorrectableIssueCounts.Add(issue.Type, 0);
+                    }
+
+                    if (!issue.HasIssues)
+                    {
+                        continue;
+                    }
+
+                    _issueCounts[issue.Type] += 1;
+                    _subissueCounts[issue.Type] += issue.IssueCount;
+
+                    if (issue.IsCorrectable)
+                    {
+                        _correctableIssueCounts[issue.Type] += 1;
+                    }
+
+                    if (issue.IsAutoCorrectable)
+                    {
+                        _autoCorrectableIssueCounts[issue.Type] += 1;
+                    }
+                }
+            }
+        }
+
+        public void AddAll(IEnumerable<IEnumerable<AnalysisType<TA, TT, TE>>> allAnalysisResults)
+        {
+            foreach (var analysisResults in allAnalysisResults)
+            {
+                Add(analysisResults);
+            }
         }
 
         public void Reset()
         {
-            _issueCounts?.Clear();
-            _subissueCounts?.Clear();
+            using (_PRF_Reset.Auto())
+            {
+                _issueCounts?.Clear();
+                _subissueCounts?.Clear();
+                _correctableIssueCounts?.Clear();
+                _autoCorrectableIssueCounts?.Clear();
+            }
         }
     }
 }

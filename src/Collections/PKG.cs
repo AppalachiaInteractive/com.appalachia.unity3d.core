@@ -8,7 +8,7 @@ namespace Appalachia.Core.Collections
 {
     internal static partial class PKG
     {
-        public const int Priority = -402000;
+        public const int Priority = -405000;
         public const string Name = "Collections";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";

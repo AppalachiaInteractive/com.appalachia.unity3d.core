@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.CI.Integration.Core;
 using Appalachia.CI.Integration.FileSystem;
 using Appalachia.Core.Assets;
 using Sirenix.OdinInspector;
@@ -19,7 +20,7 @@ using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Scriptables
 {
-    public abstract class AppalachiaObject<T> : ScriptableObject /*, IResponsive*/
+    public abstract class AppalachiaObject<T> : ScriptableObject /*, IResponsive*/, IAppalachiaObject<T>
         where T : ScriptableObject
     {
         #region Profiling And Tracing Markers
@@ -70,6 +71,26 @@ namespace Appalachia.Core.Scriptables
 
 #if UNITY_EDITOR
 
+        #region Profiling And Tracing Markers
+
+        private static readonly ProfilerMarker _PRF_Ping = new(_PRF_PFX + nameof(Ping));
+        private static readonly ProfilerMarker _PRF_Select = new(_PRF_PFX + nameof(Select));
+        private static readonly ProfilerMarker _PRF_Duplicate = new(_PRF_PFX + nameof(Duplicate));
+        private static readonly ProfilerMarker _PRF_AssetPath = new(_PRF_PFX + nameof(AssetPath));
+        private static readonly ProfilerMarker _PRF_DirectoryPath = new(_PRF_PFX + nameof(DirectoryPath));
+        private static readonly ProfilerMarker _PRF_HasAssetPath = new(_PRF_PFX + nameof(HasAssetPath));
+        private static readonly ProfilerMarker _PRF_HasSubAssets = new(_PRF_PFX + nameof(HasSubAssets));
+
+        private static readonly ProfilerMarker _PRF_UpdateNameAndMove =
+            new(_PRF_PFX + nameof(UpdateNameAndMove));
+
+        private static readonly ProfilerMarker _PRF_GetAllOfType = new(_PRF_PFX + nameof(GetAllOfType));
+        private static readonly ProfilerMarker _PRF_CreateNew = new(_PRF_PFX + nameof(CreateNew));
+        private static readonly ProfilerMarker _PRF_LoadOrCreateNew = new(_PRF_PFX + nameof(LoadOrCreateNew));
+        private static readonly ProfilerMarker _PRF_Rename = new(_PRF_PFX + nameof(Rename));
+
+        #endregion
+
         [SerializeField]
         [HideInInspector]
         private string _cachedName;
@@ -90,8 +111,6 @@ namespace Appalachia.Core.Scriptables
             set => _niceName = value;
         }
 
-        private static readonly ProfilerMarker _PRF_Ping = new(_PRF_PFX + nameof(Ping));
-
         public void Ping()
         {
             using (_PRF_Ping.Auto())
@@ -99,8 +118,6 @@ namespace Appalachia.Core.Scriptables
                 EditorGUIUtility.PingObject(this);
             }
         }
-
-        private static readonly ProfilerMarker _PRF_Select = new(_PRF_PFX + nameof(Select));
 
         [ShowIfGroup("$ShowWorkflow")]
         [FoldoutGroup("$ShowWorkflow/Workflow", Order = -50000)]
@@ -115,8 +132,6 @@ namespace Appalachia.Core.Scriptables
                 AssetDatabaseManager.SetSelection(this);
             }
         }
-
-        private static readonly ProfilerMarker _PRF_Duplicate = new(_PRF_PFX + nameof(Duplicate));
 
         [HorizontalGroup("$ShowWorkflow/Workflow/Productivity")]
         [Button]
@@ -135,8 +150,6 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        private static readonly ProfilerMarker _PRF_AssetPath = new(_PRF_PFX + nameof(AssetPath));
-
         public string AssetPath
         {
             get
@@ -148,8 +161,6 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        private static readonly ProfilerMarker _PRF_DirectoryPath = new(_PRF_PFX + nameof(DirectoryPath));
-
         public string DirectoryPath
         {
             get
@@ -160,8 +171,6 @@ namespace Appalachia.Core.Scriptables
                 }
             }
         }
-
-        private static readonly ProfilerMarker _PRF_HasAssetPath = new(_PRF_PFX + nameof(HasAssetPath));
 
         public bool HasAssetPath(out string path)
         {
@@ -177,8 +186,6 @@ namespace Appalachia.Core.Scriptables
                 return true;
             }
         }
-
-        private static readonly ProfilerMarker _PRF_HasSubAssets = new(_PRF_PFX + nameof(HasSubAssets));
 
         public bool HasSubAssets(out Object[] subAssets)
         {
@@ -201,9 +208,6 @@ namespace Appalachia.Core.Scriptables
                 return false;
             }
         }
-
-        private static readonly ProfilerMarker _PRF_UpdateNameAndMove =
-            new(_PRF_PFX + nameof(UpdateNameAndMove));
 
         public bool UpdateNameAndMove(string newName)
         {
@@ -249,11 +253,9 @@ namespace Appalachia.Core.Scriptables
 
         public virtual bool ShowWorkflow => false;
 
-        internal virtual void OnCreate()
+        public virtual void OnCreate()
         {
         }
-
-        private static readonly ProfilerMarker _PRF_GetAllOfType = new(_PRF_PFX + nameof(GetAllOfType));
 
         public static T[] GetAllOfType()
         {
@@ -297,12 +299,6 @@ namespace Appalachia.Core.Scriptables
                 return results;
             }
         }
-
-        private static readonly ProfilerMarker _PRF_CreateNew = new(_PRF_PFX + nameof(CreateNew));
-
-        private static readonly ProfilerMarker _PRF_LoadOrCreateNew = new(_PRF_PFX + nameof(LoadOrCreateNew));
-
-        private static readonly ProfilerMarker _PRF_Rename = new(_PRF_PFX + nameof(Rename));
 
         public static T CreateNew()
         {

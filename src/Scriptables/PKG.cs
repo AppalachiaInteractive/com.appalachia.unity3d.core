@@ -8,7 +8,7 @@ namespace Appalachia.Core.Scriptables
 {
     internal static partial class PKG
     {
-        public const int Priority = -386000;
+        public const int Priority = -389000;
         public const string Name = "Scriptables";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";

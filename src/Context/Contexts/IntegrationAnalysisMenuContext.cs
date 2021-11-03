@@ -8,6 +8,7 @@ using Appalachia.Core.Context.Analysis.Core;
 using Appalachia.Core.Context.Elements.Progress;
 using Appalachia.Core.Context.Interfaces;
 using Appalachia.Core.Preferences;
+using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Context.Contexts
@@ -36,37 +37,12 @@ namespace Appalachia.Core.Context.Contexts
 
         private PREF<bool> _appalachiaOnly;
         private PREF<bool> _assetsOnly;
-
         public PREF<bool> AppalachiaOnly => _appalachiaOnly;
-
         public PREF<bool> AssetsOnly => _assetsOnly;
 
         #endregion
 
-        protected override string GetPreferencePrefix => APPASTR.PREF.CI.Package_Review;
-
-        public override string GetMenuDisplayName(TA item)
-        {
-            return item.Target.Name;
-        }
-
-        public override IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
-        {
-            drawer.RegisterFilterPref(AppalachiaOnly);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(AssetsOnly);
-
-            yield return null;
-
-            var baseResults = base.RegisterPreferences(drawer);
-
-            while (baseResults.MoveNext())
-            {
-                yield return baseResults.Current;
-            }
-        }
+        protected override string GetPreferencePrefix => APPASTR.PREF.CI.Package_Review + typeof(TT) + "/";
 
         public override bool ShouldShowInMenu(TA analysis)
         {
@@ -98,18 +74,46 @@ namespace Appalachia.Core.Context.Contexts
             }
         }
 
+        public override IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
+        {
+            drawer.RegisterFilterPref(AppalachiaOnly);
+
+            yield return null;
+
+            drawer.RegisterFilterPref(AssetsOnly);
+
+            yield return null;
+
+            var baseResults = base.RegisterPreferences(drawer);
+
+            while (baseResults.MoveNext())
+            {
+                yield return baseResults.Current;
+            }
+        }
+
+        public override string GetMenuDisplayName(TA item)
+        {
+            return item.Target.Name;
+        }
+
         protected override IEnumerable<AppaProgress> OnInitialize(AppaProgressCounter p)
         {
             using (_TRACE_OnInitialize.Auto())
             using (_PRF_OnInitialize.Auto())
             {
                 var progress = p.Current;
-
-                yield return p.Get(AppaProgress.FINDING, ref progress, 10);
+                using (_PRF_OnInitialize.Suspend())
+                {
+                    yield return p.Get(AppaProgress.FINDING, ref progress, 10);
+                }
 
                 var instances = IntegrationMetadata.FindAll<TT>();
-
-                yield return p.Get(AppaProgress.INITIALIZING, ref progress, 10);
+                
+                using (_PRF_OnInitialize.Suspend())
+                {
+                    yield return p.Get(AppaProgress.INITIALIZING, ref progress, 10);
+                }
 
                 if (items == null)
                 {
@@ -120,7 +124,10 @@ namespace Appalachia.Core.Context.Contexts
                     items.Clear();
                 }
 
-                yield return p.Get(AppaProgress.CHECKING, ref progress, 10);
+                using (_PRF_OnInitialize.Suspend())
+                {
+                    yield return p.Get(AppaProgress.CHECKING, ref progress, 10);
+                }
 
                 foreach (var instance in instances)
                 {
@@ -130,8 +137,11 @@ namespace Appalachia.Core.Context.Contexts
                     }
 
                     p.Increment(ref progress, 20, instances);
-
-                    yield return p.Get($"{AppaProgress.CHECKING}: {instance.Name}", progress);
+                    
+                    using (_PRF_OnInitialize.Suspend())
+                    {
+                        yield return p.Get($"{AppaProgress.CHECKING}: {instance.Name}", progress);
+                    }
 
                     var analysis = AnalysisGroup<TA, TT, TE>.Create(instance);
 
@@ -143,8 +153,11 @@ namespace Appalachia.Core.Context.Contexts
                 foreach (var instance in instances)
                 {
                     p.Increment(ref progress, 20, instances);
-
-                    yield return p.Get($"{AppaProgress.SETTING}: {instance.Name}", progress);
+                    
+                    using (_PRF_OnInitialize.Suspend())
+                    {
+                        yield return p.Get($"{AppaProgress.SETTING}: {instance.Name}", progress);
+                    }
 
                     if (!instance.readOnly)
                     {
@@ -152,13 +165,19 @@ namespace Appalachia.Core.Context.Contexts
                     }
                 }
 
-                yield return p.Get(AppaProgress.VALIDATING, ref progress, 10);
+                using (_PRF_OnInitialize.Suspend())
+                {
+                    yield return p.Get(AppaProgress.VALIDATING, ref progress, 10);
+                }
 
                 ValidateSummaryProperties();
 
                 foreach (var analysis in MenuOneItems)
                 {
-                    yield return p.Get($"{AppaProgress.ANALYZING}: {analysis.Target.Name}", progress);
+                    using (_PRF_OnInitialize.Suspend())
+                    {
+                        yield return p.Get($"{AppaProgress.ANALYZING}: {analysis.Target.Name}", progress);
+                    }
 
                     analysis.Analyze();
 
@@ -176,11 +195,11 @@ namespace Appalachia.Core.Context.Contexts
 
             yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Appalachia_Only}", 1);
 
-            _appalachiaOnly = PREFS.REG(APPASTR.PREF.CI.Package_Review, APPASTR.Appalachia_Only, true);
+            _appalachiaOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Appalachia_Only, true);
 
             yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Assets_Only}", 1);
 
-            _assetsOnly = PREFS.REG(APPASTR.PREF.CI.Package_Review, APPASTR.Assets_Only, true);
+            _assetsOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Assets_Only, true);
         }
     }
 }

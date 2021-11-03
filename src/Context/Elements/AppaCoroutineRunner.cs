@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Context.Elements
@@ -23,8 +24,6 @@ namespace Appalachia.Core.Context.Elements
 
         #endregion
 
-        private readonly Stopwatch _stopwatch = new();
-
         private bool _cancelOnError = true;
 
         private bool _forceCancelImmediately;
@@ -36,6 +35,8 @@ namespace Appalachia.Core.Context.Elements
         private double _executionTime;
 
         private int _stepSize = 10;
+
+        private readonly Stopwatch _stopwatch = new();
 
         public bool IsExecutingCoroutine => _isExecutingCoroutine;
 
@@ -73,6 +74,62 @@ namespace Appalachia.Core.Context.Elements
             }
         }
 
+        protected IEnumerator ExecuteCoroutineEnumerator(Func<IEnumerator> coroutine, Action onComplete)
+        {
+            using (_PRF_ExecuteCoroutineEnumerator.Auto())
+            {
+                try
+                {
+                    BeginExecution();
+
+                    var count = -1;
+
+                    var routineResults = coroutine();
+                    using (_PRF_ExecuteCoroutineEnumerator.Suspend())
+                    {
+                        while (true)
+                        {
+                            if (_forceCancelImmediately)
+                            {
+                                break;
+                            }
+
+                            count += 1;
+                            object current = null;
+
+                            try
+                            {
+                                if (!routineResults.MoveNext())
+                                {
+                                    break;
+                                }
+
+                                current = routineResults.Current;
+                            }
+                            catch (Exception ex)
+                            {
+                                UnityEngine.Debug.LogException(ex);
+
+                                if (_cancelOnError)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if ((count % _stepSize) == 0)
+                            {
+                                yield return current;
+                            }
+                        }
+                    }
+                }
+                finally
+                {
+                    EndExecution(onComplete);
+                }
+            }
+        }
+
         protected void BeginExecution()
         {
             using (_PRF_BeginExecution.Auto())
@@ -92,60 +149,6 @@ namespace Appalachia.Core.Context.Elements
                 _isExecutingCoroutine = false;
 
                 onComplete?.Invoke();
-            }
-        }
-
-        protected IEnumerator ExecuteCoroutineEnumerator(Func<IEnumerator> coroutine, Action onComplete)
-        {
-            using (_PRF_ExecuteCoroutineEnumerator.Auto())
-            {
-                try
-                {
-                    BeginExecution();
-
-                    var count = -1;
-
-                    var routineResults = coroutine();
-
-                    while (true)
-                    {
-                        if (_forceCancelImmediately)
-                        {
-                            break;
-                        }
-
-                        count += 1;
-                        object current = null;
-
-                        try
-                        {
-                            if (!routineResults.MoveNext())
-                            {
-                                break;
-                            }
-
-                            current = routineResults.Current;
-                        }
-                        catch (Exception ex)
-                        {
-                            UnityEngine.Debug.LogException(ex);
-
-                            if (_cancelOnError)
-                            {
-                                break;
-                            }
-                        }
-
-                        if ((count % _stepSize) == 0)
-                        {
-                            yield return current;
-                        }
-                    }
-                }
-                finally
-                {
-                    EndExecution(onComplete);
-                }
             }
         }
     }

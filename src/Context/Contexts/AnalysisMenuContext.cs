@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Appalachia.CI.Constants;
-using Appalachia.CI.Integration.Core;
 using Appalachia.Core.Aspects.Tracing;
 using Appalachia.Core.Context.Analysis.Core;
 using Appalachia.Core.Context.Elements.Progress;
@@ -45,12 +45,16 @@ namespace Appalachia.Core.Context.Contexts
         private PREF<TE> _issueType;
 
         private PREF<bool> _onlyShowIssues;
+        
+        private PREF<float> _menuWidth;
 
         public PREF<bool> GenerateTestFiles => _generateTestFiles;
 
         public PREF<TE> IssueType => _issueType;
 
         public PREF<bool> OnlyShowIssues => _onlyShowIssues;
+
+        public override float MenuWidth => _menuWidth.v;
 
         #endregion
 
@@ -69,21 +73,6 @@ namespace Appalachia.Core.Context.Contexts
         {
             get => _aggregateAnalysis;
             protected set => _aggregateAnalysis = value;
-        }
-
-        public virtual IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
-        {
-            drawer.RegisterFilterPref(OnlyShowIssues);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(IssueType, () => OnlyShowIssues.v);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(GenerateTestFiles);
-
-            yield return null;
         }
 
         public virtual bool ShouldShowInMenu(TA analysis)
@@ -112,34 +101,23 @@ namespace Appalachia.Core.Context.Contexts
             }
         }
 
-        public void ResetAnalysis()
+        public virtual IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
         {
-            AggregateAnalysis = null;
-        }
+            drawer.RegisterFilterPref(OnlyShowIssues);
 
-        public void ValidateSummaryProperties()
-        {
-            using (_PRF_ValidateSummaryProperties.Auto())
-            {
-                _aggregateAnalysis = new AnalysisAggregate<TA, TT, TE>();
-                
-                for (var index = 0; index < MenuOneItems.Count; index++)
-                {
-                    var analysis = MenuOneItems[index];
+            yield return null;
 
-                    if (analysis == null)
-                    {
-                        continue;
-                    }
+            drawer.RegisterFilterPref(IssueType, () => OnlyShowIssues.v);
 
-                    var target = analysis.Target;
+            yield return null;
 
-                    if ((target != null) && ShouldShowInMenu(analysis))
-                    {
-                        _aggregateAnalysis.Add(analysis.AllTypes);
-                    }
-                }
-            }
+            drawer.RegisterFilterPref(GenerateTestFiles);
+
+            yield return null;
+
+            drawer.RegisterFilterPref(_menuWidth);
+
+            yield return null;
         }
 
         public override void ValidateMenuSelection(int menuIndex)
@@ -157,6 +135,27 @@ namespace Appalachia.Core.Context.Contexts
             }
         }
 
+        public void ResetAnalysis()
+        {
+            AggregateAnalysis = null;
+        }
+
+        public void ValidateSummaryProperties()
+        {
+            using (_PRF_ValidateSummaryProperties.Auto())
+            {
+                RecreateAnalysisResults();
+
+                for (var index = 0; index < MenuOneItems.Count; index++)
+                {
+                    var analysis = MenuOneItems[index];
+
+                    analysis.OnReanalyzeNecessary -= RecreateAnalysisResults;
+                    analysis.OnReanalyzeNecessary += RecreateAnalysisResults;
+                }
+            }
+        }
+
         protected override IEnumerable<AppaProgress> OnPreInitialize(AppaProgressCounter pc)
         {
             yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Only_Issues}", 1);
@@ -170,6 +169,10 @@ namespace Appalachia.Core.Context.Contexts
             yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Test_Files}", 1);
 
             _generateTestFiles = PREFS.REG(GetPreferencePrefix, APPASTR.Test_Files, true);
+            
+            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Menu_Width}", 1);
+
+            _menuWidth = PREFS.REG(GetPreferencePrefix, APPASTR.Menu_Width, 300f, 150f, 500f);
         }
 
         protected override void OnReset()
@@ -180,6 +183,37 @@ namespace Appalachia.Core.Context.Contexts
 
                 items = null;
             }
+        }
+
+        private IEnumerable<IEnumerable<AnalysisType<TA, TT, TE>>> GetAnalysisResults()
+        {
+            return MenuOneItems.Select(
+                analysis =>
+                {
+                    if (analysis == null)
+                    {
+                        return null;
+                    }
+
+                    var target = analysis.Target;
+
+                    if ((target != null) && ShouldShowInMenu(analysis))
+                    {
+                        return analysis.AllTypes;
+                    }
+
+                    return null;
+                }
+            );
+        }
+
+        private void RecreateAnalysisResults()
+        {
+            _aggregateAnalysis = new AnalysisAggregate<TA, TT, TE>();
+
+            var allResults = GetAnalysisResults();
+
+            _aggregateAnalysis.AddAll(allResults);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Appalachia.Core.Context.Analysis.Core
@@ -27,6 +28,12 @@ namespace Appalachia.Core.Context.Analysis.Core
             this.alignment = alignment;
         }
 
+        public AnalysisMessagePart(string label, Action action, Color color, TextAnchor alignment) : this(label, color, alignment)
+        {
+            this.action = action;
+        }
+
+        public Action action;
         public Color color;
         public string text;
         public TextAnchor alignment;
@@ -71,6 +78,16 @@ namespace Appalachia.Core.Context.Analysis.Core
             {
                 new AnalysisMessagePart(text1, color, TextAnchor.MiddleRight),
                 new AnalysisMessagePart(text2, color, TextAnchor.MiddleLeft)
+            };
+        }
+
+        public static AnalysisMessagePart[] PairedWithButton(string text1, string text2, Color color, string buttonLabel, Color buttonColor, Action action)
+        {
+            return new[]
+            {
+                new AnalysisMessagePart(text1, color, TextAnchor.MiddleRight),
+                new AnalysisMessagePart(text2, color, TextAnchor.MiddleLeft),
+                new AnalysisMessagePart(buttonLabel, action, buttonColor, TextAnchor.MiddleRight)
             };
         }
 

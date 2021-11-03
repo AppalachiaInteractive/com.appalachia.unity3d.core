@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Utility.Colors;
+using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -12,6 +13,49 @@ namespace Appalachia.Core.Context.Analysis.Core
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
+        #region Profiling And Tracing Markers
+
+        private const string _PRF_PFX = nameof(AnalysisGroup<TA, TT, TE>) + ".";
+
+        private static readonly ProfilerMarker _PRF_Analyze = new ProfilerMarker(_PRF_PFX + nameof(Analyze));
+
+        private static readonly ProfilerMarker _PRF_CorrectAllIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(CorrectAllIssues));
+
+        private static readonly ProfilerMarker _PRF_GetAnalysisByType =
+            new ProfilerMarker(_PRF_PFX + nameof(GetAnalysisByType));
+
+        private static readonly ProfilerMarker
+            _PRF_GetColor = new ProfilerMarker(_PRF_PFX + nameof(GetColor));
+
+        private static readonly ProfilerMarker _PRF_GetIssueCount =
+            new ProfilerMarker(_PRF_PFX + nameof(GetIssueCount));
+
+        private static readonly ProfilerMarker _PRF_HasIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(HasIssues));
+
+        private static readonly ProfilerMarker _PRF_Reanalyze =
+            new ProfilerMarker(_PRF_PFX + nameof(Reanalyze));
+
+        private static readonly ProfilerMarker _PRF_SetAnalysisMetadata =
+            new ProfilerMarker(_PRF_PFX + nameof(SetAnalysisMetadata));
+
+        private static readonly ProfilerMarker _PRF_SetAnalysisTarget =
+            new ProfilerMarker(_PRF_PFX + nameof(SetAnalysisTarget));
+
+        private static readonly ProfilerMarker _PRF_ClearAnalysisResults =
+            new ProfilerMarker(_PRF_PFX + nameof(ClearAnalysisResults));
+
+        private static readonly ProfilerMarker _PRF_RegisterAnalysisType =
+            new ProfilerMarker(_PRF_PFX + nameof(RegisterAnalysisType));
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_Create = new ProfilerMarker(_PRF_PFX + nameof(Create));
+
+        #endregion
+
         protected AnalysisGroup()
         {
             Initialize();
@@ -34,9 +78,10 @@ namespace Appalachia.Core.Context.Analysis.Core
         public int IssueDisplayColumns { get; set; } = 3;
 
         public abstract Object Asset { get; }
-        public bool AnyIssues => AllTypes.Any(a => a.HasIssues);
-        
+
         public bool AnyAutoCorrectableIssues => AllTypes.Any(a => a.HasAutoCorrectableIssues);
+        public bool AnyIssues => AllTypes.Any(a => a.HasIssues);
+        public bool AnyCorrectableIssues => AllTypes.Any(a => a.HasCorrectableIssues);
 
         public IReadOnlyList<AnalysisType<TA, TT, TE>> AllTypes => _allTypes;
 
@@ -52,210 +97,267 @@ namespace Appalachia.Core.Context.Analysis.Core
             set => _colors = value;
         }
 
+        public event ReanalyzeHandler OnReanalyzeNecessary;
+
         protected abstract void OnAnalyze();
 
         protected abstract void RegisterAllAnalysis();
 
-        public void Analyze()
+        protected virtual void ExecuteReanalyzeNecessary()
         {
-            if (_target == null)
-            {
-                throw new NotSupportedException("Target has not been set!");
-            }
-            
-            ClearAnalysisResults();
-            Initialize();
-            
-            if (_analyzing)
-            {
-                return;
-            }
-
-            SetAnalysisMetadata();
-
-            _analyzing = true;
-
-            if (Target == null)
-            {
-                return;
-            }
-
-            OnAnalyze();
-
-            // ReSharper disable once NotAccessedVariable
-            var sum = 0;
-            foreach (var result in AllTypes)
-            {
-                result.CheckIssue();
-            }
-
-            _analyzing = false;
+            OnReanalyzeNecessary?.Invoke();
         }
 
-        public void CorrectAllIssues(bool useTestFiles, bool reimport)
+        public static TA Create(TT target)
         {
-            for (var index = 0; index < AllTypes.Count; index++)
+            using (_PRF_Create.Auto())
             {
-                var issue = AllTypes[index];
+                if (target == null)
+                {
+                    throw new ArgumentNullException(nameof(target));
+                }
 
-                issue.Correct(useTestFiles, reimport);
+                var instance = new TA();
+                instance.SetAnalysisTarget(target);
+
+                instance.Initialize();
+
+                return instance;
             }
         }
 
         public AnalysisType<TA, TT, TE> GetAnalysisByType(TE type)
         {
-            foreach (var issue in _allTypes)
+            using (_PRF_GetAnalysisByType.Auto())
             {
-                if (issue.Type.Equals(type))
+                foreach (var issue in _allTypes)
                 {
-                    return issue;
+                    if (issue.Type.Equals(type))
+                    {
+                        return issue;
+                    }
                 }
+
+                throw new NotSupportedException(type.ToString());
             }
-
-            throw new NotSupportedException(type.ToString());
-        }
-
-        public Color GetColor(TE type)
-        {
-            foreach (var issue in AllTypes)
-            {
-                if (Equals(issue.Type, type))
-                {
-                    return issue.IssueColor;
-                }
-            }
-
-            throw new NotSupportedException(type.ToString());
-        }
-
-        public Color GetColor(object colorable)
-        {
-            if (_colors == null)
-            {
-                _colors = new Dictionary<object, Color>();
-            }
-
-            if (_colors.ContainsKey(colorable))
-            {
-                return _colors[colorable];
-            }
-
-            return ResultColor;
-        }
-
-        public int GetIssueCount(TE type)
-        {
-            var issue = GetAnalysisByType(type);
-
-            return issue.IssueCount;
         }
 
         public bool HasIssues(TE type)
         {
-            var issue = GetAnalysisByType(type);
+            using (_PRF_HasIssues.Auto())
+            {
+                var issue = GetAnalysisByType(type);
 
-            return issue.HasIssues;
+                return issue.HasIssues;
+            }
+        }
+
+        public Color GetColor(TE type)
+        {
+            using (_PRF_GetColor.Auto())
+            {
+                foreach (var issue in AllTypes)
+                {
+                    if (Equals(issue.Type, type))
+                    {
+                        return issue.IssueColor;
+                    }
+                }
+
+                throw new NotSupportedException(type.ToString());
+            }
+        }
+
+        public Color GetColor(object colorable)
+        {
+            using (_PRF_GetColor.Auto())
+            {
+                if (_colors == null)
+                {
+                    _colors = new Dictionary<object, Color>();
+                }
+
+                if (_colors.ContainsKey(colorable))
+                {
+                    return _colors[colorable];
+                }
+
+                return ResultColor;
+            }
+        }
+
+        public int GetIssueCount(TE type)
+        {
+            using (_PRF_GetIssueCount.Auto())
+            {
+                var issue = GetAnalysisByType(type);
+
+                return issue.IssueCount;
+            }
+        }
+
+        public void Analyze()
+        {
+            using (_PRF_Analyze.Auto())
+            {
+                if (_target == null)
+                {
+                    throw new NotSupportedException("Target has not been set!");
+                }
+
+                ClearAnalysisResults();
+                Initialize();
+
+                if (_analyzing)
+                {
+                    return;
+                }
+
+                SetAnalysisMetadata();
+
+                _analyzing = true;
+
+                if (Target == null)
+                {
+                    return;
+                }
+
+                OnAnalyze();
+
+                // ReSharper disable once NotAccessedVariable
+                //var sum = 0;
+                foreach (var result in AllTypes)
+                {
+                    result.CheckIssue();
+                }
+
+                _analyzing = false;
+            }
+        }
+
+        public void CorrectAllIssues(bool useTestFiles, bool reimport)
+        {
+            using (_PRF_CorrectAllIssues.Auto())
+            {
+                for (var index = 0; index < AllTypes.Count; index++)
+                {
+                    var issue = AllTypes[index];
+
+                    issue.Correct(useTestFiles, reimport);
+                }
+            }
         }
 
         public void Reanalyze()
         {
-            if (_target == null)
+            using (_PRF_Reanalyze.Auto())
             {
-                throw new NotSupportedException("Target has not been set!");
-            }
+                if (_target == null)
+                {
+                    throw new NotSupportedException("Target has not been set!");
+                }
 
-            Analyze();
+                ExecuteReanalyzeNecessary();
+                
+                Analyze();
+            }
         }
 
         public void SetAnalysisMetadata()
         {
-            var metadataCount = AllTypes.Count;
-
-            var colors = ColorPalette.Default.bad.Multiple(metadataCount);
-
-            _typeMetadata = new List<AnalysisTypeMetadata<TE>>();
-
-            for (var index = 0; index < metadataCount; index++)
+            using (_PRF_SetAnalysisMetadata.Auto())
             {
-                var issue = AllTypes[index];
+                var metadataCount = AllTypes.Count;
 
-                issue.SetColor(colors[index]);
+                var colors = ColorPalette.Default.bad.Multiple(metadataCount);
 
-                var newMetadata = new AnalysisTypeMetadata<TE>
+                _typeMetadata = new List<AnalysisTypeMetadata<TE>>();
+
+                for (var index = 0; index < metadataCount; index++)
                 {
-                    color = colors[index], type = issue.Type, name = issue.DisplayName
-                };
+                    var issue = AllTypes[index];
 
-                _typeMetadata.Add(newMetadata);
+                    issue.SetColor(colors[index]);
+
+                    var newMetadata = new AnalysisTypeMetadata<TE>
+                    {
+                        color = colors[index], type = issue.Type, name = issue.DisplayName
+                    };
+
+                    _typeMetadata.Add(newMetadata);
+                }
             }
         }
 
         public void SetAnalysisTarget(TT target)
         {
-            if (target == null)
+            using (_PRF_SetAnalysisTarget.Auto())
             {
-                throw new ArgumentNullException(nameof(target));
+                if (target == null)
+                {
+                    throw new ArgumentNullException(nameof(target));
+                }
+
+                _target = target;
             }
-            
-            _target = target;
-        }
-
-        protected void ClearAnalysisResults()
-        {
-            if (_target == null)
-            {
-                throw new NotSupportedException("Target has not been set!");
-            }
-
-            _initialized = false;
-            _analyzing = false;
-
-            _colors?.Clear();
-            _typeMetadata = null;
-
-            foreach (var analysisType in _allTypes)
-            {
-                analysisType.ClearResults((TA) this, _target);
-            }
-
-            _allTypes = null;
         }
 
         protected T RegisterAnalysisType<T>(T analysis)
             where T : AnalysisType<TA, TT, TE>
         {
-            _allTypes.Add(analysis);
+            using (_PRF_RegisterAnalysisType.Auto())
+            {
+                _allTypes.Add(analysis);
 
-            return analysis;
+                return analysis;
+            }
+        }
+
+        protected void ClearAnalysisResults()
+        {
+            using (_PRF_ClearAnalysisResults.Auto())
+            {
+                if (_target == null)
+                {
+                    throw new NotSupportedException("Target has not been set!");
+                }
+
+                _initialized = false;
+                _analyzing = false;
+
+                _colors?.Clear();
+                _typeMetadata = null;
+
+                foreach (var analysisType in _allTypes)
+                {
+                    analysisType.ClearResults((TA) this, _target);
+                }
+
+                _allTypes = null;
+            }
         }
 
         private void Initialize()
         {
-            if (_initialized)
+            using (_PRF_Initialize.Auto())
             {
-                return;
+                if (_initialized)
+                {
+                    return;
+                }
+
+                _initialized = true;
+
+                _allTypes = new List<AnalysisType<TA, TT, TE>>();
+
+                RegisterAllAnalysis();
             }
-
-            _initialized = true;
-
-            _allTypes = new List<AnalysisType<TA, TT, TE>>();
-
-            RegisterAllAnalysis();
         }
 
-        public static TA Create(TT target)
-        {
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-            
-            var instance = new TA();
-            instance.SetAnalysisTarget(target);
+        #region Nested Types
 
-            instance.Initialize();
+        public delegate void ReanalyzeHandler();
 
-            return instance;
-        }
+        #endregion
     }
 }

@@ -47,8 +47,6 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             {
                 foreach (var reference in assembly.references)
                 {
-                    var hasDependencyAlready = false;
-
                     if (reference.assembly == null)
                     {
                         continue;

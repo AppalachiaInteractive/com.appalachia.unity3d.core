@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Utility.Colors;
 using Appalachia.Utility.Enums;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Core.Context.Analysis.Core
@@ -12,6 +13,32 @@ namespace Appalachia.Core.Context.Analysis.Core
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
+        #region Profiling And Tracing Markers
+
+        private const string _PRF_PFX = nameof(AnalysisType<TA, TT, TE>) + ".";
+
+        private static readonly ProfilerMarker _PRF_DisplayName =
+            new ProfilerMarker(_PRF_PFX + nameof(DisplayName));
+
+        private static readonly ProfilerMarker _PRF_ClearResults =
+            new ProfilerMarker(_PRF_PFX + nameof(ClearResults));
+
+        private static readonly ProfilerMarker _PRF_Correct = new ProfilerMarker(_PRF_PFX + nameof(Correct));
+
+        private static readonly ProfilerMarker _PRF_CheckIssue =
+            new ProfilerMarker(_PRF_PFX + nameof(CheckIssue));
+
+        private static readonly ProfilerMarker
+            _PRF_SetColor = new ProfilerMarker(_PRF_PFX + nameof(SetColor));
+
+        private static readonly ProfilerMarker _PRF_HasAutoCorrectableIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(HasAutoCorrectableIssues));
+
+        private static readonly ProfilerMarker _PRF_HasIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(HasIssues));
+
+        #endregion
+
         protected AnalysisType(TA group)
         {
             _group = group;
@@ -27,29 +54,50 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         private TA _group;
 
+        public virtual bool IsCorrectable => true;
+
         public abstract bool IsAutoCorrectable { get; }
 
         public abstract string ShortName { get; }
 
         public abstract TE Type { get; }
 
-        public bool HasIssues
-        {
-            get
-            {
-                CheckIssue();
-
-                return _messages.Count(m => m.isIssue) > 0;
-            }
-        }
-        
         public bool HasAutoCorrectableIssues
         {
             get
             {
-                CheckIssue();
+                using (_PRF_HasAutoCorrectableIssues.Auto())
+                {
+                    CheckIssue();
 
-                return IsAutoCorrectable && (_messages.Count(m => m.isIssue) > 0);
+                    return IsAutoCorrectable && (_messages.Count(m => m.isIssue) > 0);
+                }
+            }
+        }
+
+        public bool HasCorrectableIssues
+        {
+            get
+            {
+                using (_PRF_HasAutoCorrectableIssues.Auto())
+                {
+                    CheckIssue();
+
+                    return IsCorrectable && (_messages.Count(m => m.isIssue) > 0);
+                }
+            }
+        }
+
+        public bool HasIssues
+        {
+            get
+            {
+                using (_PRF_HasIssues.Auto())
+                {
+                    CheckIssue();
+
+                    return _messages.Count(m => m.isIssue) > 0;
+                }
             }
         }
 
@@ -72,12 +120,15 @@ namespace Appalachia.Core.Context.Analysis.Core
         {
             get
             {
-                if (_longName == null)
+                using (_PRF_DisplayName.Auto())
                 {
-                    _longName = Type.ToDisplayName();
-                }
+                    if (_longName == null)
+                    {
+                        _longName = Type.ToDisplayName();
+                    }
 
-                return _longName;
+                    return _longName;
+                }
             }
         }
 
@@ -90,53 +141,68 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         public virtual void ClearResults(TA group, TT target)
         {
-            _messages?.Clear();
+            using (_PRF_ClearResults.Auto())
+            {
+                _messages?.Clear();
+            }
         }
 
         public void Correct(bool useTestFiles, bool reimport)
         {
-            if (HasIssues)
+            using (_PRF_Correct.Auto())
             {
-                CorrectIssue(_group, _group.Target, useTestFiles, reimport);
+                if (HasIssues)
+                {
+                    CorrectIssue(_group, _group.Target, useTestFiles, reimport);
+                }
             }
         }
 
         public void SetColor(Color c)
         {
-            _issueColor = c;
+            using (_PRF_SetColor.Auto())
+            {
+                _issueColor = c;
+            }
         }
 
         internal void CheckIssue()
         {
-            if (_messages == null)
+            using (_PRF_CheckIssue.Auto())
             {
-                _messages = new List<AnalysisMessage>();
+                if (_messages == null)
+                {
+                    _messages = new List<AnalysisMessage>();
 
-                AnalyzeIssue(_group, _group.Target, _messages);
+                    AnalyzeIssue(_group, _group.Target, _messages);
 
-                _messages.Sort((a, b) => -1 * a.isIssue.CompareTo(b.isIssue));
+                    _messages.Sort((a, b) => -1 * a.isIssue.CompareTo(b.isIssue));
+                }
             }
         }
 
         protected void SetColor(object colorable, AnalysisType<TA, TT, TE> analysis, bool overwrite = false)
         {
-            _color = IssueColor;
-
-            if (_group.Colors == null)
+            using (_PRF_SetColor.Auto())
             {
-                _group.Colors = new Dictionary<object, Color>();
-            }
+                _color = IssueColor;
 
-            if (_group.Colors.ContainsKey(colorable))
-            {
-                if (overwrite)
+                if (_group.Colors == null)
                 {
-                    _group.Colors[colorable] = analysis.IssueColor;
+                    _group.Colors = new Dictionary<object, Color>();
                 }
-            }
-            else
-            {
-                _group.Colors.Add(colorable, analysis.IssueColor);
+
+                if (_group.Colors.ContainsKey(colorable))
+                {
+                    if (overwrite)
+                    {
+                        _group.Colors[colorable] = analysis.IssueColor;
+                    }
+                }
+                else
+                {
+                    _group.Colors.Add(colorable, analysis.IssueColor);
+                }
             }
         }
 
@@ -148,10 +214,13 @@ namespace Appalachia.Core.Context.Analysis.Core
             AnalysisType<TA, TT, TE> analysis,
             bool overwrite = false)
         {
-            SetColor(colorable1, analysis, overwrite);
-            SetColor(colorable2, analysis, overwrite);
-            SetColor(colorable3, analysis, overwrite);
-            SetColor(colorable4, analysis, overwrite);
+            using (_PRF_SetColor.Auto())
+            {
+                SetColor(colorable1, analysis, overwrite);
+                SetColor(colorable2, analysis, overwrite);
+                SetColor(colorable3, analysis, overwrite);
+                SetColor(colorable4, analysis, overwrite);
+            }
         }
 
         protected void SetColor(
@@ -161,9 +230,12 @@ namespace Appalachia.Core.Context.Analysis.Core
             AnalysisType<TA, TT, TE> analysis,
             bool overwrite = false)
         {
-            SetColor(colorable1, analysis, overwrite);
-            SetColor(colorable2, analysis, overwrite);
-            SetColor(colorable3, analysis, overwrite);
+            using (_PRF_SetColor.Auto())
+            {
+                SetColor(colorable1, analysis, overwrite);
+                SetColor(colorable2, analysis, overwrite);
+                SetColor(colorable3, analysis, overwrite);
+            }
         }
 
         protected void SetColor(
@@ -172,8 +244,11 @@ namespace Appalachia.Core.Context.Analysis.Core
             AnalysisType<TA, TT, TE> analysis,
             bool overwrite = false)
         {
-            SetColor(colorable1, analysis, overwrite);
-            SetColor(colorable2, analysis, overwrite);
+            using (_PRF_SetColor.Auto())
+            {
+                SetColor(colorable1, analysis, overwrite);
+                SetColor(colorable2, analysis, overwrite);
+            }
         }
     }
 }

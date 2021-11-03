@@ -210,7 +210,7 @@ namespace Appalachia.Core.Scriptables
         {
         }
 
-        internal override void OnCreate()
+        public override void OnCreate()
         {
             NewID();
         }

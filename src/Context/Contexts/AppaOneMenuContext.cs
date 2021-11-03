@@ -5,7 +5,7 @@ namespace Appalachia.Core.Context.Contexts
     public abstract class AppaOneMenuContext<T1> : AppaMenuContext
     {
         public abstract IReadOnlyList<T1> MenuOneItems { get; }
-
+        
         public override int RequiredMenuCount => 1;
 
         public IEnumerable<T1> VisibleMenuOneItems => GetVisibleItems(0, MenuOneItems);

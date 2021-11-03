@@ -1,5 +1,6 @@
 using System;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.CI.Integration.Core;
 using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Interfaces;
 using Sirenix.OdinInspector;
