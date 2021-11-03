@@ -8,7 +8,7 @@ namespace Appalachia.Core.Caching
 {
     internal static partial class PKG
     {
-        public const int Priority = -406000;
+        public const int Priority = -412000;
         public const string Name = "Caching";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";

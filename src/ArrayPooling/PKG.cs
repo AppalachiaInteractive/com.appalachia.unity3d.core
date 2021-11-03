@@ -8,7 +8,7 @@ namespace Appalachia.Core.ArrayPooling
 {
     internal static partial class PKG
     {
-        public const int Priority = -411000;
+        public const int Priority = -417000;
         public const string Name = "ArrayPooling";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";
