@@ -15,6 +15,7 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 12b41f2b7581ee8f6e4d10bd1f34e53c2402bcf7 | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | 864416928202df784de56fc403648c237e1bbb2d | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | acccc4e32c33308613e6d494479c4e96287d3a13 | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | dd89bf3e56037d58932512c5b60d2f9ec08ed8fa | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
