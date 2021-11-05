@@ -14,6 +14,7 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 864416928202df784de56fc403648c237e1bbb2d | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | acccc4e32c33308613e6d494479c4e96287d3a13 | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | dd89bf3e56037d58932512c5b60d2f9ec08ed8fa | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | e6ce2380c0253454b5b98e7fad687e95ce78850e | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
@@ -40,11 +41,6 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
 | de68b7d6feaa2329eeeb4485d570ad8aa6a619a1 | 2021-10-31 | Chris Schubert | Updating changelog and releaselog |
 | 327d8930f6fbaa282de5b0199ba5ee69e49b675c | 2021-10-31 | Chris Schubert | Updating changelog and releaselog |
 | a37f58bbd0366d530b016f6a374cdb45f81df697 | 2021-10-31 | Chris Schubert | Updating changelog and releaselog |
-
-
- ## Tag: `v0.2.0`
-| Hash | Date | Author | Changes |
-|------|------|--------|---------|
 | 519571190c702a69a2ab384e70702a09b36b268a | 2021-10-31 | Chris Schubert | Updating to 0.2 for packaging simplicity |
 
 
