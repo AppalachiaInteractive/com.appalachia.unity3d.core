@@ -8,7 +8,7 @@ namespace Appalachia.Core.Overrides
 {
     internal static partial class PKG
     {
-        public const int Priority = -400000;
+        public const int Priority = -399000;
         public const string Name = "Overrides";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";

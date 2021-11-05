@@ -8,7 +8,7 @@ namespace Appalachia.Core.ObjectPooling
 {
     internal static partial class PKG
     {
-        public const int Priority = -401000;
+        public const int Priority = -400000;
         public const string Name = "ObjectPooling";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";

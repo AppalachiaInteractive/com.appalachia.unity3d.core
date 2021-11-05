@@ -8,7 +8,7 @@ namespace Appalachia.Core.Debugging
 {
     internal static partial class PKG
     {
-        public const int Priority = -409000;
+        public const int Priority = -408000;
         public const string Name = "Debugging";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";

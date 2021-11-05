@@ -1,16 +1,17 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Context.Elements
 {
-    public class AppaCoroutineRunner
+    public class AppaWindowBackgroundCoroutineRunner
     {
         #region Profiling And Tracing Markers
 
-        private const string _PRF_PFX = nameof(AppaCoroutineRunner) + ".";
+        private const string _PRF_PFX = nameof(AppaWindowBackgroundCoroutineRunner) + ".";
 
         private static readonly ProfilerMarker _PRF_ExecuteCoroutineEnumerator =
             new(_PRF_PFX + nameof(ExecuteCoroutineEnumerator));
@@ -67,9 +68,12 @@ namespace Appalachia.Core.Context.Elements
             using (_PRF_ExecuteCoroutine.Auto())
             {
                 var enumerator = ExecuteCoroutineEnumerator(coroutine, onComplete);
+                var safe = enumerator.ToSafe();
 
 #if UNITY_EDITOR
-                Unity.EditorCoroutines.Editor.EditorCoroutineUtility.StartCoroutine(enumerator, this);
+                safe.ExecuteAsEditorCoroutine();
+#else
+                safe.ExecuteAsCoroutine();
 #endif
             }
         }

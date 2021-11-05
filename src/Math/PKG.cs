@@ -8,7 +8,7 @@ namespace Appalachia.Core.Math
 {
     internal static partial class PKG
     {
-        public const int Priority = -402000;
+        public const int Priority = -401000;
         public const string Name = "Math";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";
