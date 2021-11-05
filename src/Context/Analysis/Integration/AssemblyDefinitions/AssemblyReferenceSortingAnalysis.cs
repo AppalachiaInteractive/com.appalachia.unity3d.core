@@ -4,18 +4,18 @@ using Appalachia.Core.Context.Analysis.Core;
 
 namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
 {
-    public sealed class SortingAnalysis : AssemblyDefinitionAnalysis
+    public sealed class AssemblyReferenceSortingAnalysis : AssemblyDefinitionAnalysis
     {
-        public SortingAnalysis(AssemblyDefinitionAnalysisGroup group) : base(group)
+        public AssemblyReferenceSortingAnalysis(AssemblyDefinitionAnalysisGroup group) : base(group)
         {
         }
 
-        public override bool IsAutoCorrectable => true;
+        public override bool IsAutoCorrectable() => true;
 
         public override string ShortName => "Ref. Sorting";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>
-            AssemblyDefinitionAnalysisGroup.Types.Sorting;
+            AssemblyDefinitionAnalysisGroup.Types.AssemblyReferenceSorting;
 
         protected override void AnalyzeIssue(
             AssemblyDefinitionAnalysisGroup group,

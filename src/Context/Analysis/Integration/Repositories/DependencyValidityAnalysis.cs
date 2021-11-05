@@ -11,7 +11,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
         }
 
-        public override bool IsAutoCorrectable => true;
+        public override bool IsAutoCorrectable() => true;
         public override string ShortName => "Dep. Validity";
 
         public override RepositoryAnalysisGroup.Types Type =>

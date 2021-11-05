@@ -11,18 +11,18 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
     {
         public enum Types
         {
-            All = 00000,
-            AssemblyReferenceLevel = 00010,
-            ReferenceOpportunity = 00020,
-            AssemblyName = 00050,
-            FileName = 00060,
-            Namespace = 00070,
-            ReferenceStyle = 00080,
-            ReferenceValidity = 00090,
-            Sorting = 00100,
-            ReferenceDuplicates = 00110,
-            NamespaceFoldersExclusions = 00130,
-            NamespaceFoldersEncoding = 00140
+            All = 0,
+            AssemblyReferenceLevel = 1 << 0,
+            ReferenceOpportunity = 1 << 1,
+            AssemblyName = 1 << 2,
+            FileName = 1 << 3,
+            Namespace = 1 << 4,
+            ReferenceStyle = 1 << 5,
+            ReferenceValidity = 1 << 6,
+            AssemblyReferenceSorting = 1 << 7,
+            ReferenceDuplicates = 1 << 8,
+            NamespaceFoldersExclusions = 1 << 9,
+            NamespaceFoldersEncoding = 1 <<10,
         }
 
         public AssemblyNameAnalysis assemblyName;
@@ -36,7 +36,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         public ReferenceOpportunityAnalysis ReferenceOpportunity;
         public ReferenceStyleAnalysis ReferenceStyle;
         public ReferenceValidityAnalysis ReferenceValidity;
-        public SortingAnalysis Sorting;
+        public AssemblyReferenceSortingAnalysis assemblyReferenceSorting;
 
         public override Object Asset => Target.asset;
 
@@ -61,7 +61,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
             ReferenceOpportunity = RegisterAnalysisType(new ReferenceOpportunityAnalysis(this));
             ReferenceStyle = RegisterAnalysisType(new ReferenceStyleAnalysis(this));
             ReferenceValidity = RegisterAnalysisType(new ReferenceValidityAnalysis(this));
-            Sorting = RegisterAnalysisType(new SortingAnalysis(this));
+            assemblyReferenceSorting = RegisterAnalysisType(new AssemblyReferenceSortingAnalysis(this));
         }
     }
 }

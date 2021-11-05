@@ -12,7 +12,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
         }
 
-        public override bool IsAutoCorrectable => false;
+        public override bool IsAutoCorrectable() => false;
         public override string ShortName => "Publish Status";
 
         public override RepositoryAnalysisGroup.Types Type => RepositoryAnalysisGroup.Types.PublishStatus;

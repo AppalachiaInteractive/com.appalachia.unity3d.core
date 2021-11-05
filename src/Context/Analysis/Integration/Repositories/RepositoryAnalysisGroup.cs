@@ -12,21 +12,21 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
     {
         public enum Types
         {
-            All = 00000,
-            DependencyPresence = 0b00000001,
-            DependencyVersions = 0b00000010,
-            DependencyValidity = 0b00000100,
-            PublishStatus =      0b00001000,
-            DistributableSize =  0b00010000,
-            FileSize =           0b00100000
+            All = 0,
+            DependencyPresence = 1 << 0,
+            DependencyVersions = 1 << 1,
+            DependencyValidity = 1 << 2,
+            PublishStatus = 1 << 3,
+            DistributableSize = 1 << 4,
+            FileSize = 1 << 5
         }
 
         public DependencyPresenceAnalysis DependencyPresence;
         public DependencyValidityAnalysis DependencyValidity;
         public DependencyVersionsAnalysis DependencyVersions;
-        public PublishStatusAnalysis PublishStatus;
         public DistributableSizeAnalysis DistributableSize;
         public FileSizeAnalysis FileSize;
+        public PublishStatusAnalysis PublishStatus;
 
         internal Dictionary<string, RepositoryDependency> uniqueDependencies;
 
@@ -36,7 +36,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
             Target.OnReanalyzeNecessary -= Reanalyze;
             Target.OnReanalyzeNecessary += Reanalyze;
-                
+
             uniqueDependencies = new Dictionary<string, RepositoryDependency>();
 
             foreach (var dependency in Target.dependencies)
@@ -60,11 +60,11 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             DependencyValidity = RegisterAnalysisType(new DependencyValidityAnalysis(this));
 
             DependencyVersions = RegisterAnalysisType(new DependencyVersionsAnalysis(this));
-            
+
             PublishStatus = RegisterAnalysisType(new PublishStatusAnalysis(this));
 
             DistributableSize = RegisterAnalysisType(new DistributableSizeAnalysis(this));
-            
+
             FileSize = RegisterAnalysisType(new FileSizeAnalysis(this));
         }
     }

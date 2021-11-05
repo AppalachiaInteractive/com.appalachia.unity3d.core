@@ -13,7 +13,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Packages
         public enum Types
         {
             All = 00000,
-            PackageVersions = 00010
+            PackageVersions = 1 << 0,
         }
 
         public PackageVersionsAnalysis PackageVersions;

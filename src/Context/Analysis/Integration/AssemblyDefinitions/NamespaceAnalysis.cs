@@ -10,7 +10,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
         {
         }
 
-        public override bool IsAutoCorrectable => false;
+        public override bool IsAutoCorrectable() => false;
         public override string ShortName => "Namespace";
 
         public override AssemblyDefinitionAnalysisGroup.Types Type =>

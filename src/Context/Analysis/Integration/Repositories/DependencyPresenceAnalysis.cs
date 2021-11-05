@@ -12,7 +12,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
         }
 
-        public override bool IsAutoCorrectable => true;
+        public override bool IsAutoCorrectable() => true;
 
         public override string ShortName => "Dep. Presence";
 
@@ -110,7 +110,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
             var npmPackage = target.npmPackage;
 
-            npmPackage.Dependencies ??= new Dictionary<string, string>();
+            npmPackage.Dependencies ??= new SortedDictionary<string, string>();
 
             foreach (var dependency in target.dependencies.Concat(target.missingDependencies))
             {

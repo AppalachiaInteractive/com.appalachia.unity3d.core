@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Appalachia.CI.Constants;
-using Appalachia.CI.Integration.Core;
 using Appalachia.Core.Context.Elements;
 using Appalachia.Core.Context.Elements.Progress;
 using UnityEngine;
@@ -17,16 +16,35 @@ namespace Appalachia.Core.Context.Contexts
 
         private AppaMenuSelection[] _menuSelections;
 
+        public virtual bool NeedsProgressDraw { get; }
+
         public string ProgressVerb { get; set; }
-        public virtual float MenuWidth => 300f;
-        
+
         public abstract int RequiredMenuCount { get; }
+        public virtual float MenuWidth => 300f;
+
+        public bool CurrentSelectionVisible
+        {
+            get
+            {
+                var menuSelection = GetMenuSelection(0);
+                var menuItemIndex = menuSelection.currentIndex;
+                var visibility = menuSelection.IsVisible(menuItemIndex);
+
+                return visibility;
+            }
+        }
 
         public abstract int GetMenuItemCount(int menuIndex);
 
         public abstract void ValidateMenuSelection(int menuIndex);
 
         protected abstract void OnReset();
+
+        public virtual AppaProgress GetProgress()
+        {
+            return default;
+        }
 
         // ReSharper disable once UnusedParameter.Global
         protected virtual void OnAfterChangeMenuSelection(int menuIndex)
@@ -97,6 +115,13 @@ namespace Appalachia.Core.Context.Contexts
             OnReset();
         }
 
+        protected override IEnumerable<AppaProgress> OnPostInitialize(AppaProgressCounter pc)
+        {
+            InitializeMenuSelections();
+
+            yield return (APPASTR.Completed, 100f);
+        }
+
         protected IEnumerable<TL> GetVisibleItems<TL>(int menuIndex, IReadOnlyList<TL> items)
         {
             var menuSelection = GetMenuSelection(menuIndex);
@@ -116,13 +141,6 @@ namespace Appalachia.Core.Context.Contexts
             }
         }
 
-        protected override IEnumerable<AppaProgress> OnPostInitialize(AppaProgressCounter pc)
-        {
-            InitializeMenuSelections();
-
-            yield return (APPASTR.Completed, 100f);
-        }
-
         private void InitializeMenuSelections()
         {
             if (_menuSelections == null)
@@ -140,13 +158,6 @@ namespace Appalachia.Core.Context.Contexts
                     _menuSelections[menuIndex] = current;
                 }
             }
-        }
-        
-        public virtual bool NeedsProgressDraw { get; }
-
-        public virtual AppaProgress GetProgress()
-        {
-            return default;
         }
     }
 }

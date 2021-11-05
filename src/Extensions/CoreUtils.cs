@@ -214,13 +214,7 @@ namespace Appalachia.Core.Extensions
 
             return animateMaterials;
         }
-
-        public static bool HasFlag<T>(T mask, T flag)
-            where T : IConvertible
-        {
-            return (mask.ToUInt32(null) & flag.ToUInt32(null)) != 0;
-        }
-
+        
         public static bool IsSceneViewFogEnabled(Camera camera)
         {
             var fogEnable = true;

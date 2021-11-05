@@ -204,7 +204,7 @@ namespace Appalachia.Core.Context.Analysis.Core
                         _correctableIssueCounts[issue.Type] += 1;
                     }
 
-                    if (issue.IsAutoCorrectable)
+                    if (issue.IsAutoCorrectable())
                     {
                         _autoCorrectableIssueCounts[issue.Type] += 1;
                     }

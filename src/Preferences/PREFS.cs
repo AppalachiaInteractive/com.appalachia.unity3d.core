@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 
 #endregion
@@ -22,8 +23,6 @@ namespace Appalachia.Core.Preferences
             new(_PRF_PFX + nameof(InternalRegistrationEnum));
 
         #endregion
-
-        #region Preferences
 
         public static PREF<TR> REG<TR>(
             string grouping,
@@ -260,8 +259,6 @@ namespace Appalachia.Core.Preferences
             }
         }
 
-        #endregion
-
         private static bool InternalRegistration<TR>(
             string key,
             string grouping,
@@ -329,7 +326,33 @@ namespace Appalachia.Core.Preferences
         {
             using (_PRF_InternalRegistrationEnum.Auto())
             {
-                var state = PREF_STATES.GetEnumState<TR>();
+                if (!typeof(TR).IsEnum)
+                {
+                    result = null;
+                    return false;
+                }
+
+                var underlyingType = Enum.GetUnderlyingType(typeof(TR));
+
+                if ((underlyingType == typeof(ulong)) ||
+                    (underlyingType == typeof(uint)) ||
+                    (underlyingType == typeof(ushort)))
+                {
+                    throw new NotSupportedException(
+                        "Preferences does not support the use of enums with unsigned underlying types."
+                    );
+                }
+
+                PREF_STATE<TR> state;
+
+                if (typeof(TR).HasAttribute<FlagsAttribute>())
+                {
+                    state = PREF_STATES.GetFlagState<TR>();
+                }
+                else
+                {
+                    state = PREF_STATES.GetEnumState<TR>();
+                }
 
                 if (defaultValue is TR dv)
                 {

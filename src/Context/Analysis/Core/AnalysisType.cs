@@ -54,9 +54,11 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         private TA _group;
 
+        protected TA Group => _group;
+
         public virtual bool IsCorrectable => true;
 
-        public abstract bool IsAutoCorrectable { get; }
+        public abstract bool IsAutoCorrectable();
 
         public abstract string ShortName { get; }
 
@@ -70,7 +72,7 @@ namespace Appalachia.Core.Context.Analysis.Core
                 {
                     CheckIssue();
 
-                    return IsAutoCorrectable && (_messages.Count(m => m.isIssue) > 0);
+                    return IsAutoCorrectable() && (_messages.Count(m => m.isIssue) > 0);
                 }
             }
         }

@@ -8,6 +8,7 @@ using Appalachia.Core.Context.Analysis.Core;
 using Appalachia.Core.Context.Elements.Progress;
 using Appalachia.Core.Context.Interfaces;
 using Appalachia.Core.Preferences;
+using Appalachia.Utility.Enums;
 using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 
@@ -35,16 +36,19 @@ namespace Appalachia.Core.Context.Contexts
 
         #region Preferences
 
-        private PREF<bool> _appalachiaOnly;
-        private PREF<bool> _appalachiaManagedOnly;
-        private PREF<bool> _assetsOnly;
-        public PREF<bool> AppalachiaOnly => _appalachiaOnly;
-        public PREF<bool> AppalachiaManagedOnly => _appalachiaManagedOnly;
-        public PREF<bool> AssetsOnly => _assetsOnly;
+        private PREF<IntegrationTypeFlags> _hideFlags;
+        public PREF<IntegrationTypeFlags> HideFlags => _hideFlags;
+            
+        //private PREF<bool> _appalachiaOnly;
+        //private PREF<bool> _appalachiaManagedOnly;
+        //private PREF<bool> _assetsOnly;
+        //public PREF<bool> AppalachiaOnly => _appalachiaOnly;
+        //public PREF<bool> AppalachiaManagedOnly => _appalachiaManagedOnly;
+        //public PREF<bool> AssetsOnly => _assetsOnly;
 
         #endregion
 
-        protected override string GetPreferencePrefix => APPASTR.PREF.CI.Package_Review + typeof(TT) + "/";
+        protected override string GetPreferencePrefix => APPASTR.PREF.CI.Package_Review + "/" + typeof(TT).Name + "/";
 
         public override bool ShouldShowInMenu(TA analysis)
         {
@@ -62,6 +66,12 @@ namespace Appalachia.Core.Context.Contexts
                     return false;
                 }
 
+                if (analysis.Target.flags.HasAny(_hideFlags.Value))
+                {
+                    return false;
+                }
+
+                /*
                 if (_appalachiaManagedOnly.Value && !analysis.Target.IsAppalachiaManaged)
                 {
                     return false;
@@ -75,7 +85,7 @@ namespace Appalachia.Core.Context.Contexts
                 if (_assetsOnly.Value && !analysis.Target.IsAsset)
                 {
                     return false;
-                }
+                }*/
 
                 return true;
             }
@@ -83,14 +93,20 @@ namespace Appalachia.Core.Context.Contexts
 
         public override IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
         {
-            drawer.RegisterFilterPref(AppalachiaManagedOnly);
+            drawer.RegisterFilterPref(HideFlags);
+            yield return null;
+            
+            /*drawer.RegisterFilterPref(AppalachiaManagedOnly);
+            
+            yield return null;
+            
             drawer.RegisterFilterPref(AppalachiaOnly);
 
             yield return null;
 
             drawer.RegisterFilterPref(AssetsOnly);
 
-            yield return null;
+            yield return null;*/
 
             var baseResults = base.RegisterPreferences(drawer);
 
@@ -201,17 +217,21 @@ namespace Appalachia.Core.Context.Contexts
                 yield return baseResult;
             }
 
-            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Appalachia_Only}", 1);
+            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Hide_Flags}", 1);
 
-            _appalachiaOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Appalachia_Only, true);
+            _hideFlags = PREFS.REG(GetPreferencePrefix, APPASTR.Hide_Flags, IntegrationTypeFlags.None);
+            
+            //yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Appalachia_Only}", 1);
 
-            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Appalachia_Managed_Only}", 1);
+            //_appalachiaOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Appalachia_Only, true);
 
-            _appalachiaManagedOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Appalachia_Managed_Only, true);
+            //yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Appalachia_Managed_Only}", 1);
 
-            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Assets_Only}", 1);
+            //_appalachiaManagedOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Appalachia_Managed_Only, true);
 
-            _assetsOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Assets_Only, true);
+            //yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Assets_Only}", 1);
+
+            //_assetsOnly = PREFS.REG(GetPreferencePrefix, APPASTR.Assets_Only, true);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
         }
 
-        public override bool IsAutoCorrectable => false;
+        public override bool IsAutoCorrectable() => false;
         public override bool IsCorrectable => false;
         public override string ShortName => "Dist. Size";
 
