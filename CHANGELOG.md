@@ -1,4 +1,6 @@
 ```
+C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
+ Let's go!  
  ________   ___  ___   ________   ________    ________   _______    ________      
 |\   ____\ |\  \|\  \ |\   __  \ |\   ___  \ |\   ____\ |\  ___ \  |\   ____\     
 \ \  \___| \ \  \\\  \\ \  \|\  \\ \  \\ \  \\ \  \___| \ \   __/| \ \  \___|_    
@@ -12,6 +14,7 @@
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 407a44bd1757158cc0cb725ca277f62345d2879e | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | cd7b502c4e77c2f3065e1d80cce29ad7dd1e987d | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | 20d4632fa2c253d74451218efd55a46b24736c49 | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |
 | 12b41f2b7581ee8f6e4d10bd1f34e53c2402bcf7 | 2021-11-05 | Chris Schubert | Updating changelog and releaselog |

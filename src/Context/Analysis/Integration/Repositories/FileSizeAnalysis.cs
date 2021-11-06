@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.CI.Integration.FileSystem;
 using Appalachia.CI.Integration.Repositories;
 using Appalachia.Core.Context.Analysis.Core;
 using Appalachia.Utility.Colors;
@@ -24,6 +25,16 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             RepositoryMetadata target,
             List<AnalysisMessage> messages)
         {
+            if (!AppaDirectory.Exists(target.Path))
+            {
+                SetColor(group, target, this);
+                messages.Add(
+                    true,
+                    AnalysisMessagePart.Center("Could not find directory.", ColorPalette.Default.bad.First)
+                );
+                return;
+            }
+            
             var files = target.GetLargestFiles(20);
 
             foreach (var file in files)
