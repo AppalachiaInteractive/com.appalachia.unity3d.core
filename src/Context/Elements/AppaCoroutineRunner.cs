@@ -68,7 +68,7 @@ namespace Appalachia.Core.Context.Elements
             using (_PRF_ExecuteCoroutine.Auto())
             {
                 var enumerator = ExecuteCoroutineEnumerator(coroutine, onComplete);
-                var safe = enumerator.ToSafe();
+                var safe = enumerator.AsSafe();
 
 #if UNITY_EDITOR
                 safe.ExecuteAsEditorCoroutine();
