@@ -12,8 +12,6 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
         {
         }
 
-        public override bool IsAutoCorrectable() => true;
-
         public override string ShortName => "Dep. Presence";
 
         public override RepositoryAnalysisGroup.Types Type =>
@@ -25,8 +23,13 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
             {
                 throw new ArgumentNullException(nameof(target));
             }
-            
+
             target.missingDependencies?.Clear();
+        }
+
+        public override bool IsAutoCorrectable()
+        {
+            return true;
         }
 
         protected override void AnalyzeIssue(
@@ -75,6 +78,31 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
 
                     target.missingDependencies.Add(newDependency);
                     existingDependencies.Add(newDependency.Name);
+                }
+            }
+
+            if (target.IsAppalachia)
+            {
+                var requiredReferences = new[] {"com.appalachia.unity3d.third-party.sirenix"};
+
+                foreach (var requiredReference in requiredReferences)
+                {
+                    if (!existingDependencies.Contains(requiredReference))
+                    {
+                        var referenceRepo = RepositoryMetadata.FindByName(requiredReference);
+
+                        var newDependency = new RepositoryDependency(
+                            referenceRepo.Name,
+                            referenceRepo.PackageVersion
+                        );
+
+                        newDependency.SetMissing();
+
+                        target.PopulateDependency(newDependency);
+
+                        target.missingDependencies.Add(newDependency);
+                        existingDependencies.Add(newDependency.Name);
+                    }
                 }
             }
 
