@@ -297,8 +297,8 @@ namespace Appalachia.Core.Editing.Groups
                     InnerContainerStyle,
                     GUILayoutOptions.Width(tabGroup.InnerContainerWidth).ExpandHeight(tabGroup.ExpandHeight)
                 );
-                UIStateStacks.PushHierarchyMode(false);
-                UIStateStacks.PushLabelWidth(tabGroup.LabelWidth - 4f);
+                APPAGUI.StateStacks.PushHierarchyMode(false);
+                APPAGUI.StateStacks.PushLabelWidth(tabGroup.LabelWidth - 4f);
                 if (Event.current.type == EventType.Repaint)
                 {
                     Rect = rect;
@@ -320,8 +320,8 @@ namespace Appalachia.Core.Editing.Groups
         {
             if (IsVisible)
             {
-                UIStateStacks.PopLabelWidth();
-                UIStateStacks.PopHierarchyMode();
+                APPAGUI.StateStacks.PopLabelWidth();
+                APPAGUI.StateStacks.PopHierarchyMode();
                 if (tabGroup.IsAnimating)
                 {
                     GUI.color = prevColor;
@@ -490,9 +490,9 @@ namespace Appalachia.Core.Editing.Groups
                 options[2] = !FixedHeight ? GUILayout.Height(currentHeight) : GUILayout.Height(num1);
             }
 
-            UIStateStacks.guiEnabled.Push(false);
+            APPAGUI.StateStacks.guiEnabled.Push(false);
             GUILayout.BeginScrollView(scrollPosition, false, false, GUIStyle.none, GUIStyle.none, options);
-            UIStateStacks.PopGUIEnabled();
+            APPAGUI.StateStacks.PopGUIEnabled();
             var rect2 = EditorGUILayout.BeginHorizontal(GUILayoutOptions.ExpandHeight(ExpandHeight));
             if (Event.current.type != EventType.Repaint)
             {
@@ -506,9 +506,9 @@ namespace Appalachia.Core.Editing.Groups
         public void EndGroup()
         {
             EditorGUILayout.EndHorizontal();
-            UIStateStacks.guiEnabled.Push(false);
+            APPAGUI.StateStacks.guiEnabled.Push(false);
             GUILayout.EndScrollView();
-            UIStateStacks.PopGUIEnabled();
+            APPAGUI.StateStacks.PopGUIEnabled();
             EditorGUILayout.EndVertical();
             if (targetPage != currentPage)
             {
@@ -673,8 +673,8 @@ namespace Appalachia.Core.Editing.Groups
         {
             currentDrawingToolbarWidth = width;
             Rect rect = EditorGUILayout.BeginVertical(style, (GUILayoutOption[]) GUILayoutOptions.Width(width).ExpandHeight(false));
-            UIStateStacks.PushHierarchyMode(false, true);
-            UIStateStacks.PushIndentLevel(0);
+            APPAGUI.StateStacks.PushHierarchyMode(false, true);
+            APPAGUI.StateStacks.PushIndentLevel(0);
             return rect;
         }
 
@@ -691,8 +691,8 @@ namespace Appalachia.Core.Editing.Groups
                 SirenixEditorGUI.DrawBorders(currentLayoutRect, 1, true);
             }
 
-            UIStateStacks.PopIndentLevel();
-            UIStateStacks.PopHierarchyMode();
+            APPAGUI.StateStacks.PopIndentLevel();
+            APPAGUI.StateStacks.PopHierarchyMode();
             EditorGUILayout.EndVertical();
         }
 
@@ -723,15 +723,15 @@ namespace Appalachia.Core.Editing.Groups
         public static Rect BeginVerticalToolbarBox(params GUILayoutOption[] options)
         {
             SirenixEditorGUI.BeginIndentedVertical(SirenixGUIStyles.BoxContainer, options);
-            UIStateStacks.PushHierarchyMode(false, true);
-            UIStateStacks.PushLabelWidth(GUIHelper.BetterLabelWidth - 4f);
+            APPAGUI.StateStacks.PushHierarchyMode(false, true);
+            APPAGUI.StateStacks.PushLabelWidth(GUIHelper.BetterLabelWidth - 4f);
             return GUIHelper.GetCurrentLayoutRect();
         }
 
         public static void EndVerticalToolbarBox()
         {
-            UIStateStacks.PopLabelWidth();
-            UIStateStacks.PopHierarchyMode();
+            APPAGUI.StateStacks.PopLabelWidth();
+            APPAGUI.StateStacks.PopHierarchyMode();
             SirenixEditorGUI.EndIndentedVertical();
         }
 
