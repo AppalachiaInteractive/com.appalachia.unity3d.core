@@ -14,13 +14,10 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 1f1bdde3aab00d7a63346e09a82c87a8cb3e7eab | 2021-11-09 | Chris Schubert | Removing empty directories, adding some debugger passthroughs, and reformatting asmdefs |
+| 6ab2f59da84fe609de1bec0c60adf6e9570ce79a | 2021-11-08 | Chris Schubert | Updating changelog and releaselog |
 | f0e4ea8c57d2a7bd6ccf4f4ff8a2e6843cf59e29 | 2021-11-08 | Chris Schubert | Upgrading to new logging library |
 | 80cd43e818fb8bfd16df6fcae73142c03a171a5b | 2021-11-07 | Chris Schubert | Fixing shader includes and automatic references for resources |
-
-
- ## Tag: `v0.2.0`
-| Hash | Date | Author | Changes |
-|------|------|--------|---------|
 | 71e8864d1033ad3e8a42f8436e84a4a26953c1a0 | 2021-11-06 | Chris Schubert | Updating changelog and releaselog |
 | c4b6b8215816e637544d69d34e0e87f36143804e | 2021-11-06 | Chris Schubert | Updating changelog and releaselog |
 | 85c1d8bb6ea95a49a534d400ed52360413621763 | 2021-11-06 | Chris Schubert | Updating changelog and releaselog |
