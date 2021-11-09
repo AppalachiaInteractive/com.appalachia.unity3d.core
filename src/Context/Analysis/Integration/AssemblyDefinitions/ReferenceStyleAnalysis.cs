@@ -23,6 +23,8 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
             AssemblyDefinitionMetadata target,
             List<AnalysisMessage> messages)
         {
+            var shouldUseGuidReferences = target.IsAppalachiaManaged;
+            
             for (var index = 0; index < target.references.Count; index++)
             {
                 var reference = target.references[index];
@@ -34,7 +36,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
 
                 var isIssue = false;
 
-                if (!reference.IsGuidReference)
+                if (reference.IsGuidReference != shouldUseGuidReferences)
                 {
                     isIssue = true;
                     SetColor(group, target, reference, this);

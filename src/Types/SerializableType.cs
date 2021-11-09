@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Utility.Enums;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -66,7 +67,7 @@ namespace Appalachia.Core.Types
             }
         }
 
-        public bool Equals(SerializableType p)
+        [DebuggerStepThrough] public bool Equals(SerializableType p)
         {
             // If parameter is null return false:
             if ((object) p == null)
@@ -79,7 +80,7 @@ namespace Appalachia.Core.Types
         }
 
         // overload the .Equals method
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             // If parameter is null return false.
             if (obj == null)
@@ -100,13 +101,13 @@ namespace Appalachia.Core.Types
 
         // we don't need to overload operators between SerializableType and System.Type because we already enabled them to implicitly convert
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             return type.GetHashCode();
         }
 
         // overload the == and != operators
-        public static bool operator ==(SerializableType a, SerializableType b)
+        [DebuggerStepThrough] public static bool operator ==(SerializableType a, SerializableType b)
         {
             // If both are null, or both are same instance, return true.
             if (ReferenceEquals(a, b))
@@ -124,18 +125,18 @@ namespace Appalachia.Core.Types
             return a.type == b.type;
         }
 
-        public static bool operator !=(SerializableType a, SerializableType b)
+        [DebuggerStepThrough] public static bool operator !=(SerializableType a, SerializableType b)
         {
             return !(a == b);
         }
 
-        public static implicit operator SerializableType(Type t)
+        [DebuggerStepThrough] public static implicit operator SerializableType(Type t)
         {
             return new(t);
         }
 
         // allow SerializableType to implicitly be converted to and from System.Type
-        public static implicit operator Type(SerializableType stype)
+        [DebuggerStepThrough] public static implicit operator Type(SerializableType stype)
         {
             return stype.type;
         }

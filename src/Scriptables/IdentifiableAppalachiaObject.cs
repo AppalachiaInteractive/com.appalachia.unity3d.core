@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Appalachia.Core.Assets;
 using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
@@ -34,7 +35,7 @@ namespace Appalachia.Core.Scriptables
 
         #region IComparable
 
-        public int CompareTo(object obj)
+        [DebuggerStepThrough] public int CompareTo(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -53,7 +54,7 @@ namespace Appalachia.Core.Scriptables
                 );
         }
 
-        public int CompareTo(T other)
+        [DebuggerStepThrough] public int CompareTo(T other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -68,28 +69,28 @@ namespace Appalachia.Core.Scriptables
             return id.CompareTo(other.id);
         }
 
-        public static bool operator <(
+        [DebuggerStepThrough] public static bool operator <(
             IdentifiableAppalachiaObject<T> left,
             IdentifiableAppalachiaObject<T> right)
         {
             return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) < 0;
         }
 
-        public static bool operator >(
+        [DebuggerStepThrough] public static bool operator >(
             IdentifiableAppalachiaObject<T> left,
             IdentifiableAppalachiaObject<T> right)
         {
             return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) > 0;
         }
 
-        public static bool operator <=(
+        [DebuggerStepThrough] public static bool operator <=(
             IdentifiableAppalachiaObject<T> left,
             IdentifiableAppalachiaObject<T> right)
         {
             return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) <= 0;
         }
 
-        public static bool operator >=(
+        [DebuggerStepThrough] public static bool operator >=(
             IdentifiableAppalachiaObject<T> left,
             IdentifiableAppalachiaObject<T> right)
         {

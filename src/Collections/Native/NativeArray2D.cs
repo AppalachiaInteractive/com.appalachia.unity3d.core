@@ -278,7 +278,7 @@ namespace Appalachia.Core.Collections.Native
             return dst;
         }
 
-        public bool Equals(NativeArray2D<T> other)
+        [DebuggerStepThrough] public bool Equals(NativeArray2D<T> other)
         {
             return (m_Buffer == other.m_Buffer) &&
                    (Length0 == other.Length0) &&
@@ -287,7 +287,7 @@ namespace Appalachia.Core.Collections.Native
                    (Capacity1 == other.Capacity1);
         }
 
-        public override bool Equals(object other)
+        [DebuggerStepThrough] public override bool Equals(object other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -297,7 +297,7 @@ namespace Appalachia.Core.Collections.Native
             return other is NativeArray2D<T> && Equals((NativeArray2D<T>) other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             var result = (int) m_Buffer;
             result = (result * 397) ^ Capacity0;
@@ -305,12 +305,12 @@ namespace Appalachia.Core.Collections.Native
             return result;
         }
 
-        public static bool operator ==(NativeArray2D<T> a, NativeArray2D<T> b)
+        [DebuggerStepThrough] public static bool operator ==(NativeArray2D<T> a, NativeArray2D<T> b)
         {
             return a.Equals(b);
         }
 
-        public static bool operator !=(NativeArray2D<T> a, NativeArray2D<T> b)
+        [DebuggerStepThrough] public static bool operator !=(NativeArray2D<T> a, NativeArray2D<T> b)
         {
             return !a.Equals(b);
         }

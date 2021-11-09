@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
 
@@ -43,7 +44,7 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        public int CompareTo(AutonamedIdentifiableAppalachiaObject<T> other)
+        [DebuggerStepThrough] public int CompareTo(AutonamedIdentifiableAppalachiaObject<T> other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -91,28 +92,28 @@ namespace Appalachia.Core.Scriptables
                 );
         }
 
-        public static bool operator >(
+        [DebuggerStepThrough] public static bool operator >(
             AutonamedIdentifiableAppalachiaObject<T> left,
             AutonamedIdentifiableAppalachiaObject<T> right)
         {
             return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) > 0;
         }
 
-        public static bool operator >=(
+        [DebuggerStepThrough] public static bool operator >=(
             AutonamedIdentifiableAppalachiaObject<T> left,
             AutonamedIdentifiableAppalachiaObject<T> right)
         {
             return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) >= 0;
         }
 
-        public static bool operator <(
+        [DebuggerStepThrough] public static bool operator <(
             AutonamedIdentifiableAppalachiaObject<T> left,
             AutonamedIdentifiableAppalachiaObject<T> right)
         {
             return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) < 0;
         }
 
-        public static bool operator <=(
+        [DebuggerStepThrough] public static bool operator <=(
             AutonamedIdentifiableAppalachiaObject<T> left,
             AutonamedIdentifiableAppalachiaObject<T> right)
         {

@@ -46,7 +46,7 @@ namespace Appalachia.Core.Volumes.Parameters
             m_Value = x;
         }
 
-        public bool Equals(AppaVolumeParameter<T> other)
+        [DebuggerStepThrough] public bool Equals(AppaVolumeParameter<T> other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -61,7 +61,7 @@ namespace Appalachia.Core.Volumes.Parameters
             return EqualityComparer<T>.Default.Equals(m_Value, other.m_Value);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -81,7 +81,7 @@ namespace Appalachia.Core.Volumes.Parameters
             return Equals((AppaVolumeParameter<T>) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -96,7 +96,7 @@ namespace Appalachia.Core.Volumes.Parameters
             }
         }
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return $"{value} ({overrideState})";
         }
@@ -112,12 +112,12 @@ namespace Appalachia.Core.Volumes.Parameters
             m_Value = parameter.GetValue<T>();
         }
 
-        public static bool operator ==(AppaVolumeParameter<T> lhs, T rhs)
+        [DebuggerStepThrough] public static bool operator ==(AppaVolumeParameter<T> lhs, T rhs)
         {
             return (lhs != null) && (lhs.value != null) && lhs.value.Equals(rhs);
         }
 
-        public static bool operator !=(AppaVolumeParameter<T> lhs, T rhs)
+        [DebuggerStepThrough] public static bool operator !=(AppaVolumeParameter<T> lhs, T rhs)
         {
             return !(lhs == rhs);
         }
@@ -134,7 +134,7 @@ namespace Appalachia.Core.Volumes.Parameters
         //
         // For safety reason this is one-way only.
         //
-        public static implicit operator T(AppaVolumeParameter<T> prop)
+        [DebuggerStepThrough] public static implicit operator T(AppaVolumeParameter<T> prop)
         {
             return prop.m_Value;
         }

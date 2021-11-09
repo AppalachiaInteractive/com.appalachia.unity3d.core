@@ -807,7 +807,7 @@ namespace Appalachia.Core.Caching
             }
         }
 
-        public static implicit operator T(Cached<T> cached)
+        [DebuggerStepThrough] public static implicit operator T(Cached<T> cached)
         {
             using (_PRF_op_Implicit.Auto())
             {

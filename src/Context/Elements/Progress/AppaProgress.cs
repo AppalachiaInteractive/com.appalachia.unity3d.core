@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Appalachia.Core.Context.Elements.Progress
 {
@@ -39,7 +40,7 @@ namespace Appalachia.Core.Context.Elements.Progress
 
         public string message;
 
-        public int CompareTo(object obj)
+        [DebuggerStepThrough] public int CompareTo(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -51,92 +52,92 @@ namespace Appalachia.Core.Context.Elements.Progress
                 : throw new ArgumentException($"Object must be of type {nameof(AppaProgress)}");
         }
 
-        public int CompareTo(AppaProgress other)
+        [DebuggerStepThrough] public int CompareTo(AppaProgress other)
         {
             return progress.CompareTo(other.progress);
         }
 
-        public bool Equals(AppaProgress other)
+        [DebuggerStepThrough] public bool Equals(AppaProgress other)
         {
             return (message == other.message) && progress.Equals(other.progress);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is AppaProgress other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             return HashCode.Combine(message, progress);
         }
 
-        public static implicit operator (string, float)(AppaProgress o)
+        [DebuggerStepThrough] public static implicit operator (string, float)(AppaProgress o)
         {
             return (o.message, o.progress);
         }
 
-        public static implicit operator AppaProgress(string o)
+        [DebuggerStepThrough] public static implicit operator AppaProgress(string o)
         {
             return new(o);
         }
 
-        public static implicit operator AppaProgress(float o)
+        [DebuggerStepThrough] public static implicit operator AppaProgress(float o)
         {
             return new(o);
         }
 
-        public static implicit operator AppaProgress(Tuple<string, float> o)
+        [DebuggerStepThrough] public static implicit operator AppaProgress(Tuple<string, float> o)
         {
             return new(o.Item1, o.Item2);
         }
 
-        public static implicit operator AppaProgress((string, float) o)
+        [DebuggerStepThrough] public static implicit operator AppaProgress((string, float) o)
         {
             return new(o.Item1, o.Item2);
         }
 
-        public static bool operator ==(AppaProgress left, AppaProgress right)
+        [DebuggerStepThrough] public static bool operator ==(AppaProgress left, AppaProgress right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator >(AppaProgress left, AppaProgress right)
+        [DebuggerStepThrough] public static bool operator >(AppaProgress left, AppaProgress right)
         {
             return left.CompareTo(right) > 0;
         }
 
-        public static bool operator >=(AppaProgress left, AppaProgress right)
+        [DebuggerStepThrough] public static bool operator >=(AppaProgress left, AppaProgress right)
         {
             return left.CompareTo(right) >= 0;
         }
 
-        public static bool operator !=(AppaProgress left, AppaProgress right)
+        [DebuggerStepThrough] public static bool operator !=(AppaProgress left, AppaProgress right)
         {
             return !left.Equals(right);
         }
 
-        public static bool operator <(AppaProgress left, AppaProgress right)
+        [DebuggerStepThrough] public static bool operator <(AppaProgress left, AppaProgress right)
         {
             return left.CompareTo(right) < 0;
         }
 
-        public static bool operator <=(AppaProgress left, AppaProgress right)
+        [DebuggerStepThrough] public static bool operator <=(AppaProgress left, AppaProgress right)
         {
             return left.CompareTo(right) <= 0;
         }
 
-        public static implicit operator float(AppaProgress o)
+        [DebuggerStepThrough] public static implicit operator float(AppaProgress o)
         {
             return o.progress;
         }
 
-        public static implicit operator string(AppaProgress o)
+        [DebuggerStepThrough] public static implicit operator string(AppaProgress o)
         {
             return o.message ?? $"{o.progress:N3}";
         }
 
-        public static implicit operator Tuple<string, float>(AppaProgress o)
+        [DebuggerStepThrough] public static implicit operator Tuple<string, float>(AppaProgress o)
         {
             return Tuple.Create(o.message, o.progress);
         }

@@ -453,7 +453,7 @@ namespace Appalachia.Core.Collections.Native
 	        ///     If the given enumerators refer to the same node and neither
 	        ///     enumerator is invalid.
 	        /// </returns>
-	        public static bool operator ==(Enumerator a, Enumerator b)
+	        [DebuggerStepThrough] public static bool operator ==(Enumerator a, Enumerator b)
             {
                 // Enumerators without a valid list can't be equal
                 if ((a.m_List.m_State == null) || (b.m_List.m_State == null))
@@ -486,7 +486,7 @@ namespace Appalachia.Core.Collections.Native
 	        ///     If the given enumerators refer to different nodes or either
 	        ///     enumerator is invalid.
 	        /// </returns>
-	        public static bool operator !=(Enumerator a, Enumerator b)
+	        [DebuggerStepThrough] public static bool operator !=(Enumerator a, Enumerator b)
             {
                 // Enumerators without a valid list can't be equal
                 if ((a.m_List.m_State == null) || (b.m_List.m_State == null))
@@ -538,7 +538,7 @@ namespace Appalachia.Core.Collections.Native
 	        ///     enumerator and is of the same type and neither enumerator is
 	        ///     invalid.
 	        /// </returns>
-	        public override bool Equals(object obj)
+	        [DebuggerStepThrough] public override bool Equals(object obj)
             {
                 return obj is Enumerator && (this == (Enumerator) obj);
             }
@@ -555,7 +555,7 @@ namespace Appalachia.Core.Collections.Native
 	        /// <returns>
 	        ///     A hash code for this enumerator
 	        /// </returns>
-	        public override int GetHashCode()
+	        [DebuggerStepThrough] public override int GetHashCode()
             {
                 // Suppress "non-readonly field" warning because we don't have a
                 // readonly-only way to generate a hash code since Index is

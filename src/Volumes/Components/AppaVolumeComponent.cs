@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using Appalachia.Core.Scriptables;
 using Appalachia.Core.Volumes.Parameters;
@@ -73,7 +74,7 @@ namespace Appalachia.Core.Volumes.Components
         // Custom hashing function used to compare the state of settings (it's not meant to be
         // unique but to be a quick way to check if two setting sets have the same state or not).
         // Hash collision rate should be pretty low.
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {

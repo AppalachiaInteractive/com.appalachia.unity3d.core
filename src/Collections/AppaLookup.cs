@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Collections.Exceptions;
@@ -1510,7 +1511,7 @@ namespace Appalachia.Core.Collections
 
 #region IEquatable
 
-            public bool Equals(KVPDisplayWrapper other)
+            [DebuggerStepThrough] public bool Equals(KVPDisplayWrapper other)
             {
                 if (ReferenceEquals(null, other))
                 {
@@ -1530,7 +1531,7 @@ namespace Appalachia.Core.Collections
                        _pair.Equals(other._pair);
             }
 
-            public override bool Equals(object obj)
+            [DebuggerStepThrough] public override bool Equals(object obj)
             {
                 if (ReferenceEquals(null, obj))
                 {
@@ -1550,7 +1551,7 @@ namespace Appalachia.Core.Collections
                 return Equals((KVPDisplayWrapper) obj);
             }
 
-            public override int GetHashCode()
+            [DebuggerStepThrough] public override int GetHashCode()
             {
                 unchecked
                 {
@@ -1564,12 +1565,12 @@ namespace Appalachia.Core.Collections
                 }
             }
 
-            public static bool operator ==(KVPDisplayWrapper left, KVPDisplayWrapper right)
+            [DebuggerStepThrough] public static bool operator ==(KVPDisplayWrapper left, KVPDisplayWrapper right)
             {
                 return Equals(left, right);
             }
 
-            public static bool operator !=(KVPDisplayWrapper left, KVPDisplayWrapper right)
+            [DebuggerStepThrough] public static bool operator !=(KVPDisplayWrapper left, KVPDisplayWrapper right)
             {
                 return !Equals(left, right);
             }

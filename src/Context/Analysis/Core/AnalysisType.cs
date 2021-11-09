@@ -160,7 +160,7 @@ namespace Appalachia.Core.Context.Analysis.Core
                     {
                         if (message.isIssue)
                         {
-                            AppaLog.Trace($"Fixing issue: {message.PrintMessage()}");
+                            AppaLog.Debug($"Fixing issue: {message.PrintMessage()}");
                         }
                     }
                     

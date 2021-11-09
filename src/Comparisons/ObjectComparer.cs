@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Comparisons
@@ -42,7 +43,7 @@ namespace Appalachia.Core.Comparisons
             return string.Compare(x.name, y.name, StringComparison.Ordinal);
         }
 
-        public bool Equals(T x, T y)
+        [DebuggerStepThrough] public bool Equals(T x, T y)
         {
             if ((x == null) && (y == null))
             {
@@ -57,7 +58,7 @@ namespace Appalachia.Core.Comparisons
             return x.Equals(y);
         }
 
-        public int GetHashCode(T obj)
+        [DebuggerStepThrough] public int GetHashCode(T obj)
         {
             return obj.GetHashCode();
         }

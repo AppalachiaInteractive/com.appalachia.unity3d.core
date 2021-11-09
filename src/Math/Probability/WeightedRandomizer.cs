@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Core.Math.Probability
@@ -7,12 +8,12 @@ namespace Appalachia.Core.Math.Probability
     {
         public List<float> weights;
 
-        public static implicit operator WeightedRandomizer(int _)
+        [DebuggerStepThrough] public static implicit operator WeightedRandomizer(int _)
         {
             return new() {weights = new List<float>()};
         }
 
-        public static int operator %(WeightedRandomizer rand, int count)
+        [DebuggerStepThrough] public static int operator %(WeightedRandomizer rand, int count)
         {
             float sum;
             int i;

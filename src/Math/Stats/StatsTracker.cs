@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
@@ -211,22 +212,22 @@ namespace Appalachia.Core.Math.Stats
 
         protected abstract T Transform(T value, TransformationType type);
 
-        public string ToString(SuffixType suffix)
+        [DebuggerStepThrough] public string ToString(SuffixType suffix)
         {
             return ToString(_trackMedian, suffix, TransformationType.None, _seperator);
         }
 
-        public string ToString(TransformationType transformation)
+        [DebuggerStepThrough] public string ToString(TransformationType transformation)
         {
             return ToString(_trackMedian, SuffixType.None, transformation, _seperator);
         }
 
-        public string ToString(SuffixType suffix, TransformationType transformation)
+        [DebuggerStepThrough] public string ToString(SuffixType suffix, TransformationType transformation)
         {
             return ToString(_trackMedian, suffix, transformation, _seperator);
         }
 
-        public string ToString(
+        [DebuggerStepThrough] public string ToString(
             bool includeMedian,
             SuffixType suffix,
             TransformationType transformation,
@@ -292,7 +293,7 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        public override string ToString()
+        [DebuggerStepThrough] public override string ToString()
         {
             return ToString(_trackMedian, SuffixType.None, TransformationType.None, _seperator);
         }

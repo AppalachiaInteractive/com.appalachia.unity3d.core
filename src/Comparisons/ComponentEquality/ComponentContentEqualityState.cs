@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Comparisons.ComponentEquality
@@ -9,7 +10,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
         where TO : Object
     {
         public abstract void Record(TO c);
-        public abstract bool Equals(TO other);
+        [DebuggerStepThrough] public abstract bool Equals(TO other);
 
         public static T CreateAndRecord(TO o)
         {

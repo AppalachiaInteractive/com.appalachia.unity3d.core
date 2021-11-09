@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -160,7 +161,7 @@ namespace Appalachia.Core.Collections.Native
             // The current worker thread index; it must use this exact name since it is injected
             [NativeSetThreadIndex] internal int m_ThreadIndex;
 
-            public static implicit operator ParallelWriter(NativeCounter cnt)
+            [DebuggerStepThrough] public static implicit operator ParallelWriter(NativeCounter cnt)
             {
                 ParallelWriter concurrent;
 #if ENABLE_UNITY_COLLECTIONS_CHECKS

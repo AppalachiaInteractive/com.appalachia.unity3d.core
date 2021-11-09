@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -47,21 +48,21 @@ namespace Appalachia.Core.Overrides
         [HorizontalGroup("A", .98f)]
         public T value;
 
-        public static implicit operator Overridable<T, TO>(T a)
+        [DebuggerStepThrough] public static implicit operator Overridable<T, TO>(T a)
         {
             var to = new TO {overrideEnabled = false, value = a};
 
             return to;
         }
 
-        public static implicit operator T(Overridable<T, TO> a)
+        [DebuggerStepThrough] public static implicit operator T(Overridable<T, TO> a)
         {
             return a.value;
         }
 
 #region IEquatable
 
-        public bool Equals(Overridable<T, TO> other)
+        [DebuggerStepThrough] public bool Equals(Overridable<T, TO> other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -78,7 +79,7 @@ namespace Appalachia.Core.Overrides
                 EqualityComparer<T>.Default.Equals(value, other.value);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -98,7 +99,7 @@ namespace Appalachia.Core.Overrides
             return Equals((Overridable<T, TO>) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -113,12 +114,12 @@ namespace Appalachia.Core.Overrides
             }
         }
 
-        public static bool operator ==(Overridable<T, TO> left, Overridable<T, TO> right)
+        [DebuggerStepThrough] public static bool operator ==(Overridable<T, TO> left, Overridable<T, TO> right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(Overridable<T, TO> left, Overridable<T, TO> right)
+        [DebuggerStepThrough] public static bool operator !=(Overridable<T, TO> left, Overridable<T, TO> right)
         {
             return !Equals(left, right);
         }

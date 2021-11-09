@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Layers.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -56,12 +57,12 @@ namespace Appalachia.Core.Layers
             return _layers;
         }
 
-        public static implicit operator int(LayerSelection l)
+        [DebuggerStepThrough] public static implicit operator int(LayerSelection l)
         {
             return l.layer;
         }
 
-        public static implicit operator LayerSelection(int l)
+        [DebuggerStepThrough] public static implicit operator LayerSelection(int l)
         {
             return new() {layer = l};
         }

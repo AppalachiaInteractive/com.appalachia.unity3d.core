@@ -1,10 +1,11 @@
 #region
 
 using System;
+using System.Diagnostics;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Reflection.Extensions;
 using UnityEditor;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 #endregion
 
@@ -27,7 +28,7 @@ namespace Appalachia.Core.Extensions.Helpers
             {
             }
 
-            public override string ToString()
+            [DebuggerStepThrough] public override string ToString()
             {
                 return Message;
             }

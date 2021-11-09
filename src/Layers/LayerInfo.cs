@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Diagnostics;
 using UnityEngine;
 
 #endregion
@@ -28,32 +29,32 @@ namespace Appalachia.Core.Layers
 
 #region IEquatable
 
-        public bool Equals(LayerInfo other)
+        [DebuggerStepThrough] public bool Equals(LayerInfo other)
         {
             return Id == other.Id;
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             return obj is LayerInfo other && Equals(other);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             return Id;
         }
 
-        public static bool operator ==(LayerInfo left, LayerInfo right)
+        [DebuggerStepThrough] public static bool operator ==(LayerInfo left, LayerInfo right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(LayerInfo left, LayerInfo right)
+        [DebuggerStepThrough] public static bool operator !=(LayerInfo left, LayerInfo right)
         {
             return !left.Equals(right);
         }
 
-        public bool Equals(int other)
+        [DebuggerStepThrough] public bool Equals(int other)
         {
             return Id == other;
         }

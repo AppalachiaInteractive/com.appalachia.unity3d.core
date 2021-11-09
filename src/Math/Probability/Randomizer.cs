@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Appalachia.Core.Math.Probability
@@ -16,7 +17,7 @@ namespace Appalachia.Core.Math.Probability
         public static float plusMinusOne => next * denominator;
         public static float zeroToOne => (plusMinusOne + 1f) * 0.5f;
 
-        public static int operator %(Randomizer _, int count)
+        [DebuggerStepThrough] public static int operator %(Randomizer _, int count)
         {
             return Mathf.FloorToInt(zeroToOne * (count - 1));
         }

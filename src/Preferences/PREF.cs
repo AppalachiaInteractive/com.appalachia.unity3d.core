@@ -123,7 +123,7 @@ namespace Appalachia.Core.Preferences
             }
         }
 
-        public static implicit operator T(PREF<T> o)
+        [DebuggerStepThrough] public static implicit operator T(PREF<T> o)
         {
             return o.Value;
         }

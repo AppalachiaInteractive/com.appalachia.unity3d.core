@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Types.Enums;
 using UnityEngine;
 
@@ -55,7 +56,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
 #region IEquatable
 
-        public override bool Equals(Collider other)
+        [DebuggerStepThrough] public override bool Equals(Collider other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -74,7 +75,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                     (direction == cc.direction));
         }
 
-        public override bool Equals(ColliderEqualityState other)
+        [DebuggerStepThrough] public override bool Equals(ColliderEqualityState other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -96,7 +97,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                    (direction == other.direction);
         }
 
-        public override bool Equals(object obj)
+        [DebuggerStepThrough] public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -116,7 +117,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             return Equals((ColliderEqualityState) obj);
         }
 
-        public override int GetHashCode()
+        [DebuggerStepThrough] public override int GetHashCode()
         {
             unchecked
             {
@@ -132,12 +133,12 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             }
         }
 
-        public static bool operator ==(ColliderEqualityState left, ColliderEqualityState right)
+        [DebuggerStepThrough] public static bool operator ==(ColliderEqualityState left, ColliderEqualityState right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(ColliderEqualityState left, ColliderEqualityState right)
+        [DebuggerStepThrough] public static bool operator !=(ColliderEqualityState left, ColliderEqualityState right)
         {
             return !Equals(left, right);
         }
