@@ -12,9 +12,25 @@ namespace Appalachia.Core.Aspects.Tracing
     [DebuggerStepThrough]
     public class TraceMarkerSet : DisposableAspectSet<TraceMarker>
     {
-        public const bool _TRACE_BEFORE_PREFS_READY = false;
+        #region Profiling And Tracing Markers
 
         private static readonly ProfilerMarker _PRF_TraceMarkerSet_Create = new("TraceMarkerSet.Create");
+
+        #endregion
+
+        #region Constants and Static Readonly
+
+        public const bool _TRACE_BEFORE_PREFS_READY = false;
+
+        #endregion
+
+        #region Preferences
+
+        private static PREF<bool> _enabled;
+
+        #endregion
+
+        public static bool InternalDisable;
 
         public static bool Enabled
         {
@@ -24,7 +40,7 @@ namespace Appalachia.Core.Aspects.Tracing
                 {
                     var orig = InternalDisable;
                     InternalDisable = true;
-                    _enabled = PREFS.REG(TRACE._TRACE_LOG_GROUPING, TRACE._TRACE_LOG_LABEL, false);
+                    _enabled = PREFS.REG(PKG.Prefs.Group, TRACE._TRACE_LOG_LABEL, false);
 
                     InternalDisable = orig;
                 }
@@ -37,9 +53,6 @@ namespace Appalachia.Core.Aspects.Tracing
                 return _TRACE_BEFORE_PREFS_READY;
             }
         }
-
-        public static bool InternalDisable;
-        private static PREF<bool> _enabled;
 
         public override IDisposable Initiate(TraceMarker instance)
         {

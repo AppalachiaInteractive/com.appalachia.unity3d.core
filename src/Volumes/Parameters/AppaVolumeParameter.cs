@@ -98,7 +98,7 @@ namespace Appalachia.Core.Volumes.Parameters
 
         public override string ToString()
         {
-            return string.Format("{0} ({1})", value, overrideState);
+            return $"{value} ({overrideState})";
         }
 
         internal override void Interp(AppaVolumeParameter from, AppaVolumeParameter to, float t)

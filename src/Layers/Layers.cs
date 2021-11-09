@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -165,7 +166,7 @@ namespace Appalachia.Core.Layers
 
                 if (sp.stringValue != targetName)
                 {
-                    Debug.LogWarning($"Layer [{i}] should be named [{targetName}]");
+                   AppaLog.Warning($"Layer [{i}] should be named [{targetName}]");
 
                     // Save settings
                     // tagManager.ApplyModifiedProperties();

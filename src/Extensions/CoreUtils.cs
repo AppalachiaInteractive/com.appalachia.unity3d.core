@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Types.Enums;
+using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -287,7 +288,7 @@ namespace Appalachia.Core.Extensions
             var shader = Shader.Find(shaderPath);
             if (shader == null)
             {
-                Debug.LogError(
+                AppaLog.Error(
                     "Cannot create required material because shader " + shaderPath + " could not be found"
                 );
                 return null;
@@ -301,7 +302,7 @@ namespace Appalachia.Core.Extensions
         {
             if (shader == null)
             {
-                Debug.LogError("Cannot create required material because shader is null");
+                AppaLog.Error("Cannot create required material because shader is null");
                 return null;
             }
 
@@ -381,19 +382,15 @@ namespace Appalachia.Core.Extensions
             string temp;
             if (depth == 0)
             {
-                temp = string.Format("{0}x{1}{2}_{3}", width, height, mips ? "_Mips" : "", format);
+                temp = $"{width}x{height}{(mips ? "_Mips" : "")}_{format}";
             }
             else
             {
-                temp = string.Format("{0}x{1}x{2}{3}_{4}", width, height, depth, mips ? "_Mips" : "", format);
+                temp = $"{width}x{height}x{depth}{(mips ? "_Mips" : "")}_{format}";
             }
 
-            temp = string.Format(
-                "{0}_{1}_{2}",
-                name == "" ? "Texture" : name,
-                dim == TextureDimension.None ? "" : dim.ToString(),
-                temp
-            );
+            temp =
+                $"{(name == "" ? "Texture" : name)}_{(dim == TextureDimension.None ? "" : dim.ToString())}_{temp}";
 
             return temp;
         }
@@ -482,7 +479,7 @@ namespace Appalachia.Core.Extensions
 
         public static void DisplayUnsupportedMessage(string msg)
         {
-            Debug.LogError(msg);
+            AppaLog.Error(msg);
 
 #if UNITY_EDITOR
             foreach (var o in Resources.FindObjectsOfTypeAll(typeof(SceneView)))

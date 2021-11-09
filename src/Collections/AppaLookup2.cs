@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -71,7 +72,7 @@ namespace Appalachia.Core.Collections
 
                     if (logFallbackAttempt != null)
                     {
-                        Debug.LogWarning(logFallbackAttempt);
+                       AppaLog.Warning(logFallbackAttempt);
                     }
 
                     value = sub1.FirstWithPreference_NoAlloc(fallbackCheck, out var foundFallback);
@@ -83,7 +84,7 @@ namespace Appalachia.Core.Collections
 
                     if (logFallbackFailure != null)
                     {
-                        Debug.LogWarning(logFallbackFailure);
+                       AppaLog.Warning(logFallbackFailure);
                     }
                 }
 

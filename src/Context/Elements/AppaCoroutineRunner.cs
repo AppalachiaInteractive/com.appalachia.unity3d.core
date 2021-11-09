@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Context.Elements
@@ -112,7 +113,7 @@ namespace Appalachia.Core.Context.Elements
                             }
                             catch (Exception ex)
                             {
-                                UnityEngine.Debug.LogException(ex);
+                                AppaLog.Exception(ex);
 
                                 if (_cancelOnError)
                                 {

@@ -2,6 +2,7 @@
 
 using Appalachia.Core.Attributes;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Logging;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace Appalachia.Core.Aspects.Profiling
 
         public static void Profiling_Enable()
         {
-            Debug.LogWarning("Profiling starting...");
+           AppaLog.Warning("Profiling starting...");
             ProfilerDriver.enabled = true;
 
             //Profiler.enabled = true;
@@ -47,7 +48,7 @@ namespace Appalachia.Core.Aspects.Profiling
 
         public static void Profiling_Disable()
         {
-            Debug.LogWarning("Profiling ending...");
+           AppaLog.Warning("Profiling ending...");
             ProfilerDriver.enabled = false;
 
             //Profiler.enabled = false;
@@ -57,7 +58,7 @@ namespace Appalachia.Core.Aspects.Profiling
         public static void Profiling_Clear()
         {
             ProfilerDriver.ClearAllFrames();
-            Debug.LogWarning("Profiling cleared.");
+           AppaLog.Warning("Profiling cleared.");
         }
 
 #endif

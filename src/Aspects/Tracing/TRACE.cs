@@ -15,17 +15,14 @@ namespace Appalachia.Core.Aspects.Tracing
     {
 #if UNITY_EDITOR
 
-        public const string _TRACE_LOG_GROUPING = "Appalachia/Trace Logging";
-        public const string _TRACE_LOG_LABEL = "Enable Logging";
-
-        public const string MENU_BASE = "Tools/Trace Logging/";
+        internal const string _TRACE_LOG_LABEL = "Enable Logging";
 
         [NonSerialized]
-        private static readonly PREF<bool> _enabled = PREFS.REG(_TRACE_LOG_GROUPING, _TRACE_LOG_LABEL, false);
+        private static readonly PREF<bool> _enabled = PREFS.REG(PKG.Prefs.Group, _TRACE_LOG_LABEL, false);
 
-        private const string ENABLED = MENU_BASE + "Enabled";
+        private const string ENABLED = PKG.Menu.Appalachia.Debug.Base + "Trace Logging/Enabled";
 
-        [UnityEditor.MenuItem(ENABLED, true)]
+        [UnityEditor.MenuItem(ENABLED, true, PKG.Menu.Appalachia.Debug.Priority)]
         private static bool ENABLED_TOGGLE_V()
         {
             if (!_enabled.IsAwake)
@@ -37,7 +34,7 @@ namespace Appalachia.Core.Aspects.Tracing
             return true;
         }
 
-        [UnityEditor.MenuItem(ENABLED, priority = -4000)]
+        [UnityEditor.MenuItem(ENABLED, priority = PKG.Menu.Appalachia.Debug.Priority)]
         private static void ENABLED_TOGGLE()
         {
             if (!_enabled.IsAwake)
@@ -47,11 +44,6 @@ namespace Appalachia.Core.Aspects.Tracing
 
             _enabled.Value = !_enabled.Value;
         }
-
-        private static string[] _indents = new string[100];
-
-        private static Dictionary<string, string> _typeLookup;
-        private static Dictionary<string, Dictionary<int, int>> _stackDepthLookup;
 #endif
     }
 }

@@ -10,6 +10,7 @@ using Appalachia.Core.Collections.Interfaces;
 using Appalachia.Core.Collections.NonSerialized;
 using Appalachia.Core.Extensions;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Logging;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -207,7 +208,7 @@ namespace Appalachia.Core.Collections
 
                 if (logFallbackAttempt != null)
                 {
-                    Debug.LogWarning(logFallbackAttempt);
+                   AppaLog.Warning(logFallbackAttempt);
                 }
 
                 value = FirstWithPreference_NoAlloc(fallbackCheck, out var foundFallback);
@@ -219,7 +220,7 @@ namespace Appalachia.Core.Collections
 
                 if (logFallbackFailure != null)
                 {
-                    Debug.LogWarning(logFallbackFailure);
+                   AppaLog.Warning(logFallbackFailure);
                 }
 
                 value = default;

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Volumes.Components;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -147,7 +148,7 @@ namespace Appalachia.Core.Volumes
                 catch (Exception ex)
                 {
 #if UNITY_EDITOR
-                    Debug.LogError($"Failed to UNsubscribe to OnPreCull.", this);
+                    AppaLog.Error($"Failed to UNsubscribe to OnPreCull.", this);
                     Debug.LogException(ex, this);
 #endif
                 }
@@ -172,7 +173,7 @@ namespace Appalachia.Core.Volumes
                 catch (Exception ex)
                 {
 #if UNITY_EDITOR
-                    Debug.LogError($"Failed to subscribe to OnPreCull.", this);
+                    AppaLog.Error($"Failed to subscribe to OnPreCull.", this);
                     Debug.LogException(ex, this);
 #endif
                 }
@@ -200,7 +201,7 @@ namespace Appalachia.Core.Volumes
                 catch (Exception ex)
                 {
 #if UNITY_EDITOR
-                    Debug.LogError($"Failed to handle pre-cull.", this);
+                    AppaLog.Error($"Failed to handle pre-cull.", this);
                     Debug.LogException(ex, this);
 #endif
                 }

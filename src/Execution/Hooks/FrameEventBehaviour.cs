@@ -1,6 +1,7 @@
 #region
 
 using Appalachia.Core.Behaviours;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -53,7 +54,7 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 if (FrameEventSettings._ENABLE_AWAKE.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [Awake]");
+                    AppaLog.Info($"[{GetReadableName()}]: [Awake]");
                 }
 
                 EventDelegates.InvokeAwake();
@@ -66,7 +67,7 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 if (FrameEventSettings._ENABLE_START.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [Start]");
+                    AppaLog.Info($"[{GetReadableName()}]: [Start]");
                 }
 
                 EventDelegates.InvokeStart();
@@ -79,7 +80,7 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [Update]");
+                    AppaLog.Info($"[{GetReadableName()}]: [Update]");
                 }
 
                 EventDelegates.InvokeUpdate();
@@ -92,7 +93,7 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [FixedUpdate]");
+                    AppaLog.Info($"[{GetReadableName()}]: [FixedUpdate]");
                 }
 
                 EventDelegates.InvokeFixedUpdate();
@@ -107,7 +108,7 @@ namespace Appalachia.Core.Execution.Hooks
 
                 if (FrameEventSettings._ENABLE_ENABLE.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [OnEnable]");
+                    AppaLog.Info($"[{GetReadableName()}]: [OnEnable]");
                 }
 
                 EventDelegates.InvokeOnEnable();
@@ -120,7 +121,7 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [OnDisable]");
+                    AppaLog.Info($"[{GetReadableName()}]: [OnDisable]");
                 }
 
                 EventDelegates.InvokeOnDisable();
@@ -133,7 +134,7 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 if (FrameEventSettings._ENABLE_DESTROY.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [OnDestroy]");
+                    AppaLog.Info($"[{GetReadableName()}]: [OnDestroy]");
                 }
 
                 EventDelegates.InvokeOnDestroy();
@@ -146,7 +147,7 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 if (FrameEventSettings._ENABLE_QUIT.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [OnApplicationQuit]");
+                    AppaLog.Info($"[{GetReadableName()}]: [OnApplicationQuit]");
                 }
 
                 EventDelegates.InvokeOnApplicationQuit();
@@ -159,7 +160,7 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
-                    Debug.Log($"[{GetReadableName()}]: [OnPreCull]");
+                    AppaLog.Info($"[{GetReadableName()}]: [OnPreCull]");
                 }
 
                 EventDelegates.InvokeOnPreCull(Camera.current);

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assemblies;
 using Appalachia.Core.Context.Analysis.Core;
+using Appalachia.Utility.Constants;
 
 namespace Appalachia.Core.Context.Analysis.Integration.AssemblyDefinitions
 {

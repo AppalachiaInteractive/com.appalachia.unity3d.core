@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Appalachia.Core.ArrayPooling;
 using Appalachia.Core.Comparisons;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -511,7 +512,7 @@ namespace Appalachia.Core.Collections
             {
                 if ((Count - index) < length)
                 {
-                    Debug.LogError("Invalid length!");
+                    AppaLog.Error("Invalid length!");
                 }
 
                 if (length > 0)
@@ -796,7 +797,7 @@ namespace Appalachia.Core.Collections
             {
                 if (index > Count)
                 {
-                    Debug.LogError("Index " + index + " is out of range " + Count);
+                    AppaLog.Error("Index " + index + " is out of range " + Count);
                 }
 
                 if (Count == _values.Length)
@@ -981,7 +982,7 @@ namespace Appalachia.Core.Collections
                 _capacityIncreaseMultiplier = capacityIncreaseMultiplier;
                 this.noTracking = noTracking;
 
-                // Debug.Log(items.Length);
+                // AppaLog.Info(items.Length);
             }
         }
 

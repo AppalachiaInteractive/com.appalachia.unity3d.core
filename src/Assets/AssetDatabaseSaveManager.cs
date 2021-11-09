@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Preferences;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
@@ -210,7 +211,7 @@ namespace Appalachia.Core.Assets
                     return;
                 }
 
-                Debug.LogWarning(
+               AppaLog.Warning(
                     $"{prefix} | Deferral depth: {_deferralDepth:000} | Suspension depth: {_suspensionDepth:000}"
                 );
             }

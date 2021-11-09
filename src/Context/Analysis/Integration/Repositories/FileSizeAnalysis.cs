@@ -63,7 +63,7 @@ namespace Appalachia.Core.Context.Analysis.Integration.Repositories
                         () => AssetDatabaseManager.SetSelection(file.RelativePath),
                         "Show",
                         color,
-                        () => AssetDatabaseManager.OpenFolderInExplorer(file.WindowsDirectoryPath),
+                        () => AssetDatabaseManager.OpenFolderInExplorer(file.ParentWindowsDirectoryFullPath),
                         "Open",
                         color,
                         () => AssetDatabaseManager.OpenAssetAtPath(file.RelativePath),

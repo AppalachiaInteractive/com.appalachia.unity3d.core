@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Appalachia.Utility.Colors;
 using Appalachia.Utility.Enums;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -155,6 +156,14 @@ namespace Appalachia.Core.Context.Analysis.Core
             {
                 if (HasIssues)
                 {
+                    foreach (var message in _messages)
+                    {
+                        if (message.isIssue)
+                        {
+                            AppaLog.Trace($"Fixing issue: {message.PrintMessage()}");
+                        }
+                    }
+                    
                     CorrectIssue(_group, _group.Target, useTestFiles, reimport);
                 }
             }

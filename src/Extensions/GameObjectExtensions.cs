@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Utility.Logging;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 using UnityEditor;
@@ -202,8 +203,8 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Not able to dispose of [{o.name}] before destroying.", o);
-                    Debug.LogException(ex, o);
+                    AppaLog.Error($"Not able to dispose of [{o.name}] before destroying.", o);
+                    AppaLog.Exception(ex, o);
                 }
                 finally
                 {
@@ -222,8 +223,8 @@ namespace Appalachia.Core.Extensions
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogError("Exception while destroying object.", o);
-                            Debug.LogException(ex, o);
+                            AppaLog.Error("Exception while destroying object.", o);
+                            AppaLog.Exception(ex, o);
                         }
                     }
                 }
@@ -247,11 +248,11 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(
+                    AppaLog.Error(
                         $"Not able to dispose of [{typeof(T).GetReadableName()} before destroying.",
                         o
                     );
-                    Debug.LogException(ex, o);
+                    AppaLog.Exception(ex, o);
                 }
                 finally
                 {
@@ -270,8 +271,8 @@ namespace Appalachia.Core.Extensions
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogError("Exception while destroying object", o);
-                            Debug.LogException(ex, o);
+                            AppaLog.Error("Exception while destroying object", o);
+                            AppaLog.Exception(ex, o);
                         }
                     }
                 }
@@ -298,8 +299,8 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Exception while destroying GameObject.", o);
-                    Debug.LogException(ex, o);
+                    AppaLog.Error("Exception while destroying GameObject.", o);
+                    AppaLog.Exception(ex, o);
                 }
             }
         }
@@ -327,8 +328,8 @@ namespace Appalachia.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError("Exception while destroying transform.", o);
-                    Debug.LogException(ex, o);
+                    AppaLog.Error("Exception while destroying transform.", o);
+                    AppaLog.Exception(ex, o);
                 }
             }
         }

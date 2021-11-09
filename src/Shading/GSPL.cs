@@ -61,7 +61,7 @@ namespace Appalachia.Core.Shading
         {
             if (s == null)
             {
-                //Debug.LogWarning("Null shader can not be included in property lookup.");
+                //AppaLog.Warning("Null shader can not be included in property lookup.");
                 return;
             }
 
