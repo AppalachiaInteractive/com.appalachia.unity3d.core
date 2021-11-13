@@ -145,11 +145,15 @@ namespace Appalachia.Core.Volumes
 
                     Camera.onPreCull -= cam => OnPreCull();
                 }
+#if UNITY_EDITOR
                 catch (Exception ex)
                 {
-#if UNITY_EDITOR
                     AppaLog.Error($"Failed to UNsubscribe to OnPreCull.", this);
                     Debug.LogException(ex, this);
+#else
+                catch 
+                {
+                    //
 #endif
                 }
             }
@@ -170,11 +174,15 @@ namespace Appalachia.Core.Volumes
                         Camera.onPreCull += cam => OnPreCull();
                     }
                 }
+#if UNITY_EDITOR
                 catch (Exception ex)
                 {
-#if UNITY_EDITOR
                     AppaLog.Error($"Failed to subscribe to OnPreCull.", this);
                     Debug.LogException(ex, this);
+#else
+                catch 
+                {
+                    //
 #endif
                 }
             }
@@ -198,11 +206,15 @@ namespace Appalachia.Core.Volumes
                         UpdateProperties();
                     }
                 }
+#if UNITY_EDITOR
                 catch (Exception ex)
                 {
-#if UNITY_EDITOR
                     AppaLog.Error($"Failed to handle pre-cull.", this);
                     Debug.LogException(ex, this);
+#else
+                catch 
+                {
+                    //
 #endif
                 }
             }

@@ -3,7 +3,6 @@
 using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Preferences;
-using UnityEditor;
 
 #endregion
 
@@ -11,7 +10,7 @@ namespace Appalachia.Core.Collections
 {
 #if UNITY_EDITOR
 
-    [InitializeOnLoad]
+    [UnityEditor.InitializeOnLoad]
     public static class IndexedCollectionsGlobals
     {
         [ExecuteOnEnable]
@@ -29,7 +28,7 @@ namespace Appalachia.Core.Collections
             false
         );
 
-        [MenuItem(PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields", true, PKG.Menu.Appalachia.Tools.Priority)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields", true, PKG.Menu.Appalachia.Tools.Priority)]
         private static bool MENU_UI_DEBUG_VALIDATE()
         {
             if (!_UI_DEBUG.IsAwake)
@@ -37,14 +36,14 @@ namespace Appalachia.Core.Collections
                 return false;
             }
 
-            Menu.SetChecked(
+            UnityEditor.Menu.SetChecked(
                 PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields",
                 _UI_DEBUG.Value
             );
             return true;
         }
 
-        [MenuItem(PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields", priority = PKG.Menu.Appalachia.Tools.Priority)]
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Indexed Collections/Show All Fields", priority = PKG.Menu.Appalachia.Tools.Priority)]
         private static void MENU_UI_DEBUG()
         {
             if (!_UI_DEBUG.IsAwake)

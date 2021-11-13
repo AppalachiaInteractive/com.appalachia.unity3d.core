@@ -3,7 +3,6 @@
 using System;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Utility.Reflection.Extensions;
-using UnityEditor;
 using UnityEngine;
 
 #endregion
@@ -17,6 +16,7 @@ namespace Appalachia.Core.Extensions
         private static Type spriteType =>
             type == null ? type = Type.GetType("UnityEditor.Sprites.SpriteUtility, UnityEditor") : type;
 
+#if UNITY_EDITOR
         public static Vector2[][] GenerateOutline(
             this Texture texture,
             Rect rect,
@@ -24,7 +24,6 @@ namespace Appalachia.Core.Extensions
             byte alphaTolerance,
             bool holeDetection)
         {
-#if UNITY_EDITOR
             var opaths = new Vector2[0][];
             object[] parameters = {texture, rect, detail, alphaTolerance, holeDetection, opaths};
             var method = spriteType.GetMethod("GenerateOutline", ReflectionExtensions.PrivateStatic);
@@ -32,79 +31,71 @@ namespace Appalachia.Core.Extensions
             var paths = (Vector2[][]) parameters[5];
 
             return paths;
-#endif
         }
 
-        public static TextureImporter GetTextureImporter(this Texture2D texture)
+        public static  UnityEditor.TextureImporter GetTextureImporter(this Texture2D texture)
         {
-#if UNITY_EDITOR
             var path = AssetDatabaseManager.GetAssetPath(texture);
-            return (TextureImporter) AssetImporter.GetAtPath(path);
-#endif
+            return ( UnityEditor.TextureImporter)  UnityEditor.AssetImporter.GetAtPath(path);
         }
-
+        
         public static bool HasCrunchCompression(Texture2D texture)
         {
-#if UNITY_EDITOR
             if (null == texture)
             {
                 return false;
             }
 
-            var assetPath = AssetDatabase.GetAssetPath(texture);
-            var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
                 return tImporter.crunchedCompression;
             }
 
-#endif
             return false;
         }
-
+        
         public static bool HasRgbaFormat(Texture2D texture)
         {
-#if UNITY_EDITOR
             if (null == texture)
             {
                 return false;
             }
 
-            var assetPath = AssetDatabase.GetAssetPath(texture);
-            var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            var assetPath = UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
                 var pts = tImporter.GetDefaultPlatformTextureSettings();
-                if ((pts.format == TextureImporterFormat.ARGB32) ||
-                    (pts.format == TextureImporterFormat.RGBA32))
+                if ((pts.format ==  UnityEditor.TextureImporterFormat.ARGB32) ||
+                    (pts.format ==  UnityEditor.TextureImporterFormat.RGBA32))
                 {
                     return true;
                 }
 
                 return false;
             }
-#endif
             return false;
         }
 
         public static void RemoveCrunchCompression(Texture2D texture)
         {
-#if UNITY_EDITOR
             if (null == texture)
             {
                 return;
             }
 
-            var assetPath = AssetDatabase.GetAssetPath(texture);
-            var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
                 tImporter.crunchedCompression = false;
                 tImporter.SaveAndReimport();
             }
-#endif
         }
 
+#endif
         public static void SetReadable(this Texture2D texture)
         {
 #if UNITY_EDITOR
@@ -129,12 +120,12 @@ namespace Appalachia.Core.Extensions
                 return;
             }
 
-            var assetPath = AssetDatabase.GetAssetPath(texture);
-            var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
                 tImporter.textureType =
-                    normalTexture ? TextureImporterType.NormalMap : TextureImporterType.Default;
+                    normalTexture ?  UnityEditor.TextureImporterType.NormalMap :  UnityEditor.TextureImporterType.Default;
 
                 if (tImporter.isReadable)
                 {
@@ -155,12 +146,12 @@ namespace Appalachia.Core.Extensions
                 return;
             }
 
-            var assetPath = AssetDatabase.GetAssetPath(texture);
-            var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
                 var pts = tImporter.GetDefaultPlatformTextureSettings();
-                pts.format = TextureImporterFormat.RGBA32;
+                pts.format =  UnityEditor.TextureImporterFormat.RGBA32;
                 tImporter.SetPlatformTextureSettings(pts);
                 tImporter.SaveAndReimport();
             }
@@ -175,8 +166,8 @@ namespace Appalachia.Core.Extensions
                 return;
             }
 
-            var assetPath = AssetDatabase.GetAssetPath(texture);
-            var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
                 tImporter.sRGBTexture = value;

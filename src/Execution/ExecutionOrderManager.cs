@@ -4,14 +4,13 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
-using UnityEditor;
 
 #endregion
 
 namespace Appalachia.Core.Execution
 {
 #if UNITY_EDITOR
-    [InitializeOnLoad]
+    [UnityEditor.InitializeOnLoad]
     public class ExecutionOrderManager
     {
         private const string _PRF_PFX = nameof(ExecutionOrderManager) + ".";
@@ -40,11 +39,11 @@ namespace Appalachia.Core.Execution
                     for (var index = 0; index < atties.Length; index++)
                     {
                         var a = atties[index];
-                        var currentOrder = MonoImporter.GetExecutionOrder(monoScript);
+                        var currentOrder = UnityEditor.MonoImporter.GetExecutionOrder(monoScript);
                         var newOrder = a.Order;
                         if (currentOrder != newOrder)
                         {
-                            MonoImporter.SetExecutionOrder(monoScript, newOrder);
+                            UnityEditor.MonoImporter.SetExecutionOrder(monoScript, newOrder);
                         }
                     }
                 }

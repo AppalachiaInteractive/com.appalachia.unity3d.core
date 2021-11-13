@@ -3,10 +3,15 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Preferences.API;
+using Appalachia.Core.Preferences.API.PlayerPrefs;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Mathematics;
 using Unity.Profiling;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using Appalachia.Core.Preferences.API.Editor;
+#endif
 
 #endregion
 
@@ -37,61 +42,145 @@ namespace Appalachia.Core.Preferences
 
                 if (typeT == typeof(bool))
                 {
-                    API = new bool_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    bool_EPAPI
+                    #else
+                    bool_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(Bounds))
                 {
-                    API = new Bounds_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    Bounds_EPAPI
+                    #else
+                    Bounds_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(Color))
                 {
-                    API = new Color_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    Color_EPAPI
+                    #else
+                    Color_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(Gradient))
                 {
-                    API = new Gradient_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    Gradient_EPAPI
+                    #else
+                    Gradient_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(double))
                 {
-                    API = new double_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    double_EPAPI
+                    #else
+                    double_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(float))
                 {
-                    API = new float_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    float_EPAPI
+                    #else
+                    float_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(float2))
                 {
-                    API = new float2_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    float2_EPAPI
+                    #else
+                    float2_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(float3))
                 {
-                    API = new float3_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    float3_EPAPI
+                    #else
+                    float3_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(float4))
                 {
-                    API = new float4_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    float4_EPAPI
+                    #else
+                    float4_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(int))
                 {
-                    API = new int_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    int_EPAPI
+                    #else
+                    int_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(quaternion))
                 {
-                    API = new quaternion_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    quaternion_EPAPI
+                    #else
+                    quaternion_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT == typeof(string))
                 {
-                    API = new string_EPAPI() as IEditorPreferenceAPI<T>;
+                    API = new
+                    #if UNITY_EDITOR 
+                    string_EPAPI
+                    #else
+                    string_PPAPI
+                    #endif
+                    () as IPAPI<T>;
                 }
                 else if (typeT.IsEnum || (typeT == typeof(Enum)))
                 {
                     if (typeT.HasAttribute<FlagsAttribute>())
                     {
-                        API = new Flags_EPAPI<T>();   
+                        API = new
+                        #if UNITY_EDITOR 
+                        Flags_EPAPI
+                        #else
+                        Flags_PPAPI
+                        #endif
+                        <T>();   
                     }
                     else
                     {
-                        API = new Enum_EPAPI<T>();                        
+                        API = new
+                        #if UNITY_EDITOR 
+                        Enum_EPAPI
+                        #else
+                        Enum_PPAPI
+                        #endif
+                        <T>();                        
                     }
                 }
                 else
@@ -116,7 +205,7 @@ namespace Appalachia.Core.Preferences
 
         private bool _sorted;
 
-        public IEditorPreferenceAPI<T> API { get; }
+        public IPAPI<T> API { get; }
 
         public override void Awake()
         {

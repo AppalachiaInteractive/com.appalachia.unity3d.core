@@ -8,7 +8,6 @@ using Sirenix.OdinInspector.Editor;
 using Sirenix.OdinInspector.Internal;
 
 
-using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Core.Editing.Groups

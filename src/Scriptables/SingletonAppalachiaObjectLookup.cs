@@ -8,19 +8,9 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
-using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
-#if ODIN_INSPECTOR
-
-#endif
-
 #endregion
-
-#if UNITY_EDITOR
-
-#endif
 
 namespace Appalachia.Core.Scriptables
 {
@@ -46,7 +36,7 @@ namespace Appalachia.Core.Scriptables
 
 #if UNITY_EDITOR
 
-        public List<AssemblyDefinitionAsset> excludedAssemblies = new();
+        public List<UnityEditorInternal.AssemblyDefinitionAsset> excludedAssemblies = new();
 
         private void OnEnable()
         {
@@ -81,9 +71,7 @@ namespace Appalachia.Core.Scriptables
         private static readonly ProfilerMarker _PRF_Scan_AssemblyCheck =
             new(_PRF_PFX + nameof(Scan) + ".AssemblyCheck");
 
-#if ODIN_INSPECTOR
         [Button]
-#endif
         private void Scan()
         {
             using (_PRF_Scan.Auto())
@@ -187,7 +175,9 @@ namespace Appalachia.Core.Scriptables
                     }
                 }
 
-                EditorUtility.SetDirty(this);
+#if UNITY_EDITOR
+                UnityEditor.EditorUtility.SetDirty(this);
+#endif
             }
         }
 

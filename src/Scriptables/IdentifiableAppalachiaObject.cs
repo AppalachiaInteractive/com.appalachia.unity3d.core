@@ -23,15 +23,19 @@ namespace Appalachia.Core.Scriptables
 
         #endregion
 
+#if UNITY_EDITOR
         [FoldoutGroup("Metadata", false)]
         [ReadOnly]
         [PropertyOrder(-100)]
         [HorizontalGroup("Metadata/ID", .5f)]
         [SmartLabel]
         [ShowIf(nameof(ShowIDProperties))]
+#endif
         public int id;
 
+#if UNITY_EDITOR
         protected virtual bool ShowIDProperties => true;
+#endif
 
         #region IComparable
 

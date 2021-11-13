@@ -7,7 +7,9 @@ using UnityEngine;
 
 namespace Appalachia.Core.Preferences.Globals
 {
+#if UNITY_EDITOR
     [UnityEditor.InitializeOnLoad]
+#endif
     public sealed class ColorPrefs
     {
         private const string _B = "Appalachia/Colors/Buoyancy/";

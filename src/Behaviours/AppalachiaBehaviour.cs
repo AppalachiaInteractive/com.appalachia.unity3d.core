@@ -1,12 +1,9 @@
 using System;
 using System.Linq;
-using Appalachia.Core.Extensions;
-using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Framing;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -15,8 +12,12 @@ namespace Appalachia.Core.Behaviours
     [Serializable]
     public abstract class AppalachiaBehaviour : MonoBehaviour
     {
+        #region Fields
+
         private Bounds ___renderingBounds;
         private Transform ___transform;
+
+        #endregion
 
         public Bounds renderingBounds
         {
@@ -24,7 +25,7 @@ namespace Appalachia.Core.Behaviours
             {
                 if (___renderingBounds == default)
                 {
-                    ___renderingBounds = gameObject.GetRenderingBounds();
+                    ___renderingBounds = gameObject.GetRenderingBounds(out _);
                 }
 
                 return ___renderingBounds;
@@ -44,6 +45,30 @@ namespace Appalachia.Core.Behaviours
             }
         }
 
+        #region Event Functions
+
+        private void Reset()
+        {
+            ___renderingBounds = default; 
+            ___transform = default;
+            
+            OnReset();
+        }
+
+        #endregion
+
+        protected virtual void OnReset()
+        {
+            
+        }
+
+        protected void DontDestroyOnLoadSafe(Object obj)
+        {
+#if !UNITY_EDITOR
+            DontDestroyOnLoad(obj);
+#endif
+        }
+
         protected float3 LocalToWorldDirection(float3 direction)
         {
             return _transform.TransformDirection(direction);
@@ -57,6 +82,11 @@ namespace Appalachia.Core.Behaviours
         protected float3 LocalToWorldVector(float3 vector)
         {
             return _transform.TransformVector(vector);
+        }
+
+        protected void RecalculateBounds()
+        {
+            ___renderingBounds = default;
         }
 
         protected float3 WorldToLocalDirection(float3 direction)
@@ -74,41 +104,31 @@ namespace Appalachia.Core.Behaviours
             return _transform.InverseTransformVector(vector);
         }
 
-        protected void RecalculateBounds()
-        {
-            ___renderingBounds = default;
-        }
-
-        protected void DontDestroyOnLoadSafe(Object obj)
-        {
-#if !UNITY_EDITOR
-            DontDestroyOnLoad(obj);
-#endif
-        }
-        
 #if UNITY_EDITOR
 
         protected void SetDirty()
         {
-            EditorSceneManager.MarkSceneDirty(gameObject.scene);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
         }
 
         private bool? _showButtons;
+
         private bool ShowButtons
         {
             get
             {
                 if (!_showButtons.HasValue)
                 {
-                    _showButtons = !GetType().InheritsFrom(typeof(SingletonAppalachiaBehaviour<>));                    
+                    _showButtons = !GetType().InheritsFrom(typeof(SingletonAppalachiaBehaviour<>));
                 }
 
                 return _showButtons.Value;
             }
         }
 
+#if UNITY_EDITOR
         [Button(ButtonSizes.Small)]
-        [HorizontalGroup("base_A")]
+        [ButtonGroup("base_A")]
         [PropertyOrder(-1000)]
         [ShowIf(nameof(ShowButtons))]
         private void SelectAllInScene()
@@ -117,11 +137,11 @@ namespace Appalachia.Core.Behaviours
 
             var instances = FindObjectsOfType(type);
 
-            Selection.objects = instances;
+            UnityEditor.Selection.objects = instances;
         }
 
         [Button(ButtonSizes.Small)]
-        [HorizontalGroup("base_A")]
+        [ButtonGroup("base_A")]
         [PropertyOrder(-1000)]
         [ShowIf(nameof(ShowButtons))]
         private void SelectObjectsInScene()
@@ -143,8 +163,9 @@ namespace Appalachia.Core.Behaviours
                                  )
                                 .ToArray();
 
-            Selection.objects = instances;
+            UnityEditor.Selection.objects = instances;
         }
+#endif
 
         public void Frame(bool recalculateBounds = false, bool adjustAngle = true)
         {
@@ -167,7 +188,7 @@ namespace Appalachia.Core.Behaviours
                 }
             }
 
-            gameObject.Frame(renderingBounds, adjustAngle);
+            gameObject.Frame(FrameTarget.SceneView, adjustAngle);
         }
 #endif
     }

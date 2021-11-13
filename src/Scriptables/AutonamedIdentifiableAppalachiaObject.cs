@@ -18,11 +18,13 @@ namespace Appalachia.Core.Scriptables
                                                                      IComparable
         where T : AutonamedIdentifiableAppalachiaObject<T>
     {
+#if UNITY_EDITOR
         [FoldoutGroup("Metadata", false)]
         [OnValueChanged(nameof(UpdateName))]
         [DelayedProperty]
         [PropertyOrder(-1000)]
         [SmartLabel]
+#endif
         public string profileName;
 
         protected virtual void OnEnable()
@@ -30,10 +32,13 @@ namespace Appalachia.Core.Scriptables
             if (string.IsNullOrWhiteSpace(profileName))
             {
                 profileName = name;
+#if UNITY_EDITOR
                 UpdateName();
+#endif
             }
         }
 
+#if UNITY_EDITOR
         public void UpdateName()
         {
             if (name != profileName)
@@ -43,6 +48,7 @@ namespace Appalachia.Core.Scriptables
                 UpdateAllIDs();
             }
         }
+#endif
 
         [DebuggerStepThrough] public int CompareTo(AutonamedIdentifiableAppalachiaObject<T> other)
         {
@@ -64,7 +70,8 @@ namespace Appalachia.Core.Scriptables
 
             return string.Compare(profileName, other.profileName, StringComparison.Ordinal);
         }
-
+        
+#if UNITY_EDITOR
         protected override void OnUpateAllIDs()
         {
             if (string.IsNullOrWhiteSpace(profileName))
@@ -72,7 +79,7 @@ namespace Appalachia.Core.Scriptables
                 Rename(profileName);
             }
         }
-
+#endif
         int IComparable.CompareTo(object obj)
         {
             if (ReferenceEquals(null, obj))

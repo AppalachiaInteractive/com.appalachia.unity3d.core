@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Appalachia.CI.Constants;
 using Appalachia.Core.Context.Elements;
-using Appalachia.Core.Context.Elements.Progress;
+using Appalachia.Utility.Execution.Progress;
 using UnityEngine;
 
 namespace Appalachia.Core.Context.Contexts

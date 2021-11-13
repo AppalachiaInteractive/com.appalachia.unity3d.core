@@ -219,10 +219,12 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+#if UNITY_EDITOR
         [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(AppaVolumeProfile), priority = PKG.Menu.Assets.Priority)]
         public static void CreateAsset()
         {
             CreateNew();
         }
+#endif
     }
 }

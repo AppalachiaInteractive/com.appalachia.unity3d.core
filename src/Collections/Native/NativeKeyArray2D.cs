@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
@@ -82,7 +83,9 @@ namespace Appalachia.Core.Collections.Native
             get => _length0;
             set
             {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 SafetyUtility.CheckWriteAccess(m_Safety);
+#endif
                 SafetyUtility.RequireLengthWithinCapacity(value, Capacity0, 0);
                 _length0 = value;
             }
@@ -95,7 +98,9 @@ namespace Appalachia.Core.Collections.Native
             get => _length1;
             set
             {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 SafetyUtility.CheckWriteAccess(m_Safety);
+#endif
                 SafetyUtility.RequireLengthWithinCapacity(value, Capacity1, 1);
                 _length1 = value;
             }
@@ -119,6 +124,7 @@ namespace Appalachia.Core.Collections.Native
                 SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, 0, Length1, Capacity1);
 
                 var index = GetIndex(index0, 0);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 SafetyUtility.CheckElementReadAccess(
                     m_Safety,
                     index,
@@ -127,6 +133,7 @@ namespace Appalachia.Core.Collections.Native
                     TotalCapacity,
                     TotalCapacity
                 );
+#endif
                 return UnsafeUtility.ReadArrayElement<TK>(m_BufferKeys, index);
             }
 
@@ -136,6 +143,7 @@ namespace Appalachia.Core.Collections.Native
                 SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, 0, Length1, Capacity1);
 
                 var index = GetIndex(index0, 0);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 SafetyUtility.CheckElementWriteAccess(
                     m_Safety,
                     index,
@@ -144,6 +152,7 @@ namespace Appalachia.Core.Collections.Native
                     TotalCapacity,
                     TotalCapacity
                 );
+#endif
                 UnsafeUtility.WriteArrayElement(m_BufferKeys, index, value);
             }
         }
@@ -155,6 +164,7 @@ namespace Appalachia.Core.Collections.Native
                 SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
 
                 var index = GetIndex(index0, index1);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 SafetyUtility.CheckElementReadAccess(
                     m_Safety,
                     index,
@@ -163,6 +173,7 @@ namespace Appalachia.Core.Collections.Native
                     TotalCapacity,
                     TotalCapacity
                 );
+#endif
                 return UnsafeUtility.ReadArrayElement<TV>(m_Buffer, index);
             }
 
@@ -172,6 +183,7 @@ namespace Appalachia.Core.Collections.Native
                 SafetyUtility.RequireIndexInBounds(index0, Length0, Capacity0, index1, Length1, Capacity1);
 
                 var index = GetIndex(index0, index1);
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 SafetyUtility.CheckElementWriteAccess(
                     m_Safety,
                     index,
@@ -180,6 +192,7 @@ namespace Appalachia.Core.Collections.Native
                     TotalCapacity,
                     TotalCapacity
                 );
+#endif
                 UnsafeUtility.WriteArrayElement(m_Buffer, index, value);
             }
         }
@@ -272,7 +285,9 @@ namespace Appalachia.Core.Collections.Native
                 m_MaxIndex = totalCapacity - 1
             };
 
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             DisposeSentinel.Create(out array.m_Safety, out array.m_DisposeSentinel, 1, allocator);
+#endif
         }
 
         [WriteAccessRequired]

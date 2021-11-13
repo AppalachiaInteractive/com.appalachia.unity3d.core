@@ -7,10 +7,7 @@ using Appalachia.Core.Attributes;
 using Appalachia.Utility.Logging;
 using Unity.Profiling;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
 
-#endif
 
 #endregion
 
@@ -147,14 +144,14 @@ namespace Appalachia.Core.Layers
         private static void CheckLayers()
         {
             // Open tag manager
-            var tagManager = new SerializedObject(
+            var tagManager = new UnityEditor.SerializedObject(
                 AssetDatabaseManager.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]
             );
 
             // Layers Property
             var layersProp = tagManager.FindProperty("layers");
 
-            SerializedProperty sp;
+            UnityEditor.SerializedProperty sp;
 
             // Start at layer 9th index -> 8 (zero based) => first 8 reserved for unity / greyed out
             for (int i = 8, j = MAX_LAYERS; i < j; i++)
@@ -166,7 +163,7 @@ namespace Appalachia.Core.Layers
 
                 if (sp.stringValue != targetName)
                 {
-                   AppaLog.Warning($"Layer [{i}] should be named [{targetName}]");
+                   AppaLog.Warn($"Layer [{i}] should be named [{targetName}]");
 
                     // Save settings
                     // tagManager.ApplyModifiedProperties();

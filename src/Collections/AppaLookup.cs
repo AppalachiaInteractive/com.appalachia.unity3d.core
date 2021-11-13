@@ -209,7 +209,7 @@ namespace Appalachia.Core.Collections
 
                 if (logFallbackAttempt != null)
                 {
-                   AppaLog.Warning(logFallbackAttempt);
+                   AppaLog.Warn(logFallbackAttempt);
                 }
 
                 value = FirstWithPreference_NoAlloc(fallbackCheck, out var foundFallback);
@@ -221,7 +221,7 @@ namespace Appalachia.Core.Collections
 
                 if (logFallbackFailure != null)
                 {
-                   AppaLog.Warning(logFallbackFailure);
+                   AppaLog.Warn(logFallbackFailure);
                 }
 
                 value = default;
@@ -624,10 +624,12 @@ namespace Appalachia.Core.Collections
             set => initializerCount = value;
         }
 
+#if UNITY_EDITOR
         public void SetDirtyAction(Action a)
         {
             _setDirtyAction = a;
         }
+#endif
 
         public IReadOnlyList<TKey> Keys => keys;
 

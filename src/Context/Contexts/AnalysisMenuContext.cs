@@ -5,9 +5,9 @@ using System.Linq;
 using Appalachia.CI.Constants;
 using Appalachia.Core.Aspects.Tracing;
 using Appalachia.Core.Context.Analysis.Core;
-using Appalachia.Core.Context.Elements.Progress;
 using Appalachia.Core.Context.Interfaces;
 using Appalachia.Core.Preferences;
+using Appalachia.Utility.Execution.Progress;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Context.Contexts

@@ -15,6 +15,8 @@ namespace Appalachia.Core.Volumes
     [ExecuteAlways]
     public class AppaVolume : AppalachiaBehaviour
     {
+        #region Profiling
+
         private const string _PRF_PFX = nameof(AppaVolume) + ".";
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
         private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
@@ -25,10 +27,14 @@ namespace Appalachia.Core.Volumes
         private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
 
         private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
 
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new(_PRF_PFX + "OnDrawGizmosSelected");
+        #endregion
+
+        #region Fields
+
+        // Modifying sharedProfile will change the behavior of all volumes using this profile, and
+        // change profile settings that are stored in the project too
+        public AppaVolumeProfile sharedProfile;
 
 //custom-end
 
@@ -53,15 +59,13 @@ namespace Appalachia.Core.Volumes
 
 //custom-begin: malte: context reference for exposed property resolver
         public Object context;
-
-        // Modifying sharedProfile will change the behavior of all volumes using this profile, and
-        // change profile settings that are stored in the project too
-        public AppaVolumeProfile sharedProfile;
+        private AppaVolumeProfile m_InternalProfile;
         private float m_PreviousPriority;
 
         // Needed for state tracking (see the comments in Update)
         private int m_PreviousLayer;
-        private AppaVolumeProfile m_InternalProfile;
+
+        #endregion
 
         // This property automatically instantiates the profile and makes it unique to this volume
         // so you can safely edit it via scripting at runtime without changing the original asset
@@ -91,29 +95,10 @@ namespace Appalachia.Core.Volumes
             set => m_InternalProfile = value;
         }
 
-        internal AppaVolumeProfile profileRef => m_InternalProfile == null ? sharedProfile : m_InternalProfile;
+        internal AppaVolumeProfile profileRef =>
+            m_InternalProfile == null ? sharedProfile : m_InternalProfile;
 
-        public bool HasInstantiatedProfile()
-        {
-            return m_InternalProfile != null;
-        }
-
-        private void OnDisable()
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                AppaVolumeManager.instance.Unregister(this, gameObject.layer);
-            }
-        }
-
-        private void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                m_PreviousLayer = gameObject.layer;
-                AppaVolumeManager.instance.Register(this, m_PreviousLayer);
-            }
-        }
+        #region Event Functions
 
         private void Update()
         {
@@ -142,7 +127,35 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+        private void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                m_PreviousLayer = gameObject.layer;
+                AppaVolumeManager.instance.Register(this, m_PreviousLayer);
+            }
+        }
+
+        private void OnDisable()
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                AppaVolumeManager.instance.Unregister(this, gameObject.layer);
+            }
+        }
+
+        #endregion
+
+        public bool HasInstantiatedProfile()
+        {
+            return m_InternalProfile != null;
+        }
+
 #if UNITY_EDITOR
+        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
+
+        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
+            new(_PRF_PFX + "OnDrawGizmosSelected");
 
         // TODO: Look into a better volume previsualization system
         private List<Collider> m_TempColliders;

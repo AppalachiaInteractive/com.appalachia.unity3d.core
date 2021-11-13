@@ -2,9 +2,7 @@
 
 using Appalachia.CI.Integration.Assets;
 
-#if UNITY_EDITOR
 
-#endif
 
 #endregion
 

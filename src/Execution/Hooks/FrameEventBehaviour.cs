@@ -52,10 +52,12 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_Awake.Auto())
             {
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_AWAKE.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [Awake]");
                 }
+#endif
 
                 EventDelegates.InvokeAwake();
             }
@@ -65,10 +67,12 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_Start.Auto())
             {
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_START.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [Start]");
                 }
+#endif
 
                 EventDelegates.InvokeStart();
             }
@@ -78,10 +82,12 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_Update.Auto())
             {
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [Update]");
                 }
+#endif
 
                 EventDelegates.InvokeUpdate();
             }
@@ -91,10 +97,12 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_FixedUpdate.Auto())
             {
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [FixedUpdate]");
                 }
+#endif
 
                 EventDelegates.InvokeFixedUpdate();
             }
@@ -106,10 +114,12 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 StaticApplicationState.HasOnEnableExecuted = true;
 
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_ENABLE.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [OnEnable]");
                 }
+#endif
 
                 EventDelegates.InvokeOnEnable();
             }
@@ -119,10 +129,12 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_OnDisable.Auto())
             {
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [OnDisable]");
                 }
+#endif
 
                 EventDelegates.InvokeOnDisable();
             }
@@ -132,10 +144,12 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_OnDestroy.Auto())
             {
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DESTROY.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [OnDestroy]");
                 }
+#endif
 
                 EventDelegates.InvokeOnDestroy();
             }
@@ -145,10 +159,12 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_OnApplicationQuit.Auto())
             {
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_QUIT.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [OnApplicationQuit]");
                 }
+#endif
 
                 EventDelegates.InvokeOnApplicationQuit();
             }
@@ -158,10 +174,12 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_FixedUpdate.Auto())
             {
+#if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
                     AppaLog.Info($"[{GetReadableName()}]: [OnPreCull]");
                 }
+#endif
 
                 EventDelegates.InvokeOnPreCull(Camera.current);
             }

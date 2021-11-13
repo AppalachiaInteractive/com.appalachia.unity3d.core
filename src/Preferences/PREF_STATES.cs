@@ -7,7 +7,6 @@ using System.Reflection;
 using Appalachia.Core.Attributes;
 using Unity.Mathematics;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 
 #endregion
@@ -20,9 +19,10 @@ namespace Appalachia.Core.Preferences
 
         private const string _PRF_PFX = nameof(PREF_STATES) + ".";
 
+#if UNITY_EDITOR
         private static readonly ProfilerMarker _PRF_GetSettingsProviders =
             new(_PRF_PFX + nameof(GetSettingsProviders));
-
+#endif
         private static readonly ProfilerMarker _PRF_GetSortedCount = new(_PRF_PFX + nameof(GetSortedCount));
         private static readonly ProfilerMarker _PRF_DrawUIGroup = new(_PRF_PFX + nameof(DrawUIGroupAllTypes));
         private static readonly ProfilerMarker _PRF_DrawUI = new(_PRF_PFX + nameof(DrawUIGroupType));
@@ -69,10 +69,12 @@ namespace Appalachia.Core.Preferences
         private static Dictionary<Type, MethodInfo> _DoDrawUILookup;
         private static Dictionary<Type, MethodInfo> _GetEnumStateLookup;
         private static Dictionary<Type, MethodInfo> _GetFlagStateLookup;
-
+        
         #region Menu Items
 
-        [MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Preferences/Awaken", priority = PKG.Priority)]
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Preferences/Awaken", priority = PKG.Priority)]
+#endif
         [ExecuteOnEnable]
         public static void Awake()
         {
@@ -115,20 +117,6 @@ namespace Appalachia.Core.Preferences
 
         public static bool Draw(this PREF_BASE preference)
         {
-            EditorGUI.BeginChangeCheck();
-
-            var indent = EditorGUI.indentLevel * indentSize;
-
-            if (preference.NiceLabel == null)
-            {
-                preference.NiceLabel = ObjectNames.NicifyVariableName(preference.Label);
-            }
-
-            var labelWidth = indent + (preference.NiceLabel.Length * characterSize);
-            var currentLabelWidth = EditorGUIUtility.labelWidth;
-
-            EditorGUIUtility.labelWidth = currentLabelWidth;
-
             var realType = preference.GetType();
             var typeTR = realType.GetGenericArguments().FirstOrDefault();
 
@@ -208,7 +196,7 @@ namespace Appalachia.Core.Preferences
 
             return DoDraw(preference, prefs);
         }
-
+        
         public static PREF_STATE<TR> Get<TR>()
         {
             using (_PRF_Get.Auto())
@@ -324,14 +312,15 @@ namespace Appalachia.Core.Preferences
             }
         }
 
-        [SettingsProviderGroup]
-        public static SettingsProvider[] GetSettingsProviders()
+#if UNITY_EDITOR
+        [UnityEditor.SettingsProviderGroup]
+        public static UnityEditor.SettingsProvider[] GetSettingsProviders()
         {
             using (_PRF_GetSettingsProviders.Auto())
             {
                 Awake();
 
-                var providers = new List<SettingsProvider>();
+                var providers = new List<UnityEditor.SettingsProvider>();
                 _groupings = new List<string>();
 
                 foreach (var pref in PREF_STATE_BASE.allPreferences)
@@ -345,7 +334,7 @@ namespace Appalachia.Core.Preferences
 
                     _groupings.Add(pref.Grouping);
 
-                    var provider = new SettingsProvider(fullGrouping, SettingsScope.User)
+                    var provider = new UnityEditor.SettingsProvider(fullGrouping, UnityEditor.SettingsScope.User)
                     {
                         guiHandler = searchContext => DrawUI(pref.Grouping), label = ""
                     };
@@ -356,23 +345,25 @@ namespace Appalachia.Core.Preferences
                 return providers.ToArray();
             }
         }
-
+#endif
+        
         private static bool DoDraw<TP>(PREF<TP> preference, PREF_STATE<TP> prefs)
         {
-            EditorGUI.BeginChangeCheck();
+#if UNITY_EDITOR
+            UnityEditor.EditorGUI.BeginChangeCheck();
 
-            if (preference.NiceLabel == null)
-            {
-                preference.NiceLabel = ObjectNames.NicifyVariableName(preference.Label);
-            }
+            var indent = UnityEditor.EditorGUI.indentLevel * indentSize;
 
-            var indent = EditorGUI.indentLevel * indentSize;
-
-            var currentLabelWidth = EditorGUIUtility.labelWidth;
+            var currentLabelWidth = UnityEditor.EditorGUIUtility.labelWidth;
             var labelWidth = indent + (preference.NiceLabel.Length * characterSize);
 
-            EditorGUIUtility.labelWidth = labelWidth;
+            UnityEditor.EditorGUIUtility.labelWidth = labelWidth;
+#else
+            GUI.changed = false;
+#endif
+            
             preference.Value = prefs.API.Draw(
+                preference.Key,
                 preference.NiceLabel,
                 preference.Value,
                 preference.Low,
@@ -381,15 +372,24 @@ namespace Appalachia.Core.Preferences
 
             var changed = false;
 
-            if (EditorGUI.EndChangeCheck())
+#if UNITY_EDITOR
+            if (UnityEditor.EditorGUI.EndChangeCheck())
             {
                 changed = true;
 
                 prefs.API.Save(preference.Key, preference.Value, preference.Low, preference.High);
             }
-
-            EditorGUIUtility.labelWidth = currentLabelWidth;
-
+            
+            UnityEditor.EditorGUIUtility.labelWidth = currentLabelWidth;
+#else
+            if (GUI.changed)
+            {
+                changed = true;
+                
+                prefs.API.Save(preference.Key, preference.Value, preference.Low, preference.High);
+            }
+#endif
+            
             return changed;
         }
 
@@ -438,7 +438,9 @@ namespace Appalachia.Core.Preferences
         {
             using (_PRF_DrawUI.Auto())
             {
-                EditorGUI.indentLevel++;
+#if UNITY_EDITOR
+                UnityEditor.EditorGUI.indentLevel++;
+#endif
 
                 var sortCount = GetSortedCount(prefs);
 
@@ -452,7 +454,9 @@ namespace Appalachia.Core.Preferences
                     }
                 }
 
-                EditorGUI.indentLevel--;
+#if UNITY_EDITOR
+                UnityEditor.EditorGUI.indentLevel--;
+#endif
             }
         }
 
@@ -585,32 +589,5 @@ namespace Appalachia.Core.Preferences
             }
         }
 
-        /*
-_bools
-_bounds
-_colors
-_gradients
-_doubles
-_floats
-_float2s
-_float3s
-_float4s
-_ints
-_quaternions
-_strings
-
-bool
-Bounds
-Color
-Gradient
-double
-float
-float2
-float3
-float4
-int
-quaternion
-string
-*/
     }
 }

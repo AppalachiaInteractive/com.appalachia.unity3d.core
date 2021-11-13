@@ -15,9 +15,7 @@ using Sirenix.OdinInspector;
 
 #endregion
 
-#if UNITY_EDITOR
 
-#endif
 
 namespace Appalachia.Core.Aspects.Criticality
 {

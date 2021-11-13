@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Collections;
 using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -8,9 +9,10 @@ using UnityEngine.Serialization;
 
 namespace Appalachia.Core.Scriptables
 {
-    public abstract class AppalachiaMetadataCollection<T, TValue> : SingletonAppalachiaObject<T>
-        where T : AppalachiaMetadataCollection<T, TValue>
+    public abstract class AppalachiaMetadataCollection<T, TValue, TL> : SingletonAppalachiaObject<T>
+        where T : AppalachiaMetadataCollection<T, TValue, TL>
         where TValue : AppalachiaObject<TValue>, ICategorizable
+        where TL : AppaList<TValue>, new()
     {
         [FormerlySerializedAs("generic")]
         [FormerlySerializedAs("defaultWrapper")]
@@ -19,7 +21,7 @@ namespace Appalachia.Core.Scriptables
 
         [NonSerialized]
         [HideInInspector]
-        private List<TValue> _all;
+        private TL _all;
 
         public IReadOnlyList<TValue> all
         {
@@ -30,15 +32,17 @@ namespace Appalachia.Core.Scriptables
                     return _all;
                 }
 
-                _all = new List<TValue>();
+                _all = new TL();
 
+#if UNITY_EDITOR
                 PopulateAll(_all);
+#endif
 
                 return _all;
             }
         }
 
-        protected List<TValue> all_internal
+        protected TL all_internal
         {
             get
             {
@@ -47,21 +51,25 @@ namespace Appalachia.Core.Scriptables
                     return _all;
                 }
 
-                _all = new List<TValue>();
+                _all = new TL();
 
+#if UNITY_EDITOR
                 PopulateAll(_all);
+#endif
 
                 return _all;
             }
         }
 
+#if UNITY_EDITOR
         protected virtual void RegisterNecessaryInstances()
         {
         }
 
-        protected void PopulateAll(List<TValue> values)
+        protected void PopulateAll(TL values)
         {
-#if UNITY_EDITOR
+            values.Clear();
+            
             var assets = AssetDatabaseManager.FindAssets<TValue>();
 
             for (var i = 0; i < assets.Count; i++)
@@ -70,8 +78,8 @@ namespace Appalachia.Core.Scriptables
 
                 values.Add(asset);
             }
-#endif
         }
+#endif
 
         protected override void WhenEnabled()
         {

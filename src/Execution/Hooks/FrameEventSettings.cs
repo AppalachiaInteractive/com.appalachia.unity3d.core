@@ -2,14 +2,13 @@
 
 using System;
 using Appalachia.Core.Preferences;
-using UnityEditor;
 
 #endregion
 
 namespace Appalachia.Core.Execution.Hooks
 {
 #if UNITY_EDITOR
-    [InitializeOnLoad]
+    [UnityEditor.InitializeOnLoad]
 #endif
     public static class FrameEventSettings
     {
@@ -18,7 +17,6 @@ namespace Appalachia.Core.Execution.Hooks
         }
 
 #if UNITY_EDITOR
-
 
         [NonSerialized] public static readonly PREF<bool> _ENABLE_SUB = PREFS.REG(PKG.Prefs.Group, "Subscribe", false);
 
@@ -39,7 +37,7 @@ namespace Appalachia.Core.Execution.Hooks
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "LogSubscribe", true)]
         private static bool ENABLE_SUBv()
         {
-            Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Subscribe", _ENABLE_SUB.v);
+            UnityEditor.Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Subscribe", _ENABLE_SUB.v);
             return true;
         }
 
@@ -52,7 +50,7 @@ namespace Appalachia.Core.Execution.Hooks
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Log Unsubscribe", true)]
         private static bool ENABLE_UNSUBv()
         {
-            Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Unsubscribe", _ENABLE_UNSUB.v);
+            UnityEditor.Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Unsubscribe", _ENABLE_UNSUB.v);
             return true;
         }
 
@@ -65,7 +63,7 @@ namespace Appalachia.Core.Execution.Hooks
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Log Awake", true)]
         private static bool ENABLE_AWAKEv()
         {
-            Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Awake", _ENABLE_AWAKE.v);
+            UnityEditor.Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Awake", _ENABLE_AWAKE.v);
             return true;
         }
 
@@ -78,7 +76,7 @@ namespace Appalachia.Core.Execution.Hooks
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Log Start", true)]
         private static bool ENABLE_STARTv()
         {
-            Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Start", _ENABLE_START.v);
+            UnityEditor.Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Start", _ENABLE_START.v);
             return true;
         }
 
@@ -91,7 +89,7 @@ namespace Appalachia.Core.Execution.Hooks
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Log Enable", true)]
         private static bool ENABLE_ENABLEv()
         {
-            Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Enable", _ENABLE_ENABLE.v);
+            UnityEditor.Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Enable", _ENABLE_ENABLE.v);
             return true;
         }
 
@@ -104,7 +102,7 @@ namespace Appalachia.Core.Execution.Hooks
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Log Disable", true)]
         private static bool ENABLE_DISABLEv()
         {
-            Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Disable", _ENABLE_DISABLE.v);
+            UnityEditor.Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Disable", _ENABLE_DISABLE.v);
             return true;
         }
 
@@ -117,7 +115,7 @@ namespace Appalachia.Core.Execution.Hooks
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Log Quit", true)]
         private static bool ENABLE_QUITv()
         {
-            Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Quit", _ENABLE_QUIT.v);
+            UnityEditor.Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Quit", _ENABLE_QUIT.v);
             return true;
         }
 
@@ -130,7 +128,7 @@ namespace Appalachia.Core.Execution.Hooks
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "Log Destroy", true)]
         private static bool ENABLE_DESTROYv()
         {
-            Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Destroy", _ENABLE_DESTROY.v);
+            UnityEditor.Menu.SetChecked(PKG.Menu.Appalachia.Tools.Base + "Log Destroy", _ENABLE_DESTROY.v);
             return true;
         }
 

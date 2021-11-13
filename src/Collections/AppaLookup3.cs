@@ -77,7 +77,7 @@ namespace Appalachia.Core.Collections
 
                         if (logFallbackAttempt != null)
                         {
-                           AppaLog.Warning(logFallbackAttempt);
+                           AppaLog.Warn(logFallbackAttempt);
                         }
 
                         value = sub2.FirstWithPreference_NoAlloc(fallbackCheck, out var foundFallback);
@@ -89,7 +89,7 @@ namespace Appalachia.Core.Collections
 
                         if (logFallbackFailure != null)
                         {
-                           AppaLog.Warning(logFallbackFailure);
+                           AppaLog.Warn(logFallbackFailure);
                         }
                     }
                 }

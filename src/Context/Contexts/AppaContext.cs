@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Appalachia.Core.Context.Elements.Progress;
+using Appalachia.Utility.Execution.Progress;
 
 namespace Appalachia.Core.Context.Contexts
 {

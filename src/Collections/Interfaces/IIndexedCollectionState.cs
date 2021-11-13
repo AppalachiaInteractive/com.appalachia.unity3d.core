@@ -13,6 +13,8 @@ namespace Appalachia.Core.Collections.Interfaces
         IReadOnlyList<TValue> Values { get; }
         int InitializerCount { get; set; }
 
+#if UNITY_EDITOR
         void SetDirtyAction(Action a);
+#endif
     }
 }

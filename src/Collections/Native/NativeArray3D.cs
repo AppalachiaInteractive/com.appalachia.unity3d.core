@@ -174,7 +174,9 @@ namespace Appalachia.Core.Collections.Native
 
                 var index = GetIndex(index0, index1, index2);
                 SafetyUtility.CheckElementReadAccess(
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                     m_Safety,
+#endif
                     index,
                     m_MinIndex,
                     m_MaxIndex,
@@ -201,7 +203,9 @@ namespace Appalachia.Core.Collections.Native
 
                 var index = GetIndex(index0, index1, index2);
                 SafetyUtility.CheckElementWriteAccess(
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                     m_Safety,
+#endif
                     index,
                     m_MinIndex,
                     m_MaxIndex,
@@ -297,7 +301,9 @@ namespace Appalachia.Core.Collections.Native
                 m_MaxIndex = totalCapacity - 1
             };
 
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             DisposeSentinel.Create(out array.m_Safety, out array.m_DisposeSentinel, 1, allocator);
+#endif
         }
 
         [WriteAccessRequired]

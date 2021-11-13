@@ -1,9 +1,9 @@
 #region
 
 using Appalachia.Core.Extensions;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 
 #endregion
@@ -50,7 +50,7 @@ namespace Appalachia.Core.Behaviours
                 if ((_instance != null) && (_instance != this))
                 {
 #if UNITY_EDITOR
-                    Selection.objects = new Object[] {_instance.gameObject};
+                    UnityEditor.Selection.objects = new Object[] {_instance.gameObject};
 #endif
                     this.DestroySafely();
                 }
@@ -59,7 +59,9 @@ namespace Appalachia.Core.Behaviours
                     __instance = this as T;
                 }
 
+#if !UNITY_EDITOR
                 DontDestroyOnLoad(this);
+#endif
                 OnAwake();
             }
         }

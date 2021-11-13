@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Appalachia.Core.Preferences;
-using UnityEditor;
 
 #endregion
 
@@ -13,13 +12,12 @@ namespace Appalachia.Core.Aspects.Tracing
     [DebuggerStepThrough]
     public static class TRACE
     {
-#if UNITY_EDITOR
-
         internal const string _TRACE_LOG_LABEL = "Enable Logging";
 
         [NonSerialized]
         private static readonly PREF<bool> _enabled = PREFS.REG(PKG.Prefs.Group, _TRACE_LOG_LABEL, false);
 
+#if UNITY_EDITOR
         private const string ENABLED = PKG.Menu.Appalachia.Debug.Base + "Trace Logging/Enabled";
 
         [UnityEditor.MenuItem(ENABLED, true, PKG.Menu.Appalachia.Debug.Priority)]
@@ -30,7 +28,7 @@ namespace Appalachia.Core.Aspects.Tracing
                 return false;
             }
 
-            Menu.SetChecked(ENABLED, _enabled.Value);
+            UnityEditor.Menu.SetChecked(ENABLED, _enabled.Value);
             return true;
         }
 

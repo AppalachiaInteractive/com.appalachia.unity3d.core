@@ -11,7 +11,12 @@ namespace Appalachia.Core.Preferences
             _grouping = grouping;
             _label = label;
             _order = order;
+            
+            #if UNITY_EDITOR
             _niceLabel = UnityEditor.ObjectNames.NicifyVariableName(label);
+            #else
+            _niceLabel = label;
+            #endif
         }
 
         protected readonly int _order;

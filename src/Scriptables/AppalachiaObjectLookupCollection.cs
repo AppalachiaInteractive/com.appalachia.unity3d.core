@@ -26,7 +26,9 @@ namespace Appalachia.Core.Scriptables
 
         private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
         private static readonly ProfilerMarker _PRF_WhenEnabled = new(_PRF_PFX + nameof(WhenEnabled));
+#if UNITY_EDITOR
         private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
+#endif
         private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
         private static readonly ProfilerMarker _PRF_DoForAll = new(_PRF_PFX + nameof(DoForAll));
 
@@ -136,7 +138,9 @@ namespace Appalachia.Core.Scriptables
                     }
                 }
 
+#if UNITY_EDITOR
                 SetDirty();
+#endif
             }
         }
 

@@ -6,9 +6,7 @@ using UnityEngine;
 
 #endregion
 
-#if UNITY_EDITOR
 
-#endif
 
 namespace Appalachia.Core.Scriptables
 {

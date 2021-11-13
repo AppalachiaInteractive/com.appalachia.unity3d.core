@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Types.Enums;
 using Appalachia.Utility.Logging;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
@@ -13,12 +11,6 @@ using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Extensions
 {
-#region
-
-    using UnityObject = Object;
-
-#endregion
-
     public static class CoreUtils
     {
         public const int assetCreateMenuPriority1 = 230;
@@ -157,7 +149,7 @@ namespace Appalachia.Core.Extensions
         // Returns 'true' if "Animated Materials" are enabled for the view associated with the given camera.
         public static bool AreAnimatedMaterialsEnabled(Camera camera)
         {
-            bool animateMaterials;
+            var animateMaterials = false;
 
 #if UNITY_EDITOR
             animateMaterials = Application.isPlaying;
@@ -167,9 +159,9 @@ namespace Appalachia.Core.Extensions
                 animateMaterials = false;
 
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
-                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
+                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.SceneView)))
                 {
-                    var sv = (SceneView) o;
+                    var sv = (UnityEditor.SceneView) o;
                     if ((sv.camera == camera) && sv.sceneViewState.alwaysRefresh)
                     {
                         animateMaterials = true;
@@ -182,9 +174,9 @@ namespace Appalachia.Core.Extensions
                 animateMaterials = false;
 
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
-                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(MaterialEditor)))
+                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.MaterialEditor)))
                 {
-                    var med = (MaterialEditor) o;
+                    var med = (UnityEditor.MaterialEditor) o;
 
                     // Warning: currently, there's no way to determine whether a given camera corresponds to this MaterialEditor.
                     // Therefore, if at least one of the visible MaterialEditors is in Play Mode, all of them will play.
@@ -226,9 +218,9 @@ namespace Appalachia.Core.Extensions
                 fogEnable = false;
 
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
-                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
+                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.SceneView)))
                 {
-                    var sv = (SceneView) o;
+                    var sv = (UnityEditor.SceneView) o;
                     if ((sv.camera == camera) && sv.sceneViewState.showFog)
                     {
                         fogEnable = true;
@@ -435,26 +427,26 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static void Destroy(UnityObject obj)
+        public static void Destroy(Object obj)
         {
             if (obj != null)
             {
 #if UNITY_EDITOR
                 if (Application.isPlaying)
                 {
-                    UnityObject.Destroy(obj);
+                    Object.Destroy(obj);
                 }
                 else
                 {
-                    UnityObject.DestroyImmediate(obj);
+                    Object.DestroyImmediate(obj);
                 }
 #else
-                UnityObject.Destroy(obj);
+                Object.Destroy(obj);
 #endif
             }
         }
 
-        public static void Destroy(params UnityObject[] objs)
+        public static void Destroy(params Object[] objs)
         {
             if (objs == null)
             {
@@ -482,9 +474,9 @@ namespace Appalachia.Core.Extensions
             AppaLog.Error(msg);
 
 #if UNITY_EDITOR
-            foreach (var o in Resources.FindObjectsOfTypeAll(typeof(SceneView)))
+            foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.SceneView)))
             {
-                var sv = (SceneView) o;
+                var sv = (UnityEditor.SceneView) o;
                 sv.ShowNotification(new GUIContent(msg));
             }
 #endif

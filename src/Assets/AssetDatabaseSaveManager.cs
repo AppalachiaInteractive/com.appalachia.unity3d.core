@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -5,7 +6,6 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Preferences;
 using Appalachia.Utility.Logging;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 
 namespace Appalachia.Core.Assets
@@ -129,10 +129,10 @@ namespace Appalachia.Core.Assets
 
         public static bool RequestSuspendImport(out IDisposable scope)
         {
-            if (EditorApplication.isPlaying ||
-                EditorApplication.isCompiling ||
-                EditorApplication.isPaused ||
-                EditorApplication.isUpdating ||
+            if (UnityEditor.EditorApplication.isPlaying ||
+                UnityEditor.EditorApplication.isCompiling ||
+                UnityEditor.EditorApplication.isPaused ||
+                UnityEditor.EditorApplication.isUpdating ||
                 Application.isBatchMode ||
                 Application.isPlaying)
             {
@@ -196,7 +196,7 @@ namespace Appalachia.Core.Assets
         {
             using (_PRF_StopAssetEditing.Auto())
             {
-                AssetDatabase.StopAssetEditing();
+                UnityEditor.AssetDatabase.StopAssetEditing();
                 _explicitlyStarted = false;
                 _suspensionDepth -= 1;
             }
@@ -211,7 +211,7 @@ namespace Appalachia.Core.Assets
                     return;
                 }
 
-               AppaLog.Warning(
+                AppaLog.Warn(
                     $"{prefix} | Deferral depth: {_deferralDepth:000} | Suspension depth: {_suspensionDepth:000}"
                 );
             }
@@ -223,7 +223,7 @@ namespace Appalachia.Core.Assets
             {
                 if (!ImportSuspended)
                 {
-                    AssetDatabase.StartAssetEditing();
+                    UnityEditor.AssetDatabase.StartAssetEditing();
                     _suspensionDepth += 1;
                     _deferralDepth += 1;
                     Log("Suspending import.");
@@ -245,3 +245,5 @@ namespace Appalachia.Core.Assets
         }
     }
 }
+
+#endif

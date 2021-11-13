@@ -1,7 +1,6 @@
 using System;
 using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -40,12 +39,12 @@ namespace Appalachia.Core.Scriptables
 
         private void SelectCategory()
         {
-            Selection.objects = GetAllOfType(i => i.Category == Category).ToArray();
+            UnityEditor.Selection.objects = GetAllOfType(i => i.Category == Category).ToArray();
         }
 
         private void SelectUncategorized()
         {
-            Selection.objects = GetAllOfType(i => string.IsNullOrWhiteSpace(i.Category)).ToArray();
+            UnityEditor.Selection.objects = GetAllOfType(i => string.IsNullOrWhiteSpace(i.Category)).ToArray();
         }
 
         private bool _disablePrefix =>

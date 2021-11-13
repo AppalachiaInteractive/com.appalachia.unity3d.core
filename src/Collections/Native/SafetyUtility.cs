@@ -16,13 +16,16 @@ namespace Appalachia.Core.Collections.Native
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         [BurstDiscard]
         public static void CheckElementReadAccess(
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle safety,
+#endif
             int index,
             int minimum,
             int maximum,
             int length,
             int capacity)
         {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             if ((index < minimum) || (index > maximum))
             {
                 FailOutOfRangeError(index, minimum, maximum, length, capacity);
@@ -31,18 +34,22 @@ namespace Appalachia.Core.Collections.Native
             /*if (this.m_Safety.version == (*(int*) (void*) this.m_Safety.versionNode & -7))
                 return;*/
             AtomicSafetyHandle.CheckReadAndThrow(safety);
+#endif
         }
 
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         [BurstDiscard]
         public static void CheckElementWriteAccess(
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle safety,
+#endif
             int index,
             int minimum,
             int maximum,
             int length,
             int capacity)
         {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
             if ((index < minimum) || (index > maximum))
             {
                 FailOutOfRangeError(index, minimum, maximum, length, capacity);
@@ -51,11 +58,16 @@ namespace Appalachia.Core.Collections.Native
             /*if (this.m_Safety.version == (*(int*) (void*) this.m_Safety.versionNode & -6))
                 return;*/
             AtomicSafetyHandle.CheckWriteAndThrow(safety);
+#endif
         }
 
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         [BurstDiscard]
-        public static void CheckReadAccess(AtomicSafetyHandle safety)
+        public static void CheckReadAccess(
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle safety
+#endif
+            )
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckReadAndThrow(safety);
@@ -64,7 +76,11 @@ namespace Appalachia.Core.Collections.Native
 
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         [BurstDiscard]
-        public static void CheckWriteAccess(AtomicSafetyHandle safety)
+        public static void CheckWriteAccess(
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle safety
+#endif
+            )
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckWriteAndThrow(safety);
