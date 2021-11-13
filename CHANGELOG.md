@@ -14,14 +14,10 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 701ada404e97d92f612919e1842d0589fb69853f | 2021-11-13 | Chris Schubert | Updating changelog and releaselog |
 | dc1a2514aada8264a1c96ff9c450e6207e8efbb4 | 2021-11-13 | Chris Schubert | EXR to gitlfs |
 | f25375ef04555741a1afdb3dc972363dee721aa1 | 2021-11-13 | Chris Schubert | Editor exlusions fro runtime build |
 | dd51bd5722261d9ac43eef6fde6dffa11d70118a | 2021-11-13 | Chris Schubert | Editor exclusions for runtime build. |
-
-
- ## Tag: `v0.2.0`
-| Hash | Date | Author | Changes |
-|------|------|--------|---------|
 | 1d9c381b0babb63f7373958a7e89606ad97f5030 | 2021-11-09 | Chris Schubert | Updating changelog and releaselog |
 | 80b18904fe6066c121e72ab496f8b43e2fa0f2a7 | 2021-11-09 | Chris Schubert | Updating changelog and releaselog |
 | 1f1bdde3aab00d7a63346e09a82c87a8cb3e7eab | 2021-11-09 | Chris Schubert | Removing empty directories, adding some debugger passthroughs, and reformatting asmdefs |
