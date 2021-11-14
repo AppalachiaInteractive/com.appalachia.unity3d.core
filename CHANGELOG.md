@@ -1,6 +1,6 @@
 ```
 C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
- Let's go!  
+Let's go!  
  ________   ___  ___   ________   ________    ________   _______    ________      
 |\   ____\ |\  \|\  \ |\   __  \ |\   ___  \ |\   ____\ |\  ___ \  |\   ____\     
 \ \  \___| \ \  \\\  \\ \  \|\  \\ \  \\ \  \\ \  \___| \ \   __/| \ \  \___|_    
@@ -14,6 +14,7 @@ C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| ae86cc48dad134eba36ab260e466ed67ca2565be | 2021-11-13 | Chris Schubert | Updating changelog and releaselog |
 | 701ada404e97d92f612919e1842d0589fb69853f | 2021-11-13 | Chris Schubert | Updating changelog and releaselog |
 | dc1a2514aada8264a1c96ff9c450e6207e8efbb4 | 2021-11-13 | Chris Schubert | EXR to gitlfs |
 | f25375ef04555741a1afdb3dc972363dee721aa1 | 2021-11-13 | Chris Schubert | Editor exlusions fro runtime build |

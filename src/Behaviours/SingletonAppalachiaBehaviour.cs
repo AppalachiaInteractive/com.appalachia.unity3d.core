@@ -43,6 +43,8 @@ namespace Appalachia.Core.Behaviours
         {
         }
 
+        protected virtual bool DestroyObjectOfSubsequentInstances => false;
+        
         private void Awake()
         {
             using (_PRF_Awake.Auto())
@@ -52,7 +54,16 @@ namespace Appalachia.Core.Behaviours
 #if UNITY_EDITOR
                     UnityEditor.Selection.objects = new Object[] {_instance.gameObject};
 #endif
-                    this.DestroySafely();
+                    if (DestroyObjectOfSubsequentInstances)
+                    {
+                        gameObject.DestroySafely();
+                    }
+                    else
+                    {
+                        this.DestroySafely();
+                    }
+
+                    return;
                 }
                 else
                 {
