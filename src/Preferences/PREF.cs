@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Diagnostics;
 using Appalachia.Core.Preferences.API;
 using Sirenix.OdinInspector;
@@ -13,6 +14,7 @@ namespace Appalachia.Core.Preferences
     [ShowInInspector]
     [InlineProperty]
     [HideReferenceObjectPicker]
+    [Serializable]
     public sealed class PREF<T> : PREF_BASE
     {
         internal PREF(

@@ -17,7 +17,6 @@ namespace Appalachia.Core.Attributes.Editing
         public SmartTitleAttribute(
             string title,
             string subtitle = null,
-            TitleAlignment alignment = TitleAlignment.Left,
             bool horizontalLine = true,
             bool bold = true,
             bool reversed = false,
@@ -30,7 +29,6 @@ namespace Appalachia.Core.Attributes.Editing
         {
             Title = title ?? "null";
             Subtitle = subtitle;
-            Alignment = alignment;
             HorizontalLine = horizontalLine;
             Bold = bold;
             Reversed = reversed;
@@ -61,8 +59,6 @@ namespace Appalachia.Core.Attributes.Editing
         public bool HasSubtitleFont => TitleFont.IsNotNullOrWhiteSpace();
         public bool HasTitleColor => TitleColor.IsNotNullOrWhiteSpace();
         public bool HasSubtitleColor => SubtitleColor.IsNotNullOrWhiteSpace();
-
-        public TitleAlignment Alignment;
 
         #endregion
     }

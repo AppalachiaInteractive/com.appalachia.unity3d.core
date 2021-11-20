@@ -19,7 +19,7 @@ namespace Appalachia.Core.Collections.Native.Pointers
     [DebuggerTypeProxy(typeof(NativeFloat3PtrDebugView))]
     [DebuggerDisplay("Value = {" + nameof(Value) + "}")]
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct NativeFloat3Ptr : IDisposable
+	public unsafe struct NativeFloat3Ptr : IDisposable
     {
 	    /// <summary>
 	    ///     An atomic write-only version of the object suitable for use in a

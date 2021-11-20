@@ -1474,7 +1474,6 @@ namespace Appalachia.Core.Collections
             [SmartTitle(
                 _titlePointer,
                 _subtitlePointer,
-                TitleAlignment.Split,
                 hideIfMemberName: _disableTitlePointer,
                 titleColor: _colorPointer
             )]

@@ -21,7 +21,6 @@ namespace Appalachia.Core.Attributes.Editing
             string groupName,
             string title,
             string subtitle = null,
-            TitleAlignment alignment = TitleAlignment.Left,
             bool horizontalLine = true,
             bool bold = true,
             bool reversed = false,
@@ -35,11 +34,11 @@ namespace Appalachia.Core.Attributes.Editing
             int titleSize = 0,
             int subtitleSize = 0,
             string titleIcon = null,
-            string subtitleIcon = null) : base(groupName, order)
+            string subtitleIcon = null,
+            int titleHeight = 18) : base(groupName, order)
         {
             Title = title;
             Subtitle = subtitle;
-            Alignment = alignment;
             HorizontalLine = horizontalLine;
             Bold = bold;
             Reversed = reversed;
@@ -53,6 +52,7 @@ namespace Appalachia.Core.Attributes.Editing
             SubtitleSize = subtitleSize;
             TitleIcon = titleIcon;
             SubtitleIcon = subtitleIcon;
+            TitleHeight = titleHeight;
         }
 
         #region Fields and Autoproperties
@@ -72,8 +72,7 @@ namespace Appalachia.Core.Attributes.Editing
         public string TitleIcon;
         public int SubtitleSize;
         public string SubtitleIcon;
-
-        public TitleAlignment Alignment;
+        public int TitleHeight;
 
         #endregion
 
@@ -104,15 +103,6 @@ namespace Appalachia.Core.Attributes.Editing
                 else
                 {
                     Subtitle = otherGroup.Subtitle;
-                }
-
-                if (Alignment != TitleAlignment.Left)
-                {
-                    otherGroup.Alignment = Alignment;
-                }
-                else
-                {
-                    Alignment = otherGroup.Alignment;
                 }
 
                 if (!HorizontalLine)

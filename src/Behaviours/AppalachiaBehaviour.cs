@@ -39,11 +39,12 @@ namespace Appalachia.Core.Behaviours
         
         protected const bool TITLE_BOLD = false;
         
-        protected const string TITLEFONT = APPASTR.Fonts.Montserrat.Regular;
-        protected const string SUBTITLEFONT = APPASTR.Fonts.Montserrat.Regular;
+        protected const string TITLEFONT = APPASTR.Fonts.Montserrat.Medium;
+        protected const string SUBTITLEFONT = APPASTR.Fonts.Montserrat.Medium;
         
-        protected const int TITLESIZE = 12;
-        protected const int SUBTITLESIZE = 12;
+        protected const int TITLESIZE = 13;
+        protected const int SUBTITLESIZE = 13;
+        protected const int TITLEHEIGHT = 24;
         
         protected const string LABELCOLOR = Utility.Colors.Colors.Appalachia.HEX.Bone;
         protected const string GROUPBACKGROUNDCOLOR = Utility.Colors.Colors.Appalachia.HEX.DarkYellow;
@@ -61,7 +62,6 @@ namespace Appalachia.Core.Behaviours
             BASE,
             "$"+nameof(GetTitle),
             "$"+nameof(GetSubtitle),
-            TitleAlignment.Split,
             true,
             TITLE_BOLD,
             false,
@@ -73,7 +73,8 @@ namespace Appalachia.Core.Behaviours
             subtitleSize: SUBTITLESIZE,
             titleIcon: "$"+nameof(GetTitleIcon),
             subtitleIcon: "$"+nameof(GetSubtitleIcon),
-            backgroundColor: "$"+nameof(GetBackgroundColor)
+            backgroundColor: "$"+nameof(GetBackgroundColor),
+            titleHeight: TITLEHEIGHT
         )]
         [SmartFoldoutGroup(GROUP, false, GROUPBACKGROUNDCOLOR, true, LABELCOLOR, true, CHILDCOLOR)]
 #endif
