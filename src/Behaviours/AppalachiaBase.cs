@@ -7,8 +7,7 @@ using System;
 namespace Appalachia.Core.Behaviours
 {
     [Serializable]
-    public abstract class AppalachiaBase<T>
-        where T : AppalachiaBase<T>
+    public abstract class AppalachiaBase
     {
     }
 }

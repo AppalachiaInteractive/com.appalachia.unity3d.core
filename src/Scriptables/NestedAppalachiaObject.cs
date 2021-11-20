@@ -2,20 +2,19 @@
 
 using Appalachia.CI.Integration.Assets;
 
-
-
 #endregion
 
 namespace Appalachia.Core.Scriptables
 {
-    public abstract class NestedAppalachiaObject<T, TP> : AppalachiaObject<T>
-        where T : NestedAppalachiaObject<T, TP>
-        where TP : AppalachiaObject<TP>
+    public abstract class NestedAppalachiaObject<TP> : AppalachiaObject
+        where TP : AppalachiaObject
     {
         protected abstract string DefaultName { get; }
         public abstract void Initialize(TP parent);
+        
 #if UNITY_EDITOR
-        public static T CreateNested(TP parent, bool initialize = true)
+        public static T CreateNested<T>(TP parent, bool initialize = true)
+            where T : NestedAppalachiaObject<TP>
         {
             var path = AssetDatabaseManager.GetAssetPath(parent);
             var subAssets = AssetDatabaseManager.LoadAllAssetsAtPath(path);

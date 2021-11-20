@@ -15,22 +15,7 @@ namespace Appalachia.Core.Volumes
     [ExecuteAlways]
     public class AppaVolume : AppalachiaBehaviour
     {
-        #region Profiling
-
-        private const string _PRF_PFX = nameof(AppaVolume) + ".";
-        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
-        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
-        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
-        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
-
-        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
-
-        #endregion
-
-        #region Fields
+        #region Fields and Autoproperties
 
         // Modifying sharedProfile will change the behavior of all volumes using this profile, and
         // change profile settings that are stored in the project too
@@ -127,19 +112,23 @@ namespace Appalachia.Core.Volumes
             }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 m_PreviousLayer = gameObject.layer;
                 AppaVolumeManager.instance.Register(this, m_PreviousLayer);
             }
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             using (_PRF_OnDisable.Auto())
             {
+                base.OnDisable();
+                
                 AppaVolumeManager.instance.Unregister(this, gameObject.layer);
             }
         }
@@ -150,6 +139,21 @@ namespace Appalachia.Core.Volumes
         {
             return m_InternalProfile != null;
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(AppaVolume) + ".";
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
+        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
+        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
+
+        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
+
+        #endregion
 
 #if UNITY_EDITOR
         private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");

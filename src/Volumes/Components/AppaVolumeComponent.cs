@@ -15,23 +15,58 @@ using Unity.Profiling;
 namespace Appalachia.Core.Volumes.Components
 {
     [Serializable]
-    public class AppaVolumeComponent : AppalachiaObject<AppaVolumeComponent>
+    public class AppaVolumeComponent : AppalachiaObject
     {
-        private const string _PRF_PFX = nameof(AppaVolumeComponent) + ".";
-
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
-
-        private static readonly ProfilerMarker _PRF_Override = new(_PRF_PFX + nameof(Override));
-
-        private static readonly ProfilerMarker _PRF_SetAllOverridesTo =
-            new(_PRF_PFX + nameof(SetAllOverridesTo));
+        #region Fields and Autoproperties
 
         // Used to control the state of this override - handy to quickly turn a volume override
         // on & off in the editor
         public bool active = true;
 
         internal ReadOnlyCollection<AppaVolumeParameter> parameters { get; private set; }
+
+        #endregion
+
+        #region Event Functions
+
+        protected virtual void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                // Automatically grab all fields of type AppaVolumeParameter for this instance
+                parameters = GetType()
+                            .GetFields_CACHE(ReflectionExtensions.PublicInstance)
+                            .Where(t => t.FieldType.IsSubclassOf(typeof(AppaVolumeParameter)))
+                            .OrderBy(t => t.MetadataToken) // Guaranteed order
+                            .Select(t => (AppaVolumeParameter) t.GetValue(this))
+                            .ToList()
+                            .AsReadOnly();
+
+                for (var index = 0; index < parameters.Count; index++)
+                {
+                    var parameter = parameters[index];
+                    parameter.OnEnable();
+                }
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            using (_PRF_OnDisable.Auto())
+            {
+                if (parameters == null)
+                {
+                    return;
+                }
+
+                foreach (var parameter in parameters)
+                {
+                    parameter.OnDisable();
+                }
+            }
+        }
+
+        #endregion
 
         // You can override this to do your own blending. Either loop through the `parameters` list
         // or reference direct fields (you'll need to cast `state` to your custom type and don't
@@ -66,15 +101,11 @@ namespace Appalachia.Core.Volumes.Components
             }
         }
 
-        public void SetAllOverridesTo(bool state)
-        {
-            SetAllOverridesTo(parameters, state);
-        }
-
         // Custom hashing function used to compare the state of settings (it's not meant to be
         // unique but to be a quick way to check if two setting sets have the same state or not).
         // Hash collision rate should be pretty low.
-        [DebuggerStepThrough] public override int GetHashCode()
+        [DebuggerStepThrough]
+        public override int GetHashCode()
         {
             unchecked
             {
@@ -91,41 +122,9 @@ namespace Appalachia.Core.Volumes.Components
             }
         }
 
-        protected virtual void OnDisable()
+        public void SetAllOverridesTo(bool state)
         {
-            using (_PRF_OnDisable.Auto())
-            {
-                if (parameters == null)
-                {
-                    return;
-                }
-
-                foreach (var parameter in parameters)
-                {
-                    parameter.OnDisable();
-                }
-            }
-        }
-
-        protected virtual void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                // Automatically grab all fields of type AppaVolumeParameter for this instance
-                parameters = GetType()
-                            .GetFields_CACHE(ReflectionExtensions.PublicInstance)
-                            .Where(t => t.FieldType.IsSubclassOf(typeof(AppaVolumeParameter)))
-                            .OrderBy(t => t.MetadataToken) // Guaranteed order
-                            .Select(t => (AppaVolumeParameter) t.GetValue(this))
-                            .ToList()
-                            .AsReadOnly();
-
-                for (var index = 0; index < parameters.Count; index++)
-                {
-                    var parameter = parameters[index];
-                    parameter.OnEnable();
-                }
-            }
+            SetAllOverridesTo(parameters, state);
         }
 
         private void SetAllOverridesTo(IEnumerable<AppaVolumeParameter> enumerable, bool state)
@@ -154,5 +153,18 @@ namespace Appalachia.Core.Volumes.Components
                 }
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(AppaVolumeComponent) + ".";
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
+
+        private static readonly ProfilerMarker _PRF_Override = new(_PRF_PFX + nameof(Override));
+
+        private static readonly ProfilerMarker _PRF_SetAllOverridesTo =
+            new(_PRF_PFX + nameof(SetAllOverridesTo));
+
+        #endregion
     }
 }

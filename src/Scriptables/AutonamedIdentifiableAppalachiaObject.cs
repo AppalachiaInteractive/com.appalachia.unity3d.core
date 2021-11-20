@@ -11,21 +11,25 @@ using Sirenix.OdinInspector;
 namespace Appalachia.Core.Scriptables
 {
     [Serializable]
-    public abstract class AutonamedIdentifiableAppalachiaObject<T> : IdentifiableAppalachiaObject<T>,
-                                                                     IComparable<
-                                                                         AutonamedIdentifiableAppalachiaObject
-                                                                         <T>>,
-                                                                     IComparable
-        where T : AutonamedIdentifiableAppalachiaObject<T>
+    public abstract class AutonamedIdentifiableAppalachiaObject : IdentifiableAppalachiaObject,
+                                                                  IComparable<
+                                                                      AutonamedIdentifiableAppalachiaObject>,
+                                                                  IComparable
     {
+        #region Fields and Autoproperties
+
 #if UNITY_EDITOR
-        [FoldoutGroup("Metadata", false)]
+        [SmartFoldoutGroup(GROUP)]
         [OnValueChanged(nameof(UpdateName))]
         [DelayedProperty]
         [PropertyOrder(-1000)]
         [SmartLabel]
 #endif
         public string profileName;
+
+        #endregion
+
+        #region Event Functions
 
         protected virtual void OnEnable()
         {
@@ -36,6 +40,40 @@ namespace Appalachia.Core.Scriptables
                 UpdateName();
 #endif
             }
+        }
+
+        #endregion
+
+        [DebuggerStepThrough]
+        public static bool operator >(
+            AutonamedIdentifiableAppalachiaObject left,
+            AutonamedIdentifiableAppalachiaObject right)
+        {
+            return Comparer<AutonamedIdentifiableAppalachiaObject>.Default.Compare(left, right) > 0;
+        }
+
+        [DebuggerStepThrough]
+        public static bool operator >=(
+            AutonamedIdentifiableAppalachiaObject left,
+            AutonamedIdentifiableAppalachiaObject right)
+        {
+            return Comparer<AutonamedIdentifiableAppalachiaObject>.Default.Compare(left, right) >= 0;
+        }
+
+        [DebuggerStepThrough]
+        public static bool operator <(
+            AutonamedIdentifiableAppalachiaObject left,
+            AutonamedIdentifiableAppalachiaObject right)
+        {
+            return Comparer<AutonamedIdentifiableAppalachiaObject>.Default.Compare(left, right) < 0;
+        }
+
+        [DebuggerStepThrough]
+        public static bool operator <=(
+            AutonamedIdentifiableAppalachiaObject left,
+            AutonamedIdentifiableAppalachiaObject right)
+        {
+            return Comparer<AutonamedIdentifiableAppalachiaObject>.Default.Compare(left, right) <= 0;
         }
 
 #if UNITY_EDITOR
@@ -50,7 +88,43 @@ namespace Appalachia.Core.Scriptables
         }
 #endif
 
-        [DebuggerStepThrough] public int CompareTo(AutonamedIdentifiableAppalachiaObject<T> other)
+#if UNITY_EDITOR
+        protected override void OnUpateAllIDs()
+        {
+            if (string.IsNullOrWhiteSpace(profileName))
+            {
+                Rename(profileName);
+            }
+        }
+#endif
+
+        #region IComparable Members
+
+        int IComparable.CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return 1;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return 0;
+            }
+
+            return obj is AutonamedIdentifiableAppalachiaObject other
+                ? CompareTo(other)
+                : throw new ArgumentException(
+                    $"Object must be of type {nameof(AutonamedIdentifiableAppalachiaObject)}"
+                );
+        }
+
+        #endregion
+
+        #region IComparable<AutonamedIdentifiableAppalachiaObject> Members
+
+        [DebuggerStepThrough]
+        public int CompareTo(AutonamedIdentifiableAppalachiaObject other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -70,61 +144,7 @@ namespace Appalachia.Core.Scriptables
 
             return string.Compare(profileName, other.profileName, StringComparison.Ordinal);
         }
-        
-#if UNITY_EDITOR
-        protected override void OnUpateAllIDs()
-        {
-            if (string.IsNullOrWhiteSpace(profileName))
-            {
-                Rename(profileName);
-            }
-        }
-#endif
-        int IComparable.CompareTo(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return 1;
-            }
 
-            if (ReferenceEquals(this, obj))
-            {
-                return 0;
-            }
-
-            return obj is AutonamedIdentifiableAppalachiaObject<T> other
-                ? CompareTo(other)
-                : throw new ArgumentException(
-                    $"Object must be of type {nameof(AutonamedIdentifiableAppalachiaObject<T>)}"
-                );
-        }
-
-        [DebuggerStepThrough] public static bool operator >(
-            AutonamedIdentifiableAppalachiaObject<T> left,
-            AutonamedIdentifiableAppalachiaObject<T> right)
-        {
-            return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) > 0;
-        }
-
-        [DebuggerStepThrough] public static bool operator >=(
-            AutonamedIdentifiableAppalachiaObject<T> left,
-            AutonamedIdentifiableAppalachiaObject<T> right)
-        {
-            return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) >= 0;
-        }
-
-        [DebuggerStepThrough] public static bool operator <(
-            AutonamedIdentifiableAppalachiaObject<T> left,
-            AutonamedIdentifiableAppalachiaObject<T> right)
-        {
-            return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) < 0;
-        }
-
-        [DebuggerStepThrough] public static bool operator <=(
-            AutonamedIdentifiableAppalachiaObject<T> left,
-            AutonamedIdentifiableAppalachiaObject<T> right)
-        {
-            return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) <= 0;
-        }
+        #endregion
     }
 }

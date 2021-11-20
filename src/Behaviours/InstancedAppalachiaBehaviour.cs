@@ -1,5 +1,7 @@
 #region
 
+using System;
+using Appalachia.CI.Integration.Attributes;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,17 +9,22 @@ using UnityEngine;
 
 namespace Appalachia.Core.Behaviours
 {
+    [ExecuteInEditMode]
+    [InspectorIcon(Icons.Squirrel.Blue)]
     public abstract class InstancedAppalachiaBehaviour : AppalachiaBehaviour
     {
+        #region Fields and Autoproperties
+
         protected bool checkedForRenderers;
 
-        [SerializeField]
-        [HideInInspector]
+        [NonSerialized]
         private MaterialPropertyBlock[] _materialPropertyBlocks;
 
         [SerializeField]
         [HideInInspector]
         private MeshRenderer[] _meshRenderers;
+
+        #endregion
 
         protected MaterialPropertyBlock[] materialPropertyBlocks
         {
@@ -55,8 +62,6 @@ namespace Appalachia.Core.Behaviours
                 return _meshRenderers;
             }
         }
-
-        protected abstract void UpdateInstancedProperties(MaterialPropertyBlock block, Material m);
 
         [Button]
         public void UpdateAllInstancedProperties()
@@ -98,5 +103,7 @@ namespace Appalachia.Core.Behaviours
                 _materialPropertyBlocks = null;
             }
         }
+
+        protected abstract void UpdateInstancedProperties(MaterialPropertyBlock block, Material m);
     }
 }

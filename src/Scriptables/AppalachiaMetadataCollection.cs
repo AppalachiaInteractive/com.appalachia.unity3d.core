@@ -11,9 +11,11 @@ namespace Appalachia.Core.Scriptables
 {
     public abstract class AppalachiaMetadataCollection<T, TValue, TL> : SingletonAppalachiaObject<T>
         where T : AppalachiaMetadataCollection<T, TValue, TL>
-        where TValue : AppalachiaObject<TValue>, ICategorizable
+        where TValue : AppalachiaObject, ICategorizable
         where TL : AppaList<TValue>, new()
     {
+        #region Fields and Autoproperties
+
         [FormerlySerializedAs("generic")]
         [FormerlySerializedAs("defaultWrapper")]
         [FoldoutGroup("Default")]
@@ -22,6 +24,8 @@ namespace Appalachia.Core.Scriptables
         [NonSerialized]
         [HideInInspector]
         private TL _all;
+
+        #endregion
 
         public IReadOnlyList<TValue> all
         {
@@ -61,26 +65,6 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-#if UNITY_EDITOR
-        protected virtual void RegisterNecessaryInstances()
-        {
-        }
-
-        protected void PopulateAll(TL values)
-        {
-            values.Clear();
-            
-            var assets = AssetDatabaseManager.FindAssets<TValue>();
-
-            for (var i = 0; i < assets.Count; i++)
-            {
-                var asset = assets[i];
-
-                values.Add(asset);
-            }
-        }
-#endif
-
         protected override void WhenEnabled()
         {
             if (defaultValue == null)
@@ -95,5 +79,25 @@ namespace Appalachia.Core.Scriptables
             }
 #endif
         }
+
+#if UNITY_EDITOR
+        protected virtual void RegisterNecessaryInstances()
+        {
+        }
+
+        protected void PopulateAll(TL values)
+        {
+            values.Clear();
+
+            var assets = AssetDatabaseManager.FindAssets<TValue>();
+
+            for (var i = 0; i < assets.Count; i++)
+            {
+                var asset = assets[i];
+
+                values.Add(asset);
+            }
+        }
+#endif
     }
 }

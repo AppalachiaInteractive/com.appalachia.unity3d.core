@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using Appalachia.CI.Constants;
 using Appalachia.Core.Assets;
 using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
@@ -14,32 +16,37 @@ using UnityEngine;
 namespace Appalachia.Core.Scriptables
 {
     [Serializable]
-    public abstract class IdentifiableAppalachiaObject<T> : AppalachiaObject<T>, IComparable<T>, IComparable
-        where T : IdentifiableAppalachiaObject<T>
+    public abstract class IdentifiableAppalachiaObject : AppalachiaObject,
+                                                         IComparable<IdentifiableAppalachiaObject>,
+                                                         IComparable
     {
-        #region Profiling And Tracing Markers
-
-        private const string _PRF_PFX = nameof(IdentifiableAppalachiaObject<T>) + ".";
-
-        #endregion
+        #region Fields and Autoproperties
 
 #if UNITY_EDITOR
-        [FoldoutGroup("Metadata", false)]
         [ReadOnly]
         [PropertyOrder(-100)]
-        [HorizontalGroup("Metadata/ID", .5f)]
+        [HorizontalGroup(GROUP + "/" + "ID")]
         [SmartLabel]
         [ShowIf(nameof(ShowIDProperties))]
 #endif
         public int id;
 
+        #endregion
+
 #if UNITY_EDITOR
         protected virtual bool ShowIDProperties => true;
 #endif
 
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(IdentifiableAppalachiaObject) + ".";
+
+        #endregion
+
         #region IComparable
 
-        [DebuggerStepThrough] public int CompareTo(object obj)
+        [DebuggerStepThrough]
+        public int CompareTo(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -51,14 +58,15 @@ namespace Appalachia.Core.Scriptables
                 return 0;
             }
 
-            return obj is IdentifiableAppalachiaObject<T> other
+            return obj is IdentifiableAppalachiaObject other
                 ? CompareTo(other)
                 : throw new ArgumentException(
-                    $"Object must be of type {nameof(IdentifiableAppalachiaObject<T>)}"
+                    $"Object must be of type {nameof(IdentifiableAppalachiaObject)}"
                 );
         }
 
-        [DebuggerStepThrough] public int CompareTo(T other)
+        [DebuggerStepThrough]
+        public int CompareTo(IdentifiableAppalachiaObject other)
         {
             if (ReferenceEquals(this, other))
             {
@@ -73,32 +81,28 @@ namespace Appalachia.Core.Scriptables
             return id.CompareTo(other.id);
         }
 
-        [DebuggerStepThrough] public static bool operator <(
-            IdentifiableAppalachiaObject<T> left,
-            IdentifiableAppalachiaObject<T> right)
+        [DebuggerStepThrough]
+        public static bool operator <(IdentifiableAppalachiaObject left, IdentifiableAppalachiaObject right)
         {
-            return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) < 0;
+            return Comparer<IdentifiableAppalachiaObject>.Default.Compare(left, right) < 0;
         }
 
-        [DebuggerStepThrough] public static bool operator >(
-            IdentifiableAppalachiaObject<T> left,
-            IdentifiableAppalachiaObject<T> right)
+        [DebuggerStepThrough]
+        public static bool operator >(IdentifiableAppalachiaObject left, IdentifiableAppalachiaObject right)
         {
-            return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) > 0;
+            return Comparer<IdentifiableAppalachiaObject>.Default.Compare(left, right) > 0;
         }
 
-        [DebuggerStepThrough] public static bool operator <=(
-            IdentifiableAppalachiaObject<T> left,
-            IdentifiableAppalachiaObject<T> right)
+        [DebuggerStepThrough]
+        public static bool operator <=(IdentifiableAppalachiaObject left, IdentifiableAppalachiaObject right)
         {
-            return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) <= 0;
+            return Comparer<IdentifiableAppalachiaObject>.Default.Compare(left, right) <= 0;
         }
 
-        [DebuggerStepThrough] public static bool operator >=(
-            IdentifiableAppalachiaObject<T> left,
-            IdentifiableAppalachiaObject<T> right)
+        [DebuggerStepThrough]
+        public static bool operator >=(IdentifiableAppalachiaObject left, IdentifiableAppalachiaObject right)
         {
-            return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) >= 0;
+            return Comparer<IdentifiableAppalachiaObject>.Default.Compare(left, right) >= 0;
         }
 
         #endregion
@@ -122,10 +126,10 @@ namespace Appalachia.Core.Scriptables
         [Button]
         [PropertyOrder(-100)]
         [EnableIf(nameof(badID))]
-        [HorizontalGroup("Metadata/ID")]
+        [HorizontalGroup(GROUP + "/" + "ID")]
         [ShowIf(nameof(ShowIDProperties))]
         [LabelText("Update")]
-        public static void UpdateAllIDs()
+        public void UpdateAllIDs()
         {
             if (Application.isPlaying)
             {
@@ -144,7 +148,7 @@ namespace Appalachia.Core.Scriptables
                 var updatedAny = false;
                 hasBadIDs = false;
 
-                var all = GetAllOfType();
+                var all = GetAllOfType(GetType()).Cast<IdentifiableAppalachiaObject>().ToArray();
 
                 var maxID = 0;
 
@@ -225,10 +229,10 @@ namespace Appalachia.Core.Scriptables
         [ShowInInspector]
         [Button]
         [PropertyOrder(-99)]
-        [HorizontalGroup("Metadata/ID")]
+        [HorizontalGroup(GROUP + "/" + APPASTR.ID)]
         [ShowIf(nameof(ShowIDProperties))]
         [LabelText("Check")]
-        public static void CheckForBadIDs()
+        public void CheckForBadIDs()
         {
             if (Application.isPlaying)
             {
@@ -237,7 +241,7 @@ namespace Appalachia.Core.Scriptables
 
             using (_PRF_CheckForBadIDs.Auto())
             {
-                var all = GetAllOfType();
+                var all = GetAllOfType(GetType()).Cast<IdentifiableAppalachiaObject>().ToArray();
 
                 if (_ids == null)
                 {
@@ -273,7 +277,7 @@ namespace Appalachia.Core.Scriptables
         [ShowInInspector]
         [Button]
         [PropertyOrder(-99)]
-        [HorizontalGroup("Metadata/ID")]
+        [HorizontalGroup(GROUP + "/" + APPASTR.ID)]
         [ShowIf(nameof(ShowIDProperties))]
         public void NewID()
         {
@@ -284,7 +288,7 @@ namespace Appalachia.Core.Scriptables
                     return;
                 }
 
-                var all = GetAllOfType();
+                var all = GetAllOfType(GetType()).Cast<IdentifiableAppalachiaObject>().ToArray();
 
                 var maxID = 0;
 

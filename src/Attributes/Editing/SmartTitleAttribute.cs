@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 
 #endregion
@@ -13,39 +14,56 @@ namespace Appalachia.Core.Attributes.Editing
     [Conditional("UNITY_EDITOR")]
     public class SmartTitleAttribute : Attribute
     {
-        public TitleAlignments Alignment;
-
-        public bool Below;
-
-        public bool Bold;
-
-        public string Color;
-
-        public string HideIfMemberName;
-
-        public bool HorizontalLine;
-
-        public string Subtitle;
-        public string Title;
-
         public SmartTitleAttribute(
             string title,
             string subtitle = null,
-            TitleAlignments alignment = TitleAlignments.Left,
+            TitleAlignment alignment = TitleAlignment.Left,
             bool horizontalLine = true,
             bool bold = true,
-            string color = null,
+            bool reversed = false,
+            string titleColor = null,
+            string titleFont = null,
+            string subtitleColor = null,
+            string subtitleFont = null,
             string hideIfMemberName = null,
             bool below = false)
         {
             Title = title ?? "null";
             Subtitle = subtitle;
-            Bold = bold;
             Alignment = alignment;
             HorizontalLine = horizontalLine;
-            Color = color;
+            Bold = bold;
+            Reversed = reversed;
+            TitleColor = titleColor;
+            TitleFont = titleFont;
+            SubtitleColor = subtitleColor;
+            SubtitleFont = subtitleFont;
             HideIfMemberName = hideIfMemberName;
             Below = below;
         }
+
+        #region Fields and Autoproperties
+
+        public bool Below;
+        public bool Bold;
+        public bool Reversed;
+        public bool HorizontalLine;
+        public bool Indent;
+        public string Subtitle;
+        public string SubtitleColor;
+        public string SubtitleFont;
+        public string Title;
+        public string TitleColor;
+        public string TitleFont;
+        public string HideIfMemberName;
+
+        public bool HasTitleFont => SubtitleFont.IsNotNullOrWhiteSpace();
+        public bool HasSubtitleFont => TitleFont.IsNotNullOrWhiteSpace();
+        public bool HasTitleColor => TitleColor.IsNotNullOrWhiteSpace();
+        public bool HasSubtitleColor => SubtitleColor.IsNotNullOrWhiteSpace();
+
+        public TitleAlignment Alignment;
+
+        #endregion
     }
 }

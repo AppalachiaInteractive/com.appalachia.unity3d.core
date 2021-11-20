@@ -6,17 +6,15 @@ using UnityEngine;
 
 #endregion
 
-
-
 namespace Appalachia.Core.Scriptables
 {
     [Serializable]
-    public abstract class EmbeddedAppalachiaObject<T> : AppalachiaObject<T>
+    public abstract class EmbeddedAppalachiaObject<T> : AppalachiaObject
         where T : EmbeddedAppalachiaObject<T>
     {
 #if UNITY_EDITOR
         public static TC CreateAndSaveInExisting<TC>(GameObject mainAsset)
-            where TC : AppalachiaObject<TC>
+            where TC : AppalachiaObject
         {
             var assetName = $"{typeof(TC).Name}_{DateTime.Now:yyyyMMdd-hhmmssfff}.asset";
 
@@ -24,7 +22,7 @@ namespace Appalachia.Core.Scriptables
         }
 
         public static TC CreateAndSaveInExisting<TC>(GameObject mainAsset, string assetName)
-            where TC : AppalachiaObject<TC>
+            where TC : AppalachiaObject
         {
             var path = AssetDatabaseManager.GetAssetPath(mainAsset);
 
@@ -37,7 +35,7 @@ namespace Appalachia.Core.Scriptables
         }
 
         public static TC CreateAndSaveInExisting<TC>(string assetPath, string assetName)
-            where TC : AppalachiaObject<TC>
+            where TC : AppalachiaObject
         {
             var instance = (TC) CreateInstance(typeof(TC));
             instance.name = assetName;

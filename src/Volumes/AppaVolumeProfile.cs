@@ -12,7 +12,7 @@ using UnityEngine.Assertions;
 
 namespace Appalachia.Core.Volumes
 {
-    public sealed class AppaVolumeProfile : AppalachiaObject<AppaVolumeProfile>
+    public sealed class AppaVolumeProfile : AppalachiaObject
     {
         private const string _PRF_PFX = nameof(AppaVolumeProfile) + ".";
 
@@ -219,12 +219,11 @@ namespace Appalachia.Core.Volumes
             }
         }
 
-#if UNITY_EDITOR
         [UnityEditor.MenuItem(PKG.Menu.Assets.Base + nameof(AppaVolumeProfile), priority = PKG.Menu.Assets.Priority)]
         public static void CreateAsset()
         {
-            CreateNew();
+            CreateNew<AppaVolumeProfile>();
         }
-#endif
+        
     }
 }

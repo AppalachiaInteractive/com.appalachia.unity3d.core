@@ -16,9 +16,16 @@ namespace Appalachia.Core.Scriptables
 {
     [Critical]
     [Serializable]
-    public class SingletonAppalachiaObjectLookup : AppalachiaObject<SingletonAppalachiaObjectLookup>
+    public class SingletonAppalachiaObjectLookup : AppalachiaObject
     {
-        #region Profiling And Tracing Markers
+        #region Fields and Autoproperties
+
+        public List<ScriptableObject> singletons = new();
+        private Dictionary<Assembly, string> _assemblyNames;
+
+        #endregion
+
+        #region Profiling
 
         private const string _PRF_PFX = nameof(SingletonAppalachiaObjectLookup) + ".";
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
@@ -30,9 +37,6 @@ namespace Appalachia.Core.Scriptables
         private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
 
         #endregion
-
-        public List<ScriptableObject> singletons = new();
-        private Dictionary<Assembly, string> _assemblyNames;
 
 #if UNITY_EDITOR
 

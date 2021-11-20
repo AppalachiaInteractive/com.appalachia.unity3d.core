@@ -1,5 +1,10 @@
 using System;
 using System.Linq;
+using Appalachia.CI.Constants;
+using Appalachia.CI.Integration.Assets;
+using Appalachia.CI.Integration.Attributes;
+using Appalachia.Core.Attributes.Editing;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Framing;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
@@ -9,12 +14,73 @@ using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Behaviours
 {
-    [Serializable]
-    public abstract class AppalachiaBehaviour : MonoBehaviour
+    [Serializable, DoNotReorderFields, ExecuteInEditMode]
+    [InspectorIcon(Icons.Squirrel.Yellow)]
+    public abstract class AppalachiaBehaviour : MonoBehaviour, IInitializable
     {
-        #region Fields
+        #region Constants and Static Readonly
+        
+#if UNITY_EDITOR
+        protected const string GROUP = BASE + "/" + APPASTR.Internal;
+        protected const string GROUP_BUTTONS = GROUP + "/" + APPASTR.Buttons;
+        protected const string GROUP_WORKFLOW = SHOW_WORKFLOW + "/" + APPASTR.Workflow;
+        protected const string GROUP_WORKFLOW_PROD = GROUP_WORKFLOW + "/" + APPASTR.Productivity;
+        protected const string SHOW_WORKFLOW = GROUP + "/$ShowWorkflow";
+        protected const string BASE = "BASE";
+        
+        public const string TITLE = APPASTR.BEHAVIOUR;
+        public const string TITLECOLOR = Utility.Colors.Colors.Appalachia.HEX.RichYellow;
+        public const string TITLEICON = "";
+        public const string GAMEOBJECTICON = Icons.Squirrel.Outline;
+        
+        protected const string SUBTITLE = APPASTR.APPALACHIA_INTERACTIVE;
+        protected const string SUBTITLECOLOR = Utility.Colors.Colors.Appalachia.HEX.Yellow;
+        protected const string SUBTITLEICON = "";
+        
+        protected const bool TITLE_BOLD = false;
+        
+        protected const string TITLEFONT = APPASTR.Fonts.Montserrat.Regular;
+        protected const string SUBTITLEFONT = APPASTR.Fonts.Montserrat.Regular;
+        
+        protected const int TITLESIZE = 12;
+        protected const int SUBTITLESIZE = 12;
+        
+        protected const string LABELCOLOR = Utility.Colors.Colors.Appalachia.HEX.Bone;
+        protected const string GROUPBACKGROUNDCOLOR = Utility.Colors.Colors.Appalachia.HEX.DarkYellow;
+        protected const string CHILDCOLOR = Utility.Colors.Colors.Appalachia.HEX.LightYellow;
+        protected const string BANNERBACKGROUNDCOLOR = Utility.Colors.Colors.Appalachia.HEX.Black;
+#endif
+        
+        #endregion
+        
+        #region Fields and Autoproperties
+
+#if UNITY_EDITOR
+        [SerializeField, HideLabel, InlineProperty, LabelWidth(0)]
+        [SmartTitleGroup(
+            BASE,
+            "$"+nameof(GetTitle),
+            "$"+nameof(GetSubtitle),
+            TitleAlignment.Split,
+            true,
+            TITLE_BOLD,
+            false,
+            titleColor: "$"+nameof(GetTitleColor),
+            titleFont: TITLEFONT,
+            subtitleColor: "$"+nameof(GetSubtitleColor),
+            subtitleFont: SUBTITLEFONT,
+            titleSize: TITLESIZE,
+            subtitleSize: SUBTITLESIZE,
+            titleIcon: "$"+nameof(GetTitleIcon),
+            subtitleIcon: "$"+nameof(GetSubtitleIcon),
+            backgroundColor: "$"+nameof(GetBackgroundColor)
+        )]
+        [SmartFoldoutGroup(GROUP, false, GROUPBACKGROUNDCOLOR, true, LABELCOLOR, true, CHILDCOLOR)]
+#endif
+        private InitializationData _initializationData;
 
         private Bounds ___renderingBounds;
+
         private Transform ___transform;
 
         #endregion
@@ -32,6 +98,8 @@ namespace Appalachia.Core.Behaviours
             }
         }
 
+        protected InitializationData initializationData => _initializationData;
+
         protected Transform _transform
         {
             get
@@ -45,23 +113,77 @@ namespace Appalachia.Core.Behaviours
             }
         }
 
-        #region Event Functions
+#if UNITY_EDITOR
 
-        private void Reset()
+        protected virtual string GetTitle()
         {
-            ___renderingBounds = default; 
-            ___transform = default;
-            
-            OnReset();
+            return TITLE;
         }
 
-        #endregion
-
-        protected virtual void OnReset()
+        protected virtual string GetSubtitle()
         {
-            
+            return SUBTITLE;
         }
 
+        protected virtual string GetTitleColor()
+        {
+            return TITLECOLOR;
+        }
+
+        protected virtual string GetSubtitleColor()
+        {
+            return SUBTITLECOLOR;
+        }
+
+        protected virtual string GetTitleIcon()
+        {
+            return TITLEICON;
+        }
+
+        protected virtual string GetSubtitleIcon()
+        {
+            return SUBTITLEICON;
+        }
+
+        protected virtual string GetGameObjectIcon()
+        {
+            return GAMEOBJECTICON;
+        }
+
+        protected virtual string GetBackgroundColor()
+        {
+            return BANNERBACKGROUNDCOLOR;
+        }
+#endif
+        protected virtual void Awake()
+        {
+        }
+
+        protected virtual void Start()
+        {
+        }
+        
+        // ReSharper disable once Unity.RedundantEventFunction
+        protected virtual void OnDisable()
+        {
+        }
+
+        // ReSharper disable once Unity.RedundantEventFunction
+        protected virtual void OnDestroy()
+        {
+        }
+        
+        protected virtual void OnEnable()
+        {
+#if UNITY_EDITOR
+            var iconName = GetGameObjectIcon();
+            var icon = AssetDatabaseManager.FindFirstAsset<Texture2D>(iconName);
+            UnityEditor.EditorGUIUtility.SetIconForObject(gameObject, icon);
+#endif
+        }
+
+        
+        // ReSharper disable once UnusedParameter.Global
         protected void DontDestroyOnLoadSafe(Object obj)
         {
 #if !UNITY_EDITOR
@@ -104,10 +226,26 @@ namespace Appalachia.Core.Behaviours
             return _transform.InverseTransformVector(vector);
         }
 
+
+        protected virtual void Reset()
+        {
+            ___renderingBounds = default;
+            ___transform = default;
+            
 #if UNITY_EDITOR
+
+            InitializeInEditor();
+#endif
+        }
+
+#if UNITY_EDITOR
+        protected virtual void InitializeInEditor()
+        {
+        }
 
         protected void SetDirty()
         {
+            UnityEditor.EditorUtility.SetDirty(gameObject);
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
         }
 
@@ -126,9 +264,8 @@ namespace Appalachia.Core.Behaviours
             }
         }
 
-#if UNITY_EDITOR
         [Button(ButtonSizes.Small)]
-        [ButtonGroup("base_A")]
+        [ButtonGroup(GROUP_BUTTONS)]
         [PropertyOrder(-1000)]
         [ShowIf(nameof(ShowButtons))]
         private void SelectAllInScene()
@@ -141,7 +278,7 @@ namespace Appalachia.Core.Behaviours
         }
 
         [Button(ButtonSizes.Small)]
-        [ButtonGroup("base_A")]
+        [ButtonGroup(GROUP_BUTTONS)]
         [PropertyOrder(-1000)]
         [ShowIf(nameof(ShowButtons))]
         private void SelectObjectsInScene()
@@ -165,7 +302,6 @@ namespace Appalachia.Core.Behaviours
 
             UnityEditor.Selection.objects = instances;
         }
-#endif
 
         public void Frame(bool recalculateBounds = false, bool adjustAngle = true)
         {
@@ -191,5 +327,8 @@ namespace Appalachia.Core.Behaviours
             gameObject.Frame(FrameTarget.SceneView, adjustAngle);
         }
 #endif
+        public virtual void Initialize()
+        {
+        }
     }
 }

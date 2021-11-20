@@ -2,30 +2,26 @@
 
 using System;
 using System.Diagnostics;
+using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.CI.Integration.Attributes;
 using Unity.Profiling;
 using UnityEngine;
-
 
 #endregion
 
 namespace Appalachia.Core.Scriptables
 {
     [Serializable]
-    public abstract class SingletonAppalachiaObject<T> : AppalachiaObject<T>,
+    [InspectorIcon(Icons.Squirrel.Bone)]
+    public abstract class SingletonAppalachiaObject<T> : AppalachiaObject,
                                                          ICrossAssemblySerializable,
                                                          ISingletonAppalachiaObject
         where T : SingletonAppalachiaObject<T>
     {
-        #region Profiling And Tracing Markers
+        #region Static Fields and Autoproperties
 
-        private const string _PRF_PFX = nameof(SingletonAppalachiaObject<T>) + ".";
         private static T _instance;
-        private static readonly ProfilerMarker _PRF_instance = new(_PRF_PFX + nameof(instance));
-        private static readonly ProfilerMarker _PRF_GetSerializable = new(_PRF_PFX + nameof(GetSerializable));
-
-        private static readonly ProfilerMarker _PRF_SetInstance = new(_PRF_PFX + nameof(SetInstance));
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
 
         #endregion
 
@@ -46,6 +42,8 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
+        #region Event Functions
+
         protected virtual void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
@@ -56,9 +54,13 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
+        #endregion
+
         protected virtual void WhenEnabled()
         {
         }
+
+        #region ICrossAssemblySerializable Members
 
         public ScriptableObject GetSerializable()
         {
@@ -68,6 +70,10 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
+        #endregion
+
+        #region ISingletonAppalachiaObject Members
+
         public void SetInstance(ISingletonAppalachiaObject i)
         {
             using (_PRF_SetInstance.Auto())
@@ -75,6 +81,46 @@ namespace Appalachia.Core.Scriptables
                 _instance = i as T;
             }
         }
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(SingletonAppalachiaObject<T>) + ".";
+        private static readonly ProfilerMarker _PRF_instance = new(_PRF_PFX + nameof(instance));
+        private static readonly ProfilerMarker _PRF_GetSerializable = new(_PRF_PFX + nameof(GetSerializable));
+
+        private static readonly ProfilerMarker _PRF_SetInstance = new(_PRF_PFX + nameof(SetInstance));
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+
+        #endregion
+
+#if UNITY_EDITOR
+        
+        public new const string TITLE = APPASTR.SINGLETON_SCRIPTABLE;
+        public new const string TITLECOLOR = Utility.Colors.Colors.Appalachia.HEX.Bone;
+        public new const string TITLEICON = "";
+        
+        protected override string GetTitle()
+        {
+            return TITLE;
+        }
+
+        protected override string GetTitleColor()
+        {
+            return TITLECOLOR;
+        }
+
+        protected override string GetTitleIcon()
+        {
+            return TITLEICON;
+        }
+
+        protected override string GetSubtitleColor()
+        {
+            return TITLECOLOR;
+        }
+#endif
 
 #if UNITY_EDITOR
 

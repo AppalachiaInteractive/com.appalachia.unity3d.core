@@ -17,24 +17,9 @@ namespace Appalachia.Core.Scriptables
         where TI : AppaLookup<TKey, TValue, TKeyList, TValueList>, new()
         where TKeyList : AppaList<TKey>, new()
         where TValueList : AppaList<TValue>, new()
-        where TValue : AppalachiaObject<TValue>
+        where TValue : AppalachiaObject
     {
-        #region Profiling And Tracing Markers
-
-        private const string _PRF_PFX =
-            nameof(AppalachiaObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList>) + ".";
-
-        private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
-        private static readonly ProfilerMarker _PRF_WhenEnabled = new(_PRF_PFX + nameof(WhenEnabled));
-#if UNITY_EDITOR
-        private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
-#endif
-        private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
-        private static readonly ProfilerMarker _PRF_DoForAll = new(_PRF_PFX + nameof(DoForAll));
-
-        private static readonly ProfilerMarker _PRF_DoForAllIf = new(_PRF_PFX + nameof(DoForAllIf));
-
-        #endregion
+        #region Fields and Autoproperties
 
         [SerializeField]
         [InlineProperty]
@@ -49,6 +34,8 @@ namespace Appalachia.Core.Scriptables
             NumberOfItemsPerPage = 3
         )]
         protected TI _items;
+
+        #endregion
 
         public IAppaLookupSafeUpdates<TKey, TValue, TValueList> Items
         {
@@ -65,17 +52,13 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        protected abstract TKey GetUniqueKeyFromValue(TValue value);
+        #region Event Functions
 
         public virtual void OnDisable()
         {
         }
 
-        // ReSharper disable once UnusedParameter.Global
-        protected virtual bool IsValid(TValue element)
-        {
-            return true;
-        }
+        #endregion
 
         public void DoForAll(Action<TValue> action)
         {
@@ -144,6 +127,14 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
+        protected abstract TKey GetUniqueKeyFromValue(TValue value);
+
+        // ReSharper disable once UnusedParameter.Global
+        protected virtual bool IsValid(TValue element)
+        {
+            return true;
+        }
+
         protected override void WhenEnabled()
         {
             using (_PRF_WhenEnabled.Auto())
@@ -153,6 +144,25 @@ namespace Appalachia.Core.Scriptables
 #endif
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX =
+            nameof(AppalachiaObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList>) + ".";
+
+        private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
+        private static readonly ProfilerMarker _PRF_WhenEnabled = new(_PRF_PFX + nameof(WhenEnabled));
+        private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
+        private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
+        private static readonly ProfilerMarker _PRF_DoForAll = new(_PRF_PFX + nameof(DoForAll));
+
+        private static readonly ProfilerMarker _PRF_DoForAllIf = new(_PRF_PFX + nameof(DoForAllIf));
+
+#if UNITY_EDITOR
+
+#endif
+
+        #endregion
 
 #if UNITY_EDITOR
         [NonSerialized] private bool _initialized;

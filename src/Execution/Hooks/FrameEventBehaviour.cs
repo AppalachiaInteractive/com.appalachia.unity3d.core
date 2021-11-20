@@ -48,10 +48,12 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
             using (_PRF_Awake.Auto())
             {
+                base.Awake();
+                
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_AWAKE.v)
                 {
@@ -63,10 +65,12 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected virtual void Start()
+        protected override void Start()
         {
             using (_PRF_Start.Auto())
             {
+                base.Start();
+                
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_START.v)
                 {
@@ -108,10 +112,12 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 StaticApplicationState.HasOnEnableExecuted = true;
 
 #if UNITY_EDITOR
@@ -125,10 +131,12 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
             using (_PRF_OnDisable.Auto())
             {
+                base.OnDisable();
+                
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
@@ -140,10 +148,12 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
             using (_PRF_OnDestroy.Auto())
             {
+                base.OnDestroy();
+                
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DESTROY.v)
                 {

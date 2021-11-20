@@ -1474,9 +1474,9 @@ namespace Appalachia.Core.Collections
             [SmartTitle(
                 _titlePointer,
                 _subtitlePointer,
-                TitleAlignments.Split,
+                TitleAlignment.Split,
                 hideIfMemberName: _disableTitlePointer,
-                color: _colorPointer
+                titleColor: _colorPointer
             )]
             public TValue Value
             {

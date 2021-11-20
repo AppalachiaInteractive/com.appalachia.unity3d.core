@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.CI.Integration.Attributes;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Behaviours;
 using Appalachia.Utility.Reflection.Extensions;
@@ -15,10 +16,9 @@ using Sirenix.OdinInspector;
 
 #endregion
 
-
-
 namespace Appalachia.Core.Aspects.Criticality
 {
+    [InspectorIcon(Icons.Squirrel.Red)]
     public class CriticalReferenceHolder : AppalachiaBehaviour
     {
         private const string _PRF_PFX = nameof(CriticalReferenceHolder) + ".";
@@ -28,10 +28,12 @@ namespace Appalachia.Core.Aspects.Criticality
 
         private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 Scan();
             }
         }
