@@ -15,6 +15,8 @@ Development environment loaded!
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 82d7a9978e108f6351cc1227a61eead91e5ff58e | 2021-11-20 | Chris Schubert | Removing empty directories |
+| bb01339e967a997be3b0eac151bc9914cbb0bb22 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 9192178c0a727702eb0669fcf1faeb2fd0bf8bb6 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 68baa042118758903c20478f32ebc75565d94296 | 2021-11-20 | Chris Schubert | Packaging updates and formatting for titles |
 | ddf83acc62beb322989ea93168f6cf3d859c1eeb | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
