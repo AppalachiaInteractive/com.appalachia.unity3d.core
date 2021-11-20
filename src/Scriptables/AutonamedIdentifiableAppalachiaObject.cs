@@ -31,8 +31,10 @@ namespace Appalachia.Core.Scriptables
 
         #region Event Functions
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             if (string.IsNullOrWhiteSpace(profileName))
             {
                 profileName = name;

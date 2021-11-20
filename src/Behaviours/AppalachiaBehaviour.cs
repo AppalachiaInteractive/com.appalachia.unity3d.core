@@ -78,7 +78,7 @@ namespace Appalachia.Core.Behaviours
         )]
         [SmartFoldoutGroup(GROUP, false, GROUPBACKGROUNDCOLOR, true, LABELCOLOR, true, CHILDCOLOR)]
 #endif
-        private InitializationData _initializationData;
+        private Initializer _initializationData;
 
         private Bounds ___renderingBounds;
 
@@ -99,7 +99,7 @@ namespace Appalachia.Core.Behaviours
             }
         }
 
-        protected InitializationData initializationData => _initializationData;
+        protected Initializer initializationData => _initializationData;
 
         protected Transform _transform
         {
@@ -246,8 +246,11 @@ namespace Appalachia.Core.Behaviours
 
         protected void SetDirty()
         {
-            UnityEditor.EditorUtility.SetDirty(gameObject);
-            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+            if (!Application.isPlaying)
+            {
+                UnityEditor.EditorUtility.SetDirty(gameObject);
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
+            }
         }
 
         private bool? _showButtons;

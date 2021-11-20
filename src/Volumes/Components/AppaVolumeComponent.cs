@@ -29,10 +29,12 @@ namespace Appalachia.Core.Volumes.Components
 
         #region Event Functions
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 // Automatically grab all fields of type AppaVolumeParameter for this instance
                 parameters = GetType()
                             .GetFields_CACHE(ReflectionExtensions.PublicInstance)

@@ -83,7 +83,7 @@ namespace Appalachia.Core.Scriptables
         )]
         [SmartFoldoutGroup(GROUP, false, GROUPBACKGROUNDCOLOR, true, LABELCOLOR, true, CHILDCOLOR)]
 #endif
-        private InitializationData _initializationData;
+        private Initializer _initializationData;
         
 #if UNITY_EDITOR
             [SerializeField]
@@ -100,7 +100,7 @@ namespace Appalachia.Core.Scriptables
         protected virtual bool ShowMetadata => true;
         protected virtual bool ShowWorkflow => false;
 
-        protected InitializationData initializationData => _initializationData;
+        protected Initializer initializationData => _initializationData;
 
 #if UNITY_EDITOR
         [SmartFoldoutGroup(GROUP)]
@@ -113,7 +113,10 @@ namespace Appalachia.Core.Scriptables
 #if UNITY_EDITOR
             using (_PRF_SetDirty.Auto())
             {
-                UnityEditor.EditorUtility.SetDirty(this);
+                if (!Application.isPlaying)
+                {
+                    UnityEditor.EditorUtility.SetDirty(this);
+                }
             }
 #endif
         }
@@ -159,11 +162,11 @@ namespace Appalachia.Core.Scriptables
         
 #if UNITY_EDITOR
 
-        public static AppalachiaObject CreateNew(Type t)
+        public static AppalachiaObject CreateNew(Type t, Type ownerType = null)
         {
             using (_PRF_CreateNew.Auto())
             {
-                return AppalachiaObjectFactory.CreateNew(t) as AppalachiaObject;
+                return AppalachiaObjectFactory.CreateNew(t, ownerType: ownerType) as AppalachiaObject;
             }
         }
 
@@ -171,7 +174,7 @@ namespace Appalachia.Core.Scriptables
             Type t,
             string name,
             AppalachiaObject i = null,
-            string dataFolder = null)
+            string dataFolder = null, Type ownerType = null)
         {
             using (_PRF_CreateNew.Auto())
             {
@@ -180,26 +183,26 @@ namespace Appalachia.Core.Scriptables
                     i = CreateInstance(t) as AppalachiaObject;
                 }
 
-                return AppalachiaObjectFactory.CreateNew(t, name, i, dataFolder) as AppalachiaObject;
+                return AppalachiaObjectFactory.CreateNew(t, name, i, dataFolder, ownerType) as AppalachiaObject;
                 ;
             }
         }
 
-        public static T CreateNew<T>()
+        public static T CreateNew<T>(Type ownerType = null)
             where T : AppalachiaObject
         {
             using (_PRF_CreateNew.Auto())
             {
-                return CreateNew(typeof(T)) as T;
+                return CreateNew(typeof(T), ownerType) as T;
             }
         }
 
-        public static T CreateNew<T>(string name, T i = null, string dataFolder = null)
+        public static T CreateNew<T>(string name, T i = null, string dataFolder = null, Type ownerType = null)
             where T : AppalachiaObject
         {
             using (_PRF_CreateNew.Auto())
             {
-                return CreateNew(typeof(T), name, i, dataFolder) as T;
+                return CreateNew(typeof(T), name, i, dataFolder, ownerType) as T;
             }
         }
 
@@ -249,11 +252,11 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        public static AppalachiaObject LoadOrCreateNew(Type t, string name, string dataFolder = null)
+        public static AppalachiaObject LoadOrCreateNew(Type t, string name, string dataFolder = null, Type ownerType = null)
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return AppalachiaObjectFactory.LoadOrCreateNew(t, name, dataFolder) as AppalachiaObject;
+                return AppalachiaObjectFactory.LoadOrCreateNew(t, name, dataFolder, ownerType) as AppalachiaObject;
             }
         }
 
@@ -262,22 +265,22 @@ namespace Appalachia.Core.Scriptables
             string name,
             bool prependType,
             bool appendType,
-            string dataFolder = null)
+            string dataFolder = null, Type ownerType = null)
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return AppalachiaObjectFactory.LoadOrCreateNew(t, name, prependType, appendType, dataFolder)
+                return AppalachiaObjectFactory.LoadOrCreateNew(t, name, prependType, appendType, dataFolder, ownerType)
                     as AppalachiaObject;
                 ;
             }
         }
 
-        public static T LoadOrCreateNew<T>(string name, string dataFolder = null)
+        public static T LoadOrCreateNew<T>(string name, string dataFolder = null, Type ownerType = null)
             where T : AppalachiaObject
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return LoadOrCreateNew(typeof(T), name, dataFolder) as T;
+                return LoadOrCreateNew(typeof(T), name, dataFolder, ownerType) as T;
             }
         }
 
@@ -285,12 +288,12 @@ namespace Appalachia.Core.Scriptables
             string name,
             bool prependType,
             bool appendType,
-            string dataFolder = null)
+            string dataFolder = null, Type ownerType = null)
             where T : AppalachiaObject
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return LoadOrCreateNew(typeof(T), name, prependType, appendType, dataFolder) as T;
+                return LoadOrCreateNew(typeof(T), name, prependType, appendType, dataFolder, ownerType) as T;
             }
         }
 
@@ -298,27 +301,27 @@ namespace Appalachia.Core.Scriptables
             Type t,
             ref AppalachiaObject assignment,
             string name,
-            string dataFolder = null)
+            string dataFolder = null, Type ownerType = null)
         {
             using (_PRF_LoadOrCreateNewIfNull.Auto())
             {
                 if (assignment == null)
                 {
                     assignment =
-                        AppalachiaObjectFactory.LoadOrCreateNew(t, name, dataFolder) as AppalachiaObject;
+                        AppalachiaObjectFactory.LoadOrCreateNew(t, name, dataFolder, ownerType) as AppalachiaObject;
                     ;
                 }
             }
         }
 
-        public static void LoadOrCreateNewIfNull<T>(ref T assignment, string name, string dataFolder = null)
+        public static void LoadOrCreateNewIfNull<T>(ref T assignment, string name, string dataFolder = null, Type ownerType = null)
             where T : AppalachiaObject
         {
             using (_PRF_LoadOrCreateNewIfNull.Auto())
             {
                 AppalachiaObject obj = assignment;
 
-                LoadOrCreateNewIfNull(typeof(T), ref obj, name, dataFolder);
+                LoadOrCreateNewIfNull(typeof(T), ref obj, name, dataFolder, ownerType);
 
                 assignment = obj as T;
             }
@@ -514,6 +517,14 @@ namespace Appalachia.Core.Scriptables
         #endregion
 
 #endif
+
+        protected virtual void Awake()
+        {
+        }
+        
+        protected virtual void OnEnable()
+        {
+        }
 
 #if UNITY_EDITOR
         private const string _PRF_PFX = nameof(AppalachiaObject) + ".";

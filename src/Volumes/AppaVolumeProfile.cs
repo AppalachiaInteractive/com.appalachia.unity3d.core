@@ -206,10 +206,12 @@ namespace Appalachia.Core.Volumes
             }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 // Make sure every setting is valid. If a profile holds a script that doesn't exist
                 // anymore, nuke it to keep the volume clean. Note that if you delete a script that is
                 // currently in use in a volume you'll still get a one-time error in the console, it's

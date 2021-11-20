@@ -44,10 +44,12 @@ namespace Appalachia.Core.Scriptables
 
         #region Event Functions
 
-        protected virtual void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 _instance = this as T;
 
                 WhenEnabled();

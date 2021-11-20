@@ -42,10 +42,12 @@ namespace Appalachia.Core.Scriptables
 
         public List<UnityEditorInternal.AssemblyDefinitionAsset> excludedAssemblies = new();
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 Scan();
             }
         }
