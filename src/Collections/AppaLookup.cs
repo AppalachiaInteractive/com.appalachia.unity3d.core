@@ -54,6 +54,8 @@ namespace Appalachia.Core.Collections
 
         [NonSerialized] private Action _setDirtyAction;
 
+        [NonSerialized] private bool _insideSerialization;
+
         protected virtual bool ReplacesKeysAtStart { get; } = false;
 
         private static bool _showDebug =>
@@ -664,8 +666,17 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_OnBeforeSerialize.Auto())
             {
-                keys.TrimExcess();
-                values.TrimExcess();
+                try
+                {
+                    _insideSerialization = true;
+                        
+                    keys.TrimExcess();
+                    values.TrimExcess();
+                }
+                finally
+                {
+                    _insideSerialization = false;
+                }
             }
         }
 
@@ -676,17 +687,26 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_OnAfterDeserialize.Auto())
             {
-                if (ReplacesKeysAtStart)
+                try
                 {
-                    for (var i = 0; i < keys.Count; i++)
+                    _insideSerialization = true;
+                    
+                    if (ReplacesKeysAtStart)
                     {
-                        CheckReplacementAtStart(keys[i], values[i], out var newKey, out var newValue);
-                        keys[i] = newKey;
-                        values[i] = newValue;
+                        for (var i = 0; i < keys.Count; i++)
+                        {
+                            CheckReplacementAtStart(keys[i], values[i], out var newKey, out var newValue);
+                            keys[i] = newKey;
+                            values[i] = newValue;
+                        }
                     }
-                }
 
-                INTERNAL_INITIALIZE(false);
+                    INTERNAL_INITIALIZE(false);
+                }
+                finally
+                {
+                    _insideSerialization = false;
+                }
             }
         }
 
@@ -884,7 +904,11 @@ namespace Appalachia.Core.Collections
                 values.Clear();
                 _indices.Clear();
                 _lookup.Clear();
-                _setDirtyAction?.Invoke();
+
+                if (!_insideSerialization)
+                {
+                    _setDirtyAction?.Invoke();
+                }
             }
         }
 
@@ -1099,7 +1123,6 @@ namespace Appalachia.Core.Collections
                 }
 
                 if (!_isValueUnityObjectChecked)
-
                 {
                     isValueUnityObject = typeof(Object).IsAssignableFrom(typeof(TValue));
                     _isValueUnityObjectChecked = true;
