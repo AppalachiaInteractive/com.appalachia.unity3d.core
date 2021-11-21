@@ -26,41 +26,7 @@ namespace Appalachia.Core.Behaviours
         public static T instance => _singletonInstance;
 
         protected virtual bool DestroyObjectOfSubsequentInstances => false;
-        
-#if UNITY_EDITOR
-        
-        public new const string TITLE = APPASTR.SINGLETON_BEHAVIOUR
-            ;
-        public new const string TITLECOLOR = Utility.Colors.Colors.Appalachia.HEX.DarkYellow;
-        public new const string TITLEICON = "";
-        
-        protected override string GetTitle()
-        {
-            return TITLE;
-        }
 
-        protected override string GetTitleColor()
-        {
-            return TITLECOLOR;
-        }
-
-        protected override string GetTitleIcon()
-        {
-            return TITLEICON;
-        }
-
-        protected override string GetGameObjectIcon()
-        {
-            return GAMEOBJECTICON;
-        }
-
-        protected override string GetSubtitleColor()
-        {
-            return TITLECOLOR;
-        }
-        
-#endif
-        
         #region Event Functions
 
         protected override void Awake()
@@ -68,7 +34,22 @@ namespace Appalachia.Core.Behaviours
             using (_PRF_Awake.Auto())
             {
                 base.Awake();
-                    
+
+                SetInstance(this as T);
+                _singletonInstance.SetDirty();
+
+#if !UNITY_EDITOR
+                DontDestroyOnLoad(this);
+#endif
+            }
+        }
+
+        protected override void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                base.OnEnable();
+
                 SetInstance(this as T);
                 _singletonInstance.SetDirty();
 
@@ -130,8 +111,46 @@ namespace Appalachia.Core.Behaviours
         #region Profiling
 
         private const string _PRF_PFX = nameof(SingletonAppalachiaBehaviour<T>) + ".";
+
+        private static readonly ProfilerMarker
+            _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
 
         #endregion
+
+#if UNITY_EDITOR
+
+        public new const string TITLE = APPASTR.SINGLETON_BEHAVIOUR;
+
+        public new const string TITLECOLOR = Utility.Colors.Colors.Appalachia.HEX.DarkYellow;
+        public new const string TITLEICON = "";
+
+        protected override string GetTitle()
+        {
+            return TITLE;
+        }
+
+        protected override string GetTitleColor()
+        {
+            return TITLECOLOR;
+        }
+
+        protected override string GetTitleIcon()
+        {
+            return TITLEICON;
+        }
+
+        protected override string GetGameObjectIcon()
+        {
+            return GAMEOBJECTICON;
+        }
+
+        protected override string GetSubtitleColor()
+        {
+            return TITLECOLOR;
+        }
+
+#endif
     }
 }

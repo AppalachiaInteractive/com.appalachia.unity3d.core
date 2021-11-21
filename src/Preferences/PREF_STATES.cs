@@ -13,33 +13,9 @@ using UnityEngine;
 
 namespace Appalachia.Core.Preferences
 {
+    [AlwaysInitializeOnLoad]
     public static class PREF_STATES
     {
-        #region Profiling And Tracing Markers
-
-        private const string _PRF_PFX = nameof(PREF_STATES) + ".";
-
-#if UNITY_EDITOR
-        private static readonly ProfilerMarker _PRF_GetSettingsProviders =
-            new(_PRF_PFX + nameof(GetSettingsProviders));
-#endif
-        private static readonly ProfilerMarker _PRF_GetSortedCount = new(_PRF_PFX + nameof(GetSortedCount));
-        private static readonly ProfilerMarker _PRF_DrawUIGroup = new(_PRF_PFX + nameof(DrawUIGroupAllTypes));
-        private static readonly ProfilerMarker _PRF_DrawUI = new(_PRF_PFX + nameof(DrawUIGroupType));
-        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
-
-        private static readonly ProfilerMarker _PRF_Get = new(_PRF_PFX + nameof(Get));
-
-        private static readonly ProfilerMarker _PRF_GetEnumState = new(_PRF_PFX + nameof(GetEnumState));
-
-        private static readonly ProfilerMarker _PRF_GetFlagState =
-            new ProfilerMarker(_PRF_PFX + nameof(GetFlagState));
-
-        private static readonly ProfilerMarker _PRF_InitializeReflectionDrawingMetadata =
-            new ProfilerMarker(_PRF_PFX + nameof(InitializeReflectionDrawingMetadata));
-
-        #endregion
-
         #region Constants and Static Readonly
 
         public static readonly Dictionary<Type, object> _enums = new();
@@ -61,6 +37,17 @@ namespace Appalachia.Core.Preferences
 
         #endregion
 
+        static PREF_STATES()
+        {
+#if UNITY_EDITOR
+            _updateRegistered = true;
+            UnityEditor.EditorApplication.update += Awake;
+#endif
+        }
+
+        #region Static Fields and Autoproperties
+
+        private static bool _updateRegistered;
         public static bool _safeToAwaken;
         public static float characterSize = 7f;
         public static float indentSize = 25f;
@@ -69,49 +56,6 @@ namespace Appalachia.Core.Preferences
         private static Dictionary<Type, MethodInfo> _DoDrawUILookup;
         private static Dictionary<Type, MethodInfo> _GetEnumStateLookup;
         private static Dictionary<Type, MethodInfo> _GetFlagStateLookup;
-        
-        #region Menu Items
-
-#if UNITY_EDITOR
-        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Preferences/Awaken", priority = PKG.Priority)]
-#endif
-        [ExecuteOnEnable]
-        public static void Awake()
-        {
-            using (_PRF_Awake.Auto())
-            {
-                _safeToAwaken = true;
-
-                _bools.Awake();
-                _bounds.Awake();
-                _colors.Awake();
-                _gradients.Awake();
-                _doubles.Awake();
-                _floats.Awake();
-                _float2s.Awake();
-                _float3s.Awake();
-                _float4s.Awake();
-                _ints.Awake();
-                _quaternions.Awake();
-                _strings.Awake();
-
-                foreach (var x in _enums)
-                {
-                    if (x.Value is PREF_STATE_BASE xb)
-                    {
-                        xb.Awake();
-                    }
-                }
-
-                foreach (var x in _flags)
-                {
-                    if (x.Value is PREF_STATE_BASE xb)
-                    {
-                        xb.Awake();
-                    }
-                }
-            }
-        }
 
         #endregion
 
@@ -122,69 +66,69 @@ namespace Appalachia.Core.Preferences
 
             if (typeTR == typeof(bool))
             {
-                return DoDraw((PREF<bool>) preference, _bools);
+                return DoDraw((PREF<bool>)preference, _bools);
             }
 
             if (typeTR == typeof(Bounds))
             {
-                return DoDraw((PREF<Bounds>) preference, _bounds);
+                return DoDraw((PREF<Bounds>)preference, _bounds);
             }
 
             if (typeTR == typeof(Color))
             {
-                return DoDraw((PREF<Color>) preference, _colors);
+                return DoDraw((PREF<Color>)preference, _colors);
             }
 
             if (typeTR == typeof(Gradient))
             {
-                return DoDraw((PREF<Gradient>) preference, _gradients);
+                return DoDraw((PREF<Gradient>)preference, _gradients);
             }
 
             if (typeTR == typeof(double))
             {
-                return DoDraw((PREF<double>) preference, _doubles);
+                return DoDraw((PREF<double>)preference, _doubles);
             }
 
             if (typeTR == typeof(float))
             {
-                return DoDraw((PREF<float>) preference, _floats);
+                return DoDraw((PREF<float>)preference, _floats);
             }
 
             if (typeTR == typeof(float2))
             {
-                return DoDraw((PREF<float2>) preference, _float2s);
+                return DoDraw((PREF<float2>)preference, _float2s);
             }
 
             if (typeTR == typeof(float3))
             {
-                return DoDraw((PREF<float3>) preference, _float3s);
+                return DoDraw((PREF<float3>)preference, _float3s);
             }
 
             if (typeTR == typeof(float4))
             {
-                return DoDraw((PREF<float4>) preference, _float4s);
+                return DoDraw((PREF<float4>)preference, _float4s);
             }
 
             if (typeTR == typeof(int))
             {
-                return DoDraw((PREF<int>) preference, _ints);
+                return DoDraw((PREF<int>)preference, _ints);
             }
 
             if (typeTR == typeof(quaternion))
             {
-                return DoDraw((PREF<quaternion>) preference, _quaternions);
+                return DoDraw((PREF<quaternion>)preference, _quaternions);
             }
 
             if (typeTR == typeof(string))
             {
-                return DoDraw((PREF<string>) preference, _strings);
+                return DoDraw((PREF<string>)preference, _strings);
             }
 
             if (typeTR.IsEnum || (typeTR == typeof(Enum)))
             {
                 PrepareToDrawEnumType(typeTR, out var prefs, out _, out var drawMethod, out _);
 
-                return (bool) drawMethod.Invoke(null, new[] {preference, prefs});
+                return (bool)drawMethod.Invoke(null, new[] { preference, prefs });
             }
 
             throw new NotSupportedException(typeTR.Name);
@@ -196,7 +140,7 @@ namespace Appalachia.Core.Preferences
 
             return DoDraw(preference, prefs);
         }
-        
+
         public static PREF_STATE<TR> Get<TR>()
         {
             using (_PRF_Get.Auto())
@@ -288,7 +232,7 @@ namespace Appalachia.Core.Preferences
 
                 var existing = _enums[type];
 
-                return (PREF_STATE<TR>) existing;
+                return (PREF_STATE<TR>)existing;
             }
         }
 
@@ -308,7 +252,7 @@ namespace Appalachia.Core.Preferences
 
                 var existing = _flags[type];
 
-                return (PREF_STATE<TR>) existing;
+                return (PREF_STATE<TR>)existing;
             }
         }
 
@@ -334,10 +278,11 @@ namespace Appalachia.Core.Preferences
 
                     _groupings.Add(pref.Grouping);
 
-                    var provider = new UnityEditor.SettingsProvider(fullGrouping, UnityEditor.SettingsScope.User)
-                    {
-                        guiHandler = searchContext => DrawUI(pref.Grouping), label = ""
-                    };
+                    var provider =
+                        new UnityEditor.SettingsProvider(fullGrouping, UnityEditor.SettingsScope.User)
+                        {
+                            guiHandler = searchContext => DrawUI(pref.Grouping), label = ""
+                        };
 
                     providers.Add(provider);
                 }
@@ -346,7 +291,7 @@ namespace Appalachia.Core.Preferences
             }
         }
 #endif
-        
+
         private static bool DoDraw<TP>(PREF<TP> preference, PREF_STATE<TP> prefs)
         {
 #if UNITY_EDITOR
@@ -361,7 +306,7 @@ namespace Appalachia.Core.Preferences
 #else
             GUI.changed = false;
 #endif
-            
+
             preference.Value = prefs.API.Draw(
                 preference.Key,
                 preference.NiceLabel,
@@ -379,7 +324,7 @@ namespace Appalachia.Core.Preferences
 
                 prefs.API.Save(preference.Key, preference.Value, preference.Low, preference.High);
             }
-            
+
             UnityEditor.EditorGUIUtility.labelWidth = currentLabelWidth;
 #else
             if (GUI.changed)
@@ -389,7 +334,7 @@ namespace Appalachia.Core.Preferences
                 prefs.API.Save(preference.Key, preference.Value, preference.Low, preference.High);
             }
 #endif
-            
+
             return changed;
         }
 
@@ -422,14 +367,14 @@ namespace Appalachia.Core.Preferences
                 {
                     PrepareToDrawEnumType(key, out var prefs, out _, out _, out var drawUIMethod);
 
-                    drawUIMethod.Invoke(null, new[] {group, prefs});
+                    drawUIMethod.Invoke(null, new[] { group, prefs });
                 }
 
                 foreach (var key in _flags.Keys)
                 {
                     PrepareToDrawFlagsType(key, out var prefs, out _, out _, out var drawUIMethod);
 
-                    drawUIMethod.Invoke(null, new[] {group, prefs});
+                    drawUIMethod.Invoke(null, new[] { group, prefs });
                 }
             }
         }
@@ -499,54 +444,6 @@ namespace Appalachia.Core.Preferences
             }
         }
 
-        private static void PrepareToDrawFlagsType(
-            Type t,
-            out object prefs,
-            out MethodInfo stateMethod,
-            out MethodInfo drawMethod,
-            out MethodInfo drawUIMethod)
-        {
-            InitializeReflectionDrawingMetadata();
-
-            if (_GetFlagStateLookup.ContainsKey(t))
-            {
-                stateMethod = _GetFlagStateLookup[t];
-            }
-            else
-            {
-                var unrealizedMethod = typeof(PREF_STATES).GetMethod(nameof(GetFlagState));
-                stateMethod = unrealizedMethod.MakeGenericMethod(t);
-
-                _GetFlagStateLookup.Add(t, stateMethod);
-            }
-
-            PrepareGenericDrawingMethod(t, out prefs, stateMethod, out drawMethod, out drawUIMethod);
-        }
-
-        private static void PrepareToDrawEnumType(
-            Type t,
-            out object prefs,
-            out MethodInfo stateMethod,
-            out MethodInfo drawMethod,
-            out MethodInfo drawUIMethod)
-        {
-            InitializeReflectionDrawingMetadata();
-
-            if (_GetEnumStateLookup.ContainsKey(t))
-            {
-                stateMethod = _GetEnumStateLookup[t];
-            }
-            else
-            {
-                var unrealizedMethod = typeof(PREF_STATES).GetMethod(nameof(GetEnumState));
-                stateMethod = unrealizedMethod.MakeGenericMethod(t);
-
-                _GetEnumStateLookup.Add(t, stateMethod);
-            }
-
-            PrepareGenericDrawingMethod(t, out prefs, stateMethod, out drawMethod, out drawUIMethod);
-        }
-
         private static void PrepareGenericDrawingMethod(
             Type t,
             out object prefs,
@@ -589,5 +486,135 @@ namespace Appalachia.Core.Preferences
             }
         }
 
+        private static void PrepareToDrawEnumType(
+            Type t,
+            out object prefs,
+            out MethodInfo stateMethod,
+            out MethodInfo drawMethod,
+            out MethodInfo drawUIMethod)
+        {
+            InitializeReflectionDrawingMetadata();
+
+            if (_GetEnumStateLookup.ContainsKey(t))
+            {
+                stateMethod = _GetEnumStateLookup[t];
+            }
+            else
+            {
+                var unrealizedMethod = typeof(PREF_STATES).GetMethod(nameof(GetEnumState));
+                stateMethod = unrealizedMethod.MakeGenericMethod(t);
+
+                _GetEnumStateLookup.Add(t, stateMethod);
+            }
+
+            PrepareGenericDrawingMethod(t, out prefs, stateMethod, out drawMethod, out drawUIMethod);
+        }
+
+        private static void PrepareToDrawFlagsType(
+            Type t,
+            out object prefs,
+            out MethodInfo stateMethod,
+            out MethodInfo drawMethod,
+            out MethodInfo drawUIMethod)
+        {
+            InitializeReflectionDrawingMetadata();
+
+            if (_GetFlagStateLookup.ContainsKey(t))
+            {
+                stateMethod = _GetFlagStateLookup[t];
+            }
+            else
+            {
+                var unrealizedMethod = typeof(PREF_STATES).GetMethod(nameof(GetFlagState));
+                stateMethod = unrealizedMethod.MakeGenericMethod(t);
+
+                _GetFlagStateLookup.Add(t, stateMethod);
+            }
+
+            PrepareGenericDrawingMethod(t, out prefs, stateMethod, out drawMethod, out drawUIMethod);
+        }
+
+        #region Menu Items
+
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem(
+            PKG.Menu.Appalachia.RootTools.Base + "Preferences/Awaken",
+            priority = PKG.Priority
+        )]
+#endif
+        [ExecuteOnEnable]
+        public static void Awake()
+        {
+            using (_PRF_Awake.Auto())
+            {
+#if UNITY_EDITOR
+                if (_updateRegistered)
+                {
+                    UnityEditor.EditorApplication.update -= Awake;
+                    _updateRegistered = false;
+                }
+#endif
+                
+                _safeToAwaken = true;
+
+                _bools.Awake();
+                _bounds.Awake();
+                _colors.Awake();
+                _gradients.Awake();
+                _doubles.Awake();
+                _floats.Awake();
+                _float2s.Awake();
+                _float3s.Awake();
+                _float4s.Awake();
+                _ints.Awake();
+                _quaternions.Awake();
+                _strings.Awake();
+
+                foreach (var x in _enums)
+                {
+                    if (x.Value is PREF_STATE_BASE xb)
+                    {
+                        xb.Awake();
+                    }
+                }
+
+                foreach (var x in _flags)
+                {
+                    if (x.Value is PREF_STATE_BASE xb)
+                    {
+                        xb.Awake();
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(PREF_STATES) + ".";
+
+        private static readonly ProfilerMarker _PRF_GetSettingsProviders =
+            new(_PRF_PFX + nameof(GetSettingsProviders));
+
+        private static readonly ProfilerMarker _PRF_GetSortedCount = new(_PRF_PFX + nameof(GetSortedCount));
+        private static readonly ProfilerMarker _PRF_DrawUIGroup = new(_PRF_PFX + nameof(DrawUIGroupAllTypes));
+        private static readonly ProfilerMarker _PRF_DrawUI = new(_PRF_PFX + nameof(DrawUIGroupType));
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
+
+        private static readonly ProfilerMarker _PRF_Get = new(_PRF_PFX + nameof(Get));
+        private static readonly ProfilerMarker _PRF_GetEnumState = new(_PRF_PFX + nameof(GetEnumState));
+
+        private static readonly ProfilerMarker _PRF_GetFlagState =
+            new ProfilerMarker(_PRF_PFX + nameof(GetFlagState));
+
+        private static readonly ProfilerMarker _PRF_InitializeReflectionDrawingMetadata =
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeReflectionDrawingMetadata));
+
+        #endregion
+
+#if UNITY_EDITOR
+
+#endif
     }
 }
