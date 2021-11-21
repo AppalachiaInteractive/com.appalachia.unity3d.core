@@ -46,7 +46,7 @@ namespace Appalachia.Core.Extensions
                 return false;
             }
 
-            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var assetPath =  AssetDatabaseManager.GetAssetPath(texture);
             var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
@@ -63,7 +63,7 @@ namespace Appalachia.Core.Extensions
                 return false;
             }
 
-            var assetPath = UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var assetPath = AssetDatabaseManager.GetAssetPath(texture);
             var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
@@ -86,7 +86,7 @@ namespace Appalachia.Core.Extensions
                 return;
             }
 
-            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var assetPath =  AssetDatabaseManager.GetAssetPath(texture);
             var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
@@ -120,7 +120,7 @@ namespace Appalachia.Core.Extensions
                 return;
             }
 
-            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var assetPath =  AssetDatabaseManager.GetAssetPath(texture);
             var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
@@ -146,7 +146,7 @@ namespace Appalachia.Core.Extensions
                 return;
             }
 
-            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var assetPath =  AssetDatabaseManager.GetAssetPath(texture);
             var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {
@@ -166,7 +166,7 @@ namespace Appalachia.Core.Extensions
                 return;
             }
 
-            var assetPath =  UnityEditor.AssetDatabase.GetAssetPath(texture);
+            var assetPath =  AssetDatabaseManager.GetAssetPath(texture);
             var tImporter =  UnityEditor.AssetImporter.GetAtPath(assetPath) as  UnityEditor.TextureImporter;
             if (tImporter != null)
             {

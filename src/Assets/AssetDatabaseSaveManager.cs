@@ -196,7 +196,7 @@ namespace Appalachia.Core.Assets
         {
             using (_PRF_StopAssetEditing.Auto())
             {
-                UnityEditor.AssetDatabase.StopAssetEditing();
+                AssetDatabaseManager.StopAssetEditing();
                 _explicitlyStarted = false;
                 _suspensionDepth -= 1;
             }
@@ -223,7 +223,7 @@ namespace Appalachia.Core.Assets
             {
                 if (!ImportSuspended)
                 {
-                    UnityEditor.AssetDatabase.StartAssetEditing();
+                    AssetDatabaseManager.StartAssetEditing();
                     _suspensionDepth += 1;
                     _deferralDepth += 1;
                     Log("Suspending import.");
