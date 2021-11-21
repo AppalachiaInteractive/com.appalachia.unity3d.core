@@ -23,7 +23,24 @@ namespace Appalachia.Core.Behaviours
 
         #endregion
 
-        public static T instance => _singletonInstance;
+        public static T instance
+        {
+            get
+            {
+                if (_singletonInstance != null)
+                {
+                    return _singletonInstance;
+                }
+
+                var gameObject = new GameObject(nameof(T));
+
+                var i = gameObject.AddComponent<T>();
+
+                SetInstance(i);
+                
+                return _singletonInstance;
+            }
+        }
 
         protected virtual bool DestroyObjectOfSubsequentInstances => false;
 
