@@ -13,6 +13,7 @@
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 248d76f9e745f101712cf9468b61e50bfd2e63a5 | 2021-12-02 | Chris Schubert | Updating changelog and releaselog |
 | 588d26f9629ef3fe110eb5ca42944ac773e22514 | 2021-12-02 | Chris Schubert | Updating overrides and base objects |
 | 53d600878dcc381d8b5fcaca7b9a56683afbf171 | 2021-11-21 | Chris Schubert | Bugfix for singleton behaviour not appearing |
 | 9812793c771e214f9494067945af26a994e1774e | 2021-11-21 | Chris Schubert | Updating changelog and releaselog |
