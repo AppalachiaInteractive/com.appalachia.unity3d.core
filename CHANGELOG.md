@@ -1,6 +1,4 @@
 ```
-C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Core
-Development environment loaded!  
  ________   ___  ___   ________   ________    ________   _______    ________      
 |\   ____\ |\  \|\  \ |\   __  \ |\   ___  \ |\   ____\ |\  ___ \  |\   ____\     
 \ \  \___| \ \  \\\  \\ \  \|\  \\ \  \\ \  \\ \  \___| \ \   __/| \ \  \___|_    
@@ -14,6 +12,9 @@ Development environment loaded!
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 588d26f9629ef3fe110eb5ca42944ac773e22514 | 2021-12-02 | Chris Schubert | Updating overrides and base objects |
+| 53d600878dcc381d8b5fcaca7b9a56683afbf171 | 2021-11-21 | Chris Schubert | Bugfix for singleton behaviour not appearing |
+| 9812793c771e214f9494067945af26a994e1774e | 2021-11-21 | Chris Schubert | Updating changelog and releaselog |
 | 65431b03b76ada3769eb554294ff9a16dcbacaf9 | 2021-11-21 | Chris Schubert | Updating asset manager usages |
 | f897bcc84666a08c63db4279954e9f0f7eb4b837 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 04cae81625bb29e48d260c84279dae6ab782fb40 | 2021-11-20 | Chris Schubert | Prference initialization and UI templates |
