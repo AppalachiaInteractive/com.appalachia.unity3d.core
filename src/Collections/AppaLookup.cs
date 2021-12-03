@@ -52,7 +52,7 @@ namespace Appalachia.Core.Collections
 
         [NonSerialized] private AppaList<int> _tempRemovedIndices;
 
-        [NonSerialized] private Action _setDirtyAction;
+        [NonSerialized] private Action _markAsModifiedAction;
 
         [NonSerialized] private bool _insideSerialization;
 
@@ -627,9 +627,9 @@ namespace Appalachia.Core.Collections
         }
 
 #if UNITY_EDITOR
-        public void SetDirtyAction(Action a)
+        public void SetMarkModifiedAction(Action a)
         {
-            _setDirtyAction = a;
+            _markAsModifiedAction = a;
         }
 #endif
 
@@ -907,7 +907,7 @@ namespace Appalachia.Core.Collections
 
                 if (!_insideSerialization)
                 {
-                    _setDirtyAction?.Invoke();
+                    _markAsModifiedAction?.Invoke();
                 }
             }
         }
@@ -1013,7 +1013,7 @@ namespace Appalachia.Core.Collections
                 keys.RemoveAt(lastIndex);
                 values.RemoveAt(lastIndex);
 
-                _setDirtyAction?.Invoke();
+                _markAsModifiedAction?.Invoke();
                 return deletingValue;
             }
         }
@@ -1030,7 +1030,7 @@ namespace Appalachia.Core.Collections
                 _indices.Add(key, _indices.Count);
                 values.Add(value);
                 keys.Add(key);
-                _setDirtyAction?.Invoke();
+                _markAsModifiedAction?.Invoke();
             }
         }
 
@@ -1045,7 +1045,7 @@ namespace Appalachia.Core.Collections
                 var key = keys[index];
                 _lookup[key] = value;
                 values[index] = value;
-                _setDirtyAction?.Invoke();
+                _markAsModifiedAction?.Invoke();
             }
         }
 
@@ -1061,7 +1061,7 @@ namespace Appalachia.Core.Collections
 
                 _lookup[key] = value;
 
-                _setDirtyAction?.Invoke();
+                _markAsModifiedAction?.Invoke();
             }
         }
 
@@ -1101,25 +1101,25 @@ namespace Appalachia.Core.Collections
                 if (keys == null)
                 {
                     keys = new TKeyList {Capacity = initializerCount};
-                    _setDirtyAction?.Invoke();
+                    _markAsModifiedAction?.Invoke();
                 }
 
                 if (values == null)
                 {
                     values = new TValueList {Capacity = initializerCount};
-                    _setDirtyAction?.Invoke();
+                    _markAsModifiedAction?.Invoke();
                 }
 
                 if (_lookup == null)
                 {
                     _lookup = new Dictionary<TKey, TValue>(initializerCount);
-                    _setDirtyAction?.Invoke();
+                    _markAsModifiedAction?.Invoke();
                 }
 
                 if (_indices == null)
                 {
                     _indices = new Dictionary<TKey, int>(initializerCount);
-                    _setDirtyAction?.Invoke();
+                    _markAsModifiedAction?.Invoke();
                 }
 
                 if (!_isValueUnityObjectChecked)
@@ -1140,7 +1140,7 @@ namespace Appalachia.Core.Collections
                 if (values.Count > initializerCount)
                 {
                     initializerCount = values.Count;
-                    _setDirtyAction?.Invoke();
+                    _markAsModifiedAction?.Invoke();
                 }
             }
         }
@@ -1165,6 +1165,21 @@ namespace Appalachia.Core.Collections
             }
         }
 
+        
+#if UNITY_EDITOR
+        private static readonly ProfilerMarker _PRF_ClearFully = new ProfilerMarker(_PRF_PFX + nameof(ClearFully));
+        
+        [Button]
+        private void ClearFully()
+        {
+            using (_PRF_ClearFully.Auto())
+            {
+                values.Clear();
+                keys.Clear();
+                _markAsModifiedAction?.Invoke();
+            }
+        }
+#endif
         private static readonly ProfilerMarker _PRF_INTERNAL_REQUIRES_REBUILD =
             new(_PRF_PFX + nameof(INTERNAL_REQUIRES_REBUILD));
 
@@ -1180,7 +1195,7 @@ namespace Appalachia.Core.Collections
                     keys.ClearFast();
                     _lookup.Clear();
                     _indices.Clear();
-                    _setDirtyAction?.Invoke();
+                    _markAsModifiedAction?.Invoke();
                     return false;
                 }
 
@@ -1277,7 +1292,7 @@ namespace Appalachia.Core.Collections
                     newIndex += 1;
                 }
 
-                _setDirtyAction?.Invoke();
+                _markAsModifiedAction?.Invoke();
             }
         }
 

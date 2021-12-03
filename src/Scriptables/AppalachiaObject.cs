@@ -11,6 +11,7 @@ using Appalachia.CI.Integration.FileSystem;
 using Appalachia.Core.Assets;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Utility.Execution;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Appalachia.Core.Scriptables
 {
     [DoNotReorderFields]
     [InspectorIcon(Icons.Squirrel.Tan)]
+    [SmartLabelChildren]
     public abstract class AppalachiaObject : ScriptableObject, IAppalachiaObject, IInitializable
     {
         #region Constants and Static Readonly
@@ -100,27 +102,19 @@ namespace Appalachia.Core.Scriptables
         protected virtual bool ShowMetadata => true;
         protected virtual bool ShowWorkflow => false;
 
-        protected Initializer initializationData => _initializationData;
+        protected Initializer initializer => _initializationData;
+
 
 #if UNITY_EDITOR
-        [SmartFoldoutGroup(GROUP)]
-        [ButtonGroup(GROUP_BUTTONS)]
-        [ShowIf(nameof(ShowMetadata))]
-        [PropertyOrder(-1000)]
-#endif
-        public new void SetDirty()
+        [ButtonGroup(GROUP_BUTTONS), HideInInlineEditors]
+        private void ReInitialize()
         {
-#if UNITY_EDITOR
-            using (_PRF_SetDirty.Auto())
-            {
-                if (!Application.isPlaying)
-                {
-                    UnityEditor.EditorUtility.SetDirty(this);
-                }
-            }
-#endif
+            initializer.Reset(this, DateTime.Now.ToString("O"));
+            
+            Initialize();
         }
-
+#endif
+        
 #if UNITY_EDITOR
 
         protected virtual string GetTitle()
@@ -166,7 +160,7 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_CreateNew.Auto())
             {
-                return AppalachiaObjectFactory.CreateNew(t, ownerType: ownerType) as AppalachiaObject;
+                return AppalachiaObjectFactory.CreateNewAsset(t, ownerType: ownerType, overwriteExisting: false) as AppalachiaObject;
             }
         }
 
@@ -183,7 +177,7 @@ namespace Appalachia.Core.Scriptables
                     i = CreateInstance(t) as AppalachiaObject;
                 }
 
-                return AppalachiaObjectFactory.CreateNew(t, name, i, dataFolder, ownerType) as AppalachiaObject;
+                return AppalachiaObjectFactory.SaveInstanceToAsset(t, name, i, dataFolder, ownerType) as AppalachiaObject;
                 ;
             }
         }
@@ -256,7 +250,7 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return AppalachiaObjectFactory.LoadOrCreateNew(t, name, dataFolder, ownerType) as AppalachiaObject;
+                return AppalachiaObjectFactory.LoadExistingOrCreateNewAsset(t, name, dataFolder, ownerType) as AppalachiaObject;
             }
         }
 
@@ -269,9 +263,8 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
-                return AppalachiaObjectFactory.LoadOrCreateNew(t, name, prependType, appendType, dataFolder, ownerType)
+                return AppalachiaObjectFactory.LoadExistingOrCreateNewAsset(t, name, prependType, appendType, dataFolder, ownerType)
                     as AppalachiaObject;
-                ;
             }
         }
 
@@ -308,7 +301,7 @@ namespace Appalachia.Core.Scriptables
                 if (assignment == null)
                 {
                     assignment =
-                        AppalachiaObjectFactory.LoadOrCreateNew(t, name, dataFolder, ownerType) as AppalachiaObject;
+                        AppalachiaObjectFactory.LoadExistingOrCreateNewAsset(t, name, dataFolder, ownerType) as AppalachiaObject;
                     ;
                 }
             }
@@ -340,7 +333,7 @@ namespace Appalachia.Core.Scriptables
                 {
                     _cachedName = name;
                     _niceName = UnityEditor.ObjectNames.NicifyVariableName(name);
-                    SetDirty();
+                    this.MarkAsModified();
                 }
 
                 return _niceName;
@@ -348,6 +341,7 @@ namespace Appalachia.Core.Scriptables
             set => _niceName = value;
         }
 
+        [ButtonGroup(GROUP_BUTTONS)]
         public void Ping()
         {
             using (_PRF_Ping.Auto())
@@ -356,14 +350,13 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
-        [SmartFoldoutGroup(GROUP)]
         [ButtonGroup(GROUP_BUTTONS)]
         [PropertyOrder(-1000)]
-        public void SetDirtyAndSave()
+        public void SaveNow()
         {
-            using (_PRF_SetDirtyAndSave.Auto())
+            using (_PRF_SaveNow.Auto())
             {
-                SetDirty();
+               this.MarkAsModified();
 
                 if (!Application.isPlaying)
                 {
@@ -510,7 +503,7 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_Rename.Auto())
             {
-                AppalachiaObjectFactory.Rename(this, newName);
+                AppalachiaObjectFactory.RenameAsset(this, newName);
             }
         }
 
@@ -518,18 +511,38 @@ namespace Appalachia.Core.Scriptables
 
 #endif
 
+        protected virtual bool InitializeOnEnable => false;
+        protected virtual bool InitializeOnAwake => false;
+        protected virtual bool InitializeAlways => false;
+        
+        private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + nameof(Awake));
+        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+        
         protected virtual void Awake()
         {
+            using (_PRF_Awake.Auto())
+            {
+                if (InitializeAlways || InitializeOnAwake)
+                {
+                    Initialize();
+                }
+            }
         }
         
         protected virtual void OnEnable()
         {
+            using (_PRF_OnEnable.Auto())
+            {
+                if (InitializeAlways || InitializeOnEnable)
+                {
+                    Initialize();
+                }
+            }
         }
 
 #if UNITY_EDITOR
         private const string _PRF_PFX = nameof(AppalachiaObject) + ".";
-        private static readonly ProfilerMarker _PRF_SetDirty = new(_PRF_PFX + nameof(SetDirty));
-        private static readonly ProfilerMarker _PRF_SetDirtyAndSave = new(_PRF_PFX + nameof(SetDirtyAndSave));
+        private static readonly ProfilerMarker _PRF_SaveNow = new(_PRF_PFX + nameof(SaveNow));
         private static readonly ProfilerMarker _PRF_Ping = new(_PRF_PFX + nameof(Ping));
         private static readonly ProfilerMarker _PRF_Select = new(_PRF_PFX + nameof(Select));
         private static readonly ProfilerMarker _PRF_Duplicate = new(_PRF_PFX + nameof(Duplicate));
@@ -551,8 +564,14 @@ namespace Appalachia.Core.Scriptables
         private static readonly ProfilerMarker _PRF_LoadOrCreateNewIfNull =
             new ProfilerMarker(_PRF_PFX + nameof(LoadOrCreateNewIfNull));
 #endif
-        public virtual void Initialize()
+
+        protected virtual void Initialize()
         {
+        }
+
+        public void InitializeExternal()
+        {
+            Initialize();
         }
     }
 }

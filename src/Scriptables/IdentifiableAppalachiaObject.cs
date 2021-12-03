@@ -7,6 +7,7 @@ using System.Linq;
 using Appalachia.CI.Constants;
 using Appalachia.Core.Assets;
 using Appalachia.Core.Attributes.Editing;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -175,7 +176,7 @@ namespace Appalachia.Core.Scriptables
 
                         instance.OnUpateAllIDs();
 
-                        instance.SetDirty();
+                        instance.MarkAsModified();
                         updatedAny = true;
                     }
                 }
@@ -302,7 +303,7 @@ namespace Appalachia.Core.Scriptables
                 }
 
                 id = maxID + 1;
-                SetDirty();
+               this.MarkAsModified();
 
                 hasBadIDs = false;
                 AssetDatabaseSaveManager.SaveAssetsNextFrame();

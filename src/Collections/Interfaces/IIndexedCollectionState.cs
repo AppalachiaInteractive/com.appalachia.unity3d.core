@@ -14,7 +14,7 @@ namespace Appalachia.Core.Collections.Interfaces
         int InitializerCount { get; set; }
 
 #if UNITY_EDITOR
-        void SetDirtyAction(Action a);
+        void SetMarkModifiedAction(Action a);
 #endif
     }
 }

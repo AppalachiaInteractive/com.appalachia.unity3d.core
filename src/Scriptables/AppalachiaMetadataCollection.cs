@@ -11,7 +11,7 @@ namespace Appalachia.Core.Scriptables
 {
     public abstract class AppalachiaMetadataCollection<T, TValue, TL> : SingletonAppalachiaObject<T>
         where T : AppalachiaMetadataCollection<T, TValue, TL>
-        where TValue : AppalachiaObject, ICategorizable
+        where TValue : AppalachiaObject/*, ICategorizable*/
         where TL : AppaList<TValue>, new()
     {
         #region Fields and Autoproperties

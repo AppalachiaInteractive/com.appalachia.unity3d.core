@@ -2,7 +2,7 @@ using Appalachia.Core.Attributes;
 
 namespace Appalachia.Core.Execution.Hooks
 {
-    [ExecutionOrder(30000)]
+    [ExecutionOrder(ExecutionOrders.FrameEnd)]
     public class FrameEnd : FrameEventBehaviour<FrameEnd>
     {
         protected override string GetReadableName()

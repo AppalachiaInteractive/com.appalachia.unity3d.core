@@ -2,6 +2,6 @@ namespace Appalachia.Core.Scriptables
 {
     public interface ISingletonAppalachiaObject
     {
-        void SetInstance(ISingletonAppalachiaObject i);
+        public void SetInstance(ISingletonAppalachiaObject i);
     }
 }

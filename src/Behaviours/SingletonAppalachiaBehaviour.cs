@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Behaviours
 {
-    [Serializable, ExecuteInEditMode]
+    [Serializable, ExecuteAlways]
     [InspectorIcon(Icons.Squirrel.DarkYellow)]
     public abstract class SingletonAppalachiaBehaviour<T> : AppalachiaBehaviour
         where T : SingletonAppalachiaBehaviour<T>
@@ -32,6 +32,13 @@ namespace Appalachia.Core.Behaviours
                     return _singletonInstance;
                 }
 
+                _singletonInstance = FindObjectOfType<T>();
+
+                if (_singletonInstance != null)
+                {
+                    return _singletonInstance;
+                }
+                
                 var gameObject = new GameObject(nameof(T));
 
                 var i = gameObject.AddComponent<T>();
@@ -53,26 +60,21 @@ namespace Appalachia.Core.Behaviours
                 base.Awake();
 
                 SetInstance(this as T);
-                _singletonInstance.SetDirty();
-
-#if !UNITY_EDITOR
-                DontDestroyOnLoad(this);
-#endif
+                _singletonInstance.MarkAsModified();                
             }
         }
 
-        protected override void OnEnable()
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        protected override void Initialize()
         {
-            using (_PRF_OnEnable.Auto())
+            using (_PRF_Initialize.Auto())
             {
-                base.OnEnable();
+                base.Initialize();
 
                 SetInstance(this as T);
-                _singletonInstance.SetDirty();
-
-#if !UNITY_EDITOR
-                DontDestroyOnLoad(this);
-#endif
+                _singletonInstance.MarkAsModified();
             }
         }
 

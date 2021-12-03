@@ -8,6 +8,6 @@ namespace Appalachia.Core.Scriptables
 {
     public interface ICrossAssemblySerializable
     {
-        ScriptableObject GetSerializable();
+        public ScriptableObject GetSerializable();
     }
 }

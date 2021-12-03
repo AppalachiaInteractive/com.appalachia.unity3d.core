@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.Attributes;
+using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -148,6 +149,8 @@ namespace Appalachia.Core.Scriptables
                 }
 
                 _instance = CreateAndSaveSingleton();
+                
+                _instance.MarkAsModified();
 
                 SingletonAppalachiaObjectLookup.ScanExternal();
             }
@@ -157,7 +160,8 @@ namespace Appalachia.Core.Scriptables
         {
             using (_PRF_CreateAndSaveSingleton.Auto())
             {
-                return CreateAndSaveSingleton($"{typeof(T).Name}_{DateTime.Now:yyyyMMdd-hhmmssfff}.asset");
+                //return CreateAndSaveSingleton($"{typeof(T).Name}_{DateTime.Now:yyyyMMdd-hhmmssfff}.asset");
+                return CreateAndSaveSingleton($"{typeof(T).Name}.asset");
             }
         }
 

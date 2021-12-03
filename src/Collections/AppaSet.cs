@@ -250,7 +250,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public void SetDirtyAction(Action a)
+        public void SetMarkModifiedAction(Action a)
         {
             _setDirtyAction = a;
         }

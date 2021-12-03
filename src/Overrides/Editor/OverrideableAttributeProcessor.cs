@@ -30,13 +30,16 @@ namespace Appalachia.Core.Overrides
 
             var atties = parentProperty.Info.GetMemberInfo()?.GetAttributes_CACHE();
 
-            foreach (var attribute in atties)
+            if (atties != null)
             {
-                if (ShouldPushToChildren(attribute))
+                foreach (var attribute in atties)
                 {
-                    if (member.Name == "value")
+                    if (ShouldPushToChildren(attribute))
                     {
-                        attributes.Add(attribute);
+                        if (member.Name == "value")
+                        {
+                            attributes.Add(attribute);
+                        }
                     }
                 }
             }

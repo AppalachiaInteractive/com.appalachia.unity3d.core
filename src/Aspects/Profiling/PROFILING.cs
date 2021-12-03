@@ -777,7 +777,7 @@ public class ProfilerMarkerWrapper : IDisposable, IProfile
 {
     public ProfilerMarkerWrapper(string memberName, string sourceFilePath, int sourceLineNumber)
     {
-        var fileName = System.IO.Path.GetFileNameWithoutExtension(sourceFilePath);
+        var fileName = AppaPath.GetFileNameWithoutExtension(sourceFilePath);
         this.marker = new ProfilerMarker($"{fileName}.{memberName} [{sourceLineNumber}]");
     }
 

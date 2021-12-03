@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Appalachia.Core.Behaviours;
 using Appalachia.Core.Volumes.Components;
 using Appalachia.Utility.Logging;
 using Unity.Profiling;
@@ -13,7 +14,7 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Core.Volumes
 {
     [ExecuteAlways]
-    public class PropertyMaster : MonoBehaviour, IExposedPropertyTable, ISerializationCallbackReceiver
+    public class PropertyMaster: AppalachiaBehaviour, IExposedPropertyTable, ISerializationCallbackReceiver
     {
         private const string _PRF_PFX = nameof(PropertyMaster) + ".";
 
@@ -132,10 +133,12 @@ namespace Appalachia.Core.Volumes
             }
         }
 
-        protected void OnDisable()
+        protected override void OnDisable()
         {
             using (_PRF_OnDisable.Auto())
             {
+                base.OnDisable();
+                
                 try
                 {
                     if (Camera.onPreCull == null)
@@ -159,10 +162,12 @@ namespace Appalachia.Core.Volumes
             }
         }
 
-        protected void OnEnable()
+        protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
             {
+                base.OnEnable();
+                
                 try
                 {
                     if (Camera.onPreCull == null)

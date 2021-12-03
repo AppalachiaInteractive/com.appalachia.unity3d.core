@@ -171,10 +171,10 @@ namespace Appalachia.Core.Assets
         ///     <para>
         ///         Starts importing Assets into the Asset Database. This lets you group several Asset imports together into one larger import.
         ///         Note:
-        ///         Calling AssetDatabase.StartAssetEditing() places the Asset Database in a state that will prevent imports until
-        ///         AssetDatabase.StopAssetEditing() is called.
+        ///         Calling AssetDatabaseManager.StartAssetEditing() places the Asset Database in a state that will prevent imports until
+        ///         AssetDatabaseManager.StopAssetEditing() is called.
         ///         This means that if an exception occurs between the two function calls, the AssetDatabase will be unresponsive.
-        ///         Therefore, it is highly recommended that you place calls to AssetDatabase.StartAssetEditing() and AssetDatabase.StopAssetEditing() inside
+        ///         Therefore, it is highly recommended that you place calls to AssetDatabaseManager.StartAssetEditing() and AssetDatabaseManager.StopAssetEditing() inside
         ///         either a try..catch block, or a try..finally block as needed.
         ///     </para>
         /// </summary>

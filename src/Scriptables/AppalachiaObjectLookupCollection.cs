@@ -3,23 +3,39 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.Core;
 using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Interfaces;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Core.Scriptables
 {
+    /// <summary>
+    ///     An key-value lookup collection for an Appalachia scriptable object.
+    /// </summary>
+    /// <typeparam name="TKey">The key for the lookup.</typeparam>
+    /// <typeparam name="TValue">The value for the lookup.</typeparam>
+    /// <typeparam name="TKeyList">A serializable list of <see cref="TKey" /></typeparam>
+    /// <typeparam name="TValueList">A serializable list of <see cref="TValue" /></typeparam>
+    /// <typeparam name="TLookup">A class derived from <see cref="AppaLookup{TKey,TValue,TKeyList,TValueList}" /></typeparam>
+    /// <typeparam name="TThis">A reference to itself, the lookup collection.</typeparam>
     [Serializable]
     public abstract class
-        AppalachiaObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList> :
-            SingletonAppalachiaObject<T>
-        where T : AppalachiaObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList>
-        where TI : AppaLookup<TKey, TValue, TKeyList, TValueList>, new()
+        AppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup, TThis> :
+            SingletonAppalachiaObject<TThis>
+        where TValue : AppalachiaObject
         where TKeyList : AppaList<TKey>, new()
         where TValueList : AppaList<TValue>, new()
-        where TValue : AppalachiaObject
+        where TLookup : AppaLookup<TKey, TValue, TKeyList, TValueList>, new()
+        where TThis : AppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup, TThis>
     {
         #region Fields and Autoproperties
+
+        public abstract bool HasDefault { get; }
+        
+        [ShowIf(nameof(HasDefault))]
+        [SerializeField]
+        private TValue _defaultValue;
 
         [SerializeField]
         [InlineProperty]
@@ -33,7 +49,7 @@ namespace Appalachia.Core.Scriptables
             HideRemoveButton = true,
             NumberOfItemsPerPage = 3
         )]
-        protected TI _items;
+        protected TLookup _items;
 
         #endregion
 
@@ -51,6 +67,10 @@ namespace Appalachia.Core.Scriptables
                 }
             }
         }
+
+        public TValue defaultValue => _defaultValue;
+
+        public TValue this[TKey key] => _items[key];
 
         #region Event Functions
 
@@ -91,6 +111,16 @@ namespace Appalachia.Core.Scriptables
             }
         }
 
+        public TValue Find(TKey key)
+        {
+            if (_items.ContainsKey(key))
+            {
+                return _items[key];
+            }
+
+            return null;
+        }
+
         public TValue GetOrLoadOrCreateNew(TKey key, string name)
         {
             var items = Items;
@@ -100,7 +130,7 @@ namespace Appalachia.Core.Scriptables
                 return items.Get(key);
             }
 
-            var i = AppalachiaObjectFactory.LoadOrCreateNew<TValue>(name);
+            var i = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset<TValue>(name);
 
             items.Add(key, i);
 
@@ -122,7 +152,7 @@ namespace Appalachia.Core.Scriptables
                 }
 
 #if UNITY_EDITOR
-                SetDirty();
+               this.MarkAsModified();
 #endif
             }
         }
@@ -148,7 +178,8 @@ namespace Appalachia.Core.Scriptables
         #region Profiling
 
         private const string _PRF_PFX =
-            nameof(AppalachiaObjectLookupCollection<T, TI, TKey, TValue, TKeyList, TValueList>) + ".";
+            nameof(AppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup, TThis>) +
+            ".";
 
         private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
         private static readonly ProfilerMarker _PRF_WhenEnabled = new(_PRF_PFX + nameof(WhenEnabled));
@@ -158,11 +189,11 @@ namespace Appalachia.Core.Scriptables
 
         private static readonly ProfilerMarker _PRF_DoForAllIf = new(_PRF_PFX + nameof(DoForAllIf));
 
+        #endregion
+
 #if UNITY_EDITOR
 
 #endif
-
-        #endregion
 
 #if UNITY_EDITOR
         [NonSerialized] private bool _initialized;
@@ -174,8 +205,8 @@ namespace Appalachia.Core.Scriptables
             {
                 if (_items == null)
                 {
-                    _items = new TI();
-                    SetDirty();
+                    _items = new TLookup();
+                   this.MarkAsModified();
                 }
 
                 if (_initialized)
@@ -184,7 +215,7 @@ namespace Appalachia.Core.Scriptables
                 }
 
                 _initialized = true;
-                _items.SetDirtyAction(SetDirty);
+                _items.SetMarkModifiedAction(this.MarkAsModified);
 
                 var anyNull = false;
 

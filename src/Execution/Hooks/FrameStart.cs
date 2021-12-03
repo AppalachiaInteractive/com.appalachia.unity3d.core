@@ -6,7 +6,7 @@ using Appalachia.Core.Attributes;
 
 namespace Appalachia.Core.Execution.Hooks
 {
-    [ExecutionOrder(-30000)]
+    [ExecutionOrder(ExecutionOrders.FrameStart)]
     public class FrameStart : FrameEventBehaviour<FrameStart>
     {
         protected override string GetReadableName()

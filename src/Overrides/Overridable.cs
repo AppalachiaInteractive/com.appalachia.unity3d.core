@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Appalachia.Core.Attributes.Editing;
 using Sirenix.OdinInspector;
+using Unity.Profiling;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 #endregion
 
@@ -30,15 +32,20 @@ namespace Appalachia.Core.Overrides
             overrideEnabled = value.overrideEnabled;
             this.value = value.value;
         }
+
+        #region Fields and Autoproperties
+
         /*[SerializeField, HideInInspector]
         public bool isOverridingAllowed;*/
 
         [SerializeField]
         [HideLabel]
+        [LabelWidth(0)]
         [PropertyTooltip("Override")]
-        [ToggleLeft]
         [HorizontalGroup("A", .02f)]
-        public bool overrideEnabled;
+        [PropertyOrder(10)]
+        [FormerlySerializedAs("overrideEnabled")]
+        private bool _overrideEnabled;
 
         [SerializeField]
         [HideLabel]
@@ -46,84 +53,160 @@ namespace Appalachia.Core.Overrides
         [EnableIf(nameof(overrideEnabled))]
         [InlineProperty]
         [HorizontalGroup("A", .98f)]
-        public T value;
+        [PropertyOrder(0)]
+        [FormerlySerializedAs("value")]
+        private T _value;
 
-        [DebuggerStepThrough] public static implicit operator Overridable<T, TO>(T a)
+        #endregion
+
+        public bool overrideEnabled
         {
-            var to = new TO {overrideEnabled = false, value = a};
-
-            return to;
+            get => _overrideEnabled;
+            set => _overrideEnabled = value;
         }
 
-        [DebuggerStepThrough] public static implicit operator T(Overridable<T, TO> a)
+        public T value
         {
-            return a.value;
+            get => _value;
+            set => _value = value;
         }
 
-#region IEquatable
-
-        [DebuggerStepThrough] public bool Equals(Overridable<T, TO> other)
+        [DebuggerStepThrough]
+        public static bool operator ==(Overridable<T, TO> left, Overridable<T, TO> right)
         {
-            if (ReferenceEquals(null, other))
+            using (_PRF_eq.Auto())
             {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return /* isOverridingAllowed == other.isOverridingAllowed && */
-                (overrideEnabled == other.overrideEnabled) &&
-                EqualityComparer<T>.Default.Equals(value, other.value);
-        }
-
-        [DebuggerStepThrough] public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != GetType())
-            {
-                return false;
-            }
-
-            return Equals((Overridable<T, TO>) obj);
-        }
-
-        [DebuggerStepThrough] public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode;
-
-                //hashCode = isOverridingAllowed.GetHashCode();
-                //hashCode = (hashCode * 397) ^ overrideEnabled.GetHashCode();
-
-                hashCode = overrideEnabled.GetHashCode();
-                hashCode = (hashCode * 397) ^ EqualityComparer<T>.Default.GetHashCode(value);
-                return hashCode;
+                return Equals(left, right);
             }
         }
 
-        [DebuggerStepThrough] public static bool operator ==(Overridable<T, TO> left, Overridable<T, TO> right)
+        [DebuggerStepThrough]
+        public static implicit operator Overridable<T, TO>(T a)
         {
-            return Equals(left, right);
+            using (_PRF_op_Implicit.Auto())
+            {
+                var to = new TO { overrideEnabled = false, value = a };
+
+                return to;
+            }
         }
 
-        [DebuggerStepThrough] public static bool operator !=(Overridable<T, TO> left, Overridable<T, TO> right)
+        [DebuggerStepThrough]
+        public static implicit operator T(Overridable<T, TO> a)
         {
-            return !Equals(left, right);
+            using (_PRF_op_Implicit.Auto())
+            {
+                return a.value;
+            }
         }
 
-#endregion
+        [DebuggerStepThrough]
+        public static bool operator !=(Overridable<T, TO> left, Overridable<T, TO> right)
+        {
+            using (_PRF_neq.Auto())
+            {
+                return !Equals(left, right);
+            }
+        }
+
+        [DebuggerStepThrough]
+        public override bool Equals(object obj)
+        {
+            using (_PRF_Equals.Auto())
+            {
+                if (ReferenceEquals(null, obj))
+                {
+                    return false;
+                }
+
+                if (ReferenceEquals(this, obj))
+                {
+                    return true;
+                }
+
+                if (obj.GetType() != GetType())
+                {
+                    return false;
+                }
+
+                return Equals((Overridable<T, TO>)obj);
+            }
+        }
+
+        [DebuggerStepThrough]
+        public override int GetHashCode()
+        {
+            using (_PRF_GetHashCode.Auto())
+            {
+                unchecked
+                {
+                    int hashCode;
+
+                    //hashCode = isOverridingAllowed.GetHashCode();
+                    //hashCode = (hashCode * 397) ^ overrideEnabled.GetHashCode();
+
+                    hashCode = overrideEnabled.GetHashCode();
+                    hashCode = (hashCode * 397) ^ EqualityComparer<T>.Default.GetHashCode(value);
+                    return hashCode;
+                }
+            }
+        }
+
+        public T Get(T defaultValue)
+        {
+            using (_PRF_Get.Auto())
+            {
+                if (overrideEnabled)
+                {
+                    return value;
+                }
+
+                return defaultValue;
+            }
+        }
+
+        #region IEquatable<Overridable<T,TO>> Members
+
+        [DebuggerStepThrough]
+        public bool Equals(Overridable<T, TO> other)
+        {
+            using (_PRF_Equals.Auto())
+            {
+                if (ReferenceEquals(null, other))
+                {
+                    return false;
+                }
+
+                if (ReferenceEquals(this, other))
+                {
+                    return true;
+                }
+
+                return /* isOverridingAllowed == other.isOverridingAllowed && */
+                    (overrideEnabled == other.overrideEnabled) &&
+                    EqualityComparer<T>.Default.Equals(value, other.value);
+            }
+        }
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(Overridable<T, TO>) + ".";
+
+        private static readonly ProfilerMarker _PRF_op_Implicit =
+            new ProfilerMarker(_PRF_PFX + "op_Implicit");
+
+        private static readonly ProfilerMarker _PRF_Get = new ProfilerMarker(_PRF_PFX + nameof(Get));
+        private static readonly ProfilerMarker _PRF_Equals = new ProfilerMarker(_PRF_PFX + nameof(Equals));
+
+        private static readonly ProfilerMarker _PRF_GetHashCode =
+            new ProfilerMarker(_PRF_PFX + nameof(GetHashCode));
+
+        private static readonly ProfilerMarker _PRF_eq = new ProfilerMarker(_PRF_PFX + "eq");
+
+        private static readonly ProfilerMarker _PRF_neq = new ProfilerMarker(_PRF_PFX + "neq");
+
+        #endregion
     }
 }

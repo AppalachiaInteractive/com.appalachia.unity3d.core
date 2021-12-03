@@ -8,17 +8,50 @@ namespace Appalachia.Core.Attributes.Editing
     [Conditional("UNITY_EDITOR")]
     public class SmartLabelChildrenAttribute : Attribute
     {
-        internal bool _bold;
-        internal int _hue;
-        internal string _propertyColor;
-        internal int _saturation;
-        internal bool _suffix;
-        internal int _value;
-        public string AlignWith { get; set; }
+        public SmartLabelChildrenAttribute()
+        {
+        }
+
+        public SmartLabelChildrenAttribute(SmartLabelChildrenAttribute other)
+        {
+            AlignWith = other.AlignWith;
+            Padding = other.Padding;
+            PixelsPerCharacter = other.PixelsPerCharacter;
+            Bold = other.Bold;
+            Suffix = other.Suffix;
+            Hue = other.Hue;
+            Saturation = other.Saturation;
+            Value = other.Value;
+            Color = other.Color;
+            HasHue = other.HasHue;
+            HasPropertyColor = other.HasPropertyColor;
+            HasSaturation = other.HasSaturation;
+            HasValue = other.HasValue;
+        }
+
+        #region Fields and Autoproperties
+
+        public bool HasHue { get; private set; }
+
+        public bool HasPropertyColor { get; private set; }
+
+        public bool HasSaturation { get; private set; }
+
+        public bool HasValue { get; private set; }
 
         public float Padding { get; set; } = 4f;
 
         public float PixelsPerCharacter { get; set; } = 8.25f;
+        public string AlignWith { get; set; }
+
+        internal bool _bold;
+        internal bool _suffix;
+        internal int _hue;
+        internal int _saturation;
+        internal int _value;
+        internal string _propertyColor;
+
+        #endregion
 
         public bool Bold
         {
@@ -71,12 +104,5 @@ namespace Appalachia.Core.Attributes.Editing
                 HasPropertyColor = true;
             }
         }
-
-        public bool HasPropertyColor { get; private set; }
-        public bool HasHue { get; private set; }
-
-        public bool HasSaturation { get; private set; }
-
-        public bool HasValue { get; private set; }
     }
 }
