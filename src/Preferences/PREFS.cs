@@ -2,6 +2,7 @@
 
 using System;
 using Appalachia.Utility.Reflection.Extensions;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 #endregion
@@ -40,8 +41,11 @@ namespace Appalachia.Core.Preferences
                 label = splits[splits.Length - 1];
                 grouping = grouping.Trim('/').Trim();
 
-                var key =
-                    $"{grouping.ToLower().Replace(" ", string.Empty).Trim()}.{label.ToLower().Replace(" ", string.Empty).Trim()}";
+                var key = ZString.Format(
+                    "{0}.{1}",
+                    grouping.ToLower().Replace(" ", string.Empty).Trim(),
+                    label.ToLower().Replace(" ", string.Empty).Trim()
+                );
 
                 PREF_STATES._keys.Add(key);
                 PREF_STATES._groupings.Add(grouping);

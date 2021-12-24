@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 #endregion
@@ -80,7 +81,7 @@ namespace Appalachia.Core.Math.Stats.Implementations
                     case SuffixType.None:
                         return null;
                     case SuffixType.FPS:
-                        return string.Format(suffix_fpx, value * 1000.0);
+                        return ZString.Format(suffix_fpx, value * 1000.0);
                     default:
                         throw new ArgumentOutOfRangeException(nameof(type), type, null);
                 }

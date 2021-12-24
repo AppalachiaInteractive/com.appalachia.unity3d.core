@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Appalachia.CI.Constants;
 using Random = UnityEngine.Random;
 
 #endregion
@@ -9,8 +10,22 @@ using Random = UnityEngine.Random;
 namespace Appalachia.Core.Math.Probability
 {
     [Serializable]
-    public class ProbabilitySet
+    public class ProbabilitySet 
     {
+        [NonSerialized] private AppaContext _context;
+
+        protected AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(this);
+                }
+
+                return _context;
+            }
+        }
         public double sum;
 
         public ProbabilityPair[] pairs;

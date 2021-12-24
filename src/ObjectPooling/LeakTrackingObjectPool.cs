@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Appalachia.Utility.Strings;
 
 #endregion
 
@@ -54,7 +55,14 @@ namespace Appalachia.Core.ObjectPooling
             {
                 if (!_disposed && !Environment.HasShutdownStarted)
                 {
-                    Debug.Fail($"{typeof(T).Name} was leaked. Created at: {Environment.NewLine}{_stack}");
+                    Debug.Fail(
+                        ZString.Format(
+                            "{0} was leaked. Created at: {1}{2}",
+                            typeof(T).Name,
+                            Environment.NewLine,
+                            _stack
+                        )
+                    );
                 }
             }
 

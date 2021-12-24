@@ -14,7 +14,8 @@ namespace Appalachia.Core.Collections.Interfaces
         int InitializerCount { get; set; }
 
 #if UNITY_EDITOR
-        void SetMarkModifiedAction(Action a);
+        void SetObjectOwnership(UnityEngine.Object owner);
+        void SetObjectOwnership(UnityEngine.Object owner, Action markAsModifiedAction);
 #endif
     }
 }

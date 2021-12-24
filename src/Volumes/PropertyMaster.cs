@@ -2,9 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Initialization;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Volumes.Components;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Async;
+using Appalachia.Utility.Constants;
 using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -14,34 +16,23 @@ using Object = UnityEngine.Object;
 namespace Appalachia.Core.Volumes
 {
     [ExecuteAlways]
-    public class PropertyMaster: AppalachiaBehaviour, IExposedPropertyTable, ISerializationCallbackReceiver
+    public sealed class PropertyMaster : AppalachiaBehaviour<PropertyMaster>,
+                                         IExposedPropertyTable,
+                                         ISerializationCallbackReceiver
     {
-        private const string _PRF_PFX = nameof(PropertyMaster) + ".";
+        public enum UpdateMode
+        {
+            Automatic,
+            Manual
+        }
+
+        #region Constants and Static Readonly
 
         internal static readonly HashSet<Type> componentTypes = new();
 
-        private static readonly ProfilerMarker _PRF_ClearReferenceValue =
-            new(_PRF_PFX + nameof(ClearReferenceValue));
+        #endregion
 
-        private static readonly ProfilerMarker _PRF_GetReferenceValue =
-            new(_PRF_PFX + nameof(GetReferenceValue));
-
-        private static readonly ProfilerMarker _PRF_SetReferenceValue =
-            new(_PRF_PFX + nameof(SetReferenceValue));
-
-        private static readonly ProfilerMarker _PRF_OnBeforeSerialize =
-            new(_PRF_PFX + nameof(OnBeforeSerialize));
-
-        private static readonly ProfilerMarker _PRF_OnAfterDeserialize =
-            new(_PRF_PFX + nameof(OnAfterDeserialize));
-
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
-
-        private static readonly ProfilerMarker _PRF_OnPreCull = new(_PRF_PFX + nameof(OnPreCull));
-
-        private static readonly ProfilerMarker _PRF_UpdateProperties =
-            new(_PRF_PFX + nameof(UpdateProperties));
+        #region Fields and Autoproperties
 
         [Space(9)] public bool updateAppaVolumes;
         public LayerMask volumeLayerMask = 0;
@@ -49,13 +40,42 @@ namespace Appalachia.Core.Volumes
 
         public UpdateMode updateMode;
 
-        private Camera _propCamera;
-
         private Dictionary<PropertyName, Object> _exposedReferenceTable = new();
 
         [SerializeField]
         [HideInInspector]
         private List<ExposedReferenceData> _exposedReferenceList = new();
+
+        #endregion
+
+        #region Event Functions
+
+        private static readonly ProfilerMarker _PRF_WhenDisabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenDisabled));
+
+        protected override async AppaTask WhenDisabled()
+        {
+            using (_PRF_WhenDisabled.Auto())
+            {
+                await base.WhenDisabled();
+
+                try
+                {
+                    if (Camera.onPreCull == null)
+                    {
+                        return;
+                    }
+
+                    Camera.onPreCull -= OnCameraPreCull;
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error("Failed to UNsubscribe to OnPreCull.", this, ex);
+                }
+            }
+        }
+
+        #endregion
 
         public void UpdateProperties()
         {
@@ -71,7 +91,7 @@ namespace Appalachia.Core.Volumes
 
                 foreach (var type in componentTypes)
                 {
-                    var component = (PropertyAppaVolumeComponentBase) stack.GetComponent(type);
+                    var component = (PropertyAppaVolumeComponentBase)stack.GetComponent(type);
 
                     if (component.active)
                     {
@@ -80,6 +100,46 @@ namespace Appalachia.Core.Volumes
                 }
             }
         }
+
+        protected override async AppaTask Initialize(Initializer initializer)
+        {
+            using (_PRF_Initialize.Auto())
+            {
+                await base.Initialize(initializer);
+
+                try
+                {
+                    Camera.onPreCull -= OnCameraPreCull;
+                    Camera.onPreCull += OnCameraPreCull;
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error("Failed to subscribe to OnPreCull.", this, ex);
+                }
+            }
+        }
+
+        private void OnCameraPreCull(Camera cam)
+        {
+            using (_PRF_OnPreCull.Auto())
+            {
+                try
+                {
+                    if ((updateMode == UpdateMode.Automatic) &&
+                        ((cam.cameraType == CameraType.SceneView) || (cam.cameraType == CameraType.Game)))
+                    {
+                        UpdateProperties();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error("Failed to handle pre-cull.", this);
+                    Debug.LogException(ex, this);
+                }
+            }
+        }
+
+        #region IExposedPropertyTable Members
 
         public Object GetReferenceValue(PropertyName n, out bool valid)
         {
@@ -107,8 +167,14 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+        #endregion
+
+        #region ISerializationCallbackReceiver Members
+
         public void OnAfterDeserialize()
         {
+            using var scope = APPASERIALIZE.OnAfterDeserialize();
+
             using (_PRF_OnAfterDeserialize.Auto())
             {
                 _exposedReferenceTable = new Dictionary<PropertyName, Object>();
@@ -122,120 +188,66 @@ namespace Appalachia.Core.Volumes
 
         public void OnBeforeSerialize()
         {
+            using var scope = APPASERIALIZE.OnBeforeSerialize();
+
             using (_PRF_OnBeforeSerialize.Auto())
             {
                 _exposedReferenceList = new List<ExposedReferenceData>();
 
                 foreach (var i in _exposedReferenceTable)
                 {
-                    _exposedReferenceList.Add(new ExposedReferenceData {name = i.Key, value = i.Value});
+                    _exposedReferenceList.Add(new ExposedReferenceData { name = i.Key, value = i.Value });
                 }
             }
         }
 
-        protected override void OnDisable()
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                base.OnDisable();
-                
-                try
-                {
-                    if (Camera.onPreCull == null)
-                    {
-                        return;
-                    }
+        #endregion
 
-                    Camera.onPreCull -= cam => OnPreCull();
-                }
-#if UNITY_EDITOR
-                catch (Exception ex)
-                {
-                    AppaLog.Error($"Failed to UNsubscribe to OnPreCull.", this);
-                    Debug.LogException(ex, this);
-#else
-                catch 
-                {
-                    //
-#endif
-                }
-            }
-        }
-
-        protected override void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                base.OnEnable();
-                
-                try
-                {
-                    if (Camera.onPreCull == null)
-                    {
-                        Camera.onPreCull = cam => OnPreCull();
-                    }
-                    else
-                    {
-                        Camera.onPreCull += cam => OnPreCull();
-                    }
-                }
-#if UNITY_EDITOR
-                catch (Exception ex)
-                {
-                    AppaLog.Error($"Failed to subscribe to OnPreCull.", this);
-                    Debug.LogException(ex, this);
-#else
-                catch 
-                {
-                    //
-#endif
-                }
-            }
-        }
-
-        private void OnPreCull()
-        {
-            using (_PRF_OnPreCull.Auto())
-            {
-                try
-                {
-                    if (_propCamera == null)
-                    {
-                        _propCamera = Camera.main;
-                    }
-
-                    if ((updateMode == UpdateMode.Automatic) &&
-                        ((_propCamera.cameraType == CameraType.SceneView) ||
-                         (_propCamera.cameraType == CameraType.Game)))
-                    {
-                        UpdateProperties();
-                    }
-                }
-#if UNITY_EDITOR
-                catch (Exception ex)
-                {
-                    AppaLog.Error($"Failed to handle pre-cull.", this);
-                    Debug.LogException(ex, this);
-#else
-                catch 
-                {
-                    //
-#endif
-                }
-            }
-        }
-
-        public enum UpdateMode
-        {
-            Automatic,
-            Manual
-        }
+        #region Nested type: ExposedReferenceData
 
         [Serializable]
         private struct ExposedReferenceData
         {
+            #region Fields and Autoproperties
+
             public Object value;
             public PropertyName name;
+
+            #endregion
         }
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(PropertyMaster) + ".";
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_ClearReferenceValue =
+            new(_PRF_PFX + nameof(ClearReferenceValue));
+
+        private static readonly ProfilerMarker _PRF_GetReferenceValue =
+            new(_PRF_PFX + nameof(GetReferenceValue));
+
+        private static readonly ProfilerMarker _PRF_SetReferenceValue =
+            new(_PRF_PFX + nameof(SetReferenceValue));
+
+        private static readonly ProfilerMarker _PRF_OnBeforeSerialize =
+            new(_PRF_PFX + nameof(OnBeforeSerialize));
+
+        private static readonly ProfilerMarker _PRF_OnAfterDeserialize =
+            new(_PRF_PFX + nameof(OnAfterDeserialize));
+
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
+
+        private static readonly ProfilerMarker _PRF_OnPreCull = new(_PRF_PFX + nameof(OnCameraPreCull));
+
+        private static readonly ProfilerMarker _PRF_UpdateProperties =
+            new(_PRF_PFX + nameof(UpdateProperties));
+
+        #endregion
     }
 }

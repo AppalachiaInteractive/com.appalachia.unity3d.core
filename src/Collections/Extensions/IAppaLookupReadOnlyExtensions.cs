@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Appalachia.Core.Collections.Interfaces;
 using Unity.Profiling;
 
@@ -29,6 +31,48 @@ namespace Appalachia.Core.Collections.Extensions
                 return lookup.at[0];
             }
         }
+
+        public static IEnumerable<TNew> Select<TKey, TValue, TValueList, TNew>(
+            this IAppaLookupReadOnly<TKey, TValue, TValueList> lookup,
+            Func<TKey, TValue, TNew> getter)
+            where TValueList : AppaList<TValue>
+        {
+            foreach (var x in lookup.Lookup)
+            {
+                yield return getter(x.Key, x.Value);
+            }
+        }
+
+        public static IEnumerable<TNew> SelectMany<TKey, TValue, TValueList, TNew>(
+            this IAppaLookupReadOnly<TKey, TValue, TValueList> lookup,
+            Func<TKey, TValue, IEnumerable<TNew>> getter)
+            where TValueList : AppaList<TValue>
+        {
+            foreach (var x in lookup.Lookup)
+            {
+                var many = getter(x.Key, x.Value);
+
+                foreach (var one in many)
+                {
+                    yield return one;
+                }
+            }
+        }
+
+        public static IEnumerable<KeyValuePair<TKey, TValue>> Where<TKey, TValue, TValueList>(
+            this IAppaLookupReadOnly<TKey, TValue, TValueList> lookup,
+            Predicate<KeyValuePair<TKey, TValue>> predicate)
+            where TValueList : AppaList<TValue>
+        {
+            foreach (var x in lookup.Lookup)
+            {
+                if (predicate(x))
+                {
+                    yield return x;
+                }
+            }
+        }
+
 
         #region Profiling
 

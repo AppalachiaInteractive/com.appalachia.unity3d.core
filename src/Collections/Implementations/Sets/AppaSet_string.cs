@@ -8,7 +8,7 @@ using Appalachia.Core.Collections.Implementations.Lists;
 namespace Appalachia.Core.Collections.Implementations.Sets
 {
     [Serializable]
-    public sealed class AppaSet_string : AppaSet<string, AppaList_string>
+    public sealed class AppaSet_string : AppaSet<string, stringList>
     {
     }
 }

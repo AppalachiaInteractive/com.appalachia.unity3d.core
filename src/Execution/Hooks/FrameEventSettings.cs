@@ -1,15 +1,14 @@
 #region
 
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Preferences;
 
 #endregion
 
 namespace Appalachia.Core.Execution.Hooks
 {
-#if UNITY_EDITOR
-    [UnityEditor.InitializeOnLoad]
-#endif
+    [CallStaticConstructorInEditor]
     public static class FrameEventSettings
     {
         static FrameEventSettings()

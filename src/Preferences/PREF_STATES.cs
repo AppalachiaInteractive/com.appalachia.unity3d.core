@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Appalachia.Core.Attributes;
+using Appalachia.Utility.Strings;
 using Unity.Mathematics;
 using Unity.Profiling;
 using UnityEngine;
@@ -13,7 +14,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Preferences
 {
-    [AlwaysInitializeOnLoad]
+    [CallStaticConstructorInEditor]
     public static class PREF_STATES
     {
         #region Constants and Static Readonly
@@ -259,7 +260,11 @@ namespace Appalachia.Core.Preferences
 #if UNITY_EDITOR
         [UnityEditor.SettingsProviderGroup]
         public static UnityEditor.SettingsProvider[] GetSettingsProviders()
+#else
+        public static void GetSettingsProviders()
+#endif
         {
+#if UNITY_EDITOR
             using (_PRF_GetSettingsProviders.Auto())
             {
                 Awake();
@@ -269,7 +274,7 @@ namespace Appalachia.Core.Preferences
 
                 foreach (var pref in PREF_STATE_BASE.allPreferences)
                 {
-                    var fullGrouping = $"Preferences/{pref.Grouping}";
+                    var fullGrouping = ZString.Format("Preferences/{0}", pref.Grouping);
 
                     if (_groupings.Contains(pref.Grouping))
                     {
@@ -289,8 +294,8 @@ namespace Appalachia.Core.Preferences
 
                 return providers.ToArray();
             }
-        }
 #endif
+        }
 
         private static bool DoDraw<TP>(PREF<TP> preference, PREF_STATE<TP> prefs)
         {
@@ -613,8 +618,5 @@ namespace Appalachia.Core.Preferences
 
         #endregion
 
-#if UNITY_EDITOR
-
-#endif
     }
 }

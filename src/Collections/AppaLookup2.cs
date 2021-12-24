@@ -1,7 +1,5 @@
 using System;
-using Appalachia.Utility.Logging;
 using Unity.Profiling;
-using UnityEngine;
 
 namespace Appalachia.Core.Collections
 {
@@ -14,17 +12,35 @@ namespace Appalachia.Core.Collections
         where TNested : AppaLookup<TKey2, TValue, TKey2List, TValueList>, new()
         where TNestedList : AppaList<TNested>, new()
     {
-        private const string _PRF_PFX =
-            nameof(AppaLookup2<TKey1, TKey2, TValue, TKey1List, TKey2List, TValueList, TNested,
-                TNestedList>) +
-            ".";
+        public void AddOrUpdate(TKey1 primary, TKey2 secondary, TValue value)
+        {
+            using (_PRF_AddOrUpdate.Auto())
+            {
+                if (!TryGetValue(primary, out var sub))
+                {
+                    sub = new TNested();
 
-        private static readonly ProfilerMarker _PRF_AddOrUpdate = new(_PRF_PFX + nameof(AddOrUpdate));
+                    Add(primary, sub);
+                }
 
-        private static readonly ProfilerMarker _PRF_TryGetValue = new(_PRF_PFX + nameof(TryGetValue));
+                sub.AddOrUpdate(secondary, value);
+            }
+        }
 
-        private static readonly ProfilerMarker _PRF_TryGetValueWithFallback =
-            new(_PRF_PFX + nameof(TryGetValueWithFallback));
+        public void AddOrUpdate(TKey1 primary, TKey2 secondary, TValue value, Func<TNested> collectionCreator)
+        {
+            using (_PRF_AddOrUpdate.Auto())
+            {
+                if (!TryGetValue(primary, out var sub))
+                {
+                    sub = collectionCreator();
+
+                    Add(primary, sub);
+                }
+
+                sub.AddOrUpdate(secondary, value);
+            }
+        }
 
         public bool ContainsKeys(TKey1 key1, TKey2 key2)
         {
@@ -72,7 +88,7 @@ namespace Appalachia.Core.Collections
 
                     if (logFallbackAttempt != null)
                     {
-                       AppaLog.Warn(logFallbackAttempt);
+                        Context.Log.Warn(logFallbackAttempt);
                     }
 
                     value = sub1.FirstWithPreference_NoAlloc(fallbackCheck, out var foundFallback);
@@ -84,7 +100,7 @@ namespace Appalachia.Core.Collections
 
                     if (logFallbackFailure != null)
                     {
-                       AppaLog.Warn(logFallbackFailure);
+                        Context.Log.Warn(logFallbackFailure);
                     }
                 }
 
@@ -93,20 +109,20 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public void AddOrUpdate(TKey1 primary, TKey2 secondary, TValue value)
-        {
-            using (_PRF_AddOrUpdate.Auto())
-            {
-                if (!TryGetValue(primary, out var sub))
-                {
-                    sub = new TNested();
+        #region Profiling
 
-                    Add(primary, sub);
-                    ;
-                }
+        private const string _PRF_PFX =
+            nameof(AppaLookup2<TKey1, TKey2, TValue, TKey1List, TKey2List, TValueList, TNested,
+                TNestedList>) +
+            ".";
 
-                sub.AddOrUpdate(secondary, value);
-            }
-        }
+        private static readonly ProfilerMarker _PRF_AddOrUpdate = new(_PRF_PFX + nameof(AddOrUpdate));
+
+        private static readonly ProfilerMarker _PRF_TryGetValue = new(_PRF_PFX + nameof(TryGetValue));
+
+        private static readonly ProfilerMarker _PRF_TryGetValueWithFallback =
+            new(_PRF_PFX + nameof(TryGetValueWithFallback));
+
+        #endregion
     }
 }

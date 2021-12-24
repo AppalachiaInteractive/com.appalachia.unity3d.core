@@ -2,6 +2,7 @@
 
 #region
 
+using Appalachia.Utility.Strings;
 using Unity.Mathematics;
 using UnityEditor;
 
@@ -14,17 +15,17 @@ namespace Appalachia.Core.Preferences.API.Editor
         public float3 Get(string key, float3 defaultValue, float3 low, float3 high)
         {
             var result = float3.zero;
-            result.x = EditorPrefs.GetFloat($"{key}.x", defaultValue.x);
-            result.y = EditorPrefs.GetFloat($"{key}.y", defaultValue.y);
-            result.z = EditorPrefs.GetFloat($"{key}.z", defaultValue.z);
+            result.x = EditorPrefs.GetFloat(ZString.Format("{0}.x", key), defaultValue.x);
+            result.y = EditorPrefs.GetFloat(ZString.Format("{0}.y", key), defaultValue.y);
+            result.z = EditorPrefs.GetFloat(ZString.Format("{0}.z", key), defaultValue.z);
             return result;
         }
 
         public void Save(string key, float3 value, float3 low, float3 high)
         {
-            EditorPrefs.SetFloat($"{key}.x", value.x);
-            EditorPrefs.SetFloat($"{key}.y", value.y);
-            EditorPrefs.SetFloat($"{key}.z", value.z);
+            EditorPrefs.SetFloat(ZString.Format("{0}.x", key), value.x);
+            EditorPrefs.SetFloat(ZString.Format("{0}.y", key), value.y);
+            EditorPrefs.SetFloat(ZString.Format("{0}.z", key), value.z);
         }
 
         public float3 Draw(string key, string label, float3 value, float3 low, float3 high)

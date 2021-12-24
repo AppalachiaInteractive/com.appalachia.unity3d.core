@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 #endregion
@@ -24,8 +25,13 @@ namespace Appalachia.Core.Aspects.Profiling
         {
             using (_marker_Create.Auto())
             {
-                var markerName =
-                    $"{typePrefix}.{memberName} {(additive == null ? string.Empty : $"({additive})")} [{sourceLineNumber}]";
+                var markerName = ZString.Format(
+                    "{0}.{1} {2} [{3}]",
+                    typePrefix,
+                    memberName,
+                    additive == null ? string.Empty : ZString.Format("({0})", additive),
+                    sourceLineNumber
+                );
 
                 var marker = new ProfilerMarker(markerName);
 

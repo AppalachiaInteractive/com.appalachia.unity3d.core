@@ -2,12 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Execution;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
-using UnityEngine;
-
 
 #endregion
 
@@ -15,17 +15,20 @@ namespace Appalachia.Core.Layers
 {
     public static class Layers
     {
-        #region Profiling And Tracing Markers
+        [NonSerialized] private static AppaContext _context;
 
-        private const string _PRF_PFX = nameof(Layers) + ".";
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(Layers));
+                }
 
-        private static readonly ProfilerMarker _PRF_InitializeLayers =
-            new(_PRF_PFX + nameof(InitializeLayers));
-
-        private static readonly ProfilerMarker _PRF_GetMask = new(_PRF_PFX + nameof(GetMask));
-
-        #endregion
-
+                return _context;
+            }
+        }
         #region Constants and Static Readonly
 
         private const int MAX_LAYERS = 31;
@@ -34,8 +37,16 @@ namespace Appalachia.Core.Layers
 
         #endregion
 
+        #region Static Fields and Autoproperties
+
+        private static readonly ProfilerMarker _PRF_InitializeLayers =
+            new(_PRF_PFX + nameof(InitializeLayers));
+
+        private static readonly ProfilerMarker _PRF_GetMask = new(_PRF_PFX + nameof(GetMask));
         private static List<LayerInfo> _layerInfos;
         private static List<string> _layerNames;
+
+        #endregion
 
         public static IReadOnlyList<LayerInfo> ByID
         {
@@ -46,6 +57,8 @@ namespace Appalachia.Core.Layers
                 return _layerInfos;
             }
         }
+
+        
 
         /// <summary>
         ///     <para>Given a set of layer names as defined by either a Builtin or a User Layer in the, returns the equivalent layer mask for all of them.</para>
@@ -143,6 +156,11 @@ namespace Appalachia.Core.Layers
 
         private static void CheckLayers()
         {
+            if (AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                return;
+            }
+
             // Open tag manager
             var tagManager = new UnityEditor.SerializedObject(
                 AssetDatabaseManager.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]
@@ -163,7 +181,7 @@ namespace Appalachia.Core.Layers
 
                 if (sp.stringValue != targetName)
                 {
-                   AppaLog.Warn($"Layer [{i}] should be named [{targetName}]");
+                    Context.Log.Warn(ZString.Format("Layer [{0}] should be named [{1}]", i, targetName));
 
                     // Save settings
                     // tagManager.ApplyModifiedProperties();
@@ -172,6 +190,12 @@ namespace Appalachia.Core.Layers
             }
         }
 #endif
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(Layers) + ".";
+
+        #endregion
 
         #region Nested Types
 

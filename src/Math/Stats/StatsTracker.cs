@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Appalachia.Core.Attributes.Editing;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using Unity.Profiling;
@@ -248,10 +249,10 @@ namespace Appalachia.Core.Math.Stats
                 if (includeMedian)
                 {
                     var med = GetFormattedString(Median, labelMed, suffix, transformation, format);
-                    return string.Format(_formattedLongest, avg, s, min, s, max, s, med);
+                    return ZString.Format(_formattedLongest, avg, s, min, s, max, s, med);
                 }
 
-                return string.Format(_formattedLong, avg, s, min, s, max);
+                return ZString.Format(_formattedLong, avg, s, min, s, max);
             }
         }
 
@@ -312,7 +313,7 @@ namespace Appalachia.Core.Math.Stats
                 var v = Transform(value, transformation);
 
                 var vs = Format(v, format);
-                return string.Format(_formatted, prefix, vs, sfx);
+                return ZString.Format(_formatted, prefix, vs, sfx);
             }
         }
 

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Execution
 {
-    [AlwaysInitializeOnLoad]
+    [CallStaticConstructorInEditor]
     public class HookAttributeSubscriberManager
     {
         private const string _PRF_PFX = nameof(HookAttributeSubscriberManager) + ".";

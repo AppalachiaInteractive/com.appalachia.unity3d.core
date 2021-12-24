@@ -2,17 +2,36 @@
 
 using System;
 using System.Collections.Generic;
-using Appalachia.Utility.Logging;
+using Appalachia.CI.Constants;
+using Appalachia.Utility.Execution;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Object = UnityEngine.Object;
 
 #endregion
 
 namespace Appalachia.Core.Extensions
 {
+    
     public static class CoreUtils
     {
+        [NonSerialized] private static AppaContext _context;
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(CoreUtils));
+                }
+
+                return _context;
+            }
+        }
+
+        #region Constants and Static Readonly
+
         public const int assetCreateMenuPriority1 = 230;
         public const int assetCreateMenuPriority2 = 241;
         public const int editMenuPriority1 = 320;
@@ -43,6 +62,24 @@ namespace Appalachia.Core.Extensions
             new(0.0f, 1.0f, 0.0f)
         };
 
+        #endregion
+
+        #region Static Fields and Autoproperties
+
+        private static Cubemap m_BlackCubeTexture;
+
+        private static Cubemap m_MagentaCubeTexture;
+
+        private static Cubemap m_WhiteCubeTexture;
+
+        private static IEnumerable<Type> m_AssemblyTypes;
+
+        private static RenderTexture m_EmptyUAV;
+
+        private static Texture3D m_BlackVolumeTexture;
+
+        #endregion
+
         // Note: Color.Black have alpha channel set to 1. Most of the time we want alpha channel set to 0 as we use black to clear render target
         public static Color clearColorAllBlack => new(0f, 0f, 0f, 0f);
 
@@ -55,7 +92,7 @@ namespace Appalachia.Core.Extensions
                     m_BlackCubeTexture = new Cubemap(1, TextureFormat.RGBA32, false);
                     for (var i = 0; i < 6; ++i)
                     {
-                        m_BlackCubeTexture.SetPixel((CubemapFace) i, 0, 0, Color.black);
+                        m_BlackCubeTexture.SetPixel((CubemapFace)i, 0, 0, Color.black);
                     }
 
                     m_BlackCubeTexture.Apply();
@@ -74,7 +111,7 @@ namespace Appalachia.Core.Extensions
                     m_MagentaCubeTexture = new Cubemap(1, TextureFormat.RGBA32, false);
                     for (var i = 0; i < 6; ++i)
                     {
-                        m_MagentaCubeTexture.SetPixel((CubemapFace) i, 0, 0, Color.magenta);
+                        m_MagentaCubeTexture.SetPixel((CubemapFace)i, 0, 0, Color.magenta);
                     }
 
                     m_MagentaCubeTexture.Apply();
@@ -93,7 +130,7 @@ namespace Appalachia.Core.Extensions
                     m_WhiteCubeTexture = new Cubemap(1, TextureFormat.RGBA32, false);
                     for (var i = 0; i < 6; ++i)
                     {
-                        m_WhiteCubeTexture.SetPixel((CubemapFace) i, 0, 0, Color.white);
+                        m_WhiteCubeTexture.SetPixel((CubemapFace)i, 0, 0, Color.white);
                     }
 
                     m_WhiteCubeTexture.Apply();
@@ -124,7 +161,7 @@ namespace Appalachia.Core.Extensions
             {
                 if (m_BlackVolumeTexture == null)
                 {
-                    Color[] colors = {Color.black};
+                    Color[] colors = { Color.black };
                     m_BlackVolumeTexture = new Texture3D(1, 1, 1, TextureFormat.RGBA32, false);
                     m_BlackVolumeTexture.SetPixels(colors, 0);
                     m_BlackVolumeTexture.Apply();
@@ -134,17 +171,7 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        private static Cubemap m_BlackCubeTexture;
-
-        private static Cubemap m_MagentaCubeTexture;
-
-        private static Cubemap m_WhiteCubeTexture;
-
-        private static IEnumerable<Type> m_AssemblyTypes;
-
-        private static RenderTexture m_EmptyUAV;
-
-        private static Texture3D m_BlackVolumeTexture;
+        
 
         // Returns 'true' if "Animated Materials" are enabled for the view associated with the given camera.
         public static bool AreAnimatedMaterialsEnabled(Camera camera)
@@ -152,7 +179,7 @@ namespace Appalachia.Core.Extensions
             var animateMaterials = false;
 
 #if UNITY_EDITOR
-            animateMaterials = Application.isPlaying;
+            animateMaterials = AppalachiaApplication.IsPlayingOrWillPlay;
 
             if (camera.cameraType == CameraType.SceneView)
             {
@@ -161,7 +188,7 @@ namespace Appalachia.Core.Extensions
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
                 foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.SceneView)))
                 {
-                    var sv = (UnityEditor.SceneView) o;
+                    var sv = (UnityEditor.SceneView)o;
                     if ((sv.camera == camera) && sv.sceneViewState.alwaysRefresh)
                     {
                         animateMaterials = true;
@@ -176,7 +203,7 @@ namespace Appalachia.Core.Extensions
                 // Determine whether the "Animated Materials" checkbox is checked for the current view.
                 foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.MaterialEditor)))
                 {
-                    var med = (UnityEditor.MaterialEditor) o;
+                    var med = (UnityEditor.MaterialEditor)o;
 
                     // Warning: currently, there's no way to determine whether a given camera corresponds to this MaterialEditor.
                     // Therefore, if at least one of the visible MaterialEditors is in Play Mode, all of them will play.
@@ -207,30 +234,45 @@ namespace Appalachia.Core.Extensions
 
             return animateMaterials;
         }
-        
-        public static bool IsSceneViewFogEnabled(Camera camera)
+
+        public static void ClearCubemap(
+            CommandBuffer cmd,
+            RenderTexture renderTexture,
+            Color clearColor,
+            bool clearMips = false)
         {
-            var fogEnable = true;
-
-#if UNITY_EDITOR
-            if (camera.cameraType == CameraType.SceneView)
+            var mipCount = 1;
+            if (renderTexture.useMipMap && clearMips)
             {
-                fogEnable = false;
+                mipCount = (int)Mathf.Log(renderTexture.width, 2.0f) + 1;
+            }
 
-                // Determine whether the "Animated Materials" checkbox is checked for the current view.
-                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.SceneView)))
+            for (var i = 0; i < 6; ++i)
+            {
+                for (var mip = 0; mip < mipCount; ++mip)
                 {
-                    var sv = (UnityEditor.SceneView) o;
-                    if ((sv.camera == camera) && sv.sceneViewState.showFog)
-                    {
-                        fogEnable = true;
-                        break;
-                    }
+                    SetRenderTarget(
+                        cmd,
+                        new RenderTargetIdentifier(renderTexture),
+                        ClearFlag.Color,
+                        clearColor,
+                        mip,
+                        (CubemapFace)i
+                    );
                 }
             }
-#endif
+        }
 
-            return fogEnable;
+        public static void ClearRenderTarget(CommandBuffer cmd, ClearFlag clearFlag, Color clearColor)
+        {
+            if (clearFlag != ClearFlag.None)
+            {
+                cmd.ClearRenderTarget(
+                    (clearFlag & ClearFlag.Depth) != 0,
+                    (clearFlag & ClearFlag.Color) != 0,
+                    clearColor
+                );
+            }
         }
 
         public static Color ConvertLinearToActiveColorSpace(Color color)
@@ -242,64 +284,6 @@ namespace Appalachia.Core.Extensions
         public static Color ConvertSRGBToActiveColorSpace(Color color)
         {
             return QualitySettings.activeColorSpace == ColorSpace.Linear ? color.linear : color;
-        }
-
-        // Just a sort function that doesn't allocate memory
-        // Note: Shoud be repalc by a radix sort for positive integer
-        public static int Partition(uint[] numbers, int left, int right)
-        {
-            var pivot = numbers[left];
-            while (true)
-            {
-                while (numbers[left] < pivot)
-                {
-                    left++;
-                }
-
-                while (numbers[right] > pivot)
-                {
-                    right--;
-                }
-
-                if (left < right)
-                {
-                    var temp = numbers[right];
-                    numbers[right] = numbers[left];
-                    numbers[left] = temp;
-                }
-                else
-                {
-                    return right;
-                }
-            }
-        }
-
-        // Unity specifics
-        public static Material CreateEngineMaterial(string shaderPath)
-        {
-            var shader = Shader.Find(shaderPath);
-            if (shader == null)
-            {
-                AppaLog.Error(
-                    "Cannot create required material because shader " + shaderPath + " could not be found"
-                );
-                return null;
-            }
-
-            var mat = new Material(shader) {hideFlags = HideFlags.HideAndDontSave};
-            return mat;
-        }
-
-        public static Material CreateEngineMaterial(Shader shader)
-        {
-            if (shader == null)
-            {
-                AppaLog.Error("Cannot create required material because shader is null");
-                return null;
-            }
-
-            var mat = new Material(shader) {hideFlags = HideFlags.HideAndDontSave};
-            return mat;
         }
 
         public static Mesh CreateCubeMesh(Vector3 min, Vector3 max)
@@ -362,102 +346,34 @@ namespace Appalachia.Core.Extensions
             return mesh;
         }
 
-        public static string GetTextureAutoName(
-            int width,
-            int height,
-            TextureFormat format,
-            TextureDimension dim = TextureDimension.None,
-            string name = "",
-            bool mips = false,
-            int depth = 0)
+        // Unity specifics
+        public static Material CreateEngineMaterial(string shaderPath)
         {
-            string temp;
-            if (depth == 0)
+            var shader = Shader.Find(shaderPath);
+            if (shader == null)
             {
-                temp = $"{width}x{height}{(mips ? "_Mips" : "")}_{format}";
-            }
-            else
-            {
-                temp = $"{width}x{height}x{depth}{(mips ? "_Mips" : "")}_{format}";
-            }
-
-            temp =
-                $"{(name == "" ? "Texture" : name)}_{(dim == TextureDimension.None ? "" : dim.ToString())}_{temp}";
-
-            return temp;
-        }
-
-        public static void ClearCubemap(
-            CommandBuffer cmd,
-            RenderTexture renderTexture,
-            Color clearColor,
-            bool clearMips = false)
-        {
-            var mipCount = 1;
-            if (renderTexture.useMipMap && clearMips)
-            {
-                mipCount = (int) Mathf.Log(renderTexture.width, 2.0f) + 1;
-            }
-
-            for (var i = 0; i < 6; ++i)
-            {
-                for (var mip = 0; mip < mipCount; ++mip)
-                {
-                    SetRenderTarget(
-                        cmd,
-                        new RenderTargetIdentifier(renderTexture),
-                        ClearFlag.Color,
-                        clearColor,
-                        mip,
-                        (CubemapFace) i
-                    );
-                }
-            }
-        }
-
-        public static void ClearRenderTarget(CommandBuffer cmd, ClearFlag clearFlag, Color clearColor)
-        {
-            if (clearFlag != ClearFlag.None)
-            {
-                cmd.ClearRenderTarget(
-                    (clearFlag & ClearFlag.Depth) != 0,
-                    (clearFlag & ClearFlag.Color) != 0,
-                    clearColor
+                Context.Log.Error(
+                    "Cannot create required material because shader " + shaderPath + " could not be found"
                 );
+                return null;
             }
+
+            var mat = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
+            return mat;
         }
 
-        public static void Destroy(Object obj)
+        public static Material CreateEngineMaterial(Shader shader)
         {
-            if (obj != null)
+            if (shader == null)
             {
-#if UNITY_EDITOR
-                if (Application.isPlaying)
-                {
-                    Object.Destroy(obj);
-                }
-                else
-                {
-                    Object.DestroyImmediate(obj);
-                }
-#else
-                Object.Destroy(obj);
-#endif
-            }
-        }
-
-        public static void Destroy(params Object[] objs)
-        {
-            if (objs == null)
-            {
-                return;
+                Context.Log.Error("Cannot create required material because shader is null");
+                return null;
             }
 
-            foreach (var o in objs)
-            {
-                Destroy(o);
-            }
+            var mat = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
+            return mat;
         }
+
 
         public static void DisplayUnsupportedAPIMessage()
         {
@@ -471,12 +387,12 @@ namespace Appalachia.Core.Extensions
 
         public static void DisplayUnsupportedMessage(string msg)
         {
-            AppaLog.Error(msg);
+            Context.Log.Error(msg);
 
 #if UNITY_EDITOR
             foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.SceneView)))
             {
-                var sv = (UnityEditor.SceneView) o;
+                var sv = (UnityEditor.SceneView)o;
                 sv.ShowNotification(new GUIContent(msg));
             }
 #endif
@@ -578,6 +494,97 @@ namespace Appalachia.Core.Extensions
             // we pass the first color target as the depth target. If it has 0 depth bits,
             // no depth target ends up being bound.
             DrawFullScreen(commandBuffer, material, colorBuffers, colorBuffers[0], properties, shaderPassId);
+        }
+
+        public static string GetTextureAutoName(
+            int width,
+            int height,
+            TextureFormat format,
+            TextureDimension dim = TextureDimension.None,
+            string name = "",
+            bool mips = false,
+            int depth = 0)
+        {
+            string temp;
+            if (depth == 0)
+            {
+                temp = ZString.Format("{0}x{1}{2}_{3}", width, height, mips ? "_Mips" : "", format);
+            }
+            else
+            {
+                temp = ZString.Format(
+                    "{0}x{1}x{2}{3}_{4}",
+                    width,
+                    height,
+                    depth,
+                    mips ? "_Mips" : "",
+                    format
+                );
+            }
+
+            temp = ZString.Format(
+                "{0}_{1}_{2}",
+                name == "" ? "Texture" : name,
+                dim == TextureDimension.None ? "" : dim.ToString(),
+                temp
+            );
+
+            return temp;
+        }
+
+        public static bool IsSceneViewFogEnabled(Camera camera)
+        {
+            var fogEnable = true;
+
+#if UNITY_EDITOR
+            if (camera.cameraType == CameraType.SceneView)
+            {
+                fogEnable = false;
+
+                // Determine whether the "Animated Materials" checkbox is checked for the current view.
+                foreach (var o in Resources.FindObjectsOfTypeAll(typeof(UnityEditor.SceneView)))
+                {
+                    var sv = (UnityEditor.SceneView)o;
+                    if ((sv.camera == camera) && sv.sceneViewState.showFog)
+                    {
+                        fogEnable = true;
+                        break;
+                    }
+                }
+            }
+#endif
+
+            return fogEnable;
+        }
+
+        // Just a sort function that doesn't allocate memory
+        // Note: Shoud be repalc by a radix sort for positive integer
+        public static int Partition(uint[] numbers, int left, int right)
+        {
+            var pivot = numbers[left];
+            while (true)
+            {
+                while (numbers[left] < pivot)
+                {
+                    left++;
+                }
+
+                while (numbers[right] > pivot)
+                {
+                    right--;
+                }
+
+                if (left < right)
+                {
+                    var temp = numbers[right];
+                    numbers[right] = numbers[left];
+                    numbers[left] = temp;
+                }
+                else
+                {
+                    return right;
+                }
+            }
         }
 
         public static void QuickSort(uint[] arr, int left, int right)

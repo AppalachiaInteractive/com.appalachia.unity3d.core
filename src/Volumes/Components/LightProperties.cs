@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Appalachia.Core.Volumes.Components
 {
     [Serializable]
-    public class LightProperties : PropertyAppaVolumeComponent<LightProperties>
+    public sealed class LightProperties : PropertyAppaVolumeComponent<LightProperties>
     {
         public ClampedFloatParameter colorTemperature = new(5500f, 1000f, 20000f);
         public ColorParameter color = new(Color.white);
@@ -31,7 +31,7 @@ namespace Appalachia.Core.Volumes.Components
 
             if (rotation.overrideState)
             {
-                light.transform.localRotation = Quaternion.Euler(rotation);
+                light.transform.localRotation = Quaternion.Euler(rotation.value);
             }
 
             if (color.overrideState)

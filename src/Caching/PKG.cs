@@ -33,13 +33,13 @@ namespace Appalachia.Core.Caching
         public const string NeutralResourcesLanguage = "en";
         public const string AssemblyVersion = "0.2.0.0";
         public const string AssemblyFileVersion = "0.2.0.0";
-        public const int Priority = -409000;
+        public const int Priority = -400000;
         public const string Name = "Caching";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";
         public const string Version = "0.2.0";
         public const int VersionInt = 2000;
-        public const string BuildDate = "2021-11-19T00:01:26.5219538Z";
+        public const string BuildDate = "2021-12-21T00:29:23.0379583Z";
         
         public static partial class Prefs
         {

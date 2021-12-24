@@ -3,27 +3,32 @@
 using Appalachia.Core.Attributes;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Logging;
-using UnityEngine;
 
 #endregion
 
 namespace Appalachia.Core.Aspects.Profiling
 {
-    [AlwaysInitializeOnLoad]
+    [CallStaticConstructorInEditor]
     public static class PROFILING
     {
-#region MENU
+        #region MENU
 
 #if UNITY_EDITOR
 
-        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Profiling/Enabled" + SHC.CTRL_ALT_SHFT_P, true)]
+        [UnityEditor.MenuItem(
+            PKG.Menu.Appalachia.RootTools.Base + "Profiling/Enabled" + SHC.CTRL_ALT_SHFT_P,
+            true
+        )]
         private static bool Profiling_ToggleProfilerValidate()
         {
             UnityEditor.Menu.SetChecked("Profiling/Enabled", UnityEditorInternal.ProfilerDriver.enabled);
             return true;
         }
 
-        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Profiling/Enabled" + SHC.CTRL_ALT_SHFT_P, priority = 0)]
+        [UnityEditor.MenuItem(
+            PKG.Menu.Appalachia.RootTools.Base + "Profiling/Enabled" + SHC.CTRL_ALT_SHFT_P,
+            priority = 0
+        )]
         public static void Profiling_ToggleProfiler()
         {
             if (UnityEditorInternal.ProfilerDriver.enabled)
@@ -38,7 +43,7 @@ namespace Appalachia.Core.Aspects.Profiling
 
         public static void Profiling_Enable()
         {
-           AppaLog.Warn("Profiling starting...");
+            AppaLog.Context.Utility.Warn("Profiling starting...");
             UnityEditorInternal.ProfilerDriver.enabled = true;
 
             //Profiler.enabled = true;
@@ -46,22 +51,25 @@ namespace Appalachia.Core.Aspects.Profiling
 
         public static void Profiling_Disable()
         {
-           AppaLog.Warn("Profiling ending...");
+            AppaLog.Context.Utility.Warn("Profiling ending...");
             UnityEditorInternal.ProfilerDriver.enabled = false;
 
             //Profiler.enabled = false;
         }
 
-        [UnityEditor.MenuItem(PKG.Menu.Appalachia.RootTools.Base + "Profiling/Clear" + SHC.CTRL_ALT_SHFT_O, priority = 0)]
+        [UnityEditor.MenuItem(
+            PKG.Menu.Appalachia.RootTools.Base + "Profiling/Clear" + SHC.CTRL_ALT_SHFT_O,
+            priority = 0
+        )]
         public static void Profiling_Clear()
         {
             UnityEditorInternal.ProfilerDriver.ClearAllFrames();
-           AppaLog.Warn("Profiling cleared.");
+            AppaLog.Context.Utility.Warn("Profiling cleared.");
         }
 
 #endif
 
-#endregion
+        #endregion
     }
 }
 

@@ -1,5 +1,6 @@
 #region
 
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 #endregion
@@ -15,12 +16,21 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
             var center = result.center;
             var size = result.size;
 
-            center.x = UnityEngine.PlayerPrefs.GetFloat($"{key}.center.x", defaultValue.center.x);
-            center.y = UnityEngine.PlayerPrefs.GetFloat($"{key}.center.y", defaultValue.center.y);
-            center.z = UnityEngine.PlayerPrefs.GetFloat($"{key}.center.z", defaultValue.center.z);
-            size.x = UnityEngine.PlayerPrefs.GetFloat($"{key}.size.x",     defaultValue.size.x);
-            size.y = UnityEngine.PlayerPrefs.GetFloat($"{key}.size.y",     defaultValue.size.y);
-            size.z = UnityEngine.PlayerPrefs.GetFloat($"{key}.size.z",     defaultValue.size.z);
+            center.x = UnityEngine.PlayerPrefs.GetFloat(
+                ZString.Format("{0}.center.x", key),
+                defaultValue.center.x
+            );
+            center.y = UnityEngine.PlayerPrefs.GetFloat(
+                ZString.Format("{0}.center.y", key),
+                defaultValue.center.y
+            );
+            center.z = UnityEngine.PlayerPrefs.GetFloat(
+                ZString.Format("{0}.center.z", key),
+                defaultValue.center.z
+            );
+            size.x = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.size.x", key), defaultValue.size.x);
+            size.y = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.size.y", key), defaultValue.size.y);
+            size.z = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.size.z", key), defaultValue.size.z);
 
             result.center = center;
             result.size = size;
@@ -29,12 +39,12 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 
         public void Save(string key, Bounds value, Bounds low, Bounds high)
         {
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.center.x", value.center.x);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.center.y", value.center.y);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.center.z", value.center.z);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.size.x",   value.size.x);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.size.y",   value.size.y);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.size.z",   value.size.z);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.center.x", key), value.center.x);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.center.y", key), value.center.y);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.center.z", key), value.center.z);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.size.x",   key), value.size.x);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.size.y",   key), value.size.y);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.size.z",   key), value.size.z);
         }
 
         public Bounds Draw(string key, string label, Bounds value, Bounds low, Bounds high)

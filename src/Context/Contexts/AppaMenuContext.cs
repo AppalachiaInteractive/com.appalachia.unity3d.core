@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Context.Contexts
 {
-    public abstract class AppaMenuContext : AppaContext
+    public abstract class AppaMenuContext : AppaUIContext
     {
         #region Profiling And Tracing Markers
 

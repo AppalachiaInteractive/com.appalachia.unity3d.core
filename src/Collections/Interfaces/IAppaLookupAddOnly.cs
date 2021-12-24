@@ -17,6 +17,6 @@ namespace Appalachia.Core.Collections.Interfaces
         void AddOrUpdate(TKey key, TValue value);
         void AddOrUpdateIf(TKey key, Func<TValue> valueRetriever, Predicate<TValue> updateIf);
         void AddOrUpdateIf(TKey key, TValue value, Predicate<TValue> updateIf);
-        void AddOrUpdateRange(IList<TValue> values, Func<TValue, TKey> selector);
+        void AddOrUpdateRange(IEnumerable<TValue> values, Func<TValue, TKey> selector);
     }
 }

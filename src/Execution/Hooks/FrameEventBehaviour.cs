@@ -1,7 +1,8 @@
 #region
 
-using Appalachia.Core.Behaviours;
-using Appalachia.Utility.Logging;
+using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Async;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -13,13 +14,9 @@ namespace Appalachia.Core.Execution.Hooks
     public abstract class FrameEventBehaviour<T> : SingletonAppalachiaBehaviour<FrameEventBehaviour<T>>
         where T : FrameEventBehaviour<T>
     {
-        #region Profiling And Tracing Markers
+        #region Static Fields and Autoproperties
 
-        private const string _PRF_PFX = nameof(FrameEventBehaviour<T>) + ".";
-
-        // ReSharper disable once StaticMemberInGenericType
         private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
-
         private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
         private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
         private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
@@ -30,10 +27,15 @@ namespace Appalachia.Core.Execution.Hooks
             new(_PRF_PFX + nameof(OnApplicationQuit));
 
         private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
+        private static FrameEventDelegates<T> _eventDelegates;
 
         #endregion
-        
-        private static FrameEventDelegates<T> _eventDelegates;
+
+        #region Fields and Autoproperties
+
+        private bool _onEnableQueued;
+
+        #endregion
 
         public static FrameEventDelegates<T> EventDelegates
         {
@@ -48,39 +50,7 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected override void Awake()
-        {
-            using (_PRF_Awake.Auto())
-            {
-                base.Awake();
-                
-#if UNITY_EDITOR
-                if (FrameEventSettings._ENABLE_AWAKE.v)
-                {
-                    AppaLog.Info($"[{GetReadableName()}]: [Awake]");
-                }
-#endif
-
-                EventDelegates.InvokeAwake();
-            }
-        }
-
-        protected override void Start()
-        {
-            using (_PRF_Start.Auto())
-            {
-                base.Start();
-                
-#if UNITY_EDITOR
-                if (FrameEventSettings._ENABLE_START.v)
-                {
-                    AppaLog.Info($"[{GetReadableName()}]: [Start]");
-                }
-#endif
-
-                EventDelegates.InvokeStart();
-            }
-        }
+        #region Event Functions
 
         protected virtual void Update()
         {
@@ -89,9 +59,16 @@ namespace Appalachia.Core.Execution.Hooks
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
-                    AppaLog.Info($"[{GetReadableName()}]: [Update]");
+                    Context.Log.Info(ZString.Format("[{0}]: [Update]", GetReadableName()));
                 }
 #endif
+
+                if (_onEnableQueued)
+                {
+                    _onEnableQueued = false;
+
+                    EventDelegates.InvokeOnEnable();
+                }
 
                 EventDelegates.InvokeUpdate();
             }
@@ -104,7 +81,7 @@ namespace Appalachia.Core.Execution.Hooks
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
-                    AppaLog.Info($"[{GetReadableName()}]: [FixedUpdate]");
+                    Context.Log.Info(ZString.Format("[{0}]: [FixedUpdate]", GetReadableName()));
                 }
 #endif
 
@@ -112,35 +89,15 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected override void OnEnable()
+        protected override async AppaTask WhenDisabled()
         {
-            using (_PRF_OnEnable.Auto())
             {
-                base.OnEnable();
-                
-                StaticApplicationState.HasOnEnableExecuted = true;
+                await base.WhenDisabled();
 
-#if UNITY_EDITOR
-                if (FrameEventSettings._ENABLE_ENABLE.v)
-                {
-                    AppaLog.Info($"[{GetReadableName()}]: [OnEnable]");
-                }
-#endif
-
-                EventDelegates.InvokeOnEnable();
-            }
-        }
-
-        protected override void OnDisable()
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                base.OnDisable();
-                
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
-                    AppaLog.Info($"[{GetReadableName()}]: [OnDisable]");
+                    Context.Log.Info(ZString.Format("[{0}]: [OnDisable]", GetReadableName()));
                 }
 #endif
 
@@ -148,16 +105,16 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
-        protected override void OnDestroy()
+        protected override async AppaTask WhenDestroyed()
         {
             using (_PRF_OnDestroy.Auto())
             {
-                base.OnDestroy();
-                
+                await base.WhenDestroyed();
+
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DESTROY.v)
                 {
-                    AppaLog.Info($"[{GetReadableName()}]: [OnDestroy]");
+                    Context.Log.Info(ZString.Format("[{0}]: [OnDestroy]", GetReadableName()));
                 }
 #endif
 
@@ -172,7 +129,7 @@ namespace Appalachia.Core.Execution.Hooks
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_QUIT.v)
                 {
-                    AppaLog.Info($"[{GetReadableName()}]: [OnApplicationQuit]");
+                    Context.Log.Info(ZString.Format("[{0}]: [OnApplicationQuit]", GetReadableName()));
                 }
 #endif
 
@@ -187,7 +144,7 @@ namespace Appalachia.Core.Execution.Hooks
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
-                    AppaLog.Info($"[{GetReadableName()}]: [OnPreCull]");
+                    Context.Log.Info(ZString.Format("[{0}]: [OnPreCull]", GetReadableName()));
                 }
 #endif
 
@@ -195,6 +152,69 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
+        #endregion
+
         protected abstract string GetReadableName();
+
+        protected override void AwakeActual()
+        {
+            using (_PRF_Awake.Auto())
+            {
+                base.AwakeActual();
+
+#if UNITY_EDITOR
+                if (FrameEventSettings._ENABLE_AWAKE.v)
+                {
+                    Context.Log.Info(ZString.Format("[{0}]: [Awake]", GetReadableName()));
+                }
+#endif
+
+                EventDelegates.InvokeAwake();
+            }
+        }
+
+        protected override void OnEnableActual()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                base.OnEnableActual();
+
+                StaticApplicationState.HasOnEnableExecuted = true;
+
+#if UNITY_EDITOR
+                if (FrameEventSettings._ENABLE_ENABLE.v)
+                {
+                    Context.Log.Info(ZString.Format("[{0}]: [OnEnable]", GetReadableName()));
+                }
+#endif
+
+                _onEnableQueued = true;
+            }
+        }
+
+        protected override void StartActual()
+        {
+            using (_PRF_Start.Auto())
+            {
+                base.StartActual();
+
+#if UNITY_EDITOR
+                if (FrameEventSettings._ENABLE_START.v)
+                {
+                    Context.Log.Info(ZString.Format("[{0}]: [Start]", GetReadableName()));
+                }
+#endif
+
+                EventDelegates.InvokeStart();
+            }
+        }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(FrameEventBehaviour<T>) + ".";
+
+        #endregion
+
+        // ReSharper disable once StaticMemberInGenericType
     }
 }

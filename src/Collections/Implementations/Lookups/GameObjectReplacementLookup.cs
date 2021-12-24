@@ -2,6 +2,7 @@
 
 using System;
 using Appalachia.Core.Collections.Implementations.Lists;
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 #endregion
@@ -19,12 +20,12 @@ namespace Appalachia.Core.Collections.Implementations.Lookups
 
         protected override string GetDisplaySubtitle(GameObject key, GameObject value)
         {
-            return $"Replacement: {value.name}";
+            return ZString.Format("Replacement: {0}", value.name);
         }
 
         protected override string GetDisplayTitle(GameObject key, GameObject value)
         {
-            return $"Replacing: {key.name}";
+            return ZString.Format("Replacing: {0}", key.name);
         }
     }
 }

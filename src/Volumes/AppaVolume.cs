@@ -1,50 +1,66 @@
-#region
-
-using System;
 using System.Collections.Generic;
-using Appalachia.Core.Behaviours;
-using Appalachia.Core.Debugging;
+using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Async;
+using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
-using Object = UnityEngine.Object;
-
-#endregion
+using UnityEngine.Serialization;
 
 namespace Appalachia.Core.Volumes
 {
+    /// <summary>
+    ///     A generic AppaVolume component holding a <see cref="AppaVolumeProfile" />.
+    /// </summary>
     [ExecuteAlways]
-    public class AppaVolume : AppalachiaBehaviour
+    [AddComponentMenu(PKG.Prefix + nameof(AppaVolume))]
+    public class AppaVolume : AppalachiaBehaviour<AppaVolume>, IAppaVolume
     {
         #region Fields and Autoproperties
 
-        // Modifying sharedProfile will change the behavior of all volumes using this profile, and
-        // change profile settings that are stored in the project too
+        /// <summary>
+        ///     The shared Profile that this AppaVolume uses.
+        ///     Modifying <c>sharedProfile</c> changes every AppaVolumes that uses this Profile and also changes
+        ///     the Profile settings stored in the Project.
+        /// </summary>
+        /// <remarks>
+        ///     You should not modify Profiles that <c>sharedProfile</c> returns. If you want
+        ///     to modify the Profile of a AppaVolume, use <see cref="profile" /> instead.
+        /// </remarks>
+        /// <seealso cref="profile" />
         public AppaVolumeProfile sharedProfile;
 
-//custom-end
-
-        [Tooltip("A global volume is applied to the whole scene.")]
-        public bool isGlobal;
-
-        [Tooltip(
-            "Outer distance to start blending from. A value of 0 means no blending and the volume overrides will be applied immediately upon entry."
+        /// <summary>
+        ///     The outer distance to start blending from. A value of 0 means no blending and Unity applies
+        ///     the AppaVolume overrides immediately upon entry.
+        /// </summary>
+        [PropertyTooltip(
+            "Sets the outer distance to start blending from. A value of 0 means no blending and Unity applies the AppaVolume overrides immediately upon entry."
         )]
         public float blendDistance;
 
-        [Tooltip(
-            "AppaVolume priority in the stack. Higher number means higher priority. Negative values are supported."
+        /// <summary>
+        ///     The AppaVolume priority in the stack. A higher value means higher priority. This supports negative values.
+        /// </summary>
+        [PropertyTooltip(
+            "When multiple AppaVolumes affect the same settings, Unity uses this value to determine which AppaVolume to use. A AppaVolume with the highest Priority value takes precedence."
         )]
         public float priority;
 
-        [Range(0f, 1f)]
-        [Tooltip(
-            "Total weight of this volume in the scene. 0 means it won't do anything, 1 means full effect."
-        )]
+        /// <summary>
+        ///     The total weight of this volume in the Scene. 0 means no effect and 1 means full effect.
+        /// </summary>
+        [PropertyRange(0f, 1f),
+         PropertyTooltip(
+             "Sets the total weight of this AppaVolume in the Scene. 0 means no effect and 1 means full effect."
+         )]
         public float weight = 1f;
 
-//custom-begin: malte: context reference for exposed property resolver
-        public Object context;
+        internal List<Collider> m_Colliders = new List<Collider>();
         private AppaVolumeProfile m_InternalProfile;
+
+        [SerializeField, FormerlySerializedAs("isGlobal")]
+        private bool m_IsGlobal = true;
+
         private float m_PreviousPriority;
 
         // Needed for state tracking (see the comments in Update)
@@ -52,11 +68,18 @@ namespace Appalachia.Core.Volumes
 
         #endregion
 
-        // This property automatically instantiates the profile and makes it unique to this volume
-        // so you can safely edit it via scripting at runtime without changing the original asset
-        // in the project.
-        // Note that if you pass in your own profile, it is your responsability to destroy it once
-        // it's not in use anymore.
+        /// <summary>
+        ///     Gets the first instantiated <see cref="AppaVolumeProfile" /> assigned to the AppaVolume.
+        ///     Modifying <c>profile</c> changes the Profile for this AppaVolume only. If another AppaVolume
+        ///     uses the same Profile, this clones the shared Profile and starts using it from now on.
+        /// </summary>
+        /// <remarks>
+        ///     This property automatically instantiates the Profile and make it unique to this AppaVolume
+        ///     so you can safely edit it via scripting at runtime without changing the original Asset
+        ///     in the Project.
+        ///     Note that if you pass your own Profile, you must destroy it when you finish using it.
+        /// </remarks>
+        /// <seealso cref="sharedProfile" />
         public AppaVolumeProfile profile
         {
             get
@@ -87,181 +110,103 @@ namespace Appalachia.Core.Volumes
 
         private void Update()
         {
-            using (_PRF_Update.Auto())
-            {
-                // Unfortunately we need to track the current layer to update the volume manager in
-                // real-time as the user could change it at any time in the editor or at runtime.
-                // Because no event is raised when the layer changes, we have to track it on every
-                // frame :/
-                var layer = gameObject.layer;
-                if (layer != m_PreviousLayer)
-                {
-                    AppaVolumeManager.instance.UpdateAppaVolumeLayer(this, m_PreviousLayer, layer);
-                    m_PreviousLayer = layer;
-                }
+            // Unfortunately we need to track the current layer to update the volume manager in
+            // real-time as the user could change it at any time in the editor or at runtime.
+            // Because no event is raised when the layer changes, we have to track it on every
+            // frame :/
+            UpdateLayer();
 
-                // Same for priority. We could use a property instead, but it doesn't play nice with the
-                // serialization system. Using a custom Attribute/PropertyDrawer for a property is
-                // possible but it doesn't work with Undo/Redo in the editor, which makes it useless for
-                // our case.
-                if (Math.Abs(priority - m_PreviousPriority) > float.Epsilon)
-                {
-                    AppaVolumeManager.instance.SetLayerDirty(layer);
-                    m_PreviousPriority = priority;
-                }
-            }
-        }
-
-        protected override void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
+            // Same for priority. We could use a property instead, but it doesn't play nice with the
+            // serialization system. Using a custom Attribute/PropertyDrawer for a property is
+            // possible but it doesn't work with Undo/Redo in the editor, which makes it useless for
+            // our case.
+            if (priority != m_PreviousPriority)
             {
-                base.OnEnable();
-                
-                m_PreviousLayer = gameObject.layer;
-                AppaVolumeManager.instance.Register(this, m_PreviousLayer);
+                AppaVolumeManager.instance.SetLayerDirty(gameObject.layer);
+                m_PreviousPriority = priority;
             }
-        }
 
-        protected override void OnDisable()
-        {
-            using (_PRF_OnDisable.Auto())
-            {
-                base.OnDisable();
-                
-                AppaVolumeManager.instance.Unregister(this, gameObject.layer);
-            }
+#if UNITY_EDITOR
+
+            // In the editor, we refresh the list of colliders at every frame because it's frequent to add/remove them
+            GetComponents(m_Colliders);
+#endif
         }
 
         #endregion
 
+        /// <summary>
+        ///     Checks if the AppaVolume has an instantiated Profile or if it uses a shared Profile.
+        /// </summary>
+        /// <returns><c>true</c> if the profile has been instantiated.</returns>
+        /// <seealso cref="profile" />
+        /// <seealso cref="sharedProfile" />
         public bool HasInstantiatedProfile()
         {
             return m_InternalProfile != null;
         }
 
-        #region Profiling
-
-        private const string _PRF_PFX = nameof(AppaVolume) + ".";
-        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + "Awake");
-        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + "Start");
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + "OnEnable");
-        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + "Update");
-        private static readonly ProfilerMarker _PRF_LateUpdate = new(_PRF_PFX + "LateUpdate");
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + "OnDisable");
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + "OnDestroy");
-
-        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + "Reset");
-
-        #endregion
-
-#if UNITY_EDITOR
-        private static readonly ProfilerMarker _PRF_OnDrawGizmos = new(_PRF_PFX + "OnDrawGizmos");
-
-        private static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
-            new(_PRF_PFX + "OnDrawGizmosSelected");
-
-        // TODO: Look into a better volume previsualization system
-        private List<Collider> m_TempColliders;
-
-//custom-begin: malte: hide collider gizmos
-        public bool hideColliderGizmos { get; set; }
-
-//custom-end
-
-        private void OnDrawGizmos()
+        internal void UpdateLayer()
         {
-            if (!GizmoCameraChecker.ShouldRenderGizmos())
+            var layer = gameObject.layer;
+            if (layer != m_PreviousLayer)
             {
-                return;
-            }
-
-            using (_PRF_OnDrawGizmos.Auto())
-            {
-                if (m_TempColliders == null)
-                {
-                    m_TempColliders = new List<Collider>();
-                }
-
-                var colliders = m_TempColliders;
-                GetComponents(colliders);
-
-//custom-begin: malte: hide collider gizmos
-                if (hideColliderGizmos)
-                {
-                    return;
-                }
-
-                //custom-end
-
-                if (isGlobal || (colliders == null))
-                {
-                    return;
-                }
-
-                var transform1 = transform;
-                var scale = transform1.localScale;
-                var invScale = new Vector3(1f / scale.x, 1f / scale.y, 1f / scale.z);
-                Gizmos.matrix = Matrix4x4.TRS(transform1.position, transform1.rotation, scale);
-                Gizmos.color = new Color(0f, 1f, 0.1f, 0.35f);
-
-                // Draw a separate gizmo for each collider
-                foreach (var coll in colliders)
-                {
-                    if (!coll.enabled)
-                    {
-                        continue;
-                    }
-
-                    // We'll just use scaling as an approximation for volume skin. It's far from being
-                    // correct (and is completely wrong in some cases). Ultimately we'd use a distance
-                    // field or at least a tesselate + push modifier on the collider's mesh to get a
-                    // better approximation, but the current Gizmo system is a bit limited and because
-                    // everything is dynamic in Unity and can be changed at anytime, it's hard to keep
-                    // track of changes in an elegant way (which we'd need to implement a nice cache
-                    // system for generated volume meshes).
-                    var type = coll.GetType();
-
-                    if (type == typeof(BoxCollider))
-                    {
-                        var c = (BoxCollider) coll;
-                        Gizmos.DrawCube(c.center, c.size);
-                        Gizmos.DrawWireCube(c.center, c.size + (invScale * (blendDistance * 2f)));
-                    }
-                    else if (type == typeof(SphereCollider))
-                    {
-                        var c = (SphereCollider) coll;
-                        Gizmos.DrawSphere(c.center, c.radius);
-                        Gizmos.DrawWireSphere(c.center, c.radius + (invScale.x * blendDistance));
-                    }
-                    else if (type == typeof(MeshCollider))
-                    {
-                        var c = (MeshCollider) coll;
-
-                        // Only convex mesh colliders are allowed
-                        if (!c.convex)
-                        {
-                            c.convex = true;
-                        }
-
-                        // Mesh pivot should be centered or this won't work
-                        Gizmos.DrawMesh(c.sharedMesh);
-                        Gizmos.DrawWireMesh(
-                            c.sharedMesh,
-                            Vector3.zero,
-                            Quaternion.identity,
-                            Vector3.one + (invScale * (blendDistance * 2f))
-                        );
-                    }
-
-                    // Nothing for capsule (DrawCapsule isn't exposed in Gizmo), terrain, wheel and
-                    // other colliders...
-                }
-
-                colliders.Clear();
+                AppaVolumeManager.instance.UpdateAppaVolumeLayer(this, m_PreviousLayer, layer);
+                m_PreviousLayer = layer;
             }
         }
 
-#endif
+        protected override async AppaTask WhenDisabled()
+        {
+            using (_PRF_WhenDisabled.Auto())
+            {
+                await base.WhenDisabled();
+                AppaVolumeManager.instance.Unregister(this, gameObject.layer);
+            }
+        }
+
+        protected override async AppaTask WhenEnabled()
+        {
+            using (_PRF_WhenEnabled.Auto())
+            {
+                await base.WhenEnabled();
+
+                m_PreviousLayer = gameObject.layer;
+                AppaVolumeManager.instance.Register(this, m_PreviousLayer);
+
+                GetComponents(m_Colliders);
+            }
+        }
+
+        #region IAppaVolume Members
+
+        /// <summary>
+        ///     The colliders of the volume if <see cref="isGlobal" /> is false
+        /// </summary>
+        public List<Collider> colliders => m_Colliders;
+
+        /// <summary>
+        ///     Specifies whether to apply the AppaVolume to the entire Scene or not.
+        /// </summary>
+        [PropertyTooltip("When enabled, the AppaVolume is applied to the entire Scene.")]
+        public bool isGlobal
+        {
+            get => m_IsGlobal;
+            set => m_IsGlobal = value;
+        }
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(AppaVolume) + ".";
+
+        private static readonly ProfilerMarker _PRF_WhenEnabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenEnabled));
+
+        private static readonly ProfilerMarker _PRF_WhenDisabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenDisabled));
+
+        #endregion
     }
 }

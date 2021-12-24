@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using Appalachia.Core.Layers.Extensions;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -50,7 +51,7 @@ namespace Appalachia.Core.Layers
             {
                 var layerName = LayerMask.LayerToName(i);
 
-                var text = $"{i}: {layerName}";
+                var text = ZString.Format("{0}: {1}", i, layerName);
                 _layers.Add(text, i);
             }
 

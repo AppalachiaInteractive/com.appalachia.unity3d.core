@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Appalachia.Utility.Strings;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs.LowLevel.Unsafe;
@@ -41,7 +42,7 @@ namespace Appalachia.Core.Collections.Native
             if (!UnsafeUtility.IsBlittable<int>())
             {
                 throw new ArgumentException(
-                    string.Format("{0} used in NativeQueue<{0}> must be blittable", typeof(int))
+                    ZString.Format("{0} used in NativeQueue<{0}> must be blittable", typeof(int))
                 );
             }
 #endif

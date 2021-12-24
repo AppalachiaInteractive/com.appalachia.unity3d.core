@@ -2,6 +2,7 @@
 
 #region
 
+using Appalachia.Utility.Strings;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,12 +19,12 @@ namespace Appalachia.Core.Preferences.API.Editor
             var center = result.center;
             var size = result.size;
 
-            center.x = EditorPrefs.GetFloat($"{key}.center.x", defaultValue.center.x);
-            center.y = EditorPrefs.GetFloat($"{key}.center.y", defaultValue.center.y);
-            center.z = EditorPrefs.GetFloat($"{key}.center.z", defaultValue.center.z);
-            size.x = EditorPrefs.GetFloat($"{key}.size.x",     defaultValue.size.x);
-            size.y = EditorPrefs.GetFloat($"{key}.size.y",     defaultValue.size.y);
-            size.z = EditorPrefs.GetFloat($"{key}.size.z",     defaultValue.size.z);
+            center.x = EditorPrefs.GetFloat(ZString.Format("{0}.center.x", key), defaultValue.center.x);
+            center.y = EditorPrefs.GetFloat(ZString.Format("{0}.center.y", key), defaultValue.center.y);
+            center.z = EditorPrefs.GetFloat(ZString.Format("{0}.center.z", key), defaultValue.center.z);
+            size.x = EditorPrefs.GetFloat(ZString.Format("{0}.size.x",     key), defaultValue.size.x);
+            size.y = EditorPrefs.GetFloat(ZString.Format("{0}.size.y",     key), defaultValue.size.y);
+            size.z = EditorPrefs.GetFloat(ZString.Format("{0}.size.z",     key), defaultValue.size.z);
 
             result.center = center;
             result.size = size;
@@ -32,12 +33,12 @@ namespace Appalachia.Core.Preferences.API.Editor
 
         public void Save(string key, Bounds value, Bounds low, Bounds high)
         {
-            EditorPrefs.SetFloat($"{key}.center.x", value.center.x);
-            EditorPrefs.SetFloat($"{key}.center.y", value.center.y);
-            EditorPrefs.SetFloat($"{key}.center.z", value.center.z);
-            EditorPrefs.SetFloat($"{key}.size.x",   value.size.x);
-            EditorPrefs.SetFloat($"{key}.size.y",   value.size.y);
-            EditorPrefs.SetFloat($"{key}.size.z",   value.size.z);
+            EditorPrefs.SetFloat(ZString.Format("{0}.center.x", key), value.center.x);
+            EditorPrefs.SetFloat(ZString.Format("{0}.center.y", key), value.center.y);
+            EditorPrefs.SetFloat(ZString.Format("{0}.center.z", key), value.center.z);
+            EditorPrefs.SetFloat(ZString.Format("{0}.size.x",   key), value.size.x);
+            EditorPrefs.SetFloat(ZString.Format("{0}.size.y",   key), value.size.y);
+            EditorPrefs.SetFloat(ZString.Format("{0}.size.z",   key), value.size.z);
         }
 
         public Bounds Draw(string key, string label, Bounds value, Bounds low, Bounds high)

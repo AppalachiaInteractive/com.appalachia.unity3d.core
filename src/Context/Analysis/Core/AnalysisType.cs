@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.CI.Constants;
 using Appalachia.Utility.Colors;
 using Appalachia.Utility.Enums;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -14,36 +15,26 @@ namespace Appalachia.Core.Context.Analysis.Core
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
-        #region Profiling And Tracing Markers
+        [NonSerialized] private AppaContext _context;
 
-        private const string _PRF_PFX = nameof(AnalysisType<TA, TT, TE>) + ".";
+        protected AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(this);
+                }
 
-        private static readonly ProfilerMarker _PRF_DisplayName =
-            new ProfilerMarker(_PRF_PFX + nameof(DisplayName));
-
-        private static readonly ProfilerMarker _PRF_ClearResults =
-            new ProfilerMarker(_PRF_PFX + nameof(ClearResults));
-
-        private static readonly ProfilerMarker _PRF_Correct = new ProfilerMarker(_PRF_PFX + nameof(Correct));
-
-        private static readonly ProfilerMarker _PRF_CheckIssue =
-            new ProfilerMarker(_PRF_PFX + nameof(CheckIssue));
-
-        private static readonly ProfilerMarker
-            _PRF_SetColor = new ProfilerMarker(_PRF_PFX + nameof(SetColor));
-
-        private static readonly ProfilerMarker _PRF_HasAutoCorrectableIssues =
-            new ProfilerMarker(_PRF_PFX + nameof(HasAutoCorrectableIssues));
-
-        private static readonly ProfilerMarker _PRF_HasIssues =
-            new ProfilerMarker(_PRF_PFX + nameof(HasIssues));
-
-        #endregion
-
+                return _context;
+            }
+        }
         protected AnalysisType(TA group)
         {
             _group = group;
         }
+
+        #region Fields and Autoproperties
 
         protected Color _color;
 
@@ -55,15 +46,15 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         private TA _group;
 
-        protected TA Group => _group;
+        #endregion
 
-        public virtual bool IsCorrectable => true;
-
-        public abstract bool IsAutoCorrectable();
+        
 
         public abstract string ShortName { get; }
 
         public abstract TE Type { get; }
+
+        public virtual bool IsCorrectable => true;
 
         public bool HasAutoCorrectableIssues
         {
@@ -138,10 +129,11 @@ namespace Appalachia.Core.Context.Analysis.Core
         protected Color disabledColor => ColorPalette.Default.disabled.Middle;
         protected Color goodColor => ColorPalette.Default.good.ThreeQuarters;
 
-        protected abstract void AnalyzeIssue(TA group, TT target, List<AnalysisMessage> messages);
+        protected TA Group => _group;
 
-        protected abstract void CorrectIssue(TA group, TT target, bool useTestFiles, bool reimport);
+        public abstract bool IsAutoCorrectable();
 
+        // ReSharper disable once UnusedParameter.Global
         public virtual void ClearResults(TA group, TT target)
         {
             using (_PRF_ClearResults.Auto())
@@ -160,10 +152,10 @@ namespace Appalachia.Core.Context.Analysis.Core
                     {
                         if (message.isIssue)
                         {
-                            AppaLog.Debug($"Fixing issue: {message.PrintMessage()}");
+                            Context.Log.Debug(ZString.Format("Fixing issue: {0}", message.PrintMessage()));
                         }
                     }
-                    
+
                     CorrectIssue(_group, _group.Target, useTestFiles, reimport);
                 }
             }
@@ -191,6 +183,11 @@ namespace Appalachia.Core.Context.Analysis.Core
                 }
             }
         }
+
+        protected abstract void AnalyzeIssue(TA group, TT target, List<AnalysisMessage> messages);
+
+        // ReSharper disable once UnusedParameter.Global
+        protected abstract void CorrectIssue(TA group, TT target, bool useTestFiles, bool reimport);
 
         protected void SetColor(object colorable, AnalysisType<TA, TT, TE> analysis, bool overwrite = false)
         {
@@ -261,5 +258,31 @@ namespace Appalachia.Core.Context.Analysis.Core
                 SetColor(colorable2, analysis, overwrite);
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(AnalysisType<TA, TT, TE>) + ".";
+
+        private static readonly ProfilerMarker _PRF_DisplayName =
+            new ProfilerMarker(_PRF_PFX + nameof(DisplayName));
+
+        private static readonly ProfilerMarker _PRF_ClearResults =
+            new ProfilerMarker(_PRF_PFX + nameof(ClearResults));
+
+        private static readonly ProfilerMarker _PRF_Correct = new ProfilerMarker(_PRF_PFX + nameof(Correct));
+
+        private static readonly ProfilerMarker _PRF_CheckIssue =
+            new ProfilerMarker(_PRF_PFX + nameof(CheckIssue));
+
+        private static readonly ProfilerMarker
+            _PRF_SetColor = new ProfilerMarker(_PRF_PFX + nameof(SetColor));
+
+        private static readonly ProfilerMarker _PRF_HasAutoCorrectableIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(HasAutoCorrectableIssues));
+
+        private static readonly ProfilerMarker _PRF_HasIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(HasIssues));
+
+        #endregion
     }
 }

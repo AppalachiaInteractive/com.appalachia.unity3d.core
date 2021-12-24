@@ -1,9 +1,10 @@
 #region
 
 using System;
-using Appalachia.Core.Aspects.Tracing;
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
+using Object = UnityEngine.Object;
 
 #endregion
 
@@ -11,20 +12,27 @@ namespace Appalachia.Core.Overrides
 {
     public abstract class Restorable : AppalachiaBase, IDisposable
     {
-        private static readonly ProfilerMarker _PRF_Restorable_CombineWith = new("Restorable.CombineWith");
+        protected Restorable(Object owner) : base(owner)
+        {
+        }
 
-        private static readonly ProfilerMarker _PRF_Restorable_DisableTracing =
-            new("Restorable.DisableTracing");
-
-        private static readonly ProfilerMarker _PRF_Restorable_Restore = new("Restorable.Restore");
+        #region Fields and Autoproperties
 
         public Restorable next;
 
-        public abstract void Dispose();
+        #endregion
+
+        public static Restorable<TR> New<TR>(TR initial, TR newValue, Action<TR> assignment, Object owner)
+        {
+            using (_PRF_Restore.Auto())
+            {
+                return new Restorable<TR>(initial, newValue, assignment, owner);
+            }
+        }
 
         public Restorable CombineWith(Restorable next)
         {
-            using (_PRF_Restorable_CombineWith.Auto())
+            using (_PRF_CombineWith.Auto())
             {
                 this.next = next;
 
@@ -32,50 +40,50 @@ namespace Appalachia.Core.Overrides
             }
         }
 
-        public static Restorable DisableTracing()
-        {
-            using (_PRF_Restorable_DisableTracing.Auto())
-            {
-                return new Restorable<bool>(
-                    TraceMarkerSet.InternalDisable,
-                    false,
-                    orig => TraceMarkerSet.InternalDisable = orig
-                );
-            }
-        }
+        #region IDisposable Members
 
-        public static Restorable Restore<TR>(TR initial, TR newValue, Action<TR> assignment)
-        {
-            using (_PRF_Restorable_Restore.Auto())
-            {
-                return new Restorable<TR>(initial, newValue, assignment);
-            }
-        }
+        public abstract void Dispose();
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(Restorable) + ".";
+
+        private static readonly ProfilerMarker _PRF_Restore = new ProfilerMarker(_PRF_PFX + nameof(New));
+
+        private static readonly ProfilerMarker _PRF_CombineWith =
+            new ProfilerMarker(_PRF_PFX + nameof(CombineWith));
+
+        #endregion
     }
 
-    public class Restorable<T> : Restorable
+    public sealed class Restorable<T> : Restorable
     {
-        private static readonly ProfilerMarker _PRF_Restorable_Dispose = new("Restorable.Dispose");
-
-        private static readonly ProfilerMarker _PRF_Restorable_Restorable = new("Restorable.Restorable");
-
-        public Restorable(T initial, T newValue, Action<T> assignment)
+        public Restorable(T initial, T newValue, Action<T> assignment, Object owner) : base(owner)
         {
-            using (_PRF_Restorable_Restorable.Auto())
+            using (_PRF_Restorable.Auto())
             {
                 _initial = initial;
                 _assignment = assignment;
+                Name = ZString.Format("{0}<{1}>", nameof(Restorable), typeof(T).Name);
 
                 _assignment(newValue);
             }
         }
 
+        #region Fields and Autoproperties
+
         private Action<T> _assignment;
         private T _initial;
 
+        public override string Name { get; }
+
+        #endregion
+
         public override void Dispose()
         {
-            using (_PRF_Restorable_Dispose.Auto())
+            using (_PRF_Dispose.Auto())
             {
                 _assignment(_initial);
                 _initial = default;
@@ -87,5 +95,16 @@ namespace Appalachia.Core.Overrides
                 }
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(Restorable<T>) + ".";
+
+        private static readonly ProfilerMarker _PRF_Restorable =
+            new ProfilerMarker(_PRF_PFX + nameof(Restorable));
+
+        private static readonly ProfilerMarker _PRF_Dispose = new ProfilerMarker(_PRF_PFX + nameof(Dispose));
+
+        #endregion
     }
 }

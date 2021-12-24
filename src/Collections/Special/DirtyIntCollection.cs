@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Appalachia.Core.Collections.Special
 {
     [Serializable]
-    public sealed class DirtyIntCollection : IsDirtyCollection<int, AppaList_int>
+    public sealed class DirtyIntCollection : IsDirtyCollection<int, intList>
     {
         protected override Color GetDisplayColor(int key, bool value)
         {

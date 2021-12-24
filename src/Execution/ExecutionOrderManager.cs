@@ -2,6 +2,8 @@
 
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 
@@ -10,8 +12,8 @@ using Unity.Profiling;
 namespace Appalachia.Core.Execution
 {
 #if UNITY_EDITOR
-    [UnityEditor.InitializeOnLoad]
-    public class ExecutionOrderManager
+    [CallStaticConstructorInEditor]
+    public sealed class ExecutionOrderManager : AppalachiaBase<ExecutionOrderManager>
     {
         private const string _PRF_PFX = nameof(ExecutionOrderManager) + ".";
 
@@ -20,6 +22,11 @@ namespace Appalachia.Core.Execution
 
         static ExecutionOrderManager()
         {
+            if (AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                return;
+            }
+            
             using (_PRF_ExecutionOrderManager.Auto())
             {
                 var scripts = AssetDatabaseManager.GetAllRuntimeMonoScripts();

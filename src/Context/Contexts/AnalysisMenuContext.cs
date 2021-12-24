@@ -8,6 +8,7 @@ using Appalachia.Core.Context.Analysis.Core;
 using Appalachia.Core.Context.Interfaces;
 using Appalachia.Core.Preferences;
 using Appalachia.Utility.Execution.Progress;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Context.Contexts
@@ -158,19 +159,26 @@ namespace Appalachia.Core.Context.Contexts
 
         protected override IEnumerable<AppaProgress> OnPreInitialize(AppaProgressCounter pc)
         {
-            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Only_Issues}", 1);
+            yield return pc.Get(ZString.Format("{0}: {1}", AppaProgress.REGISTERING, APPASTR.Only_Issues), 1);
 
             _onlyShowIssues = PREFS.REG(GetPreferencePrefix, APPASTR.Only_Issues, true);
 
-            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Issue_Type_Assembly}", 1);
+            yield return pc.Get(
+                ZString.Format("{0}: {1}", AppaProgress.REGISTERING, APPASTR.Issue_Type_Assembly),
+                1
+            );
 
-            _issueType = PREFS.REG(GetPreferencePrefix, $"{APPASTR.Issue_Type} {IssueTypeName}", default(TE));
+            _issueType = PREFS.REG(
+                GetPreferencePrefix,
+                ZString.Format("{0} {1}", APPASTR.Issue_Type, IssueTypeName),
+                default(TE)
+            );
 
-            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Test_Files}", 1);
+            yield return pc.Get(ZString.Format("{0}: {1}", AppaProgress.REGISTERING, APPASTR.Test_Files), 1);
 
             _generateTestFiles = PREFS.REG(GetPreferencePrefix, APPASTR.Test_Files, true);
-            
-            yield return pc.Get($"{AppaProgress.REGISTERING}: {APPASTR.Menu_Width}", 1);
+
+            yield return pc.Get(ZString.Format("{0}: {1}", AppaProgress.REGISTERING, APPASTR.Menu_Width), 1);
 
             _menuWidth = PREFS.REG(GetPreferencePrefix, APPASTR.Menu_Width, 300f, 150f, 500f);
         }

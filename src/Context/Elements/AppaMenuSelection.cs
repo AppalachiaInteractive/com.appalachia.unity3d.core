@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Appalachia.CI.Constants;
 using UnityEngine;
 
 namespace Appalachia.Core.Context.Elements
@@ -7,6 +8,20 @@ namespace Appalachia.Core.Context.Elements
     [Serializable]
     public class AppaMenuSelection
     {
+        [NonSerialized] private static AppaContext _context;
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(AppaMenuSelection));
+                }
+
+                return _context;
+            }
+        }
         public int currentIndex;
         public int currentVisibleIndex;
         public int lastVisibleCount;

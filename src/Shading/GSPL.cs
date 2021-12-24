@@ -3,8 +3,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 #endregion
 
 namespace Appalachia.Core.Shading
@@ -59,7 +57,7 @@ namespace Appalachia.Core.Shading
         {
             if (s == null)
             {
-                //AppaLog.Warn("Null shader can not be included in property lookup.");
+                //Context.Log.Warn("Null shader can not be included in property lookup.");
                 return;
             }
 

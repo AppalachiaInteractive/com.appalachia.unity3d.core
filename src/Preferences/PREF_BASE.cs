@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Appalachia.Utility.Constants;
 
 namespace Appalachia.Core.Preferences
 {
@@ -11,12 +12,6 @@ namespace Appalachia.Core.Preferences
             _grouping = grouping;
             _label = label;
             _order = order;
-            
-            #if UNITY_EDITOR
-            _niceLabel = UnityEditor.ObjectNames.NicifyVariableName(label);
-            #else
-            _niceLabel = label;
-            #endif
         }
 
         protected readonly int _order;
@@ -32,7 +27,24 @@ namespace Appalachia.Core.Preferences
 
         public string NiceLabel
         {
-            get => _niceLabel;
+            get
+            {
+                if (_niceLabel == null)
+                {
+#if UNITY_EDITOR
+                    if (!APPASERIALIZE.InSerializationWindow)
+                    {
+                        _niceLabel = UnityEditor.ObjectNames.NicifyVariableName(_label);
+                    }
+                    else
+#endif
+                    {
+                        return _label;
+                    }
+                }
+
+                return _niceLabel;
+            }
             set => _niceLabel = value;
         }
 

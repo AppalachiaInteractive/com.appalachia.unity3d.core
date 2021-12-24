@@ -2,6 +2,7 @@
 
 #region
 
+using Appalachia.Utility.Strings;
 using Unity.Mathematics;
 using UnityEditor;
 
@@ -15,20 +16,20 @@ namespace Appalachia.Core.Preferences.API.Editor
         {
             var result = quaternion.identity;
             var value = result.value;
-            value.x = EditorPrefs.GetFloat($"{key}.x", defaultValue.value.x);
-            value.y = EditorPrefs.GetFloat($"{key}.y", defaultValue.value.y);
-            value.z = EditorPrefs.GetFloat($"{key}.z", defaultValue.value.z);
-            value.w = EditorPrefs.GetFloat($"{key}.w", defaultValue.value.w);
+            value.x = EditorPrefs.GetFloat(ZString.Format("{0}.x", key), defaultValue.value.x);
+            value.y = EditorPrefs.GetFloat(ZString.Format("{0}.y", key), defaultValue.value.y);
+            value.z = EditorPrefs.GetFloat(ZString.Format("{0}.z", key), defaultValue.value.z);
+            value.w = EditorPrefs.GetFloat(ZString.Format("{0}.w", key), defaultValue.value.w);
             result.value = value;
             return result;
         }
 
         public void Save(string key, quaternion value, quaternion low, quaternion high)
         {
-            EditorPrefs.SetFloat($"{key}.x", value.value.x);
-            EditorPrefs.SetFloat($"{key}.y", value.value.y);
-            EditorPrefs.SetFloat($"{key}.z", value.value.z);
-            EditorPrefs.SetFloat($"{key}.w", value.value.w);
+            EditorPrefs.SetFloat(ZString.Format("{0}.x", key), value.value.x);
+            EditorPrefs.SetFloat(ZString.Format("{0}.y", key), value.value.y);
+            EditorPrefs.SetFloat(ZString.Format("{0}.z", key), value.value.z);
+            EditorPrefs.SetFloat(ZString.Format("{0}.w", key), value.value.w);
         }
 
         public quaternion Draw(string key, string label, quaternion value, quaternion low, quaternion high)

@@ -21,6 +21,8 @@ namespace Appalachia.Core.Attributes.Editing
             string groupName,
             string title,
             string subtitle = null,
+            string fallbackTitle = null,
+            string fallbackSubtitle = null,
             bool horizontalLine = true,
             bool bold = true,
             bool reversed = false,
@@ -39,6 +41,8 @@ namespace Appalachia.Core.Attributes.Editing
         {
             Title = title;
             Subtitle = subtitle;
+            FallbackTitle = fallbackTitle;
+            FallbackSubtitle = fallbackSubtitle;
             HorizontalLine = horizontalLine;
             Bold = bold;
             Reversed = reversed;
@@ -73,6 +77,8 @@ namespace Appalachia.Core.Attributes.Editing
         public int SubtitleSize;
         public string SubtitleIcon;
         public int TitleHeight;
+        public string FallbackTitle;
+        public string FallbackSubtitle;
 
         #endregion
 

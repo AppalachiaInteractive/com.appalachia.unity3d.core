@@ -2,6 +2,7 @@
 
 #region
 
+using Appalachia.Utility.Strings;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,19 +19,19 @@ namespace Appalachia.Core.Preferences.API.Editor
 
         public void Save(string key, Gradient value, Gradient low, Gradient high)
         {
-            var modeKey = $"{key}.mode";
+            var modeKey = ZString.Format("{0}.mode", key);
             EditorPrefs.SetBool(modeKey, value.mode == GradientMode.Blend);
 
-            var colorBaseKey = $"{key}.color";
-            var alphaBaseKey = $"{key}.alpha";
+            var colorBaseKey = ZString.Format("{0}.color", key);
+            var alphaBaseKey = ZString.Format("{0}.alpha", key);
 
             EditorPrefs.SetInt(colorBaseKey, value.colorKeys.Length);
             EditorPrefs.SetInt(alphaBaseKey, value.alphaKeys.Length);
 
             for (var i = 0; i < value.colorKeys.Length; i++)
             {
-                var colorKey = $"{colorBaseKey}.{i}.value";
-                var timeKey = $"{colorBaseKey}.{i}.time";
+                var colorKey = ZString.Format("{0}.{1}.value", colorBaseKey, i);
+                var timeKey = ZString.Format("{0}.{1}.time",   colorBaseKey, i);
 
                 EditorPrefs.SetInt(colorKey, (int) ToHex(value.colorKeys[i].color));
                 EditorPrefs.SetFloat(timeKey, value.colorKeys[i].time);
@@ -38,8 +39,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 
             for (var i = 0; i < value.alphaKeys.Length; i++)
             {
-                var alphaKey = $"{alphaBaseKey}.{i}.value";
-                var timeKey = $"{alphaBaseKey}.{i}.time";
+                var alphaKey = ZString.Format("{0}.{1}.value", alphaBaseKey, i);
+                var timeKey = ZString.Format("{0}.{1}.time",   alphaBaseKey, i);
 
                 EditorPrefs.SetFloat(alphaKey, value.alphaKeys[i].alpha);
                 EditorPrefs.SetFloat(timeKey,  value.alphaKeys[i].time);
@@ -57,11 +58,11 @@ namespace Appalachia.Core.Preferences.API.Editor
         {
             var gradient = new Gradient();
 
-            var modeKey = $"{key}.mode";
+            var modeKey = ZString.Format("{0}.mode", key);
             gradient.mode = EditorPrefs.GetBool(modeKey, true) ? GradientMode.Blend : GradientMode.Fixed;
 
-            var colorBaseKey = $"{key}.color";
-            var alphaBaseKey = $"{key}.alpha";
+            var colorBaseKey = ZString.Format("{0}.color", key);
+            var alphaBaseKey = ZString.Format("{0}.alpha", key);
 
             var colorCount = EditorPrefs.GetInt(colorBaseKey, 2);
             var alphaCount = EditorPrefs.GetInt(alphaBaseKey, 2);
@@ -71,8 +72,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 
             for (var i = 0; i < colorCount; i++)
             {
-                var colorKey = $"{colorBaseKey}.{i}.value";
-                var timeKey = $"{colorBaseKey}.{i}.time";
+                var colorKey = ZString.Format("{0}.{1}.value", colorBaseKey, i);
+                var timeKey = ZString.Format("{0}.{1}.time",   colorBaseKey, i);
 
                 var color = EditorPrefs.GetInt(colorKey, (int) ToHex(i == 0 ? Color.black : Color.white));
                 var time = EditorPrefs.GetFloat(timeKey, i);
@@ -82,8 +83,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 
             for (var i = 0; i < alphaCount; i++)
             {
-                var alphaKey = $"{alphaBaseKey}.{i}.value";
-                var timeKey = $"{alphaBaseKey}.{i}.time";
+                var alphaKey = ZString.Format("{0}.{1}.value", alphaBaseKey, i);
+                var timeKey = ZString.Format("{0}.{1}.time",   alphaBaseKey, i);
 
                 var alpha = EditorPrefs.GetFloat(alphaKey, 1.0f);
                 var time = EditorPrefs.GetFloat(timeKey,   i);

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Context.Analysis.Core
 {
-    public class AnalysisMessagePart
+    public class AnalysisMessagePart 
     {
         private const float DEFAULT_WIDTH = 60f;
             

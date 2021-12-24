@@ -5,7 +5,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Appalachia.Core.ArrayPooling;
 using Appalachia.Core.Comparisons;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Constants;
+using Appalachia.Utility.Extensions.Debugging;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -14,7 +16,10 @@ using UnityEngine;
 namespace Appalachia.Core.Collections
 {
     [Serializable]
-    public abstract class AppaList<T> : IReadOnlyList<T>, ISerializationCallbackReceiver, IList<T>
+    public abstract class AppaList<T> : AppaCollection,
+                                        IReadOnlyList<T>,
+                                        ISerializationCallbackReceiver,
+                                        IList<T>
     {
         #region Constants and Static Readonly
 
@@ -24,6 +29,7 @@ namespace Appalachia.Core.Collections
 
         protected AppaList() : this(4)
         {
+            using var scope = APPASERIALIZE.OnAfterDeserialize();
         }
 
         protected AppaList(int capacity, float capacityIncreaseMultiplier = 2.0f, bool noTracking = false)
@@ -47,7 +53,7 @@ namespace Appalachia.Core.Collections
                 _capacityIncreaseMultiplier = capacityIncreaseMultiplier;
                 this.noTracking = noTracking;
 
-                // AppaLog.Info(items.Length);
+                // Context.Log.Info(items.Length);
             }
         }
 
@@ -443,7 +449,7 @@ namespace Appalachia.Core.Collections
             {
                 if ((Count - index) < length)
                 {
-                    AppaLog.Error("Invalid length!");
+                    Context.Log.Error("Invalid length!");
                 }
 
                 if (length > 0)
@@ -584,6 +590,11 @@ namespace Appalachia.Core.Collections
 
                     if (obj == null)
                     {
+                        var message = "Had to remove a null value from this list.";
+
+                        Context.Log.Error(message);
+                        APPADEBUG.BREAKPOINT(() => message, null);
+                        
                         hadNulls = true;
                         RemoveAt(i);
                         removedIndicesSafeOrdered.Add(i);
@@ -631,7 +642,7 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(index),
-                        $"Index {index} is out of range. List count is {Count}."
+                        ZString.Format("Index {0} is out of range. List count is {1}.", index, Count)
                     );
                 }
 
@@ -639,7 +650,12 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(length),
-                        $"Length {length} is out of range. List count is {Count} and index is {index}."
+                        ZString.Format(
+                            "Length {0} is out of range. List count is {1} and index is {2}.",
+                            length,
+                            Count,
+                            index
+                        )
                     );
                 }
 
@@ -684,7 +700,7 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(index),
-                        $"Index {index} is out of range. List count is {Count}."
+                        ZString.Format("Index {0} is out of range. List count is {1}.", index, Count)
                     );
                 }
 
@@ -692,7 +708,12 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(length),
-                        $"Length {length} is out of range. List count is {Count} and index is {index}."
+                        ZString.Format(
+                            "Length {0} is out of range. List count is {1} and index is {2}.",
+                            length,
+                            Count,
+                            index
+                        )
                     );
                 }
 
@@ -734,7 +755,7 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(index),
-                        $"Index {index} is out of range. List count is {Count}."
+                        ZString.Format("Index {0} is out of range. List count is {1}.", index, Count)
                     );
                 }
 
@@ -742,7 +763,12 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(length),
-                        $"Length {length} is out of range. List count is {Count} and index is {index}."
+                        ZString.Format(
+                            "Length {0} is out of range. List count is {1} and index is {2}.",
+                            length,
+                            Count,
+                            index
+                        )
                     );
                 }
 
@@ -773,7 +799,7 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(index),
-                        $"Index {index} is out of range. List count is {Count}."
+                        ZString.Format("Index {0} is out of range. List count is {1}.", index, Count)
                     );
                 }
 
@@ -781,7 +807,12 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(length),
-                        $"Length {length} is out of range. List count is {Count} and index is {index}."
+                        ZString.Format(
+                            "Length {0} is out of range. List count is {1} and index is {2}.",
+                            length,
+                            Count,
+                            index
+                        )
                     );
                 }
 
@@ -908,7 +939,7 @@ namespace Appalachia.Core.Collections
             {
                 if (index > Count)
                 {
-                    AppaLog.Error("Index " + index + " is out of range " + Count);
+                    Context.Log.Error("Index " + index + " is out of range " + Count);
                 }
 
                 if (Count == _values.Length)
@@ -934,7 +965,7 @@ namespace Appalachia.Core.Collections
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(index),
-                        $"Index {index} is out of range. List count is {Count}."
+                        ZString.Format("Index {0} is out of range. List count is {1}.", index, Count)
                     );
                 }
 
@@ -981,6 +1012,7 @@ namespace Appalachia.Core.Collections
 
         public void OnAfterDeserialize()
         {
+            using var scope = APPASERIALIZE.OnAfterDeserialize();
             using (_PRF_OnAfterDeserialize.Auto())
             {
                 if (__itemPoolLock == null)
@@ -992,6 +1024,7 @@ namespace Appalachia.Core.Collections
 
         public void OnBeforeSerialize()
         {
+            using var scope = APPASERIALIZE.OnBeforeSerialize();
         }
 
         #endregion
@@ -1017,7 +1050,7 @@ namespace Appalachia.Core.Collections
 
             public bool MoveNext()
             {
-                if (_current < _list.Count - 1)
+                if (_current < (_list.Count - 1))
                 {
                     _current += 1;
                     return true;

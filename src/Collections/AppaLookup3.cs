@@ -1,9 +1,7 @@
 #region
 
 using System;
-using Appalachia.Utility.Logging;
 using Unity.Profiling;
-using UnityEngine;
 
 #endregion
 
@@ -23,17 +21,55 @@ namespace Appalachia.Core.Collections
         where TSubNestedList : AppaList<TSubNested>, new()
         where TNestedList : AppaList<TNested>, new()
     {
-        private const string _PRF_PFX =
-            nameof(AppaLookup3<TKey1, TKey2, TKey3, TValue, TKey1List, TKey2List, TKey3List, TValueList,
-                TSubNested, TNested, TSubNestedList, TNestedList>) +
-            ".";
+        public void AddOrUpdate(TKey1 primary, TKey2 secondary, TKey3 tertiary, TValue value)
+        {
+            using (_PRF_AddOrUpdate.Auto())
+            {
+                if (!TryGetValue(primary, out var sub))
+                {
+                    sub = new TNested();
 
-        private static readonly ProfilerMarker _PRF_AddOrUpdate = new(_PRF_PFX + nameof(AddOrUpdate));
+                    Add(primary, sub);
+                }
 
-        private static readonly ProfilerMarker _PRF_TryGetValue = new(_PRF_PFX + nameof(TryGetValue));
+                if (!sub.TryGetValue(secondary, out var subSub))
+                {
+                    subSub = new TSubNested();
 
-        private static readonly ProfilerMarker _PRF_TryGetValueWithFallback =
-            new(_PRF_PFX + nameof(TryGetValueWithFallback));
+                    sub.Add(secondary, subSub);
+                }
+
+                subSub.AddOrUpdate(tertiary, value);
+            }
+        }
+
+        public void AddOrUpdate(
+            TKey1 primary,
+            TKey2 secondary,
+            TKey3 tertiary,
+            TValue value,
+            Func<TNested> collectionCreator1,
+            Func<TSubNested> collectionCreator2)
+        {
+            using (_PRF_AddOrUpdate.Auto())
+            {
+                if (!TryGetValue(primary, out var sub))
+                {
+                    sub = collectionCreator1();
+
+                    Add(primary, sub);
+                }
+
+                if (!sub.TryGetValue(secondary, out var subSub))
+                {
+                    subSub = collectionCreator2();
+
+                    sub.Add(secondary, subSub);
+                }
+
+                subSub.AddOrUpdate(tertiary, value);
+            }
+        }
 
         public bool TryGetValue(TKey1 primary, TKey2 secondary, TKey3 tertiary, out TValue value)
         {
@@ -77,7 +113,7 @@ namespace Appalachia.Core.Collections
 
                         if (logFallbackAttempt != null)
                         {
-                           AppaLog.Warn(logFallbackAttempt);
+                            Context.Log.Warn(logFallbackAttempt);
                         }
 
                         value = sub2.FirstWithPreference_NoAlloc(fallbackCheck, out var foundFallback);
@@ -89,7 +125,7 @@ namespace Appalachia.Core.Collections
 
                         if (logFallbackFailure != null)
                         {
-                           AppaLog.Warn(logFallbackFailure);
+                            Context.Log.Warn(logFallbackFailure);
                         }
                     }
                 }
@@ -99,26 +135,20 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public void AddOrUpdate(TKey1 primary, TKey2 secondary, TKey3 tertiary, TValue value)
-        {
-            using (_PRF_AddOrUpdate.Auto())
-            {
-                if (!TryGetValue(primary, out var sub))
-                {
-                    sub = new TNested();
+        #region Profiling
 
-                    Add(primary, sub);
-                }
+        private const string _PRF_PFX =
+            nameof(AppaLookup3<TKey1, TKey2, TKey3, TValue, TKey1List, TKey2List, TKey3List, TValueList,
+                TSubNested, TNested, TSubNestedList, TNestedList>) +
+            ".";
 
-                if (!sub.TryGetValue(secondary, out var subSub))
-                {
-                    subSub = new TSubNested();
+        private static readonly ProfilerMarker _PRF_AddOrUpdate = new(_PRF_PFX + nameof(AddOrUpdate));
 
-                    sub.Add(secondary, subSub);
-                }
+        private static readonly ProfilerMarker _PRF_TryGetValue = new(_PRF_PFX + nameof(TryGetValue));
 
-                subSub.AddOrUpdate(tertiary, value);
-            }
-        }
+        private static readonly ProfilerMarker _PRF_TryGetValueWithFallback =
+            new(_PRF_PFX + nameof(TryGetValueWithFallback));
+
+        #endregion
     }
 }

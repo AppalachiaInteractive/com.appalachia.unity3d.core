@@ -1,3 +1,4 @@
+using Appalachia.Utility.Strings;
 using UnityEngine;
 
 namespace Appalachia.Core.Collections.NonSerialized
@@ -9,6 +10,8 @@ namespace Appalachia.Core.Collections.NonSerialized
         NonSerializedList<NonSerializedAppaLookup<TKey3, TValue>>,
         NonSerializedList<NonSerializedAppaLookup2<TKey2, TKey3, TValue>>>
     {
+        protected override bool IsSerialized => false;
+
         protected override Color GetDisplayColor(
             TKey1 key,
             NonSerializedAppaLookup2<TKey2, TKey3, TValue> value)
@@ -20,7 +23,7 @@ namespace Appalachia.Core.Collections.NonSerialized
             TKey1 key,
             NonSerializedAppaLookup2<TKey2, TKey3, TValue> value)
         {
-            return $"{value.Count} sub-values";
+            return ZString.Format("{0} sub-values", value.Count);
         }
 
         protected override string GetDisplayTitle(

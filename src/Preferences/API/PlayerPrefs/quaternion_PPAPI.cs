@@ -1,5 +1,6 @@
 #region
 
+using Appalachia.Utility.Strings;
 using Unity.Mathematics;
 
 #endregion
@@ -12,20 +13,20 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
         {
             var result = quaternion.identity;
             var value = result.value;
-            value.x = UnityEngine.PlayerPrefs.GetFloat($"{key}.x", defaultValue.value.x);
-            value.y = UnityEngine.PlayerPrefs.GetFloat($"{key}.y", defaultValue.value.y);
-            value.z = UnityEngine.PlayerPrefs.GetFloat($"{key}.z", defaultValue.value.z);
-            value.w = UnityEngine.PlayerPrefs.GetFloat($"{key}.w", defaultValue.value.w);
+            value.x = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.x", key), defaultValue.value.x);
+            value.y = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.y", key), defaultValue.value.y);
+            value.z = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.z", key), defaultValue.value.z);
+            value.w = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.w", key), defaultValue.value.w);
             result.value = value;
             return result;
         }
 
         public void Save(string key, quaternion value, quaternion low, quaternion high)
         {
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.x", value.value.x);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.y", value.value.y);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.z", value.value.z);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.w", value.value.w);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.x", key), value.value.x);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.y", key), value.value.y);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.z", key), value.value.z);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.w", key), value.value.w);
         }
 
         public quaternion Draw(string key, string label, quaternion value, quaternion low, quaternion high)

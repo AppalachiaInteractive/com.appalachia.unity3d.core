@@ -1,5 +1,6 @@
 #region
 
+using Appalachia.Utility.Strings;
 using Unity.Mathematics;
 
 #endregion
@@ -11,15 +12,15 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
         public float2 Get(string key, float2 defaultValue, float2 low, float2 high)
         {
             var result = float2.zero;
-            result.x = UnityEngine.PlayerPrefs.GetFloat($"{key}.x", defaultValue.x);
-            result.y = UnityEngine.PlayerPrefs.GetFloat($"{key}.y", defaultValue.y);
+            result.x = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.x", key), defaultValue.x);
+            result.y = UnityEngine.PlayerPrefs.GetFloat(ZString.Format("{0}.y", key), defaultValue.y);
             return result;
         }
 
         public void Save(string key, float2 value, float2 low, float2 high)
         {
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.x", value.x);
-            UnityEngine.PlayerPrefs.SetFloat($"{key}.y", value.y);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.x", key), value.x);
+            UnityEngine.PlayerPrefs.SetFloat(ZString.Format("{0}.y", key), value.y);
         }
 
         public float2 Draw(string key, string label, float2 value, float2 low, float2 high)

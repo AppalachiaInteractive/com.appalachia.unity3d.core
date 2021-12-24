@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Appalachia.Core.Context.Analysis.Core
 {
-    public class AnalysisMessage
+    public class AnalysisMessage 
     {
         public AnalysisMessage(bool isIssue, params AnalysisMessagePart[] parts)
         {

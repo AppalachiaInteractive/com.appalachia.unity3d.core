@@ -1,13 +1,13 @@
 #region
 
-using Appalachia.Core.Behaviours;
+using Appalachia.Core.Objects.Root;
 using UnityEngine;
 
 #endregion
 
 namespace Appalachia.Core.Volumes
 {
-    public class PropertyInspector : AppalachiaBehaviour
+    public sealed class PropertyInspector : AppalachiaBehaviour<PropertyInspector>
     {
         public LayerMask layerMask;
     }

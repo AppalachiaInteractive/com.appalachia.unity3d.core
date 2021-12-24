@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using Appalachia.CI.Constants;
 using Appalachia.Utility.Enums;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -7,8 +8,23 @@ using UnityEngine;
 namespace Appalachia.Core.Types
 {
     [Serializable]
-    public class SerializableType
+    public class SerializableType 
     {
+        [NonSerialized] private AppaContext _context;
+
+        protected AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(this);
+                }
+
+                return _context;
+            }
+        }
+        
         public SerializableType(Type t)
         {
             type = t;
