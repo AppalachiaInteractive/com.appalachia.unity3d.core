@@ -40,6 +40,10 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
+    public partial class AppalachiaSimplePlayable
+    {
+    }
+
     public partial class AppalachiaPlayable
     {
     }

@@ -80,6 +80,13 @@ namespace Appalachia.Core.Objects.Root
     [DoNotReorderFields]
     [Serializable]
     [SmartLabelChildren]
+    public partial class AppalachiaSimplePlayable
+    {
+    }
+
+    [DoNotReorderFields]
+    [Serializable]
+    [SmartLabelChildren]
     public partial class AppalachiaPlayable
     {
     }

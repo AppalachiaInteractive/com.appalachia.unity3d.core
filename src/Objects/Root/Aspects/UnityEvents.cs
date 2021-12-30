@@ -477,7 +477,11 @@ namespace Appalachia.Core.Objects.Root
 
         private protected virtual async AppaTask Initialize()
         {
+            BeforeInitialization();
+
             await AppaTask.CompletedTask;
+
+            AfterInitialization();
         }
 
         private async AppaTask RemapUnityEvents(UnityEventFlags eventType)
@@ -603,14 +607,6 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBehaviour<T>
     {
-        private protected override async AppaTask Initialize()
-        {
-            BeforeInitialization();
-
-            await Initialize(_initializer);
-
-            AfterInitialization();
-        }
     }
 
     public partial class SingletonAppalachiaBehaviour<T>
@@ -635,6 +631,11 @@ namespace Appalachia.Core.Objects.Root
         public bool HasBeenDisabled => _hasBeenDisabled;
         public bool HasBeenEnabled => _hasBeenEnabled;
         public bool HasBeenInitialized => _hasBeenInitialized;
+
+        protected virtual async AppaTask WhenEnabled()
+        {
+            await AppaTask.CompletedTask;
+        }
 
         private async AppaTask HandleInitialization()
         {
@@ -661,11 +662,6 @@ namespace Appalachia.Core.Objects.Root
         {
         }
 
-        protected virtual async AppaTask WhenEnabled()
-        {
-            await AppaTask.CompletedTask;
-        }
-
         public void OnAfterDeserialize()
         {
             HandleInitialization().Forget();
@@ -682,6 +678,10 @@ namespace Appalachia.Core.Objects.Root
     }
 
     public partial class AppalachiaBase<T>
+    {
+    }
+
+    public partial class AppalachiaSimplePlayable
     {
     }
 

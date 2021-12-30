@@ -310,6 +310,10 @@ namespace Appalachia.Core.Objects.Root
         #endregion
     }
 
+    public partial class AppalachiaSimplePlayable
+    {
+    }
+
     public partial class AppalachiaPlayable
     {
     }

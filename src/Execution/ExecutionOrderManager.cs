@@ -2,7 +2,6 @@
 
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Attributes;
-using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Execution;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
@@ -13,20 +12,15 @@ namespace Appalachia.Core.Execution
 {
 #if UNITY_EDITOR
     [CallStaticConstructorInEditor]
-    public sealed class ExecutionOrderManager : AppalachiaBase<ExecutionOrderManager>
+    public sealed class ExecutionOrderManager
     {
-        private const string _PRF_PFX = nameof(ExecutionOrderManager) + ".";
-
-        private static readonly ProfilerMarker _PRF_ExecutionOrderManager =
-            new(_PRF_PFX + nameof(ExecutionOrderManager));
-
         static ExecutionOrderManager()
         {
             if (AppalachiaApplication.IsPlayingOrWillPlay)
             {
                 return;
             }
-            
+
             using (_PRF_ExecutionOrderManager.Auto())
             {
                 var scripts = AssetDatabaseManager.GetAllRuntimeMonoScripts();
@@ -56,6 +50,15 @@ namespace Appalachia.Core.Execution
                 }
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(ExecutionOrderManager) + ".";
+
+        private static readonly ProfilerMarker _PRF_ExecutionOrderManager =
+            new(_PRF_PFX + nameof(ExecutionOrderManager));
+
+        #endregion
     }
 #endif
 }

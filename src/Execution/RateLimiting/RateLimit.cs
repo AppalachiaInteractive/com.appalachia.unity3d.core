@@ -1,10 +1,9 @@
 using Appalachia.Core.Collections;
 using Appalachia.Core.Collections.Implementations.Lists;
-using Appalachia.Core.Objects.Root;
 
 namespace Appalachia.Core.Execution.RateLimiting
 {
-    public class RateLimit : AppalachiaBase
+    public class RateLimit
     {
         public RateLimit(int maxCalls, float periodMilliseconds)
         {
@@ -12,7 +11,11 @@ namespace Appalachia.Core.Execution.RateLimiting
             timings = new AppaList_float(maxCalls);
         }
 
+        #region Fields and Autoproperties
+
         public AppaList<float> timings;
         public float periodMilliseconds;
+
+        #endregion
     }
 }

@@ -13,7 +13,7 @@ namespace Appalachia.Core.Objects.Scriptables
         protected abstract string DefaultName { get; }
 
         // ReSharper disable once UnusedParameter.Global
-        public abstract void Initialize(AppalachiaObject parent);
+        public abstract void InitializeFromParent(AppalachiaObject parent);
 
 #if UNITY_EDITOR
         public static T CreateNested(AppalachiaObject parent, bool initialize = true)
@@ -44,7 +44,7 @@ namespace Appalachia.Core.Objects.Scriptables
 
             if (initialize)
             {
-                instance.Initialize(parent);
+                instance.InitializeFromParent(parent);
             }
 
             return instance;

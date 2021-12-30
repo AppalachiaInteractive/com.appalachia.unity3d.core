@@ -4,6 +4,7 @@ using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Async;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -209,7 +210,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public abstract partial class AppalachiaBehaviour<T> : IInitializable
+    public abstract partial class AppalachiaBehaviour : IInitializable
     {
         #region Fields and Autoproperties
 
@@ -263,7 +264,7 @@ namespace Appalachia.Core.Objects.Root
 
                         _initializationState =
                             new InitializationState(async () => await Initialize(_initializer));
-                        MarkAsModified();
+                        this.MarkAsModified();
                     }
 
                     return _initializationState;
@@ -304,7 +305,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
-                initializationState.InitializeSynchronous(InitializationComplete, this as T);
+                initializationState.InitializeSynchronous(InitializationComplete, this);
             }
         }
 
@@ -320,7 +321,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_StartInitializing.Auto())
             {
-                var startTask = initializationState.Initialize(InitializationComplete, this as T);
+                var startTask = initializationState.Initialize(InitializationComplete, this);
 
                 return startTask;
             }
@@ -389,6 +390,10 @@ namespace Appalachia.Core.Objects.Root
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSynchronous));
 
         #endregion
+    }
+
+    public abstract partial class AppalachiaBehaviour<T>
+    {
     }
 
     public abstract partial class SingletonAppalachiaBehaviour<T>
@@ -580,7 +585,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class AppalachiaPlayable : IInitializable
+    public partial class AppalachiaSimplePlayable : IInitializable
     {
         #region Fields and Autoproperties
 
@@ -756,6 +761,10 @@ namespace Appalachia.Core.Objects.Root
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSynchronous));
 
         #endregion
+    }
+
+    public partial class AppalachiaPlayable
+    {
     }
 
     public partial class AppalachiaPlayable<T>

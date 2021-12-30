@@ -5,7 +5,7 @@ namespace Appalachia.Core.Objects.Root
 {
     public partial class AppalachiaObject : INamed
     {
-        #region INamed Members
+        #region IInitializable Members
 
         public string Name => name;
 
@@ -26,7 +26,7 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBehaviour : INamed
     {
-        #region INamed Members
+        #region IInitializable Members
 
         public string Name => name;
 
@@ -77,7 +77,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class AppalachiaPlayable : INamed
+    public partial class AppalachiaSimplePlayable : INamed
     {
         #region Fields and Autoproperties
 
@@ -85,7 +85,7 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
-        #region INamed Members
+        #region IInitializable Members
 
         public virtual string Name
         {
@@ -103,6 +103,10 @@ namespace Appalachia.Core.Objects.Root
         }
 
         #endregion
+    }
+
+    public partial class AppalachiaPlayable
+    {
     }
 
     public partial class AppalachiaPlayable<T>

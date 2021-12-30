@@ -220,7 +220,7 @@ namespace Appalachia.Core.Objects.Root
         #endregion
     }
 
-    public partial class AppalachiaPlayable : IContextualInstance
+    public partial class AppalachiaSimplePlayable : IContextualInstance
     {
         #region Fields and Autoproperties
 
@@ -246,6 +246,10 @@ namespace Appalachia.Core.Objects.Root
         AppaContext IContextualInstance.Context => Context;
 
         #endregion
+    }
+
+    public partial class AppalachiaPlayable
+    {
     }
 
     public partial class AppalachiaPlayable<T> : IContextual

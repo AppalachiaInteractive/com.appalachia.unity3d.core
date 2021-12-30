@@ -31,7 +31,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class AppalachiaBehaviour<T>
+    public partial class AppalachiaBehaviour
     {
         #region Constants and Static Readonly
 
@@ -46,6 +46,10 @@ namespace Appalachia.Core.Objects.Root
 
         protected virtual bool ShowMetadata => true;
         protected virtual bool ShowWorkflow => false;
+    }
+
+    public partial class AppalachiaBehaviour<T>
+    {
     }
 
     public partial class SingletonAppalachiaBehaviour<T>
@@ -73,7 +77,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class AppalachiaPlayable
+    public partial class AppalachiaSimplePlayable
     {
         #region Constants and Static Readonly
 
@@ -88,6 +92,10 @@ namespace Appalachia.Core.Objects.Root
 
         protected virtual bool ShowMetadata => true;
         protected virtual bool ShowWorkflow => false;
+    }
+
+    public partial class AppalachiaPlayable
+    {
     }
 
     public partial class AppalachiaPlayable<T>

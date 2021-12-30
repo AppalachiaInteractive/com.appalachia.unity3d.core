@@ -200,7 +200,7 @@ namespace Appalachia.Core.Objects.Root
     }
 
     [InspectorIcon(Brand.AppalachiaPlayable.Icon)]
-    public partial class AppalachiaPlayable
+    public partial class AppalachiaSimplePlayable
     {
         protected virtual string GetBackgroundColor()
         {
@@ -231,6 +231,10 @@ namespace Appalachia.Core.Objects.Root
         {
             return Brand.AppalachiaPlayable.Color;
         }
+    }
+
+    public partial class AppalachiaPlayable
+    {
     }
 
     public partial class AppalachiaPlayable<T>
