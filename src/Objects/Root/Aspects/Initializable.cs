@@ -111,7 +111,23 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
+                BeforeInitialization();
+                
                 initializationState.InitializeSynchronous(InitializationComplete, this);
+
+                AfterInitialization();
+            }
+        }
+
+        protected internal async AppaTask ExecuteInitialization()
+        {
+            using (_PRF_ExecuteInitialization.Auto())
+            {
+                BeforeInitialization();
+
+                await initializationState.Initialize(InitializationComplete, this);
+
+                AfterInitialization();
             }
         }
 
@@ -120,16 +136,6 @@ namespace Appalachia.Core.Objects.Root
             using (_PRF_InitializationExceptionHandler.Auto())
             {
                 Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), this, ex);
-            }
-        }
-
-        private AppaTask StartInitializing()
-        {
-            using (_PRF_StartInitializing.Auto())
-            {
-                var startTask = initializationState.Initialize(InitializationComplete, this);
-
-                return startTask;
             }
         }
 
@@ -148,11 +154,6 @@ namespace Appalachia.Core.Objects.Root
         public event InitializationCompleteHandler InitializationComplete;
 
         InitializationState IInitializable.initializationState => initializationState;
-
-        async AppaTask IInitializable.StartInitializing()
-        {
-            await StartInitializing();
-        }
 
         void IInitializable.InitializationExceptionHandler(Exception ex)
         {
@@ -179,18 +180,23 @@ namespace Appalachia.Core.Objects.Root
             AfterInitialization();
         }
 
+        async AppaTask IInitializable.ExecuteInitialization()
+        {
+            await ExecuteInitialization();
+        }
+
         #endregion
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_ExecuteInitialization =
+            new ProfilerMarker(_PRF_PFX + nameof(ExecuteInitialization));
 
         private static readonly ProfilerMarker _PRF_initializationState =
             new ProfilerMarker(_PRF_PFX + nameof(initializationState));
 
         private static readonly ProfilerMarker _PRF_InitializationExceptionHandler =
             new ProfilerMarker(_PRF_PFX + nameof(InitializationExceptionHandler));
-
-        private static readonly ProfilerMarker _PRF_StartInitializing =
-            new ProfilerMarker(_PRF_PFX + nameof(StartInitializing));
 
         private static readonly ProfilerMarker _PRF_InitializeSynchronous =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSynchronous));
@@ -199,10 +205,6 @@ namespace Appalachia.Core.Objects.Root
     }
 
     public partial class AppalachiaRepository
-    {
-    }
-
-    public abstract partial class AppalachiaObject
     {
     }
 
@@ -263,7 +265,7 @@ namespace Appalachia.Core.Objects.Root
                         _initializer ??= new Initializer();
 
                         _initializationState =
-                            new InitializationState(async () => await Initialize(_initializer));
+                            new InitializationState(async () => { await Initialize(_initializer); });
                         this.MarkAsModified();
                     }
 
@@ -305,7 +307,23 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
+                BeforeInitialization();
+                
                 initializationState.InitializeSynchronous(InitializationComplete, this);
+
+                AfterInitialization();
+            }
+        }
+
+        protected internal async AppaTask ExecuteInitialization()
+        {
+            using (_PRF_ExecuteInitialization.Auto())
+            {
+                BeforeInitialization();
+
+                await initializationState.Initialize(InitializationComplete, this);
+
+                AfterInitialization();
             }
         }
 
@@ -316,17 +334,7 @@ namespace Appalachia.Core.Objects.Root
                 Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), this, ex);
             }
         }
-
-        private AppaTask StartInitializing()
-        {
-            using (_PRF_StartInitializing.Auto())
-            {
-                var startTask = initializationState.Initialize(InitializationComplete, this);
-
-                return startTask;
-            }
-        }
-
+        
         #region IInitializable Members
 
         public bool FullyInitialized => initializationState.hasInitializationFinished;
@@ -342,11 +350,6 @@ namespace Appalachia.Core.Objects.Root
         public event InitializationCompleteHandler InitializationComplete;
 
         InitializationState IInitializable.initializationState => initializationState;
-
-        async AppaTask IInitializable.StartInitializing()
-        {
-            await StartInitializing();
-        }
 
         void IInitializable.InitializationExceptionHandler(Exception ex)
         {
@@ -373,18 +376,23 @@ namespace Appalachia.Core.Objects.Root
             AfterInitialization();
         }
 
+        async AppaTask IInitializable.ExecuteInitialization()
+        {
+            await ExecuteInitialization();
+        }
+
         #endregion
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_ExecuteInitialization =
+            new ProfilerMarker(_PRF_PFX + nameof(ExecuteInitialization));
 
         private static readonly ProfilerMarker _PRF_initializationState =
             new ProfilerMarker(_PRF_PFX + nameof(initializationState));
 
         private static readonly ProfilerMarker _PRF_InitializationExceptionHandler =
             new ProfilerMarker(_PRF_PFX + nameof(InitializationExceptionHandler));
-
-        private static readonly ProfilerMarker _PRF_StartInitializing =
-            new ProfilerMarker(_PRF_PFX + nameof(StartInitializing));
 
         private static readonly ProfilerMarker _PRF_InitializeSynchronous =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSynchronous));
@@ -494,7 +502,23 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
+                BeforeInitialization();
+                
                 initializationState.InitializeSynchronous(InitializationComplete, this);
+
+                AfterInitialization();
+            }
+        }
+
+        protected internal async AppaTask ExecuteInitialization()
+        {
+            using (_PRF_ExecuteInitialization.Auto())
+            {
+                BeforeInitialization();
+
+                await initializationState.Initialize(InitializationComplete, this);
+
+                AfterInitialization();
             }
         }
 
@@ -503,16 +527,6 @@ namespace Appalachia.Core.Objects.Root
             using (_PRF_InitializationExceptionHandler.Auto())
             {
                 Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), this, ex);
-            }
-        }
-
-        private AppaTask StartInitializing()
-        {
-            using (_PRF_StartInitializing.Auto())
-            {
-                var startTask = initializationState.Initialize(InitializationComplete, this);
-
-                return startTask;
             }
         }
 
@@ -531,11 +545,6 @@ namespace Appalachia.Core.Objects.Root
         public event InitializationCompleteHandler InitializationComplete;
 
         InitializationState IInitializable.initializationState => initializationState;
-
-        async AppaTask IInitializable.StartInitializing()
-        {
-            await StartInitializing();
-        }
 
         void IInitializable.InitializationExceptionHandler(Exception ex)
         {
@@ -562,18 +571,23 @@ namespace Appalachia.Core.Objects.Root
             AfterInitialization();
         }
 
+        async AppaTask IInitializable.ExecuteInitialization()
+        {
+            await ExecuteInitialization();
+        }
+
         #endregion
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_ExecuteInitialization =
+            new ProfilerMarker(_PRF_PFX + nameof(ExecuteInitialization));
 
         private static readonly ProfilerMarker _PRF_initializationState =
             new ProfilerMarker(_PRF_PFX + nameof(initializationState));
 
         private static readonly ProfilerMarker _PRF_InitializationExceptionHandler =
             new ProfilerMarker(_PRF_PFX + nameof(InitializationExceptionHandler));
-
-        private static readonly ProfilerMarker _PRF_StartInitializing =
-            new ProfilerMarker(_PRF_PFX + nameof(StartInitializing));
 
         private static readonly ProfilerMarker _PRF_InitializeSynchronous =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSynchronous));
@@ -676,25 +690,30 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
+                BeforeInitialization();
+                
                 initializationState.InitializeSynchronous(InitializationComplete, this);
+
+                AfterInitialization();
             }
         }
 
+        protected internal async AppaTask ExecuteInitialization()
+        {
+            using (_PRF_ExecuteInitialization.Auto())
+            {
+                BeforeInitialization();
+
+                await initializationState.Initialize(InitializationComplete, this);
+
+                AfterInitialization();
+            }
+        }
         private void InitializationExceptionHandler(Exception ex)
         {
             using (_PRF_InitializationExceptionHandler.Auto())
             {
                 Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), this, ex);
-            }
-        }
-
-        private AppaTask StartInitializing()
-        {
-            using (_PRF_StartInitializing.Auto())
-            {
-                var startTask = initializationState.Initialize(InitializationComplete, this);
-
-                return startTask;
             }
         }
 
@@ -713,11 +732,6 @@ namespace Appalachia.Core.Objects.Root
         public event InitializationCompleteHandler InitializationComplete;
 
         InitializationState IInitializable.initializationState => initializationState;
-
-        async AppaTask IInitializable.StartInitializing()
-        {
-            await StartInitializing();
-        }
 
         void IInitializable.InitializationExceptionHandler(Exception ex)
         {
@@ -744,6 +758,11 @@ namespace Appalachia.Core.Objects.Root
             AfterInitialization();
         }
 
+        async AppaTask IInitializable.ExecuteInitialization()
+        {
+            await ExecuteInitialization(null);
+        }
+        
         #endregion
 
         #region Profiling
@@ -753,9 +772,6 @@ namespace Appalachia.Core.Objects.Root
 
         private static readonly ProfilerMarker _PRF_InitializationExceptionHandler =
             new ProfilerMarker(_PRF_PFX + nameof(InitializationExceptionHandler));
-
-        private static readonly ProfilerMarker _PRF_StartInitializing =
-            new ProfilerMarker(_PRF_PFX + nameof(StartInitializing));
 
         private static readonly ProfilerMarker _PRF_InitializeSynchronous =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSynchronous));

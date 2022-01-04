@@ -56,6 +56,11 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_Update.Auto())
             {
+                if (!DependenciesAreReady || !FullyInitialized)
+                {
+                    return;
+                }
+                
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {

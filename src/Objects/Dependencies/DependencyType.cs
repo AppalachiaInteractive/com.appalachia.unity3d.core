@@ -6,6 +6,5 @@ namespace Appalachia.Core.Objects.Dependencies
         Repository = 01,
         Object = 05,
         Behaviour = 10,
-        Playable = 20,
     }
 }

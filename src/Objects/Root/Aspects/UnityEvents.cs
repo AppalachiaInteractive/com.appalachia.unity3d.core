@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Core.Objects.Dependencies;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Enums;
 using Appalachia.Utility.Execution;
@@ -8,6 +10,7 @@ using UnityEngine;
 
 // ReSharper disable NotAccessedField.Local
 // ReSharper disable StaticMemberInGenericType
+#pragma warning disable CS0414
 
 namespace Appalachia.Core.Objects.Root
 {
@@ -176,13 +179,15 @@ namespace Appalachia.Core.Objects.Root
             await AppaTask.CompletedTask;
         }
 
-        private async AppaTask RemapUnityEvents(UnityEventFlags eventType)
+        private async AppaTask RemapUnityEvents(UnityEventFlags currentUnityEventType)
         {
             using (_PRF_RemapUnityEvents.Auto())
             {
-                _unityEventFlags |= UnityEventFlags.OnDestroy;
+                await AppalachiaRepositoryDependencyManager.ValidateDependencies();
 
-                switch (eventType)
+                _unityEventFlags |= currentUnityEventType;
+
+                switch (currentUnityEventType)
                 {
                     case UnityEventFlags.Awake:
 
@@ -226,7 +231,7 @@ namespace Appalachia.Core.Objects.Root
                         );
                 }
 
-                if (_unityEventFlags == UnityEventFlags.OnDestroy)
+                if (currentUnityEventType == UnityEventFlags.OnDestroy)
                 {
                     _eventFlags = AppalachiaEventFlags.None;
                     await WhenDestroyed();
@@ -235,7 +240,7 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                if (_unityEventFlags == UnityEventFlags.OnDisable)
+                if (currentUnityEventType == UnityEventFlags.OnDisable)
                 {
                     _eventFlags = _eventFlags.UnsetFlag(AppalachiaEventFlags.Enabled);
                     await WhenDisabled();
@@ -248,17 +253,14 @@ namespace Appalachia.Core.Objects.Root
 
                 if (!_eventFlags.Has(AppalachiaEventFlags.Initialized))
                 {
-                    BeforeInitialization();
-
-                    await Initialize(_initializer);
-
-                    AfterInitialization();
+                    await ExecuteInitialization();
 
                     _eventFlags |= AppalachiaEventFlags.Initialized;
                 }
 
-                if (_unityEventFlags == UnityEventFlags.OnEnable)
+                if (currentUnityEventType == UnityEventFlags.OnEnable)
                 {
+                    _eventFlags = _eventFlags.SetFlag(AppalachiaEventFlags.Enabled);
                     await WhenEnabled();
 
                     _hasBeenEnabled = true;
@@ -287,6 +289,7 @@ namespace Appalachia.Core.Objects.Root
         #endregion
     }
 
+    
     public partial class AppalachiaRepository
     {
     }
@@ -484,13 +487,15 @@ namespace Appalachia.Core.Objects.Root
             AfterInitialization();
         }
 
-        private async AppaTask RemapUnityEvents(UnityEventFlags eventType)
+        private async AppaTask RemapUnityEvents(UnityEventFlags currentUnityEventType)
         {
             using (_PRF_RemapUnityEvents.Auto())
             {
-                _unityEventFlags |= UnityEventFlags.OnDestroy;
+                await AppalachiaRepositoryDependencyManager.ValidateDependencies();
 
-                switch (eventType)
+                _unityEventFlags |= currentUnityEventType;
+
+                switch (currentUnityEventType)
                 {
                     case UnityEventFlags.Awake:
 
@@ -541,7 +546,7 @@ namespace Appalachia.Core.Objects.Root
                         );
                 }
 
-                if (_unityEventFlags == UnityEventFlags.OnDestroy)
+                if (currentUnityEventType == UnityEventFlags.OnDestroy)
                 {
                     _eventFlags = AppalachiaEventFlags.None;
 
@@ -552,7 +557,7 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                if (_unityEventFlags == UnityEventFlags.OnDisable)
+                if (currentUnityEventType == UnityEventFlags.OnDisable)
                 {
                     _eventFlags = _eventFlags.UnsetFlag(AppalachiaEventFlags.Enabled);
 
@@ -569,12 +574,12 @@ namespace Appalachia.Core.Objects.Root
                     await Initialize();
 
                     _hasBeenInitialized = true;
-
                     _eventFlags |= AppalachiaEventFlags.Initialized;
                 }
 
-                if (_unityEventFlags == UnityEventFlags.OnEnable)
+                if (currentUnityEventType == UnityEventFlags.OnEnable)
                 {
+                    _eventFlags = _eventFlags.SetFlag(AppalachiaEventFlags.Enabled);
                     await WhenEnabled();
 
                     _hasBeenEnabled = true;
@@ -641,6 +646,9 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_HandleInitialization.Auto())
             {
+                await AppaTask.NextFrame();
+                await AppalachiaRepositoryDependencyManager.ValidateDependencies();
+
                 BeforeInitialization();
 
                 await Initialize(_initializer);
@@ -664,8 +672,17 @@ namespace Appalachia.Core.Objects.Root
 
         public void OnAfterDeserialize()
         {
-            HandleInitialization().Forget();
+            if (_hasBeenInitialized)
+            {
+                return;
+            }
+
+            _initializationFunctions ??= new Queue<Func<AppaTask>>();
+            _initializationFunctions.Enqueue(HandleInitialization);
         }
+
+        private static Queue<Func<AppaTask>> _initializationFunctions;
+        public static Queue<Func<AppaTask>> InitializationFunctions => _initializationFunctions;
 
         #endregion
 
@@ -693,3 +710,4 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 }
+#pragma warning restore CS0414

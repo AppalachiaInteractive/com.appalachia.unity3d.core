@@ -172,9 +172,7 @@ namespace Appalachia.Core.Objects.Scriptables
                     }
                 }
 
-#if UNITY_EDITOR
                 MarkAsModified();
-#endif
             }
         }
 
@@ -219,41 +217,13 @@ namespace Appalachia.Core.Objects.Scriptables
 
 #if UNITY_EDITOR
                 await PopulateItems();
+#else
+                await AppaTask.CompletedTask;
 #endif
             }
         }
 
-        #region Profiling
-
-        private const string _PRF_PFX =
-            nameof(AppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup, T>) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
-        private static readonly ProfilerMarker _PRF_Clear = new ProfilerMarker(_PRF_PFX + nameof(Clear));
-
-        private static readonly ProfilerMarker _PRF_RemoveByKey =
-            new ProfilerMarker(_PRF_PFX + nameof(RemoveByKey));
-
-        private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
-        private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
-        private static readonly ProfilerMarker _PRF_DoForAll = new(_PRF_PFX + nameof(DoForAll));
-
-        private static readonly ProfilerMarker _PRF_DoForAllIf = new(_PRF_PFX + nameof(DoForAllIf));
-
-        #endregion
-
 #if UNITY_EDITOR
-
-        private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
-
-        [ButtonGroup]
-        private void PopulateItemsSynchronous()
-        {
-            PopulateItems().Forget();
-        }
-
         private async AppaTask PopulateItems()
         {
             using (_PRF_PopulateItems.Auto())
@@ -311,6 +281,12 @@ namespace Appalachia.Core.Objects.Scriptables
         }
 
         [ButtonGroup]
+        private void PopulateItemsSynchronous()
+        {
+            PopulateItems().Forget();
+        }
+        
+        [ButtonGroup]
         private void RepopulateItems()
         {
             _items.Clear();
@@ -318,6 +294,31 @@ namespace Appalachia.Core.Objects.Scriptables
             PopulateItems();
 #pragma warning restore CS4014
         }
-    }
 #endif
+
+        #region Profiling
+
+        private const string _PRF_PFX =
+            nameof(AppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup, T>) + ".";
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_Clear = new ProfilerMarker(_PRF_PFX + nameof(Clear));
+
+        private static readonly ProfilerMarker _PRF_RemoveByKey =
+            new ProfilerMarker(_PRF_PFX + nameof(RemoveByKey));
+
+        private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
+        private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
+        private static readonly ProfilerMarker _PRF_DoForAll = new(_PRF_PFX + nameof(DoForAll));
+
+        private static readonly ProfilerMarker _PRF_DoForAllIf = new(_PRF_PFX + nameof(DoForAllIf));
+
+#if UNITY_EDITOR
+        private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
+#endif
+
+        #endregion
+    }
 }

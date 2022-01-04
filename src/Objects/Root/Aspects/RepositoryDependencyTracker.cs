@@ -1,9 +1,7 @@
-using System.Reflection;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Dependencies;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Constants;
-using Appalachia.Utility.Reflection.Extensions;
 using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
@@ -16,10 +14,7 @@ namespace Appalachia.Core.Objects.Root
     {
         static AppalachiaRepository()
         {
-            _dependencyTracker = new AppalachiaRepositoryDependencyTracker(
-                typeof(AppalachiaRepository),
-                DependencyType.Repository
-            );
+            _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(AppalachiaRepository));
         }
 
         #region Static Fields and Autoproperties
@@ -52,7 +47,7 @@ namespace Appalachia.Core.Objects.Root
     {
         static AppalachiaObject()
         {
-            _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T), DependencyType.Object);
+            _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T));
             _dependencyTracker.RegisterDependency(
                 AppalachiaRepository.DependencyTracker,
                 i => _appalachiaRepository = i
@@ -80,15 +75,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_RegisterDependency.Auto())
             {
-                var property = typeof(TDependency).GetProperty_CACHE(
-                    nameof(DependencyTracker),
-                    BindingFlags.Public | BindingFlags.Static
-                );
-
-                var value = property.GetValue(null);
-                var cast = value as AppalachiaRepositoryDependencyTracker;
-
-                _dependencyTracker.RegisterDependency(cast, handler);
+                _dependencyTracker.RegisterDependency(handler);
             }
         }
 
@@ -104,7 +91,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_RegisterDependency =
-            new ProfilerMarker(_PRF_PFX + nameof(RegisterDependency));
+            new(_PRF_PFX + nameof(RegisterDependency));
 
         #endregion
     }
@@ -140,7 +127,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_ValidateTypeIsInRepository =
-            new ProfilerMarker(_PRF_PFX + nameof(ValidateTypeIsInRepository));
+            new(_PRF_PFX + nameof(ValidateTypeIsInRepository));
 
         #endregion
     }
@@ -154,8 +141,7 @@ namespace Appalachia.Core.Objects.Root
     {
         static AppalachiaBehaviour()
         {
-            _dependencyTracker =
-                new AppalachiaRepositoryDependencyTracker(typeof(T), DependencyType.Behaviour);
+            _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T));
             _dependencyTracker.RegisterDependency(
                 AppalachiaRepository.DependencyTracker,
                 i => _appalachiaRepository = i
@@ -164,7 +150,7 @@ namespace Appalachia.Core.Objects.Root
 
         #region Static Fields and Autoproperties
 
-        private protected static AppalachiaRepositoryDependencyTracker _dependencyTracker;
+        protected internal static AppalachiaRepositoryDependencyTracker _dependencyTracker;
 
         private static AppalachiaRepository _appalachiaRepository;
 
@@ -183,15 +169,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_RegisterDependency.Auto())
             {
-                var property = typeof(TDependency).GetProperty_CACHE(
-                    nameof(DependencyTracker),
-                    BindingFlags.Public | BindingFlags.Static
-                );
-
-                var value = property.GetValue(null);
-                var cast = value as AppalachiaRepositoryDependencyTracker;
-
-                _dependencyTracker.RegisterDependency(cast, handler);
+                _dependencyTracker.RegisterDependency(handler);
             }
         }
 
@@ -202,15 +180,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_RegisterDependency.Auto())
             {
-                var property = typeof(TDependency).GetProperty_CACHE(
-                    nameof(DependencyTracker),
-                    BindingFlags.Public | BindingFlags.Static
-                );
-
-                var value = property.GetValue(null);
-                var cast = value as AppalachiaRepositoryDependencyTracker;
-
-                _dependencyTracker.RegisterDependency(cast, handler);
+                _dependencyTracker.RegisterDependency(handler);
             }
         }
 
@@ -226,7 +196,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_RegisterDependency =
-            new ProfilerMarker(_PRF_PFX + nameof(RegisterDependency));
+            new(_PRF_PFX + nameof(RegisterDependency));
 
         #endregion
     }
@@ -252,8 +222,7 @@ namespace Appalachia.Core.Objects.Root
     {
         static AppalachiaBase()
         {
-            _dependencyTracker =
-                new AppalachiaRepositoryDependencyTracker(typeof(T), DependencyType.Behaviour);
+            _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T));
             _dependencyTracker.RegisterDependency(
                 AppalachiaRepository.DependencyTracker,
                 i => _appalachiaRepository = i
@@ -281,15 +250,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_RegisterDependency.Auto())
             {
-                var property = typeof(TDependency).GetProperty_CACHE(
-                    nameof(DependencyTracker),
-                    BindingFlags.Public | BindingFlags.Static
-                );
-
-                var value = property.GetValue(null);
-                var cast = value as AppalachiaRepositoryDependencyTracker;
-
-                _dependencyTracker.RegisterDependency(cast, handler);
+                _dependencyTracker.RegisterDependency(handler);
             }
         }
 
@@ -305,7 +266,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_RegisterDependency =
-            new ProfilerMarker(_PRF_PFX + nameof(RegisterDependency));
+            new(_PRF_PFX + nameof(RegisterDependency));
 
         #endregion
     }
@@ -322,8 +283,7 @@ namespace Appalachia.Core.Objects.Root
     {
         static AppalachiaPlayable()
         {
-            _dependencyTracker =
-                new AppalachiaRepositoryDependencyTracker(typeof(T), DependencyType.Behaviour);
+            _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T));
             _dependencyTracker.RegisterDependency(
                 AppalachiaRepository.DependencyTracker,
                 i => _appalachiaRepository = i
@@ -351,15 +311,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_RegisterDependency.Auto())
             {
-                var property = typeof(TDependency).GetProperty_CACHE(
-                    nameof(DependencyTracker),
-                    BindingFlags.Public | BindingFlags.Static
-                );
-
-                var value = property.GetValue(null);
-                var cast = value as AppalachiaRepositoryDependencyTracker;
-
-                _dependencyTracker.RegisterDependency(cast, handler);
+                _dependencyTracker.RegisterDependency(handler);
             }
         }
 
@@ -375,7 +327,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_RegisterDependency =
-            new ProfilerMarker(_PRF_PFX + nameof(RegisterDependency));
+            new(_PRF_PFX + nameof(RegisterDependency));
 
         #endregion
     }

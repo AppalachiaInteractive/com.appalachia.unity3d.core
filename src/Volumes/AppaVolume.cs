@@ -110,6 +110,11 @@ namespace Appalachia.Core.Volumes
 
         private void Update()
         {
+            if (!DependenciesAreReady || !FullyInitialized)
+            {
+                return;
+            }
+            
             // Unfortunately we need to track the current layer to update the volume manager in
             // real-time as the user could change it at any time in the editor or at runtime.
             // Because no event is raised when the layer changes, we have to track it on every

@@ -21,14 +21,10 @@ namespace Appalachia.Core.Objects.Root.Contracts
 
         void InitializeSynchronous();
 
-        AppaTask StartInitializing();
+        AppaTask ExecuteInitialization();
 
-        void AfterInitialization()
-        {
-        }
+        void AfterInitialization();
 
-        void BeforeInitialization()
-        {
-        }
+        void BeforeInitialization();
     }
 }

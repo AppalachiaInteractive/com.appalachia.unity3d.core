@@ -101,18 +101,18 @@ namespace Appalachia.Core.Objects.Scriptables
             }
         }
 
+#if UNITY_EDITOR
         protected override void OnUpdateAllIDs()
         {
             using (_PRF_OnUpateAllIDs.Auto())
             {
-#if UNITY_EDITOR
                 if (string.IsNullOrWhiteSpace(profileName))
                 {
                     Rename(profileName);
                 }
-#endif
             }
         }
+#endif
 
         #region IComparable Members
 
@@ -179,8 +179,10 @@ namespace Appalachia.Core.Objects.Scriptables
         private static readonly ProfilerMarker _PRF_UpdateName =
             new ProfilerMarker(_PRF_PFX + nameof(UpdateName));
 
+#if UNITY_EDITOR
         private static readonly ProfilerMarker _PRF_OnUpateAllIDs =
             new ProfilerMarker(_PRF_PFX + nameof(OnUpdateAllIDs));
+#endif
 
         private static readonly ProfilerMarker _PRF_CompareTo =
             new ProfilerMarker(_PRF_PFX + nameof(CompareTo));

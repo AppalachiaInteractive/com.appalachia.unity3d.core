@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Appalachia.Core.Objects.Root;
+using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Objects.Dependencies
@@ -11,11 +14,24 @@ namespace Appalachia.Core.Objects.Dependencies
     {
         public delegate void DependenciesReadyHandler();
 
-        internal AppalachiaRepositoryDependencyTracker(Type t, DependencyType dt)
-        {
-            Tracking = t;
-            dependencyType = dt;
+        public ISingleton instance;
 
+        internal AppalachiaRepositoryDependencyTracker(Type t)
+        {
+            Owner = t;
+            if (t == typeof(AppalachiaRepository))
+            {
+                ownerType = DependencyType.Repository;
+            }
+            else if (t.InheritsFrom(typeof(AppalachiaObject)))
+            {
+                ownerType = DependencyType.Object;
+            }
+            else // if (t.InheritsFrom(typeof(AppalachiaBehaviour)))
+            {
+                ownerType = DependencyType.Behaviour;
+            }
+            
             _repositoryDependencies = new DependencyTrackingSubset(this);
             _objectDependencies = new DependencyTrackingSubset(this);
             _behaviourDependencies = new DependencyTrackingSubset(this);
@@ -27,9 +43,9 @@ namespace Appalachia.Core.Objects.Dependencies
 
         #region Fields and Autoproperties
 
-        public readonly DependencyType dependencyType;
+        public readonly DependencyType ownerType;
 
-        public Type Tracking { get; }
+        public Type Owner { get; }
 
         private readonly DependencyTrackingSubset[] _subsets;
         private DependencyTrackingSubset _behaviourDependencies;
@@ -90,7 +106,7 @@ namespace Appalachia.Core.Objects.Dependencies
 
         private DependencyTrackingSubset[] subsets => _subsets;
 
-        private string typeName => Tracking.FullName;
+        private string typeName => Owner.FullName;
 
         public event DependenciesReadyHandler DependenciesReady;
 
@@ -155,6 +171,50 @@ namespace Appalachia.Core.Objects.Dependencies
             }
         }
 
+        private const BindingFlags DEPENDENCY_TRACKER_FLAGS =
+            AppalachiaRootConstants.DEPENDENCY_TRACKER_FLAGS;
+
+        private const string DEPENDENCY_TRACKER_NAME = AppalachiaRootConstants.DEPENDENCY_TRACKER_NAME;
+
+        public void RegisterDependency<TDependency>(
+            SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
+            where TDependency : SingletonAppalachiaObject<TDependency>,
+            IRepositoryDependencyTracker<TDependency>
+        {
+            using (_PRF_RegisterDependency.Auto())
+            {
+                var property = typeof(AppalachiaObject<TDependency>).GetField_CACHE(
+                    DEPENDENCY_TRACKER_NAME,
+                    DEPENDENCY_TRACKER_FLAGS
+                );
+
+                var value = property.GetValue(null);
+                var cast = value as AppalachiaRepositoryDependencyTracker;
+
+                RegisterDependency(cast, handler);
+            }
+        }
+
+        public void RegisterDependency<TDependency>(
+            SingletonAppalachiaBehaviour<TDependency>.InstanceAvailableHandler handler)
+            where TDependency : SingletonAppalachiaBehaviour<TDependency>,
+            IRepositoryDependencyTracker<TDependency>
+        {
+            using (_PRF_RegisterDependency.Auto())
+            {
+                var property = typeof(AppalachiaBehaviour<TDependency>).GetField_CACHE(
+                    DEPENDENCY_TRACKER_NAME,
+                    DEPENDENCY_TRACKER_FLAGS
+                );
+
+                var value = property.GetValue(null);
+                var cast = value as AppalachiaRepositoryDependencyTracker;
+
+                RegisterDependency(cast, handler);
+            }
+        }
+
+
         public void RegisterDependency<TDependency>(
             AppalachiaRepositoryDependencyTracker dependentOn,
             SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
@@ -209,6 +269,11 @@ namespace Appalachia.Core.Objects.Dependencies
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return $"{ownerType}: {Owner.Name}";
+        }
 
         #region Profiling
 

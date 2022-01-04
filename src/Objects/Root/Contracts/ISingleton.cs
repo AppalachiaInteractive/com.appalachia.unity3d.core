@@ -1,6 +1,6 @@
 namespace Appalachia.Core.Objects.Root.Contracts
 {
-    public interface ISingleton<T>
+    public interface ISingleton<T> : INamed
     {
         bool HasInstance { get; }
 
@@ -13,7 +13,7 @@ namespace Appalachia.Core.Objects.Root.Contracts
         void SetInstance(T i);
     }
 
-    public interface ISingleton
+    public interface ISingleton : INamed
     {
         bool IsReady { get; }
 
@@ -23,6 +23,6 @@ namespace Appalachia.Core.Objects.Root.Contracts
 
         void InvokeInstanceAvailable(ISingleton original, ISingleton current);
 
-        void SetInstance(ISingleton i);
+        void SetSingletonInstance(ISingleton i);
     }
 }

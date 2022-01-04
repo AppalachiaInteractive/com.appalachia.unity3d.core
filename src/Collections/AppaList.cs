@@ -680,7 +680,7 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_Sort.Auto())
             {
-                Array.Sort(_values);
+                Array.Sort(_values, 0, Count);
             }
         }
 
@@ -721,6 +721,21 @@ namespace Appalachia.Core.Collections
             }
         }
 
+        private sealed class DynamicComparer : Comparer<T>
+        {
+            public DynamicComparer(Comparison<T> comparison)
+            {
+                this.comparison = comparison;
+            }
+
+            private readonly Comparison<T> comparison;
+
+            public override int Compare(T x, T y)
+            {
+                return comparison(x, y);
+            }
+        }
+        
         public void Sort(Comparison<T> comparison)
         {
             using (_PRF_Sort.Auto())
@@ -735,7 +750,9 @@ namespace Appalachia.Core.Collections
                     return;
                 }
 
-                Array.Sort(_values, comparison);
+                var comparer = new DynamicComparer(comparison);
+
+                Array.Sort(_values, 0, Count, comparer);
             }
         }
 

@@ -43,11 +43,9 @@ namespace Appalachia.Core.Objects.Initialization
             {
                 AppaLog.Context.Initialize.Error(
                     ZString.Format(
-                        "{0} in [{1}] for [{2}]: {3}",
-                        ex.GetType().FormatForLogging(),
+                        "{0} for {1} threw an exception.",
                         nameof(Initialize).FormatMethodForLogging(),
-                        target.Name.FormatNameForLogging(),
-                        ex.Message
+                        target.Name.FormatNameForLogging()
                     ),
                     target,
                     ex
@@ -59,7 +57,7 @@ namespace Appalachia.Core.Objects.Initialization
 
         public void InitializeSynchronous(InitializationCompleteHandler handler, IInitializable target)
         {
-            using (_PRF_InitializeImmediate.Auto())
+            using (_PRF_InitializeSynchronous.Auto())
             {
                 try
                 {
@@ -81,11 +79,9 @@ namespace Appalachia.Core.Objects.Initialization
                 {
                     AppaLog.Context.Initialize.Error(
                         ZString.Format(
-                            "{0} in [{1}] for [{2}]: {3}",
-                            ex.GetType().FormatForLogging(),
+                            "{0} for {1} threw an exception.",
                             nameof(InitializeSynchronous).FormatMethodForLogging(),
-                            target.Name.FormatNameForLogging(),
-                            ex.Message
+                            target.Name.FormatNameForLogging()
                         ),
                         target,
                         ex
@@ -106,7 +102,7 @@ namespace Appalachia.Core.Objects.Initialization
 
         private void OnFinishInitialization(InitializationCompleteHandler handler, IInitializable target)
         {
-            using (_PRF_InvokeInitializationCompleted.Auto())
+            using (_PRF_OnFinishInitialization.Auto())
             {
                 try
                 {
@@ -123,11 +119,9 @@ namespace Appalachia.Core.Objects.Initialization
                 {
                     AppaLog.Context.Initialize.Error(
                         ZString.Format(
-                            "{0} in [{1}] for [{2}]: {3}",
-                            ex.GetType().FormatForLogging(),
+                            "{0} for {1} threw an exception.",
                             nameof(OnFinishInitialization).FormatMethodForLogging(),
-                            target.Name.FormatNameForLogging(),
-                            ex.Message
+                            target.Name.FormatNameForLogging()
                         ),
                         target,
                         ex
@@ -155,11 +149,9 @@ namespace Appalachia.Core.Objects.Initialization
                 {
                     AppaLog.Context.Initialize.Error(
                         ZString.Format(
-                            "{0} in [{1}] for [{2}]: {3}",
-                            ex.GetType().FormatForLogging(),
+                            "{0} for {1} threw an exception.",
                             nameof(PrepareInitializationTask).FormatMethodForLogging(),
-                            target.Name.FormatNameForLogging(),
-                            ex.Message
+                            target.Name.FormatNameForLogging()
                         ),
                         target,
                         ex
@@ -180,10 +172,10 @@ namespace Appalachia.Core.Objects.Initialization
         private static readonly ProfilerMarker _PRF_PrepareInitializationTask =
             new ProfilerMarker(_PRF_PFX + nameof(PrepareInitializationTask));
 
-        private static readonly ProfilerMarker _PRF_InitializeImmediate =
+        private static readonly ProfilerMarker _PRF_InitializeSynchronous =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeSynchronous));
 
-        private static readonly ProfilerMarker _PRF_InvokeInitializationCompleted =
+        private static readonly ProfilerMarker _PRF_OnFinishInitialization =
             new ProfilerMarker(_PRF_PFX + nameof(OnFinishInitialization));
 
         #endregion

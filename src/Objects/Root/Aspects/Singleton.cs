@@ -92,7 +92,7 @@ namespace Appalachia.Core.Objects.Root
             InvokeInstanceAvailable(original as AppalachiaRepository, current as AppalachiaRepository);
         }
 
-        void ISingleton.SetInstance(ISingleton i)
+        void ISingleton.SetSingletonInstance(ISingleton i)
         {
             SetInstance(i as AppalachiaRepository);
         }
@@ -223,7 +223,7 @@ namespace Appalachia.Core.Objects.Root
             InvokeInstanceAvailable(original as T, current as T);
         }
 
-        void ISingleton.SetInstance(ISingleton i)
+        void ISingleton.SetSingletonInstance(ISingleton i)
         {
             SetInstance(i as T);
         }
@@ -269,7 +269,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class SingletonAppalachiaBehaviour<T> : ISingleton<T>, ISingleton
+    public partial class SingletonAppalachiaBehaviour<T> : ISingleton<T>, ISingleton, ISingletonBehaviour
     {
         #region Static Fields and Autoproperties
 
@@ -352,7 +352,7 @@ namespace Appalachia.Core.Objects.Root
             InvokeInstanceAvailable(original as T, current as T);
         }
 
-        void ISingleton.SetInstance(ISingleton i)
+        void ISingleton.SetSingletonInstance(ISingleton i)
         {
             SetInstance(i as T);
         }
@@ -375,6 +375,18 @@ namespace Appalachia.Core.Objects.Root
         void ISingleton<T>.SetInstance(T i)
         {
             SetInstance(i);
+        }
+
+        #endregion
+
+        #region ISingletonBehaviour Members
+
+        void ISingletonBehaviour.EnsureInstanceIsPrepared(ISingletonBehaviour callingInstance)
+        {
+            if (callingInstance is T i)
+            {
+                EnsureInstanceIsPrepared(i);
+            }
         }
 
         #endregion

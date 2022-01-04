@@ -67,15 +67,20 @@ namespace Appalachia.Core.Objects.Root
             await AppaTask.CompletedTask;
         }
 
-        private async AppaTask ExecuteInitialization(Playable playable)
+        private async AppaTask ExecuteInitialization(Playable? playable)
         {
             using (_PRF_ExecuteInitialization.Auto())
             {
+                if (!playable.HasValue)
+                {
+                    return;
+                }
+                
                 BeforeInitialization();
 
                 await Initialize(_initializer);
 
-                await InitializePlayable(playable);
+                await InitializePlayable(playable.Value);
 
                 AfterInitialization();
             }

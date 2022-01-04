@@ -9,6 +9,7 @@ namespace Appalachia.Core.Objects.Root
 {
     public partial class AppalachiaObject
     {
+#if UNITY_EDITOR
         [ButtonGroup(GROUP_WORKFLOW_PROD)]
         [PropertyOrder(-40000)]
         [ShowIf(nameof(ShowWorkflow))]
@@ -84,6 +85,8 @@ namespace Appalachia.Core.Objects.Root
             new ProfilerMarker(_PRF_PFX + nameof(ReInitialize));
 
         #endregion
+
+#endif
     }
 
     public partial class AppalachiaRepository

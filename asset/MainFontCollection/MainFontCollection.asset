@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf469251b8684c0db8eab5de1db3d195, type: 3}
   m_Name: MainFontCollection
   m_EditorClassIdentifier: 
-  _initializationData:
-    _tags: []
-    _resetToken: 
   _cachedName: 
   _niceName: 
+  _initializer:
+    _tags: []
+    _resetToken: 
   _lookup: {fileID: 11400000, guid: 45abf92311a2f2e43a678c2027f25f28, type: 2}
