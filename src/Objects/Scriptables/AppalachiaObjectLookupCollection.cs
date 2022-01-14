@@ -26,6 +26,7 @@ namespace Appalachia.Core.Objects.Scriptables
     /// <typeparam name="T">This type.</typeparam>
     [Serializable]
     [InspectorIcon(Brand.AppalachiaObjectLookupCollection.Icon)]
+    [AssetLabel(Brand.AppalachiaObjectLookupCollection.Label)]
     public abstract class
         AppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup, T> : AppalachiaObject<T>
         where TValue : UnityEngine.Object
@@ -206,6 +207,8 @@ namespace Appalachia.Core.Objects.Scriptables
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
+            await base.Initialize(initializer);
+
             using (_PRF_Initialize.Auto())
             {
                 if (_items == null)
@@ -213,18 +216,37 @@ namespace Appalachia.Core.Objects.Scriptables
                     _items = new TLookup();
                 }
 
-                _items.SetObjectOwnership(this);
+                _items.SetSerializationOwner(this);
 
 #if UNITY_EDITOR
-                await PopulateItems();
-#else
-                await AppaTask.CompletedTask;
+                AppaTask.FireAndForget(PopulateItems);
 #endif
             }
         }
 
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_Clear = new ProfilerMarker(_PRF_PFX + nameof(Clear));
+        private static readonly ProfilerMarker _PRF_DoForAll = new(_PRF_PFX + nameof(DoForAll));
+
+        private static readonly ProfilerMarker _PRF_DoForAllIf = new(_PRF_PFX + nameof(DoForAllIf));
+
+        private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
+
 #if UNITY_EDITOR
-        private async AppaTask PopulateItems()
+        private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
+#endif
+
+        private static readonly ProfilerMarker _PRF_RemoveByKey =
+            new ProfilerMarker(_PRF_PFX + nameof(RemoveByKey));
+
+        private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
+
+        #endregion
+
+#if UNITY_EDITOR
+        [ButtonGroup]
+        private void PopulateItems()
         {
             using (_PRF_PopulateItems.Auto())
             {
@@ -234,7 +256,7 @@ namespace Appalachia.Core.Objects.Scriptables
                     MarkAsModified();
                 }
 
-                _items.SetObjectOwnership(this);
+                _items.SetSerializationOwner(this);
 
                 for (var i = _items.Count - 1; i >= 0; i--)
                 {
@@ -251,8 +273,6 @@ namespace Appalachia.Core.Objects.Scriptables
 
                     for (var index = 0; index < assets.Count; index++)
                     {
-                        await AppaTask.Yield();
-
                         var asset = assets[index];
 
                         if (asset == null)
@@ -281,12 +301,6 @@ namespace Appalachia.Core.Objects.Scriptables
         }
 
         [ButtonGroup]
-        private void PopulateItemsSynchronous()
-        {
-            PopulateItems().Forget();
-        }
-        
-        [ButtonGroup]
         private void RepopulateItems()
         {
             _items.Clear();
@@ -295,30 +309,5 @@ namespace Appalachia.Core.Objects.Scriptables
 #pragma warning restore CS4014
         }
 #endif
-
-        #region Profiling
-
-        private const string _PRF_PFX =
-            nameof(AppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup, T>) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
-        private static readonly ProfilerMarker _PRF_Clear = new ProfilerMarker(_PRF_PFX + nameof(Clear));
-
-        private static readonly ProfilerMarker _PRF_RemoveByKey =
-            new ProfilerMarker(_PRF_PFX + nameof(RemoveByKey));
-
-        private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
-        private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
-        private static readonly ProfilerMarker _PRF_DoForAll = new(_PRF_PFX + nameof(DoForAll));
-
-        private static readonly ProfilerMarker _PRF_DoForAllIf = new(_PRF_PFX + nameof(DoForAllIf));
-
-#if UNITY_EDITOR
-        private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
-#endif
-
-        #endregion
     }
 }

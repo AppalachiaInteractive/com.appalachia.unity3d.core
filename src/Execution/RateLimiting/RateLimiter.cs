@@ -9,10 +9,19 @@ namespace Appalachia.Core.Execution.RateLimiting
 {
     public static class RateLimiter
     {
+        #region Constants and Static Readonly
+
         private const int _initialSize = 32;
+
+        #endregion
+
+        #region Static Fields and Autoproperties
+
         private static bool _initialized;
 
         private static NonSerializedAppaLookup<string, RateLimit> _limits;
+
+        #endregion
 
         public static void Dispose()
         {
@@ -55,6 +64,16 @@ namespace Appalachia.Core.Execution.RateLimiting
             return true;
         }
 
+        private static void Setup(string key, int maxCalls, float periodMilliseconds)
+        {
+            Initialize();
+
+            if (!_limits.ContainsKey(key))
+            {
+                _limits.Add(key, new RateLimit(maxCalls, periodMilliseconds));
+            }
+        }
+
         private static bool ShouldDo(string key, float currentTime)
         {
             if (Initialize())
@@ -77,16 +96,6 @@ namespace Appalachia.Core.Execution.RateLimiting
             }
 
             return false;
-        }
-
-        private static void Setup(string key, int maxCalls, float periodMilliseconds)
-        {
-            Initialize();
-
-            if (!_limits.ContainsKey(key))
-            {
-                _limits.Add(key, new RateLimit(maxCalls, periodMilliseconds));
-            }
         }
     }
 }

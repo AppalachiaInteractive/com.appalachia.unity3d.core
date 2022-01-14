@@ -38,6 +38,24 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        public static T CreateNew<T>(Type ownerType = null)
+            where T : AppalachiaObject
+        {
+            using (_PRF_CreateNew.Auto())
+            {
+                return CreateNew(typeof(T), ownerType) as T;
+            }
+        }
+
+        public static T CreateNew<T>(string name, T i = null, string dataFolder = null, Type ownerType = null)
+            where T : AppalachiaObject
+        {
+            using (_PRF_CreateNew.Auto())
+            {
+                return CreateNew(typeof(T), name, i, dataFolder, ownerType) as T;
+            }
+        }
+
         public static ScriptableObject LoadOrCreateNew(
             Type t,
             string name,
@@ -47,6 +65,15 @@ namespace Appalachia.Core.Objects.Root
             using (_PRF_LoadOrCreateNew.Auto())
             {
                 return AppalachiaObjectFactory.LoadExistingOrCreateNewAsset(t, name, dataFolder, ownerType);
+            }
+        }
+
+        public static T LoadOrCreateNew<T>(string name, string dataFolder = null, Type ownerType = null)
+            where T : AppalachiaObject
+        {
+            using (_PRF_LoadOrCreateNew.Auto())
+            {
+                return LoadOrCreateNew(typeof(T), name, dataFolder, ownerType) as T;
             }
         }
 
@@ -68,33 +95,6 @@ namespace Appalachia.Core.Objects.Root
                         ownerType
                     );
                 }
-            }
-        }
-
-        public static T CreateNew<T>(Type ownerType = null)
-            where T : AppalachiaObject
-        {
-            using (_PRF_CreateNew.Auto())
-            {
-                return CreateNew(typeof(T), ownerType) as T;
-            }
-        }
-
-        public static T CreateNew<T>(string name, T i = null, string dataFolder = null, Type ownerType = null)
-            where T : AppalachiaObject
-        {
-            using (_PRF_CreateNew.Auto())
-            {
-                return CreateNew(typeof(T), name, i, dataFolder, ownerType) as T;
-            }
-        }
-
-        public static T LoadOrCreateNew<T>(string name, string dataFolder = null, Type ownerType = null)
-            where T : AppalachiaObject
-        {
-            using (_PRF_LoadOrCreateNew.Auto())
-            {
-                return LoadOrCreateNew(typeof(T), name, dataFolder, ownerType) as T;
             }
         }
 
@@ -131,6 +131,12 @@ namespace Appalachia.Core.Objects.Root
 
     public abstract partial class AppalachiaObject<T>
     {
+        #region Constants and Static Readonly
+
+        private static readonly string _PRF_PFX3 = typeof(T).Name + ".";
+
+        #endregion
+
         public static T CreateNew(Type ownerType = null)
         {
             using (_PRF_CreateNew.Auto())
@@ -174,13 +180,13 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_CreateNew =
-            new ProfilerMarker(_PRF_PFX + nameof(CreateNew));
+            new ProfilerMarker(_PRF_PFX3 + nameof(CreateNew));
 
         private static readonly ProfilerMarker _PRF_LoadOrCreateNew =
-            new ProfilerMarker(_PRF_PFX + nameof(LoadOrCreateNew));
+            new ProfilerMarker(_PRF_PFX3 + nameof(LoadOrCreateNew));
 
         private static readonly ProfilerMarker _PRF_LoadOrCreateNewIfNull =
-            new ProfilerMarker(_PRF_PFX + nameof(LoadOrCreateNewIfNull));
+            new ProfilerMarker(_PRF_PFX3 + nameof(LoadOrCreateNewIfNull));
 
         #endregion
     }

@@ -44,6 +44,12 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBehaviour<T> : IUnitySerializable
     {
+        #region Constants and Static Readonly
+
+        private static readonly string _PRF_PFX4 = typeof(T).Name + ".";
+
+        #endregion
+
         #region IUnitySerializable Members
 
         public void MarkAsModified()
@@ -59,7 +65,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_MarkAsModified =
-            new ProfilerMarker(_PRF_PFX + nameof(MarkAsModified));
+            new ProfilerMarker(_PRF_PFX4 + nameof(MarkAsModified));
 
         #endregion
     }

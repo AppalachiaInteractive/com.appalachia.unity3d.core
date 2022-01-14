@@ -8,6 +8,18 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 {
     public struct double_PPAPI : IPAPI<double>
     {
+        private static double Round(float d)
+        {
+            return Math.Round(d, 4, MidpointRounding.AwayFromZero);
+        }
+
+        private static float Round(double d)
+        {
+            return (float)Math.Round(d, 4, MidpointRounding.AwayFromZero);
+        }
+
+        #region IPAPI<double> Members
+
         public double Get(string key, double defaultValue, double low, double high)
         {
             return Round(UnityEngine.PlayerPrefs.GetFloat(key, Round(defaultValue)));
@@ -28,14 +40,6 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
             return Round(val);*/
         }
 
-        private static double Round(float d)
-        {
-            return Math.Round(d, 4, MidpointRounding.AwayFromZero);
-        }
-
-        private static float Round(double d)
-        {
-            return (float) Math.Round(d, 4, MidpointRounding.AwayFromZero);
-        }
+        #endregion
     }
 }

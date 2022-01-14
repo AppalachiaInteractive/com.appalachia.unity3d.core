@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableColor(bool overrideEnabled, Color value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableColor(bool overrideEnabled, Color value) : base(overrideEnabled, value)
         {
         }
 

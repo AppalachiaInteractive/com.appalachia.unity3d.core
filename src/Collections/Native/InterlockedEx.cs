@@ -25,81 +25,6 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        public static double Decrement(ref double location1)
-        {
-            return Add(ref location1, -1.0f);
-        }
-
-        public static double Divide(ref double location1, double value)
-        {
-            var newCurrentValue = location1; // non-volatile read, so may be stale
-            while (true)
-            {
-                var currentValue = newCurrentValue;
-                var newValue = currentValue / value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
-                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                {
-                    return newValue;
-                }
-            }
-        }
-
-        public static double Increment(ref double location1)
-        {
-            return Add(ref location1, 1.0f);
-        }
-
-        public static double Max(ref double location1, double value)
-        {
-            var newCurrentValue = location1; // non-volatile read, so may be stale
-            while (true)
-            {
-                var currentValue = newCurrentValue;
-                var newValue = math.max(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
-                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                {
-                    return newValue;
-                }
-            }
-        }
-
-        public static double Min(ref double location1, double value)
-        {
-            var newCurrentValue = location1; // non-volatile read, so may be stale
-            while (true)
-            {
-                var currentValue = newCurrentValue;
-                var newValue = math.min(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
-                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                {
-                    return newValue;
-                }
-            }
-        }
-
-        public static double Multiply(ref double location1, double value)
-        {
-            var newCurrentValue = location1; // non-volatile read, so may be stale
-            while (true)
-            {
-                var currentValue = newCurrentValue;
-                var newValue = currentValue * value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
-                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                {
-                    return newValue;
-                }
-            }
-        }
-
-        public static double Subtract(ref double location1, double value)
-        {
-            return Add(ref location1, -value);
-        }
-
         public static float Add(ref float location1, float value)
         {
             var newCurrentValue = location1; // non-volatile read, so may be stale
@@ -113,81 +38,6 @@ namespace Appalachia.Core.Collections.Native
                     return newValue;
                 }
             }
-        }
-
-        public static float Decrement(ref float location1)
-        {
-            return Add(ref location1, -1.0f);
-        }
-
-        public static float Divide(ref float location1, float value)
-        {
-            var newCurrentValue = location1; // non-volatile read, so may be stale
-            while (true)
-            {
-                var currentValue = newCurrentValue;
-                var newValue = currentValue / value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
-                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                {
-                    return newValue;
-                }
-            }
-        }
-
-        public static float Increment(ref float location1)
-        {
-            return Add(ref location1, 1.0f);
-        }
-
-        public static float Max(ref float location1, float value)
-        {
-            var newCurrentValue = location1; // non-volatile read, so may be stale
-            while (true)
-            {
-                var currentValue = newCurrentValue;
-                var newValue = math.max(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
-                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                {
-                    return newValue;
-                }
-            }
-        }
-
-        public static float Min(ref float location1, float value)
-        {
-            var newCurrentValue = location1; // non-volatile read, so may be stale
-            while (true)
-            {
-                var currentValue = newCurrentValue;
-                var newValue = math.min(currentValue, value);
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
-                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                {
-                    return newValue;
-                }
-            }
-        }
-
-        public static float Multiply(ref float location1, float value)
-        {
-            var newCurrentValue = location1; // non-volatile read, so may be stale
-            while (true)
-            {
-                var currentValue = newCurrentValue;
-                var newValue = currentValue * value;
-                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
-                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                {
-                    return newValue;
-                }
-            }
-        }
-
-        public static float Subtract(ref float location1, float value)
-        {
-            return Add(ref location1, -value);
         }
 
         public static float2 Add(ref float2 location1, float value)
@@ -224,84 +74,6 @@ namespace Appalachia.Core.Collections.Native
             return location1;
         }
 
-        public static float2 Divide(ref float2 location1, float value)
-        {
-            return Divide(ref location1, new float2(value, value));
-        }
-
-        public static float2 Divide(ref float2 location1, float2 value)
-        {
-            for (var i = 0; i < 2; i++)
-            {
-                var newCurrentValue = location1[i];
-                var stepVal = value[i];
-
-                while (true)
-                {
-                    var currentValue = newCurrentValue;
-                    var newValue = currentValue / stepVal;
-
-                    newCurrentValue = Interlocked.CompareExchange(
-                        ref newCurrentValue,
-                        newValue,
-                        currentValue
-                    );
-
-                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                    {
-                        location1[i] = newValue;
-                        break;
-                    }
-                }
-            }
-
-            return location1;
-        }
-
-        public static float2 Multiply(ref float2 location1, float value)
-        {
-            return Multiply(ref location1, new float2(value, value));
-        }
-
-        public static float2 Multiply(ref float2 location1, float2 value)
-        {
-            for (var i = 0; i < 2; i++)
-            {
-                var newCurrentValue = location1[i];
-                var stepVal = value[i];
-
-                while (true)
-                {
-                    var currentValue = newCurrentValue;
-                    var newValue = currentValue * stepVal;
-
-                    newCurrentValue = Interlocked.CompareExchange(
-                        ref newCurrentValue,
-                        newValue,
-                        currentValue
-                    );
-
-                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                    {
-                        location1[i] = newValue;
-                        break;
-                    }
-                }
-            }
-
-            return location1;
-        }
-
-        public static float2 Subtract(ref float2 location1, float value)
-        {
-            return Subtract(ref location1, new float2(value, value));
-        }
-
-        public static float2 Subtract(ref float2 location1, float2 value)
-        {
-            return Add(ref location1, -value);
-        }
-
         public static float3 Add(ref float3 location1, float value)
         {
             return Add(ref location1, new float3(value, value, value));
@@ -318,6 +90,114 @@ namespace Appalachia.Core.Collections.Native
                 {
                     var currentValue = newCurrentValue;
                     var newValue = currentValue + stepVal;
+
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
+
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                    {
+                        location1[i] = newValue;
+                        break;
+                    }
+                }
+            }
+
+            return location1;
+        }
+
+        public static float4 Add(ref float4 location1, float value)
+        {
+            return Add(ref location1, new float4(value, value, value, value));
+        }
+
+        public static float4 Add(ref float4 location1, float4 value)
+        {
+            for (var i = 0; i < 4; i++)
+            {
+                var newCurrentValue = location1[i];
+                var stepVal = value[i];
+
+                while (true)
+                {
+                    var currentValue = newCurrentValue;
+                    var newValue = currentValue + stepVal;
+
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
+
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                    {
+                        location1[i] = newValue;
+                        break;
+                    }
+                }
+            }
+
+            return location1;
+        }
+
+        public static double Decrement(ref double location1)
+        {
+            return Add(ref location1, -1.0f);
+        }
+
+        public static float Decrement(ref float location1)
+        {
+            return Add(ref location1, -1.0f);
+        }
+
+        public static double Divide(ref double location1, double value)
+        {
+            var newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                var currentValue = newCurrentValue;
+                var newValue = currentValue / value;
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                {
+                    return newValue;
+                }
+            }
+        }
+
+        public static float Divide(ref float location1, float value)
+        {
+            var newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                var currentValue = newCurrentValue;
+                var newValue = currentValue / value;
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                {
+                    return newValue;
+                }
+            }
+        }
+
+        public static float2 Divide(ref float2 location1, float value)
+        {
+            return Divide(ref location1, new float2(value, value));
+        }
+
+        public static float2 Divide(ref float2 location1, float2 value)
+        {
+            for (var i = 0; i < 2; i++)
+            {
+                var newCurrentValue = location1[i];
+                var stepVal = value[i];
+
+                while (true)
+                {
+                    var currentValue = newCurrentValue;
+                    var newValue = currentValue / stepVal;
 
                     newCurrentValue = Interlocked.CompareExchange(
                         ref newCurrentValue,
@@ -370,14 +250,148 @@ namespace Appalachia.Core.Collections.Native
             return location1;
         }
 
-        public static float3 Multiply(ref float3 location1, float value)
+        public static float4 Divide(ref float4 location1, float value)
         {
-            return Multiply(ref location1, new float3(value, value, value));
+            return Divide(ref location1, new float4(value, value, value, value));
         }
 
-        public static float3 Multiply(ref float3 location1, float3 value)
+        public static float4 Divide(ref float4 location1, float4 value)
         {
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < 4; i++)
+            {
+                var newCurrentValue = location1[i];
+                var stepVal = value[i];
+
+                while (true)
+                {
+                    var currentValue = newCurrentValue;
+                    var newValue = currentValue / stepVal;
+
+                    newCurrentValue = Interlocked.CompareExchange(
+                        ref newCurrentValue,
+                        newValue,
+                        currentValue
+                    );
+
+                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                    {
+                        location1[i] = newValue;
+                        break;
+                    }
+                }
+            }
+
+            return location1;
+        }
+
+        public static double Increment(ref double location1)
+        {
+            return Add(ref location1, 1.0f);
+        }
+
+        public static float Increment(ref float location1)
+        {
+            return Add(ref location1, 1.0f);
+        }
+
+        public static double Max(ref double location1, double value)
+        {
+            var newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                var currentValue = newCurrentValue;
+                var newValue = math.max(currentValue, value);
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                {
+                    return newValue;
+                }
+            }
+        }
+
+        public static float Max(ref float location1, float value)
+        {
+            var newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                var currentValue = newCurrentValue;
+                var newValue = math.max(currentValue, value);
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                {
+                    return newValue;
+                }
+            }
+        }
+
+        public static double Min(ref double location1, double value)
+        {
+            var newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                var currentValue = newCurrentValue;
+                var newValue = math.min(currentValue, value);
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                {
+                    return newValue;
+                }
+            }
+        }
+
+        public static float Min(ref float location1, float value)
+        {
+            var newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                var currentValue = newCurrentValue;
+                var newValue = math.min(currentValue, value);
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                {
+                    return newValue;
+                }
+            }
+        }
+
+        public static double Multiply(ref double location1, double value)
+        {
+            var newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                var currentValue = newCurrentValue;
+                var newValue = currentValue * value;
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                {
+                    return newValue;
+                }
+            }
+        }
+
+        public static float Multiply(ref float location1, float value)
+        {
+            var newCurrentValue = location1; // non-volatile read, so may be stale
+            while (true)
+            {
+                var currentValue = newCurrentValue;
+                var newValue = currentValue * value;
+                newCurrentValue = Interlocked.CompareExchange(ref location1, newValue, currentValue);
+                if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                {
+                    return newValue;
+                }
+            }
+        }
+
+        public static float2 Multiply(ref float2 location1, float value)
+        {
+            return Multiply(ref location1, new float2(value, value));
+        }
+
+        public static float2 Multiply(ref float2 location1, float2 value)
+        {
+            for (var i = 0; i < 2; i++)
             {
                 var newCurrentValue = location1[i];
                 var stepVal = value[i];
@@ -404,24 +418,14 @@ namespace Appalachia.Core.Collections.Native
             return location1;
         }
 
-        public static float3 Subtract(ref float3 location1, float value)
+        public static float3 Multiply(ref float3 location1, float value)
         {
-            return Subtract(ref location1, new float3(value, value, value));
+            return Multiply(ref location1, new float3(value, value, value));
         }
 
-        public static float3 Subtract(ref float3 location1, float3 value)
+        public static float3 Multiply(ref float3 location1, float3 value)
         {
-            return Add(ref location1, -value);
-        }
-
-        public static float4 Add(ref float4 location1, float value)
-        {
-            return Add(ref location1, new float4(value, value, value, value));
-        }
-
-        public static float4 Add(ref float4 location1, float4 value)
-        {
-            for (var i = 0; i < 4; i++)
+            for (var i = 0; i < 3; i++)
             {
                 var newCurrentValue = location1[i];
                 var stepVal = value[i];
@@ -429,41 +433,7 @@ namespace Appalachia.Core.Collections.Native
                 while (true)
                 {
                     var currentValue = newCurrentValue;
-                    var newValue = currentValue + stepVal;
-
-                    newCurrentValue = Interlocked.CompareExchange(
-                        ref newCurrentValue,
-                        newValue,
-                        currentValue
-                    );
-
-                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
-                    {
-                        location1[i] = newValue;
-                        break;
-                    }
-                }
-            }
-
-            return location1;
-        }
-
-        public static float4 Divide(ref float4 location1, float value)
-        {
-            return Divide(ref location1, new float4(value, value, value, value));
-        }
-
-        public static float4 Divide(ref float4 location1, float4 value)
-        {
-            for (var i = 0; i < 4; i++)
-            {
-                var newCurrentValue = location1[i];
-                var stepVal = value[i];
-
-                while (true)
-                {
-                    var currentValue = newCurrentValue;
-                    var newValue = currentValue / stepVal;
+                    var newValue = currentValue * stepVal;
 
                     newCurrentValue = Interlocked.CompareExchange(
                         ref newCurrentValue,
@@ -514,16 +484,6 @@ namespace Appalachia.Core.Collections.Native
             }
 
             return location1;
-        }
-
-        public static float4 Subtract(ref float4 location1, float value)
-        {
-            return Subtract(ref location1, new float4(value, value, value, value));
-        }
-
-        public static float4 Subtract(ref float4 location1, float4 value)
-        {
-            return Add(ref location1, -value);
         }
 
         public static int OptimisticAdd(ref int location1, int value)
@@ -614,6 +574,46 @@ namespace Appalachia.Core.Collections.Native
         public static int OptimisticSubtract(ref int location1, int value)
         {
             return OptimisticAdd(ref location1, -value);
+        }
+
+        public static double Subtract(ref double location1, double value)
+        {
+            return Add(ref location1, -value);
+        }
+
+        public static float Subtract(ref float location1, float value)
+        {
+            return Add(ref location1, -value);
+        }
+
+        public static float2 Subtract(ref float2 location1, float value)
+        {
+            return Subtract(ref location1, new float2(value, value));
+        }
+
+        public static float2 Subtract(ref float2 location1, float2 value)
+        {
+            return Add(ref location1, -value);
+        }
+
+        public static float3 Subtract(ref float3 location1, float value)
+        {
+            return Subtract(ref location1, new float3(value, value, value));
+        }
+
+        public static float3 Subtract(ref float3 location1, float3 value)
+        {
+            return Add(ref location1, -value);
+        }
+
+        public static float4 Subtract(ref float4 location1, float value)
+        {
+            return Subtract(ref location1, new float4(value, value, value, value));
+        }
+
+        public static float4 Subtract(ref float4 location1, float4 value)
+        {
+            return Add(ref location1, -value);
         }
     }
 }

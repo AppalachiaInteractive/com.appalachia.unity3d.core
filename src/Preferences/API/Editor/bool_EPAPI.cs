@@ -10,6 +10,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 {
     public struct bool_EPAPI : IPAPI<bool>
     {
+        #region IPAPI<bool> Members
+
         public bool Get(string key, bool defaultValue, bool low, bool high)
         {
             return EditorPrefs.GetBool(key, defaultValue);
@@ -24,6 +26,8 @@ namespace Appalachia.Core.Preferences.API.Editor
         {
             return EditorGUILayout.ToggleLeft(label, value);
         }
+
+        #endregion
     }
 }
 

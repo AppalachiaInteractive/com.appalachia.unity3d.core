@@ -10,36 +10,10 @@ namespace Appalachia.Core.Context.Elements
 {
     public class AppaWindowBackgroundCoroutineRunner
     {
+        #region Fields and Autoproperties
+
+        private readonly Stopwatch _stopwatch = new();
         [NonSerialized] private AppaContext _context;
-
-        protected AppaContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new AppaContext(this);
-                }
-
-                return _context;
-            }
-        }
-        
-        #region Profiling And Tracing Markers
-
-        private const string _PRF_PFX = nameof(AppaWindowBackgroundCoroutineRunner) + ".";
-
-        private static readonly ProfilerMarker _PRF_ExecuteCoroutineEnumerator =
-            new(_PRF_PFX + nameof(ExecuteCoroutineEnumerator));
-
-        private static readonly ProfilerMarker _PRF_ExecuteCoroutine =
-            new(_PRF_PFX + nameof(ExecuteCoroutine));
-
-        private static readonly ProfilerMarker _PRF_BeginExecution = new(_PRF_PFX + nameof(BeginExecution));
-
-        private static readonly ProfilerMarker _PRF_EndExecution = new(_PRF_PFX + nameof(EndExecution));
-
-        #endregion
 
         private bool _cancelOnError = true;
 
@@ -53,7 +27,7 @@ namespace Appalachia.Core.Context.Elements
 
         private int _stepSize = 10;
 
-        private readonly Stopwatch _stopwatch = new();
+        #endregion
 
         public bool IsExecutingCoroutine => _isExecutingCoroutine;
 
@@ -79,6 +53,19 @@ namespace Appalachia.Core.Context.Elements
             set => _stepSize = value;
         }
 
+        protected AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(this);
+                }
+
+                return _context;
+            }
+        }
+
         public void ExecuteCoroutine(Func<IEnumerator> coroutine, Action onComplete = null)
         {
             using (_PRF_ExecuteCoroutine.Auto())
@@ -91,6 +78,28 @@ namespace Appalachia.Core.Context.Elements
 #else
                 safe.ExecuteAsCoroutine();
 #endif
+            }
+        }
+
+        protected void BeginExecution()
+        {
+            using (_PRF_BeginExecution.Auto())
+            {
+                _isExecutingCoroutine = true;
+                _stopwatch.Restart();
+            }
+        }
+
+        protected void EndExecution(Action onComplete)
+        {
+            using (_PRF_EndExecution.Auto())
+            {
+                _stopwatch.Stop();
+                _lastExecutionTime = DateTime.Now;
+                _executionTime = _stopwatch.Elapsed.TotalSeconds;
+                _isExecutingCoroutine = false;
+
+                onComplete?.Invoke();
             }
         }
 
@@ -150,26 +159,20 @@ namespace Appalachia.Core.Context.Elements
             }
         }
 
-        protected void BeginExecution()
-        {
-            using (_PRF_BeginExecution.Auto())
-            {
-                _isExecutingCoroutine = true;
-                _stopwatch.Restart();
-            }
-        }
+        #region Profiling
 
-        protected void EndExecution(Action onComplete)
-        {
-            using (_PRF_EndExecution.Auto())
-            {
-                _stopwatch.Stop();
-                _lastExecutionTime = DateTime.Now;
-                _executionTime = _stopwatch.Elapsed.TotalSeconds;
-                _isExecutingCoroutine = false;
+        private const string _PRF_PFX = nameof(AppaWindowBackgroundCoroutineRunner) + ".";
 
-                onComplete?.Invoke();
-            }
-        }
+        private static readonly ProfilerMarker _PRF_ExecuteCoroutineEnumerator =
+            new(_PRF_PFX + nameof(ExecuteCoroutineEnumerator));
+
+        private static readonly ProfilerMarker _PRF_ExecuteCoroutine =
+            new(_PRF_PFX + nameof(ExecuteCoroutine));
+
+        private static readonly ProfilerMarker _PRF_BeginExecution = new(_PRF_PFX + nameof(BeginExecution));
+
+        private static readonly ProfilerMarker _PRF_EndExecution = new(_PRF_PFX + nameof(EndExecution));
+
+        #endregion
     }
 }

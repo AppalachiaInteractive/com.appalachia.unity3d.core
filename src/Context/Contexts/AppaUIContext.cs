@@ -8,27 +8,18 @@ namespace Appalachia.Core.Context.Contexts
 {
     public abstract class AppaUIContext
     {
+        #region Fields and Autoproperties
+
         [NonSerialized] private AppaContext _context;
 
-        protected AppaContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new AppaContext(this);
-                }
-
-                return _context;
-            }
-        }
-        
         private AppaProgress _initializationProgress;
-        private bool _initialized;
-        private bool _initializing;
 #pragma warning disable 649
         private bool _forceLock;
 #pragma warning restore 649
+        private bool _initialized;
+        private bool _initializing;
+
+        #endregion
 
         protected virtual bool ShouldBeLocked => false;
 
@@ -51,7 +42,7 @@ namespace Appalachia.Core.Context.Contexts
             _forceLock = !_forceLock;
         }
         */
-        
+
         public bool ShouldInitialize => !Initialized && !Initializing;
 
         public AppaProgress InitializationProgress
@@ -72,6 +63,29 @@ namespace Appalachia.Core.Context.Contexts
             protected set => _initializing = value;
         }
 
+        protected AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(this);
+                }
+
+                return _context;
+            }
+        }
+
+        public IEnumerator Check()
+        {
+            if (ShouldInitialize)
+            {
+                return Initialize();
+            }
+
+            return default;
+        }
+
         protected abstract IEnumerable<AppaProgress> OnInitialize(AppaProgressCounter p);
 
         // ReSharper disable once UnusedParameter.Global
@@ -83,16 +97,6 @@ namespace Appalachia.Core.Context.Contexts
         protected virtual IEnumerable<AppaProgress> OnPreInitialize(AppaProgressCounter p)
         {
             yield break;
-        }
-
-        public IEnumerator Check()
-        {
-            if (ShouldInitialize)
-            {
-                return Initialize();
-            }
-
-            return default;
         }
 
         private IEnumerator Initialize()

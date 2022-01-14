@@ -14,6 +14,8 @@ namespace Appalachia.Core.Preferences
             _order = order;
         }
 
+        #region Fields and Autoproperties
+
         protected readonly int _order;
         protected readonly string _grouping;
         protected readonly string _key;
@@ -22,6 +24,8 @@ namespace Appalachia.Core.Preferences
         protected bool _isAwake;
         protected bool _reset;
         protected string _niceLabel;
+
+        #endregion
 
         public bool IsAwake => _isAwake;
 

@@ -9,6 +9,15 @@ namespace Appalachia.Core.Shading
 {
     public static class GSPL
     {
+        #region Static Fields and Autoproperties
+
+        private static Dictionary<string, int> _propertyIDsByName;
+        private static HashSet<string> _hashedShaders;
+
+        private static object _addLock = new();
+
+        #endregion
+
         public static Dictionary<string, int> propertyIDsByName
         {
             get
@@ -26,11 +35,6 @@ namespace Appalachia.Core.Shading
                 return _propertyIDsByName;
             }
         }
-
-        private static Dictionary<string, int> _propertyIDsByName;
-        private static HashSet<string> _hashedShaders;
-
-        private static object _addLock = new();
 
         public static int Get(string property)
         {

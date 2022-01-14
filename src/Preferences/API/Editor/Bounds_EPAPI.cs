@@ -12,6 +12,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 {
     public struct Bounds_EPAPI : IPAPI<Bounds>
     {
+        #region IPAPI<Bounds> Members
+
         public Bounds Get(string key, Bounds defaultValue, Bounds low, Bounds high)
         {
             var result = default(Bounds);
@@ -45,6 +47,8 @@ namespace Appalachia.Core.Preferences.API.Editor
         {
             return EditorGUILayout.BoundsField(label, value);
         }
+
+        #endregion
     }
 }
 

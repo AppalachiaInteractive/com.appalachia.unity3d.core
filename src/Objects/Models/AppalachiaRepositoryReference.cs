@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -85,7 +86,17 @@ namespace Appalachia.Core.Objects.Models
                     return _assetReference.editorAsset.name;
                 }
 
-                return _assetReference.SubObjectName ?? _assetReference.AssetGUID;
+                if (_assetReference.SubObjectName.IsNotNullOrWhiteSpace())
+                {
+                    return _assetReference.SubObjectName;
+                }
+
+                if (_assetReference.AssetGUID.IsNotNullOrWhiteSpace())
+                {
+                    return _assetReference.AssetGUID;
+                }
+
+                return $"[MISSING] {_typeName}";
             }
         }
 #endif

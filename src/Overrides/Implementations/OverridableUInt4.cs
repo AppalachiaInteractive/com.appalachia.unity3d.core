@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableUInt4(bool overrideEnabled, uint4 value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableUInt4(bool overrideEnabled, uint4 value) : base(overrideEnabled, value)
         {
         }
 

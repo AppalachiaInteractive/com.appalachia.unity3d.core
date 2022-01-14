@@ -10,18 +10,6 @@ namespace Appalachia.Core.ObjectPooling
     public class DisposingObjectPool<T> : ObjectPool<T>
         where T : class, IDisposable
     {
-        private static readonly ProfilerMarker _PRF_DisposingObjectPool_DisposeItem =
-            new("DisposingObjectPool.DisposeItem");
-
-        private static readonly ProfilerMarker _PRF_DisposingObjectPool_DisposingObjectPool =
-            new("DisposingObjectPool.DisposingObjectPool");
-
-        private static readonly ProfilerMarker _PRF_DisposingObjectPool_OnDispose =
-            new("DisposingObjectPool.OnDispose");
-
-        private static readonly ProfilerMarker _PRF_DisposingObjectPool_OnReset =
-            new("DisposingObjectPool.OnReset");
-
         public DisposingObjectPool(Func<T> customAdd) : base(customAdd)
         {
             using (_PRF_DisposingObjectPool_DisposingObjectPool.Auto())
@@ -59,7 +47,11 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
+        #region Fields and Autoproperties
+
         protected readonly bool _disposeElements;
+
+        #endregion
 
         protected override void OnDispose()
         {
@@ -103,5 +95,21 @@ namespace Appalachia.Core.ObjectPooling
                 }
             }
         }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_DisposingObjectPool_DisposeItem =
+            new("DisposingObjectPool.DisposeItem");
+
+        private static readonly ProfilerMarker _PRF_DisposingObjectPool_DisposingObjectPool =
+            new("DisposingObjectPool.DisposingObjectPool");
+
+        private static readonly ProfilerMarker _PRF_DisposingObjectPool_OnDispose =
+            new("DisposingObjectPool.OnDispose");
+
+        private static readonly ProfilerMarker _PRF_DisposingObjectPool_OnReset =
+            new("DisposingObjectPool.OnReset");
+
+        #endregion
     }
 }

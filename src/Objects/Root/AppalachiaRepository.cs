@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Collections;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Models;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Async.External.Addressables;
@@ -17,6 +19,13 @@ namespace Appalachia.Core.Objects.Root
     [Critical]
     public sealed partial class AppalachiaRepository : AppalachiaObject
     {
+        #region Static Fields and Autoproperties
+
+        private static InitializationStage _initializationStage;
+        private static object _repositoryAwakeLock;
+
+        #endregion
+
         #region Fields and Autoproperties
 
         [NonSerialized] private Dictionary<Assembly, string> _assemblyNames;
@@ -25,47 +34,105 @@ namespace Appalachia.Core.Objects.Root
 
         internal static async AppaTask<AppalachiaRepository> AwakeRepository()
         {
-            using (_PRF_AwakeRepository.Auto())
+            if (instance != null)
             {
-                if (instance != null)
+                return instance;
+            }
+
+            _repositoryAwakeLock ??= new object();
+
+            bool shouldAwake;
+            bool shouldWait;
+
+            lock (_repositoryAwakeLock)
+            {
+                shouldAwake = _initializationStage == InitializationStage.None;
+                shouldWait = _initializationStage == InitializationStage.InProgress;
+
+                if (shouldAwake)
                 {
-                    return instance;
+                    _initializationStage = InitializationStage.InProgress;
                 }
+            }
 
-                StaticContext.Log.Info("Awakening.  Will attempt to load addressable repository asset.");
+            if (shouldWait)
+            {
+                await AppaTask.WaitUntil(() => _initializationStage == InitializationStage.Completed);
+                return instance;
+            }
 
-                var i = await Addressables.LoadAssetAsync<AppalachiaRepository>(nameof(AppalachiaRepository));
+            if (!shouldAwake)
+            {
+                return instance;
+            }
 
-                StaticContext.Log.Info("Initializing repository.");
+            StaticContext.Log.Info("Awakening.  Will attempt to load addressable repository asset.");
 
-                await i.ExecuteInitialization();
+            var i = await Addressables.LoadAssetAsync<AppalachiaRepository>(nameof(AppalachiaRepository));
 
-                SetInstance(i);
+            StaticContext.Log.Info("Initializing repository.");
 
-                StaticContext.Log.Info("Successfully awakened.");
+            await i.ExecuteInitialization();
 
-                return i;
+            i.InitializeLookups();
+
+            SetInstance(i);
+
+            StaticContext.Log.Info("Successfully awakened.");
+
+            _initializationStage = InitializationStage.Completed;
+
+            return i;
+        }
+
+        private void InitializeLookups()
+        {
+            using (_PRF_InitializeLookups.Auto())
+            {
+                _assemblyNames ??= new Dictionary<Assembly, string>();
+
+                InitializeSingletons();
+                InitializePrefabs();
             }
         }
 
-        protected override void AfterInitialization()
+        private void InitializePrefabs()
         {
-            using (_PRF_AfterInitialization.Auto())
+            using (_PRF_InitializeLookups.Auto())
             {
-                _singletonLookup ??= new Dictionary<Type, AppalachiaRepositorySingletonReference>();
+                _prefabs ??= new AppalachiaRepositoryPrefabReferenceList();
                 _prefabLookup ??= new Dictionary<string, AppalachiaRepositoryPrefabReference>();
+                _prefabLookup.Clear();
+
+                PopulatePrefabLookup(_prefabLookup, _prefabs);
+            }
+        }
+
+        private void InitializeSingletons()
+        {
+            using (_PRF_InitializeLookups.Auto())
+            {
+                _singletons ??= new AppalachiaRepositorySingletonReferenceList();
+#if UNITY_EDITOR
+                _editorSingletons ??= new AppalachiaRepositorySingletonReferenceList();
+#endif
+
+                _singletonLookup ??= new Dictionary<Type, AppalachiaRepositorySingletonReference>();
+                _singletonLookup.Clear();
 
                 PopulateSingletonLookup(_singletonLookup, _singletons);
 #if UNITY_EDITOR
                 PopulateSingletonLookup(_singletonLookup, _editorSingletons);
 #endif
-                PopulatePrefabLookup(_prefabLookup, _prefabs);
             }
         }
 
         #region Profiling
 
         private const string _PRF_PFX = nameof(AppalachiaRepository) + ".";
+
+        private static readonly ProfilerMarker _PRF_InitializeLookups =
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeLookups));
 
         private static readonly ProfilerMarker _PRF_AfterInitialization =
             new ProfilerMarker(_PRF_PFX + nameof(AfterInitialization));

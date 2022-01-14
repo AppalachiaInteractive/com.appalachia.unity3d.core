@@ -8,7 +8,8 @@ using UnityEngine;
 namespace Appalachia.Core.Overrides.Implementations
 {
     [Serializable]
-    public sealed class OverridableGradientColorKey : Overridable<GradientColorKey, OverridableGradientColorKey>
+    public sealed class
+        OverridableGradientColorKey : Overridable<GradientColorKey, OverridableGradientColorKey>
     {
         public OverridableGradientColorKey() : base(false, default)
         {

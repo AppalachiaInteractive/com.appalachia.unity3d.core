@@ -15,6 +15,7 @@ using UnityEngine.Serialization;
 namespace Appalachia.Core.Objects.Scriptables
 {
     [InspectorIcon(Brand.AppalachiaMetadataCollection.Icon)]
+    [AssetLabel(Brand.AppalachiaMetadataCollection.Label)]
     public abstract class AppalachiaMetadataCollection<T, TValue, TL> : SingletonAppalachiaObject<T>
         where T : AppalachiaMetadataCollection<T, TValue, TL>
         where TValue : AppalachiaObject<TValue> /*, ICategorizable*/
@@ -74,35 +75,36 @@ namespace Appalachia.Core.Objects.Scriptables
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
-            {
-                await initializer.Do(
-                    this,
-                    nameof(defaultValue),
-                    defaultValue == null,
-                    () => defaultValue = all_internal.FirstOrDefault_NoAlloc()
-                );
+            await base.Initialize(initializer);
 
-#if UNITY_EDITOR
-                if (!AppalachiaApplication.IsPlayingOrWillPlay)
+            initializer.Do(
+                this,
+                nameof(defaultValue),
+                defaultValue == null,
+                () =>
                 {
-                    using (new AssetEditingScope())
+                    using (_PRF_Initialize.Auto())
                     {
-                        RegisterNecessaryInstances();
+                        defaultValue = all_internal.FirstOrDefault_NoAlloc();
                     }
                 }
-#endif
+            );
+
+#if UNITY_EDITOR
+            if (!AppalachiaApplication.IsPlayingOrWillPlay)
+            {
+                using (var scope = new AssetEditingScope())
+                {
+                    var result = RegisterNecessaryInstances();
+
+                    if (result == 0)
+                    {
+                        scope.Ignore();
+                    }
+                }
             }
+#endif
         }
-
-        #region Profiling
-
-        private const string _PRF_PFX = nameof(AppalachiaMetadataCollection<T, TValue, TL>) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
-        #endregion
 
 #if UNITY_EDITOR
 
@@ -126,8 +128,13 @@ namespace Appalachia.Core.Objects.Scriptables
             return Brand.AppalachiaMetadataCollection.Banner;
         }
 
-        protected virtual void RegisterNecessaryInstances()
+        /// <summary>
+        ///     Registers any necessary instances for the metadata collection.
+        /// </summary>
+        /// <returns>The number of registered instances.</returns>
+        protected virtual int RegisterNecessaryInstances()
         {
+            return 0;
         }
 
         private static readonly ProfilerMarker _PRF_PopulateAll =

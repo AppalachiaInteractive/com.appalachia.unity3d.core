@@ -3,6 +3,7 @@ using Appalachia.CI.Integration.Attributes;
 namespace Appalachia.Core.Objects.Root
 {
     [InspectorIcon(Brand.AppalachiaObject.Icon)]
+    [AssetLabel(Brand.AppalachiaObject.Label)]
     public partial class AppalachiaObject
     {
         protected virtual string GetBackgroundColor()
@@ -37,6 +38,7 @@ namespace Appalachia.Core.Objects.Root
     }
 
     [InspectorIcon(Brand.AppalachiaRepository.Icon)]
+    [AssetLabel(Brand.AppalachiaRepository.Label)]
     public partial class AppalachiaRepository
     {
         protected override string GetBackgroundColor()
@@ -65,6 +67,7 @@ namespace Appalachia.Core.Objects.Root
     }
 
     [InspectorIcon(Brand.SingletonAppalachiaObject.Icon)]
+    [AssetLabel(Brand.SingletonAppalachiaObject.Label)]
     public partial class SingletonAppalachiaObject<T>
     {
         protected override string GetBackgroundColor()

@@ -13,6 +13,12 @@ namespace Appalachia.Core.Objects.Root
 {
     public abstract partial class SingletonAppalachiaObject<T>
     {
+        #region Constants and Static Readonly
+
+        private static readonly string _PRF_PFX2 = typeof(T).Name + ".";
+
+        #endregion
+
         private static async AppaTask<T> CreateAndSaveSingleton()
         {
             using (_PRF_CreateAndSaveSingleton.Auto())
@@ -55,7 +61,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_CreateAndSaveSingleton =
-            new(_PRF_PFX + nameof(CreateAndSaveSingleton));
+            new(_PRF_PFX2 + nameof(CreateAndSaveSingleton));
 
         #endregion
     }

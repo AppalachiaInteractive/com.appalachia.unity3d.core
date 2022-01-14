@@ -11,10 +11,41 @@ namespace Appalachia.Core.Collections.Native
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe struct NativeLinkedListState
     {
+        #region Fields and Autoproperties
+
         /// <summary>
-        ///     Each node's value. Indices correspond with nextIndexes.
+        ///     Allocator used to create the backing arrays
         /// </summary>
-        internal void* m_Values;
+        internal Allocator m_AllocatorLabel;
+
+        /// <summary>
+        ///     Number of nodes that can be contained
+        /// </summary>
+        internal int m_Capacity;
+
+        /// <summary>
+        ///     Index of the first node in the list or -1 if there are no nodes in
+        ///     the list
+        /// </summary>
+        internal int m_HeadIndex;
+
+        /// <summary>
+        ///     Number of nodes contained
+        /// </summary>
+        internal int m_Length;
+
+        /// <summary>
+        ///     Index of the last node in the list or -1 if there are no nodes in
+        ///     the list
+        /// </summary>
+        internal int m_TailIndex;
+
+        /// <summary>
+        ///     Version of enumerators that are valid for this list. This starts at
+        ///     1 and increases by one with each change that invalidates the list's
+        ///     enumerators.
+        /// </summary>
+        internal int m_Version;
 
         /// <summary>
         ///     Each node's next node index. Indices correspond with values.
@@ -27,37 +58,10 @@ namespace Appalachia.Core.Collections.Native
         internal int* m_PrevIndexes;
 
         /// <summary>
-        ///     Index of the first node in the list or -1 if there are no nodes in
-        ///     the list
+        ///     Each node's value. Indices correspond with nextIndexes.
         /// </summary>
-        internal int m_HeadIndex;
+        internal void* m_Values;
 
-        /// <summary>
-        ///     Index of the last node in the list or -1 if there are no nodes in
-        ///     the list
-        /// </summary>
-        internal int m_TailIndex;
-
-        /// <summary>
-        ///     Number of nodes contained
-        /// </summary>
-        internal int m_Length;
-
-        /// <summary>
-        ///     Number of nodes that can be contained
-        /// </summary>
-        internal int m_Capacity;
-
-        /// <summary>
-        ///     Version of enumerators that are valid for this list. This starts at
-        ///     1 and increases by one with each change that invalidates the list's
-        ///     enumerators.
-        /// </summary>
-        internal int m_Version;
-
-        /// <summary>
-        ///     Allocator used to create the backing arrays
-        /// </summary>
-        internal Allocator m_AllocatorLabel;
+        #endregion
     }
 }

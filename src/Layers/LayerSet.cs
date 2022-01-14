@@ -59,10 +59,14 @@ namespace Appalachia.Core.Layers
             oppositeLayerMask = ~layerMask;
         }
 
+        #region Fields and Autoproperties
+
         public readonly List<int> layers;
-        private readonly HashSet<int> _layerLookup;
         public LayerMask layerMask;
         public LayerMask oppositeLayerMask;
+        private readonly HashSet<int> _layerLookup;
+
+        #endregion
 
         public bool ContainsLayer(GameObject go)
         {

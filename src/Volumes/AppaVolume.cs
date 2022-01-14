@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Async;
 using Sirenix.OdinInspector;
-using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -110,11 +109,11 @@ namespace Appalachia.Core.Volumes
 
         private void Update()
         {
-            if (!DependenciesAreReady || !FullyInitialized)
+            if (ShouldSkipUpdate)
             {
                 return;
             }
-            
+
             // Unfortunately we need to track the current layer to update the volume manager in
             // real-time as the user could change it at any time in the editor or at runtime.
             // Because no event is raised when the layer changes, we have to track it on every
@@ -199,18 +198,6 @@ namespace Appalachia.Core.Volumes
             get => m_IsGlobal;
             set => m_IsGlobal = value;
         }
-
-        #endregion
-
-        #region Profiling
-
-        private const string _PRF_PFX = nameof(AppaVolume) + ".";
-
-        private static readonly ProfilerMarker _PRF_WhenEnabled =
-            new ProfilerMarker(_PRF_PFX + nameof(WhenEnabled));
-
-        private static readonly ProfilerMarker _PRF_WhenDisabled =
-            new ProfilerMarker(_PRF_PFX + nameof(WhenDisabled));
 
         #endregion
     }

@@ -5,6 +5,8 @@ namespace Appalachia.Core.Attributes.Editing
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class CheckboxEnabledAttribute : Attribute
     {
+        #region Fields and Autoproperties
+
         public bool EnableIf { get; set; }
         public bool PreviewField { get; set; }
         public bool ShowIf { get; set; }
@@ -15,5 +17,7 @@ namespace Appalachia.Core.Attributes.Editing
         public int PreviewHeight { get; set; }
         public string MaxMember { get; set; }
         public string MinMember { get; set; }
+
+        #endregion
     }
 }

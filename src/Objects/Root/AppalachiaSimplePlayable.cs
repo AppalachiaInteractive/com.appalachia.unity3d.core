@@ -75,7 +75,7 @@ namespace Appalachia.Core.Objects.Root
                 {
                     return;
                 }
-                
+
                 BeforeInitialization();
 
                 await Initialize(_initializer);
@@ -83,6 +83,8 @@ namespace Appalachia.Core.Objects.Root
                 await InitializePlayable(playable.Value);
 
                 AfterInitialization();
+
+                initializationState.hasInitializationFinished = true;
             }
         }
 

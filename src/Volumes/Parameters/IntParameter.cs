@@ -15,7 +15,7 @@ namespace Appalachia.Core.Volumes.Parameters
         {
             // Int snapping interpolation. Don't use this for enums as they don't necessarily have
             // contiguous values. Use the default interpolator instead (same as bool).
-            m_Value = (int) (from + ((to - from) * t));
+            m_Value = (int)(from + ((to - from) * t));
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Appalachia.Core.Math
 {
     public static class Mathd
     {
+        #region Constants and Static Readonly
+
         // Degrees-to-radians conversion constant (RO).
         public const double Deg2Rad = (PI * 2F) / 360F;
 
@@ -24,6 +26,26 @@ namespace Appalachia.Core.Math
         // Radians-to-degrees conversion constant (RO).
         public const double Rad2Deg = 1F / Deg2Rad;
 
+        #endregion
+
+        // Returns the absolute value of /f/.
+        public static double Abs(double d)
+        {
+            return System.Math.Abs(d);
+        }
+
+        // Returns the absolute value of /value/.
+        public static int Abs(int value)
+        {
+            return System.Math.Abs(value);
+        }
+
+        // Returns the arc-cosine of /f/ - the angle in radians whose cosine is /f/.
+        public static double Acos(double d)
+        {
+            return System.Math.Acos(d);
+        }
+
         // Compares two doubleing point values if they are similar.
         public static bool Approximately(double a, double b)
         {
@@ -35,18 +57,6 @@ namespace Appalachia.Core.Math
             // thus we could use an epsilon of 0.000001f for comparing values close to 1.
             // We multiply this epsilon by the biggest magnitude of a and b.
             return Abs(b - a) < Max(0.000001f * Max(Abs(a), Abs(b)), double.Epsilon * 8);
-        }
-
-        // Returns the absolute value of /f/.
-        public static double Abs(double d)
-        {
-            return System.Math.Abs(d);
-        }
-
-        // Returns the arc-cosine of /f/ - the angle in radians whose cosine is /f/.
-        public static double Acos(double d)
-        {
-            return System.Math.Acos(d);
         }
 
         // Returns the arc-sine of /f/ - the angle in radians whose sine is /f/.
@@ -73,8 +83,32 @@ namespace Appalachia.Core.Math
             return System.Math.Ceiling(d);
         }
 
+        // Returns the smallest integer greater to or equal to /f/.
+        public static int CeilToInt(double d)
+        {
+            return (int)System.Math.Ceiling(d);
+        }
+
         // Clamps a value between a minimum double and maximum double value.
         public static double Clamp(double value, double min, double max)
+        {
+            if (value < min)
+            {
+                value = min;
+            }
+            else if (value > max)
+            {
+                value = max;
+            }
+
+            return value;
+        }
+
+        // Clamps value between min and max and returns value.
+        // Set the position of the transform to be that of the time
+        // but never less than 1 or more than 3
+        //
+        public static int Clamp(int value, int min, int max)
         {
             if (value < min)
             {
@@ -132,6 +166,12 @@ namespace Appalachia.Core.Math
         public static double Floor(double d)
         {
             return System.Math.Floor(d);
+        }
+
+        // Returns the largest integer smaller to or equal to /f/.
+        public static int FloorToInt(double d)
+        {
+            return (int)System.Math.Floor(d);
         }
 
         //*undocumented
@@ -234,6 +274,33 @@ namespace Appalachia.Core.Math
         }
 
         /// *listonly*
+        public static int Max(int a, int b)
+        {
+            return a > b ? a : b;
+        }
+
+        // Returns the largest of two or more values.
+        public static int Max(params int[] values)
+        {
+            var len = values.Length;
+            if (len == 0)
+            {
+                return 0;
+            }
+
+            var m = values[0];
+            for (var i = 1; i < len; i++)
+            {
+                if (values[i] > m)
+                {
+                    m = values[i];
+                }
+            }
+
+            return m;
+        }
+
+        /// *listonly*
         public static double Min(double a, double b)
         {
             return a < b ? a : b;
@@ -241,6 +308,33 @@ namespace Appalachia.Core.Math
 
         // Returns the smallest of two or more values.
         public static double Min(params double[] values)
+        {
+            var len = values.Length;
+            if (len == 0)
+            {
+                return 0;
+            }
+
+            var m = values[0];
+            for (var i = 1; i < len; i++)
+            {
+                if (values[i] < m)
+                {
+                    m = values[i];
+                }
+            }
+
+            return m;
+        }
+
+        /// *listonly*
+        public static int Min(int a, int b)
+        {
+            return a < b ? a : b;
+        }
+
+        // Returns the smallest of two or more values.
+        public static int Min(params int[] values)
         {
             var len = values.Length;
             if (len == 0)
@@ -307,6 +401,12 @@ namespace Appalachia.Core.Math
         public static double Round(double d)
         {
             return System.Math.Round(d);
+        }
+
+        // Returns /f/ rounded to the nearest integer.
+        public static int RoundToInt(double d)
+        {
+            return (int)System.Math.Round(d);
         }
 
         // Returns the sign of /f/.
@@ -435,107 +535,11 @@ namespace Appalachia.Core.Math
             return System.Math.Tan(d);
         }
 
-        // Returns the absolute value of /value/.
-        public static int Abs(int value)
-        {
-            return System.Math.Abs(value);
-        }
-
-        // Returns the smallest integer greater to or equal to /f/.
-        public static int CeilToInt(double d)
-        {
-            return (int) System.Math.Ceiling(d);
-        }
-
-        // Clamps value between min and max and returns value.
-        // Set the position of the transform to be that of the time
-        // but never less than 1 or more than 3
-        //
-        public static int Clamp(int value, int min, int max)
-        {
-            if (value < min)
-            {
-                value = min;
-            }
-            else if (value > max)
-            {
-                value = max;
-            }
-
-            return value;
-        }
-
-        // Returns the largest integer smaller to or equal to /f/.
-        public static int FloorToInt(double d)
-        {
-            return (int) System.Math.Floor(d);
-        }
-
-        /// *listonly*
-        public static int Max(int a, int b)
-        {
-            return a > b ? a : b;
-        }
-
-        // Returns the largest of two or more values.
-        public static int Max(params int[] values)
-        {
-            var len = values.Length;
-            if (len == 0)
-            {
-                return 0;
-            }
-
-            var m = values[0];
-            for (var i = 1; i < len; i++)
-            {
-                if (values[i] > m)
-                {
-                    m = values[i];
-                }
-            }
-
-            return m;
-        }
-
-        /// *listonly*
-        public static int Min(int a, int b)
-        {
-            return a < b ? a : b;
-        }
-
-        // Returns the smallest of two or more values.
-        public static int Min(params int[] values)
-        {
-            var len = values.Length;
-            if (len == 0)
-            {
-                return 0;
-            }
-
-            var m = values[0];
-            for (var i = 1; i < len; i++)
-            {
-                if (values[i] < m)
-                {
-                    m = values[i];
-                }
-            }
-
-            return m;
-        }
-
-        // Returns /f/ rounded to the nearest integer.
-        public static int RoundToInt(double d)
-        {
-            return (int) System.Math.Round(d);
-        }
-
         internal static long RandomToLong(Random r)
         {
             var buffer = new byte[8];
             r.NextBytes(buffer);
-            return (long) (BitConverter.ToUInt64(buffer, 0) & long.MaxValue);
+            return (long)(BitConverter.ToUInt64(buffer, 0) & long.MaxValue);
         }
     }
 }

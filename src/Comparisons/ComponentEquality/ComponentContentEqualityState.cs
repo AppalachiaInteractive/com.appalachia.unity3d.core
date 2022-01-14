@@ -10,7 +10,6 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
         where TO : Object
     {
         public abstract void Record(TO c);
-        [DebuggerStepThrough] public abstract bool Equals(TO other);
 
         public static T CreateAndRecord(TO o)
         {
@@ -19,5 +18,12 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
             return state;
         }
+
+        #region IEquatable<TO> Members
+
+        [DebuggerStepThrough]
+        public abstract bool Equals(TO other);
+
+        #endregion
     }
 }

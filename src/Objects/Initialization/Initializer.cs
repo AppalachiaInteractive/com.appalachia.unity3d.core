@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Objects.Root.Contracts;
-using Appalachia.Utility.Async;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
@@ -34,8 +33,6 @@ namespace Appalachia.Core.Objects.Initialization
 
         [NonSerialized] private HashSet<string> _tagsHash;
 
-        private int delayFrames = 1;
-
         [NonSerialized] private List<string> _nonSerializedTags;
 
         [HideInInspector, SerializeField]
@@ -50,402 +47,329 @@ namespace Appalachia.Core.Objects.Initialization
 
         internal string ResetToken => _resetToken;
 
-        public void ConfigureInitializerDelay(int delayForXFrames)
+        public void Do(IUnitySerializable obj, string tag, TagState tagState, Action action)
         {
-            using (_PRF_ConfigureInitializerDelay.Auto())
-            {
-                delayFrames = delayForXFrames;
-            }
+            InitializeInternal(obj, tag, false, tagState, action);
         }
 
-        public async AppaTask Do(IUnitySerializable obj, string tag, TagState tagState, Action action)
+        public void Do(IUnitySerializable obj, string tag, Action action)
         {
-            using (_PRF_Do.Auto())
-            {
-                await InitializeInternal(obj, tag, false, tagState, action);
-            }
+            InitializeInternal(obj, tag, false, TagState.Serialized, action);
         }
 
-        public async AppaTask Do(IUnitySerializable obj, string tag, Action action)
+        public void Do(IUnitySerializable obj, string tag, bool force, Action action)
         {
-            using (_PRF_Do.Auto())
-            {
-                await InitializeInternal(obj, tag, false, TagState.Serialized, action);
-            }
+            InitializeInternal(obj, tag, force, TagState.Serialized, action);
         }
 
-        public async AppaTask Do(IUnitySerializable obj, string tag, bool force, Action action)
+        public void Do(IUnitySerializable obj, string tag, bool force, TagState tagState, Action action)
         {
-            using (_PRF_Do.Auto())
-            {
-                await InitializeInternal(obj, tag, force, TagState.Serialized, action);
-            }
+            InitializeInternal(obj, tag, force, tagState, action);
         }
 
-        public async AppaTask Do(
-            IUnitySerializable obj,
-            string tag,
-            bool force,
-            TagState tagState,
-            Action action)
-        {
-            using (_PRF_Do.Auto())
-            {
-                await InitializeInternal(obj, tag, force, tagState, action);
-            }
-        }
-
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             GameObject obj,
+            TC target,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    typeof(TC).Name,
-                    false,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                typeof(TC).Name,
+                target == null,
+                TagState.Serialized,
+                false,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             GameObject obj,
+            TC target,
             string tag,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    false,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                tag,
+                target == null,
+                TagState.Serialized,
+                false,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             GameObject obj,
+            TC target,
             string tag,
             bool force,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    force,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(obj, target, tag, force, TagState.Serialized, false, getComponentStrategy);
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             GameObject obj,
+            TC target,
             string tag,
             bool force,
             TagState tagState,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(obj, tag, force, tagState, false, getComponentStrategy);
-            }
+            return GetInternal(obj, target, tag, force, tagState, false, getComponentStrategy);
         }
 
-        public async AppaTask<TC> Get<TC>(Transform obj, GetComponentStrategy getComponentStrategy)
+        public TC Get<TC>(Transform obj, TC target, GetComponentStrategy getComponentStrategy)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    typeof(TC).Name,
-                    false,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                typeof(TC).Name,
+                target == null,
+                TagState.Serialized,
+                false,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             Transform obj,
+            TC target,
             string tag,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    false,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                tag,
+                target == null,
+                TagState.Serialized,
+                false,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             Transform obj,
-            string tag,
+            TC target,
             bool force,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    force,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                typeof(TC).Name,
+                force,
+                TagState.Serialized,
+                false,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             Transform obj,
+            TC target,
+            string tag,
+            bool force,
+            GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
+            where TC : Component
+        {
+            return GetInternal(obj, target, tag, force, TagState.Serialized, false, getComponentStrategy);
+        }
+
+        public TC Get<TC>(
+            Transform obj,
+            TC target,
             string tag,
             bool force,
             TagState tagState,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(obj, tag, force, tagState, false, getComponentStrategy);
-            }
+            return GetInternal(obj, target, tag, force, tagState, false, getComponentStrategy);
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             MonoBehaviour obj,
+            TC target,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    typeof(TC).Name,
-                    false,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                typeof(TC).Name,
+                target == null,
+                TagState.Serialized,
+                false,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             MonoBehaviour obj,
+            TC target,
             string tag,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    false,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                tag,
+                target == null,
+                TagState.Serialized,
+                false,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             MonoBehaviour obj,
+            TC target,
             string tag,
             bool force,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    force,
-                    TagState.Serialized,
-                    false,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(obj, target, tag, force, TagState.Serialized, false, getComponentStrategy);
         }
 
-        public async AppaTask<TC> Get<TC>(
+        public TC Get<TC>(
             MonoBehaviour obj,
+            TC target,
             string tag,
             bool force,
             TagState tagState,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_Get.Auto())
-            {
-                return await GetInternal<TC>(obj, tag, force, tagState, false, getComponentStrategy);
-            }
+            return GetInternal(obj, target, tag, force, tagState, false, getComponentStrategy);
         }
 
-        public async AppaTask<TC> GetOrCreate<TC>(
+        public TC GetOrCreate<TC>(
             GameObject obj,
+            TC target,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_GetOrCreate.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    typeof(TC).Name,
-                    false,
-                    TagState.Serialized,
-                    true,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                typeof(TC).Name,
+                target == null,
+                TagState.Serialized,
+                true,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> GetOrCreate<TC>(
+        public TC GetOrCreate<TC>(
             GameObject obj,
+            TC target,
             string tag,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_GetOrCreate.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    false,
-                    TagState.Serialized,
-                    true,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                tag,
+                target == null,
+                TagState.Serialized,
+                true,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> GetOrCreate<TC>(
+        public TC GetOrCreate<TC>(
             GameObject obj,
+            TC target,
             string tag,
             bool force,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_GetOrCreate.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    force,
-                    TagState.Serialized,
-                    true,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(obj, target, tag, force, TagState.Serialized, true, getComponentStrategy);
         }
 
-        public async AppaTask<TC> GetOrCreate<TC>(
+        public TC GetOrCreate<TC>(
             GameObject obj,
+            TC target,
             string tag,
             bool force,
             TagState tagState,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_GetOrCreate.Auto())
-            {
-                return await GetInternal<TC>(obj, tag, force, tagState, true, getComponentStrategy);
-            }
+            return GetInternal(obj, target, tag, force, tagState, true, getComponentStrategy);
         }
 
-        public async AppaTask<TC> GetOrCreate<TC>(
+        public TC GetOrCreate<TC>(
             MonoBehaviour obj,
+            TC target,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_GetOrCreate.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    typeof(TC).Name,
-                    false,
-                    TagState.Serialized,
-                    true,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                typeof(TC).Name,
+                target == null,
+                TagState.Serialized,
+                true,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> GetOrCreate<TC>(
+        public TC GetOrCreate<TC>(
             MonoBehaviour obj,
+            TC target,
             string tag,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_GetOrCreate.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    false,
-                    TagState.Serialized,
-                    true,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj,
+                target,
+                tag,
+                target == null,
+                TagState.Serialized,
+                true,
+                getComponentStrategy
+            );
         }
 
-        public async AppaTask<TC> GetOrCreate<TC>(
+        public TC GetOrCreate<TC>(
             MonoBehaviour obj,
+            TC target,
             string tag,
             bool force,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_GetOrCreate.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj,
-                    tag,
-                    force,
-                    TagState.Serialized,
-                    true,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(obj, target, tag, force, TagState.Serialized, true, getComponentStrategy);
         }
 
-        public async AppaTask<TC> GetOrCreate<TC>(
+        public TC GetOrCreate<TC>(
             MonoBehaviour obj,
+            TC target,
             string tag,
             bool force,
             TagState tagState,
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            using (_PRF_GetOrCreate.Auto())
-            {
-                return await GetInternal<TC>(obj, tag, force, tagState, true, getComponentStrategy);
-            }
+            return GetInternal(obj, target, tag, force, tagState, true, getComponentStrategy);
         }
 
         public void Reset(object obj, string token)
@@ -503,11 +427,6 @@ namespace Appalachia.Core.Objects.Initialization
             }
         }
 
-        public async AppaTask Yield()
-        {
-            await AppaTask.Yield();
-        }
-
         internal bool HasInitialized(string tag, TagState tagState = TagState.Serialized)
         {
             using (_PRF_HasInitialized.Auto())
@@ -523,22 +442,9 @@ namespace Appalachia.Core.Objects.Initialization
             }
         }
 
-        private async AppaTask ExecuteDelay()
-        {
-            using (_PRF_ExecuteDelay.Auto())
-            {
-                var i = 0;
-
-                while (i < delayFrames)
-                {
-                    await AppaTask.Yield(PlayerLoopTiming.Initialization);
-                    i += 1;
-                }
-            }
-        }
-
-        private async AppaTask<TC> GetInternal<TC>(
+        private TC GetInternal<TC>(
             GameObject obj,
+            TC target,
             string tag,
             bool force,
             TagState tagState,
@@ -546,11 +452,11 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy)
             where TC : Component
         {
-            using (_PRF_GetInternal.Auto())
-            {
-                TC foundComponent = null;
+            var foundComponent = target;
 
-                void Getter()
+            void Getter()
+            {
+                using (_PRF_GetInternal_Getter.Auto())
                 {
                     foundComponent = obj.Get<TC>(getComponentStrategy);
                     if (allowCreate && (foundComponent == null))
@@ -558,15 +464,16 @@ namespace Appalachia.Core.Objects.Initialization
                         foundComponent = obj.gameObject.AddComponent<TC>();
                     }
                 }
-
-                await InitializeInternal(obj, tag, force, tagState, Getter);
-
-                return foundComponent;
             }
+
+            InitializeInternal(obj, tag, force, tagState, Getter);
+
+            return foundComponent;
         }
 
-        private async AppaTask<TC> GetInternal<TC>(
+        private TC GetInternal<TC>(
             Transform obj,
+            TC target,
             string tag,
             bool force,
             TagState tagState,
@@ -574,21 +481,20 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy)
             where TC : Component
         {
-            using (_PRF_GetInternal.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj.gameObject,
-                    tag,
-                    force,
-                    tagState,
-                    allowCreate,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj.gameObject,
+                target,
+                tag,
+                force,
+                tagState,
+                allowCreate,
+                getComponentStrategy
+            );
         }
 
-        private async AppaTask<TC> GetInternal<TC>(
+        private TC GetInternal<TC>(
             MonoBehaviour obj,
+            TC target,
             string tag,
             bool force,
             TagState tagState,
@@ -596,23 +502,24 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy)
             where TC : Component
         {
-            using (_PRF_GetInternal.Auto())
-            {
-                return await GetInternal<TC>(
-                    obj.gameObject,
-                    tag,
-                    force,
-                    tagState,
-                    allowCreate,
-                    getComponentStrategy
-                );
-            }
+            return GetInternal(
+                obj.gameObject,
+                target,
+                tag,
+                force,
+                tagState,
+                allowCreate,
+                getComponentStrategy
+            );
         }
 
         private void GetLoggingObjects(out string loggingName, out Object loggingContext)
         {
-            loggingName = _object is Object uobj1 ? uobj1.name : _object.GetType().Name;
-            loggingContext = _object is Object uobj2 ? uobj2 : null;
+            using (_PRF_GetLoggingObjects.Auto())
+            {
+                loggingName = _object is Object uobj1 ? uobj1.name : _object.GetType().Name;
+                loggingContext = _object is Object uobj2 ? uobj2 : null;
+            }
         }
 
         private void HandleCaughtInitializationException(string tag, Exception ex)
@@ -632,12 +539,7 @@ namespace Appalachia.Core.Objects.Initialization
             }
         }
 
-        private async AppaTask InitializeInternal(
-            object obj,
-            string tag,
-            bool force,
-            TagState tagState,
-            Action action)
+        private void InitializeInternal(object obj, string tag, bool force, TagState tagState, Action action)
         {
             using (_PRF_InitializeInternal.Auto())
             {
@@ -649,10 +551,7 @@ namespace Appalachia.Core.Objects.Initialization
                 try
                 {
                     action();
-
                     MarkInitialized(tag, tagState);
-
-                    await ExecuteDelay();
                 }
                 catch (Exception ex)
                 {
@@ -665,7 +564,7 @@ namespace Appalachia.Core.Objects.Initialization
 
         private void InitializeInternalCollections()
         {
-            using (_PRF_InitializeInternal.Auto())
+            using (_PRF_InitializeInternalCollections.Auto())
             {
                 _tags ??= new List<string>();
                 _tagsHash ??= new HashSet<string>(_tags);
@@ -772,16 +671,19 @@ namespace Appalachia.Core.Objects.Initialization
 
         private void MarkAsModified()
         {
+            using (_PRF_MarkAsModified.Auto())
+            {
 #if UNITY_EDITOR
-            if (_object is Object tobj)
-            {
-                tobj.MarkAsModified();
-            }
-            else if (_object is IUnitySerializable us)
-            {
-                us.MarkAsModified();
-            }
+                if (_object is Object tobj)
+                {
+                    tobj.MarkAsModified();
+                }
+                else if (_object is IUnitySerializable us)
+                {
+                    us.MarkAsModified();
+                }
 #endif
+            }
         }
 
         private void MarkInitialized(string tag, TagState tagState = TagState.Serialized)
@@ -825,7 +727,7 @@ namespace Appalachia.Core.Objects.Initialization
         [Button, ButtonGroup(GROUP)]
         private void ResetInitializationData()
         {
-            using (_PRF_Reset.Auto())
+            using (_PRF_ResetInitializationData.Auto())
             {
                 ResetDirectly();
             }
@@ -906,19 +808,20 @@ namespace Appalachia.Core.Objects.Initialization
 
         private const string _PRF_PFX = nameof(Initializer) + ".";
 
-        private static readonly ProfilerMarker _PRF_ExecuteDelay =
-            new ProfilerMarker(_PRF_PFX + nameof(ExecuteDelay));
+        private static readonly ProfilerMarker _PRF_GetInternal_Getter =
+            new ProfilerMarker(_PRF_PFX + nameof(GetInternal) + ".Getter");
 
-        private static readonly ProfilerMarker _PRF_ConfigureInitializerDelay =
-            new ProfilerMarker(_PRF_PFX + nameof(ConfigureInitializerDelay));
+        private static readonly ProfilerMarker _PRF_GetLoggingObjects =
+            new ProfilerMarker(_PRF_PFX + nameof(GetLoggingObjects));
 
-        private static readonly ProfilerMarker _PRF_GetInternal =
-            new ProfilerMarker(_PRF_PFX + nameof(GetInternal));
+        private static readonly ProfilerMarker _PRF_InitializeInternalCollections =
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeInternalCollections));
 
-        private static readonly ProfilerMarker _PRF_Get = new ProfilerMarker(_PRF_PFX + nameof(Get));
+        private static readonly ProfilerMarker _PRF_MarkAsModified =
+            new ProfilerMarker(_PRF_PFX + nameof(MarkAsModified));
 
-        private static readonly ProfilerMarker _PRF_GetOrCreate =
-            new ProfilerMarker(_PRF_PFX + nameof(GetOrCreate));
+        private static readonly ProfilerMarker _PRF_ResetInitializationData =
+            new ProfilerMarker(_PRF_PFX + nameof(ResetInitializationData));
 
         private static readonly ProfilerMarker _PRF_InitializeScopeInternal =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeScopeInternal));
@@ -935,12 +838,10 @@ namespace Appalachia.Core.Objects.Initialization
             new ProfilerMarker(_PRF_PFX + nameof(ResetDirectly));
 
         private static readonly ProfilerMarker _PRF_InitializeInternal =
-            new ProfilerMarker(_PRF_PFX + nameof(InitializeInternalCollections));
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeInternal));
 
         private static readonly ProfilerMarker _PRF_Reset =
             new ProfilerMarker(_PRF_PFX + nameof(ResetInitializationData));
-
-        private static readonly ProfilerMarker _PRF_Do = new ProfilerMarker(_PRF_PFX + nameof(Do));
 
         private static readonly ProfilerMarker _PRF_HasInitialized =
             new ProfilerMarker(_PRF_PFX + nameof(HasInitialized));

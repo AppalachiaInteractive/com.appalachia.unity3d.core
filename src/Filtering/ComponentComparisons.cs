@@ -5,13 +5,7 @@ namespace Appalachia.Core.Filtering
 {
     public static class ComponentComparisons
     {
-        public abstract class SimpleComparer<T, TC> : IComparer<TC>
-            where T : SimpleComparer<T, TC>, new()
-        {
-            public static readonly T Instance = new();
-
-            public abstract int Compare(TC x, TC y);
-        }
+        #region Nested type: BestMeshMeshFilterComparer
 
         public class BestMeshMeshFilterComparer : SimpleComparer<BestMeshMeshFilterComparer, MeshFilter>
         {
@@ -53,6 +47,10 @@ namespace Appalachia.Core.Filtering
                 return -smx.vertexCount.CompareTo(smy.vertexCount);
             }
         }
+
+        #endregion
+
+        #region Nested type: BestMeshRendererComparer
 
         public class BestMeshRendererComparer : SimpleComparer<BestMeshRendererComparer, Renderer>
         {
@@ -113,6 +111,30 @@ namespace Appalachia.Core.Filtering
             }
         }
 
+        #endregion
+
+        #region Nested type: SimpleComparer
+
+        public abstract class SimpleComparer<T, TC> : IComparer<TC>
+            where T : SimpleComparer<T, TC>, new()
+        {
+            #region Constants and Static Readonly
+
+            public static readonly T Instance = new();
+
+            #endregion
+
+            #region IComparer<TC> Members
+
+            public abstract int Compare(TC x, TC y);
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Nested type: WorstMeshMeshFilterComparer
+
         public class WorstMeshMeshFilterComparer : SimpleComparer<WorstMeshMeshFilterComparer, MeshFilter>
         {
             public override int Compare(MeshFilter x, MeshFilter y)
@@ -153,6 +175,10 @@ namespace Appalachia.Core.Filtering
                 return smx.vertexCount.CompareTo(smy.vertexCount);
             }
         }
+
+        #endregion
+
+        #region Nested type: WorstMeshRendererComparer
 
         public class WorstMeshRendererComparer : SimpleComparer<WorstMeshRendererComparer, Renderer>
         {
@@ -212,5 +238,7 @@ namespace Appalachia.Core.Filtering
                 return smx.vertexCount.CompareTo(smy.vertexCount);
             }
         }
+
+        #endregion
     }
 }

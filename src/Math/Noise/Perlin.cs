@@ -8,7 +8,7 @@ namespace Appalachia.Core.Math.Noise
 {
     public static class Perlin
     {
-#region Noise functions
+        #region Noise functions
 
         public static float Noise(float x)
         {
@@ -77,9 +77,9 @@ namespace Appalachia.Core.Math.Noise
             return Noise(coord.x, coord.y, coord.z);
         }
 
-#endregion
+        #endregion
 
-#region fBm functions
+        #region fBm functions
 
         public static float Fbm(float x, int octave)
         {
@@ -133,9 +133,9 @@ namespace Appalachia.Core.Math.Noise
             return Fbm(new Vector3(x, y, z), octave);
         }
 
-#endregion
+        #endregion
 
-#region Private functions
+        #region Private functions
 
         private static float Fade(float t)
         {
@@ -430,6 +430,6 @@ namespace Appalachia.Core.Math.Noise
             151
         };
 
-#endregion
+        #endregion
     }
 }

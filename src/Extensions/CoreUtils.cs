@@ -12,24 +12,8 @@ using UnityEngine.Rendering;
 
 namespace Appalachia.Core.Extensions
 {
-    
     public static class CoreUtils
     {
-        [NonSerialized] private static AppaContext _context;
-
-        private static AppaContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new AppaContext(typeof(CoreUtils));
-                }
-
-                return _context;
-            }
-        }
-
         #region Constants and Static Readonly
 
         public const int assetCreateMenuPriority1 = 230;
@@ -65,6 +49,8 @@ namespace Appalachia.Core.Extensions
         #endregion
 
         #region Static Fields and Autoproperties
+
+        [NonSerialized] private static AppaContext _context;
 
         private static Cubemap m_BlackCubeTexture;
 
@@ -171,7 +157,18 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(CoreUtils));
+                }
+
+                return _context;
+            }
+        }
 
         // Returns 'true' if "Animated Materials" are enabled for the view associated with the given camera.
         public static bool AreAnimatedMaterialsEnabled(Camera camera)
@@ -373,7 +370,6 @@ namespace Appalachia.Core.Extensions
             var mat = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
             return mat;
         }
-
 
         public static void DisplayUnsupportedAPIMessage()
         {

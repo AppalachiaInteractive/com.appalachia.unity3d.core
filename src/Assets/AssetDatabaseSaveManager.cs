@@ -14,21 +14,6 @@ namespace Appalachia.Core.Assets
 {
     public class AssetDatabaseSaveManager : MonoBehaviour
     {
-        [NonSerialized] private static AppaContext _context;
-
-        private static AppaContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new AppaContext(typeof(AssetDatabaseSaveManager));
-                }
-
-                return _context;
-            }
-        }
-
         #region Preferences
 
         public static PREF<int> _SAVE_FRAME_DELAY;
@@ -42,6 +27,7 @@ namespace Appalachia.Core.Assets
         [NonSerialized] public static bool QueuedNextFrame;
         [NonSerialized] public static bool QueuedSoon;
         [NonSerialized] public static int LastSaveAt;
+        [NonSerialized] private static AppaContext _context;
         private static bool _explicitlyStarted;
         private static Dictionary<string, Action> _postActions;
         [NonSerialized] private static int _deferralDepth;
@@ -52,6 +38,19 @@ namespace Appalachia.Core.Assets
 
         public static bool ImportDeferred => _deferralDepth > 0;
         public static bool ImportSuspended => _suspensionDepth > 0;
+
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(AssetDatabaseSaveManager));
+                }
+
+                return _context;
+            }
+        }
 
         #region Event Functions
 

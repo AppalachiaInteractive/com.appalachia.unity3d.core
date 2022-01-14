@@ -15,20 +15,6 @@ namespace Appalachia.Core.Layers
 {
     public static class Layers
     {
-        [NonSerialized] private static AppaContext _context;
-
-        private static AppaContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new AppaContext(typeof(Layers));
-                }
-
-                return _context;
-            }
-        }
         #region Constants and Static Readonly
 
         private const int MAX_LAYERS = 31;
@@ -38,6 +24,8 @@ namespace Appalachia.Core.Layers
         #endregion
 
         #region Static Fields and Autoproperties
+
+        [NonSerialized] private static AppaContext _context;
 
         private static readonly ProfilerMarker _PRF_InitializeLayers =
             new(_PRF_PFX + nameof(InitializeLayers));
@@ -58,7 +46,18 @@ namespace Appalachia.Core.Layers
             }
         }
 
-        
+        private static AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(typeof(Layers));
+                }
+
+                return _context;
+            }
+        }
 
         /// <summary>
         ///     <para>Given a set of layer names as defined by either a Builtin or a User Layer in the, returns the equivalent layer mask for all of them.</para>

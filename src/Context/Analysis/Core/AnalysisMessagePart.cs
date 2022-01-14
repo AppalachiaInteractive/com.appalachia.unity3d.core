@@ -3,10 +3,14 @@ using UnityEngine;
 
 namespace Appalachia.Core.Context.Analysis.Core
 {
-    public class AnalysisMessagePart 
+    public class AnalysisMessagePart
     {
+        #region Constants and Static Readonly
+
         private const float DEFAULT_WIDTH = 60f;
-            
+
+        #endregion
+
         public AnalysisMessagePart(
             int value,
             Color color,
@@ -50,12 +54,16 @@ namespace Appalachia.Core.Context.Analysis.Core
             this.action = action;
         }
 
+        #region Fields and Autoproperties
+
         public Action action;
         public bool expandWidth;
         public Color color;
         public float width;
         public string text;
         public TextAnchor alignment;
+
+        #endregion
 
         public static AnalysisMessagePart Center(
             string text,
@@ -95,26 +103,6 @@ namespace Appalachia.Core.Context.Analysis.Core
             float width = DEFAULT_WIDTH)
         {
             return new(text, color, TextAnchor.MiddleLeft, expandWidth, width);
-        }
-
-        public static AnalysisMessagePart Right(
-            string text,
-            bool isIssue,
-            Color issueColor,
-            Color goodColor,
-            bool expandWidth = true,
-            float width = DEFAULT_WIDTH)
-        {
-            return new(text, isIssue ? issueColor : goodColor, TextAnchor.MiddleRight, expandWidth, width);
-        }
-
-        public static AnalysisMessagePart Right(
-            string text,
-            Color color,
-            bool expandWidth = true,
-            float width = DEFAULT_WIDTH)
-        {
-            return new(text, color, TextAnchor.MiddleRight, expandWidth, width);
         }
 
         public static AnalysisMessagePart[] Paired(
@@ -163,41 +151,6 @@ namespace Appalachia.Core.Context.Analysis.Core
             };
         }
 
-        public static AnalysisMessagePart[] PairedWithButton(
-            string text1,
-            string text2,
-            Color color,
-            string buttonLabel,
-            Color buttonColor,
-            Action action,
-            bool expandWidthLeft = true,
-            float widthLeft = DEFAULT_WIDTH,
-            bool expandWidthRight = true,
-            float widthRight = DEFAULT_WIDTH,
-            bool expandWidthButton = true,
-            float widthButton = DEFAULT_WIDTH)
-        {
-            return new[]
-            {
-                new AnalysisMessagePart(text1, color, TextAnchor.MiddleRight, expandWidthLeft, widthLeft),
-                new AnalysisMessagePart(
-                    text2,
-                    color,
-                    TextAnchor.MiddleRight,
-                    expandWidthRight,
-                    widthRight
-                ),
-                new AnalysisMessagePart(
-                    buttonLabel,
-                    action,
-                    buttonColor,
-                    TextAnchor.MiddleCenter,
-                    expandWidthButton,
-                    widthButton
-                )
-            };
-        }
-        
         public static AnalysisMessagePart[] PairedWith2Buttons(
             string text1,
             string text2,
@@ -245,7 +198,7 @@ namespace Appalachia.Core.Context.Analysis.Core
                 )
             };
         }
-        
+
         public static AnalysisMessagePart[] PairedWith3Buttons(
             string text1,
             string text2,
@@ -305,6 +258,61 @@ namespace Appalachia.Core.Context.Analysis.Core
                     widthButton3
                 )
             };
+        }
+
+        public static AnalysisMessagePart[] PairedWithButton(
+            string text1,
+            string text2,
+            Color color,
+            string buttonLabel,
+            Color buttonColor,
+            Action action,
+            bool expandWidthLeft = true,
+            float widthLeft = DEFAULT_WIDTH,
+            bool expandWidthRight = true,
+            float widthRight = DEFAULT_WIDTH,
+            bool expandWidthButton = true,
+            float widthButton = DEFAULT_WIDTH)
+        {
+            return new[]
+            {
+                new AnalysisMessagePart(text1, color, TextAnchor.MiddleRight, expandWidthLeft, widthLeft),
+                new AnalysisMessagePart(
+                    text2,
+                    color,
+                    TextAnchor.MiddleRight,
+                    expandWidthRight,
+                    widthRight
+                ),
+                new AnalysisMessagePart(
+                    buttonLabel,
+                    action,
+                    buttonColor,
+                    TextAnchor.MiddleCenter,
+                    expandWidthButton,
+                    widthButton
+                )
+            };
+        }
+
+        public static AnalysisMessagePart Right(
+            string text,
+            bool isIssue,
+            Color issueColor,
+            Color goodColor,
+            bool expandWidth = true,
+            float width = DEFAULT_WIDTH)
+        {
+            return new(text, isIssue ? issueColor : goodColor, TextAnchor.MiddleRight, expandWidth, width);
+        }
+
+        public static AnalysisMessagePart Right(
+            string text,
+            Color color,
+            bool expandWidth = true,
+            float width = DEFAULT_WIDTH)
+        {
+            return new(text, color, TextAnchor.MiddleRight, expandWidth, width);
         }
     }
 }

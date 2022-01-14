@@ -15,7 +15,11 @@ namespace Appalachia.Core.Types
             _nextID = startsAt0 ? 0 : 1;
         }
 
+        #region Fields and Autoproperties
+
         [SerializeField] private int _nextID;
+
+        #endregion
 
         public int GetNextIdAndIncrement()
         {

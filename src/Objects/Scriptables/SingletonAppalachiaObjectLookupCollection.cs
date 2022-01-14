@@ -7,7 +7,6 @@ using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
-using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Core.Objects.Scriptables
@@ -24,6 +23,7 @@ namespace Appalachia.Core.Objects.Scriptables
     /// <typeparam name="TOLookup">The internal lookup scriptable.</typeparam>
     [Serializable]
     [InspectorIcon(Brand.SingletonAppalachiaObjectLookupCollection.Icon)]
+    [AssetLabel(Brand.SingletonAppalachiaObjectLookupCollection.Label)]
     public abstract class SingletonAppalachiaObjectLookupCollection<
         TKey, TValue, TKeyList, TValueList, TLookup, TOLookup, TThis> : SingletonAppalachiaObject<TThis>
         where TValue : UnityEngine.Object
@@ -66,31 +66,16 @@ namespace Appalachia.Core.Objects.Scriptables
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
-            using (_PRF_Initialize.Auto())
-            {
 #if UNITY_EDITOR
-                if (_lookup == null)
-                {
-                    _lookup = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset<TOLookup>(
-                        ZString.Concat(typeof(TOLookup).Name, "_MainInternal")
-                    );
-                }
+            if (_lookup == null)
+            {
+                _lookup = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset<TOLookup>(
+                    ZString.Concat(typeof(TOLookup).Name, "_MainInternal")
+                );
+            }
 #endif
 
-                await AppaTask.CompletedTask;
-            }
+            await AppaTask.CompletedTask;
         }
-
-        #region Profiling
-
-        private const string _PRF_PFX =
-            nameof(SingletonAppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup,
-                TOLookup, TThis>) +
-            ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
-        #endregion
     }
 }

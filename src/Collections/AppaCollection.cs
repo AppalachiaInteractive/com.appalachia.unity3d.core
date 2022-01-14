@@ -9,7 +9,11 @@ namespace Appalachia.Core.Collections
     [Searchable(FuzzySearch = true, Recursive = true)]
     public abstract class AppaCollection
     {
+        #region Fields and Autoproperties
+
         [NonSerialized] private AppaContext _context;
+
+        #endregion
 
         protected AppaContext Context
         {

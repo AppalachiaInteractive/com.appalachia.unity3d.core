@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableBounds(bool overrideEnabled, Bounds value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableBounds(bool overrideEnabled, Bounds value) : base(overrideEnabled, value)
         {
         }
 

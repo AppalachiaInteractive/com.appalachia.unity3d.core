@@ -6,6 +6,7 @@ using Appalachia.Utility.Constants;
 using Appalachia.Utility.Logging;
 using Appalachia.Utility.Strings;
 using Unity.Profiling;
+using UnityEngine;
 
 namespace Appalachia.Core.Objects.Initialization
 {
@@ -18,12 +19,31 @@ namespace Appalachia.Core.Objects.Initialization
 
         #region Fields and Autoproperties
 
-        public bool hasInitializationFinished;
-        public bool hasInitializationStarted;
-        public bool hasInvokedInitializationCompleted;
         private readonly Func<AppaTask> _initializationAction;
 
+        private bool _hasInitializationFinished;
+        private bool _hasInitializationStarted;
+        private bool _hasInvokedInitializationCompleted;
+
         #endregion
+
+        public bool hasInitializationFinished
+        {
+            get => _hasInitializationFinished;
+            internal set => _hasInitializationFinished = value;
+        }
+
+        public bool hasInitializationStarted
+        {
+            get => _hasInitializationStarted;
+            internal set => _hasInitializationStarted = value;
+        }
+
+        public bool hasInvokedInitializationCompleted
+        {
+            get => _hasInvokedInitializationCompleted;
+            internal set => _hasInvokedInitializationCompleted = value;
+        }
 
         public async AppaTask Initialize(InitializationCompleteHandler handler, IInitializable target)
         {
@@ -35,6 +55,13 @@ namespace Appalachia.Core.Objects.Initialization
                 }
 
                 var task = PrepareInitializationTask(target);
+
+                if (target is Component c)
+                {
+                    var cancellationToken = c.GetCancellationTokenOnDestroy();
+                    task = task.AttachExternalCancellation(cancellationToken);
+                }
+
                 await task;
 
                 OnFinishInitialization(handler, target);
@@ -43,8 +70,9 @@ namespace Appalachia.Core.Objects.Initialization
             {
                 AppaLog.Context.Initialize.Error(
                     ZString.Format(
-                        "{0} for {1} threw an exception.",
+                        "{0} for {1} on {2} threw an exception.",
                         nameof(Initialize).FormatMethodForLogging(),
+                        target.GetType().FormatForLogging(),
                         target.Name.FormatNameForLogging()
                     ),
                     target,
@@ -96,7 +124,7 @@ namespace Appalachia.Core.Objects.Initialization
         {
             using (_PRF_IsInitializationInProgress.Auto())
             {
-                return hasInitializationStarted && !hasInitializationFinished;
+                return _hasInitializationStarted && !_hasInitializationFinished;
             }
         }
 
@@ -106,14 +134,12 @@ namespace Appalachia.Core.Objects.Initialization
             {
                 try
                 {
-                    if (!hasInvokedInitializationCompleted)
+                    if (!_hasInvokedInitializationCompleted)
                     {
-                        hasInvokedInitializationCompleted = true;
+                        _hasInvokedInitializationCompleted = true;
 
                         handler?.Invoke(target);
                     }
-
-                    hasInitializationFinished = true;
                 }
                 catch (Exception ex)
                 {
@@ -138,8 +164,8 @@ namespace Appalachia.Core.Objects.Initialization
             {
                 try
                 {
-                    hasInitializationStarted = true;
-                    hasInitializationFinished = false;
+                    _hasInitializationStarted = true;
+                    _hasInitializationFinished = false;
 
                     var task = _initializationAction();
 

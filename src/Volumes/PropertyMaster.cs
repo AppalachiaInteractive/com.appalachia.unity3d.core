@@ -48,35 +48,6 @@ namespace Appalachia.Core.Volumes
 
         #endregion
 
-        #region Event Functions
-
-        private static readonly ProfilerMarker _PRF_WhenDisabled =
-            new ProfilerMarker(_PRF_PFX + nameof(WhenDisabled));
-
-        protected override async AppaTask WhenDisabled()
-        {
-            using (_PRF_WhenDisabled.Auto())
-            {
-                await base.WhenDisabled();
-
-                try
-                {
-                    if (Camera.onPreCull == null)
-                    {
-                        return;
-                    }
-
-                    Camera.onPreCull -= OnCameraPreCull;
-                }
-                catch (Exception ex)
-                {
-                    Context.Log.Error("Failed to UNsubscribe to OnPreCull.", this, ex);
-                }
-            }
-        }
-
-        #endregion
-
         public void UpdateProperties()
         {
             using (_PRF_UpdateProperties.Auto())
@@ -103,10 +74,10 @@ namespace Appalachia.Core.Volumes
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
+            await base.Initialize(initializer);
+
             using (_PRF_Initialize.Auto())
             {
-                await base.Initialize(initializer);
-
                 try
                 {
                     Camera.onPreCull -= OnCameraPreCull;
@@ -115,6 +86,28 @@ namespace Appalachia.Core.Volumes
                 catch (Exception ex)
                 {
                     Context.Log.Error("Failed to subscribe to OnPreCull.", this, ex);
+                }
+            }
+        }
+
+        protected override async AppaTask WhenDisabled()
+        {
+            using (_PRF_WhenDisabled.Auto())
+            {
+                await base.WhenDisabled();
+
+                try
+                {
+                    if (Camera.onPreCull == null)
+                    {
+                        return;
+                    }
+
+                    Camera.onPreCull -= OnCameraPreCull;
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error("Failed to UNsubscribe to OnPreCull.", this, ex);
                 }
             }
         }
@@ -220,30 +213,22 @@ namespace Appalachia.Core.Volumes
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(PropertyMaster) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
         private static readonly ProfilerMarker _PRF_ClearReferenceValue =
             new(_PRF_PFX + nameof(ClearReferenceValue));
 
         private static readonly ProfilerMarker _PRF_GetReferenceValue =
             new(_PRF_PFX + nameof(GetReferenceValue));
 
-        private static readonly ProfilerMarker _PRF_SetReferenceValue =
-            new(_PRF_PFX + nameof(SetReferenceValue));
+        private static readonly ProfilerMarker _PRF_OnAfterDeserialize =
+            new(_PRF_PFX + nameof(OnAfterDeserialize));
 
         private static readonly ProfilerMarker _PRF_OnBeforeSerialize =
             new(_PRF_PFX + nameof(OnBeforeSerialize));
 
-        private static readonly ProfilerMarker _PRF_OnAfterDeserialize =
-            new(_PRF_PFX + nameof(OnAfterDeserialize));
-
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
-
         private static readonly ProfilerMarker _PRF_OnPreCull = new(_PRF_PFX + nameof(OnCameraPreCull));
+
+        private static readonly ProfilerMarker _PRF_SetReferenceValue =
+            new(_PRF_PFX + nameof(SetReferenceValue));
 
         private static readonly ProfilerMarker _PRF_UpdateProperties =
             new(_PRF_PFX + nameof(UpdateProperties));

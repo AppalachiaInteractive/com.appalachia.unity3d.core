@@ -10,7 +10,11 @@ namespace Appalachia.Core.Collections.Observable
             this.item = item;
         }
 
+        #region Fields and Autoproperties
+
         public readonly int index;
         public readonly T item;
+
+        #endregion
     }
 }

@@ -17,21 +17,29 @@ namespace Appalachia.Core.Execution.Hooks
 
 #if UNITY_EDITOR
 
-        [NonSerialized] public static readonly PREF<bool> _ENABLE_SUB = PREFS.REG(PKG.Prefs.Group, "Subscribe", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _ENABLE_SUB = PREFS.REG(PKG.Prefs.Group, "Subscribe", false);
 
-        [NonSerialized] public static readonly PREF<bool> _ENABLE_UNSUB = PREFS.REG(PKG.Prefs.Group, "Unsubscribe", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _ENABLE_UNSUB = PREFS.REG(PKG.Prefs.Group, "Unsubscribe", false);
 
-        [NonSerialized] public static readonly PREF<bool> _ENABLE_AWAKE = PREFS.REG(PKG.Prefs.Group, "Awake", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _ENABLE_AWAKE = PREFS.REG(PKG.Prefs.Group, "Awake", false);
 
-        [NonSerialized] public static readonly PREF<bool> _ENABLE_START = PREFS.REG(PKG.Prefs.Group, "Start", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _ENABLE_START = PREFS.REG(PKG.Prefs.Group, "Start", false);
 
-        [NonSerialized] public static readonly PREF<bool> _ENABLE_ENABLE = PREFS.REG(PKG.Prefs.Group, "Enable", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _ENABLE_ENABLE = PREFS.REG(PKG.Prefs.Group, "Enable", false);
 
-        [NonSerialized] public static readonly PREF<bool> _ENABLE_DISABLE = PREFS.REG(PKG.Prefs.Group, "Disable", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _ENABLE_DISABLE = PREFS.REG(PKG.Prefs.Group, "Disable", false);
 
-        [NonSerialized] public static readonly PREF<bool> _ENABLE_QUIT = PREFS.REG(PKG.Prefs.Group, "Quit", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _ENABLE_QUIT = PREFS.REG(PKG.Prefs.Group, "Quit", false);
 
-        [NonSerialized] public static readonly PREF<bool> _ENABLE_DESTROY = PREFS.REG(PKG.Prefs.Group, "Destroy", false);
+        [NonSerialized]
+        public static readonly PREF<bool> _ENABLE_DESTROY = PREFS.REG(PKG.Prefs.Group, "Destroy", false);
 
         [UnityEditor.MenuItem(PKG.Menu.Appalachia.Tools.Base + "LogSubscribe", true)]
         private static bool ENABLE_SUBv()

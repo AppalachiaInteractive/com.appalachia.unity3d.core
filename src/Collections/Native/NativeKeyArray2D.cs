@@ -2,7 +2,6 @@
 
 using System;
 using System.Diagnostics;
-using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
@@ -21,26 +20,6 @@ namespace Appalachia.Core.Collections.Native
         where TK : struct
         where TV : struct
     {
-        [NativeDisableUnsafePtrRestriction]
-        private void* m_BufferKeys;
-
-        [NativeDisableUnsafePtrRestriction]
-        private void* m_Buffer;
-
-        internal int m_Length;
-        internal int m_MinIndex;
-        internal int m_MaxIndex;
-
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-
-        internal AtomicSafetyHandle m_Safety;
-
-        [NativeSetClassTypeToNullOnSchedule]
-        private DisposeSentinel m_DisposeSentinel;
-#endif
-
-        internal Allocator m_AllocatorLabel;
-
         public NativeKeyArray2D(
             int length0,
             int length1,
@@ -50,7 +29,7 @@ namespace Appalachia.Core.Collections.Native
             Allocate(length0, length1, allocator, out this);
             if (options == NativeArrayOptions.ClearMemory)
             {
-                UnsafeUtility.MemClear(m_Buffer, TotalLength * (long) UnsafeUtility.SizeOf<TV>());
+                UnsafeUtility.MemClear(m_Buffer, TotalLength * (long)UnsafeUtility.SizeOf<TV>());
             }
         }
 
@@ -68,15 +47,37 @@ namespace Appalachia.Core.Collections.Native
             Copy(array, this);
         }
 
-        public int TotalCapacity => Capacity0 * Capacity1;
-
-        public int TotalLength => Length0 * Length1;
+        #region Fields and Autoproperties
 
         public int Capacity0 { get; private set; }
 
         public int Capacity1 { get; private set; }
 
+        internal Allocator m_AllocatorLabel;
+
+        internal int m_Length;
+        internal int m_MaxIndex;
+        internal int m_MinIndex;
+
         private int _length0;
+
+        private int _length1;
+
+        [NativeDisableUnsafePtrRestriction]
+        private void* m_Buffer;
+
+        [NativeDisableUnsafePtrRestriction]
+        private void* m_BufferKeys;
+
+        #endregion
+
+        public bool IsCreated => (IntPtr)m_Buffer != IntPtr.Zero;
+
+        public bool IsDisposed => m_Buffer == null;
+
+        public int TotalCapacity => Capacity0 * Capacity1;
+
+        public int TotalLength => Length0 * Length1;
 
         public int Length0
         {
@@ -91,8 +92,6 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        private int _length1;
-
         public int Length1
         {
             get => _length1;
@@ -104,17 +103,6 @@ namespace Appalachia.Core.Collections.Native
                 SafetyUtility.RequireLengthWithinCapacity(value, Capacity1, 1);
                 _length1 = value;
             }
-        }
-
-        public int GetIndex(int index0, int index1)
-        {
-            return (index0 * Length1) + index1;
-        }
-
-        public void ReverseIndex(int index, out int index0, out int index1)
-        {
-            index1 = index % Length1;
-            index0 = index / Length1;
         }
 
         public TK this[int index0]
@@ -197,52 +185,100 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckReadAccess()
+        [DebuggerStepThrough]
+        public static bool operator ==(NativeKeyArray2D<TK, TV> a, NativeKeyArray2D<TK, TV> b)
         {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            SafetyUtility.CheckReadAccess(m_Safety);
-#endif
+            return a.Equals(b);
         }
 
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckWriteAccess()
+        [DebuggerStepThrough]
+        public static bool operator !=(NativeKeyArray2D<TK, TV> a, NativeKeyArray2D<TK, TV> b)
         {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            SafetyUtility.CheckWriteAccess(m_Safety);
-#endif
+            return !a.Equals(b);
         }
 
-        public bool IsCreated => (IntPtr) m_Buffer != IntPtr.Zero;
+        [DebuggerStepThrough]
+        public override bool Equals(object other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
 
-        public bool IsDisposed => m_Buffer == null;
+            return other is NativeKeyArray2D<TK, TV> && Equals((NativeKeyArray2D<TK, TV>)other);
+        }
+
+        [DebuggerStepThrough]
+        public override int GetHashCode()
+        {
+            var result = (int)m_Buffer;
+            result = (result * 397) ^ (int)m_BufferKeys;
+            result = (result * 397) ^ Capacity0;
+            result = (result * 397) ^ Capacity1;
+            return result;
+        }
+
+        [WriteAccessRequired]
+        public void CopyFrom(TK[] keys, TV[,] array)
+        {
+            Copy(keys, array, this);
+        }
+
+        [WriteAccessRequired]
+        public void CopyFrom(NativeKeyArray2D<TK, TV> array)
+        {
+            Copy(array, this);
+        }
+
+        public void CopyTo(TK[] keys, TV[,] array)
+        {
+            Copy(this, keys);
+            Copy(this, array);
+        }
+
+        public void CopyTo(TK[] array)
+        {
+            Copy(this, array);
+        }
+
+        public void CopyTo(TV[,] array)
+        {
+            Copy(this, array);
+        }
+
+        public void CopyTo(NativeKeyArray2D<TK, TV> array)
+        {
+            Copy(this, array);
+        }
+
+        public int GetIndex(int index0, int index1)
+        {
+            return (index0 * Length1) + index1;
+        }
+
+        public void ReverseIndex(int index, out int index0, out int index1)
+        {
+            index1 = index % Length1;
+            index0 = index / Length1;
+        }
 
         public bool ShouldAllocate()
         {
             return IsDisposed || !IsCreated;
         }
 
-        [WriteAccessRequired]
-        public void Dispose()
+        public TV[,] ToArray()
         {
-            SafetyUtility.RequireValidAllocator<NativeKeyArray2D<TK, TV>>(m_AllocatorLabel);
-
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
-#endif
-            Deallocate();
+            var dst = new TV[Length0, Length1];
+            Copy(this, dst);
+            return dst;
         }
 
-        private void Deallocate()
+        public TK[] ToKeyArray()
         {
-            UnsafeUtility.Free(m_Buffer, m_AllocatorLabel);
-            m_Buffer = null;
-            UnsafeUtility.Free(m_BufferKeys, m_AllocatorLabel);
-            m_BufferKeys = null;
-            _length0 = 0;
-            _length1 = 0;
-            Capacity0 = 0;
-            Capacity1 = 0;
+            var dst = new TK[Length0];
+            Copy(this, dst);
+            return dst;
         }
 
         private static void Allocate(
@@ -288,92 +324,6 @@ namespace Appalachia.Core.Collections.Native
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             DisposeSentinel.Create(out array.m_Safety, out array.m_DisposeSentinel, 1, allocator);
 #endif
-        }
-
-        [WriteAccessRequired]
-        public void CopyFrom(TK[] keys, TV[,] array)
-        {
-            Copy(keys, array, this);
-        }
-
-        [WriteAccessRequired]
-        public void CopyFrom(NativeKeyArray2D<TK, TV> array)
-        {
-            Copy(array, this);
-        }
-
-        public void CopyTo(TK[] keys, TV[,] array)
-        {
-            Copy(this, keys);
-            Copy(this, array);
-        }
-
-        public void CopyTo(TK[] array)
-        {
-            Copy(this, array);
-        }
-
-        public void CopyTo(TV[,] array)
-        {
-            Copy(this, array);
-        }
-
-        public void CopyTo(NativeKeyArray2D<TK, TV> array)
-        {
-            Copy(this, array);
-        }
-
-        public TK[] ToKeyArray()
-        {
-            var dst = new TK[Length0];
-            Copy(this, dst);
-            return dst;
-        }
-
-        public TV[,] ToArray()
-        {
-            var dst = new TV[Length0, Length1];
-            Copy(this, dst);
-            return dst;
-        }
-
-        [DebuggerStepThrough] public bool Equals(NativeKeyArray2D<TK, TV> other)
-        {
-            return (m_Buffer == other.m_Buffer) &&
-                   (m_BufferKeys == other.m_BufferKeys) &&
-                   (Length0 == other.Length0) &&
-                   (Length1 == other.Length1) &&
-                   (Capacity0 == other.Capacity0) &&
-                   (Capacity1 == other.Capacity1);
-        }
-
-        [DebuggerStepThrough] public override bool Equals(object other)
-        {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            return other is NativeKeyArray2D<TK, TV> && Equals((NativeKeyArray2D<TK, TV>) other);
-        }
-
-        [DebuggerStepThrough] public override int GetHashCode()
-        {
-            var result = (int) m_Buffer;
-            result = (result * 397) ^ (int) m_BufferKeys;
-            result = (result * 397) ^ Capacity0;
-            result = (result * 397) ^ Capacity1;
-            return result;
-        }
-
-        [DebuggerStepThrough] public static bool operator ==(NativeKeyArray2D<TK, TV> a, NativeKeyArray2D<TK, TV> b)
-        {
-            return a.Equals(b);
-        }
-
-        [DebuggerStepThrough] public static bool operator !=(NativeKeyArray2D<TK, TV> a, NativeKeyArray2D<TK, TV> b)
-        {
-            return !a.Equals(b);
         }
 
         private static void Copy(NativeKeyArray2D<TK, TV> src, NativeKeyArray2D<TK, TV> dest)
@@ -514,5 +464,71 @@ namespace Appalachia.Core.Collections.Native
 
             throw new ArgumentException("Arrays must have the same size");
         }
+
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        private void CheckReadAccess()
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            SafetyUtility.CheckReadAccess(m_Safety);
+#endif
+        }
+
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        private void CheckWriteAccess()
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            SafetyUtility.CheckWriteAccess(m_Safety);
+#endif
+        }
+
+        private void Deallocate()
+        {
+            UnsafeUtility.Free(m_Buffer, m_AllocatorLabel);
+            m_Buffer = null;
+            UnsafeUtility.Free(m_BufferKeys, m_AllocatorLabel);
+            m_BufferKeys = null;
+            _length0 = 0;
+            _length1 = 0;
+            Capacity0 = 0;
+            Capacity1 = 0;
+        }
+
+        #region IDisposable Members
+
+        [WriteAccessRequired]
+        public void Dispose()
+        {
+            SafetyUtility.RequireValidAllocator<NativeKeyArray2D<TK, TV>>(m_AllocatorLabel);
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
+#endif
+            Deallocate();
+        }
+
+        #endregion
+
+        #region IEquatable<NativeKeyArray2D<TK,TV>> Members
+
+        [DebuggerStepThrough]
+        public bool Equals(NativeKeyArray2D<TK, TV> other)
+        {
+            return (m_Buffer == other.m_Buffer) &&
+                   (m_BufferKeys == other.m_BufferKeys) &&
+                   (Length0 == other.Length0) &&
+                   (Length1 == other.Length1) &&
+                   (Capacity0 == other.Capacity0) &&
+                   (Capacity1 == other.Capacity1);
+        }
+
+        #endregion
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+
+        internal AtomicSafetyHandle m_Safety;
+
+        [NativeSetClassTypeToNullOnSchedule]
+        private DisposeSentinel m_DisposeSentinel;
+#endif
     }
 }

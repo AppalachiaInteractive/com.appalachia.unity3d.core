@@ -7,7 +7,7 @@ namespace Appalachia.Core.Collections.Native
     ///     Extensions to <see cref="IDisposable" /> to support
     ///     <see cref="SharedDisposable{TDisposable}" />.
     /// </summary>
-    public static class IDisposableExtensions
+    public static class INativeDisposableExtensions
     {
         /// <summary>
         ///     Allocate memory and save the disposable

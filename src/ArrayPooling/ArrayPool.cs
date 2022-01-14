@@ -23,10 +23,12 @@ namespace Appalachia.Core.ArrayPooling
     /// </remarks>
     public abstract class ArrayPool<T>
     {
-        private static readonly ProfilerMarker _PRF_ArrayPool_Create = new("ArrayPool.Create");
+        #region Static Fields and Autoproperties
 
-        private static readonly ProfilerMarker _PRF_ArrayPool_EnsureSharedCreated =
-            new("ArrayPool.EnsureSharedCreated");
+        /// <summary>The lazily-initialized shared pool instance.</summary>
+        private static volatile ArrayPool<T> s_sharedInstance;
+
+        #endregion
 
         /// <summary>
         ///     Retrieves a shared <see cref="ArrayPool{T}" /> instance.
@@ -40,9 +42,6 @@ namespace Appalachia.Core.ArrayPooling
         ///     buffer being allocated if one is not available.
         /// </remarks>
         public static ArrayPool<T> Shared => s_sharedInstance ?? EnsureSharedCreated();
-
-        /// <summary>The lazily-initialized shared pool instance.</summary>
-        private static volatile ArrayPool<T> s_sharedInstance;
 
         /// <summary>
         ///     Retrieves a buffer that is at least the requested length.
@@ -125,5 +124,14 @@ namespace Appalachia.Core.ArrayPooling
                 return s_sharedInstance;
             }
         }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_ArrayPool_Create = new("ArrayPool.Create");
+
+        private static readonly ProfilerMarker _PRF_ArrayPool_EnsureSharedCreated =
+            new("ArrayPool.EnsureSharedCreated");
+
+        #endregion
     }
 }

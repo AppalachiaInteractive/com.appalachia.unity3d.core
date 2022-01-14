@@ -7,6 +7,13 @@ namespace Appalachia.Core.Timing
     [InlineProperty]
     public struct Duration
     {
+        #region Fields and Autoproperties
+
+        [HorizontalGroup(.33f)]
+        [ToggleLeft]
+        [LabelWidth(80f)]
+        public bool inRealTime;
+
         [HorizontalGroup(.33f)]
         [PropertyRange(nameof(rangeMinimum), nameof(rangeMaximum))]
         [HideLabel]
@@ -16,10 +23,7 @@ namespace Appalachia.Core.Timing
         [HideLabel]
         public TimeUnit unit;
 
-        [HorizontalGroup(.33f)]
-        [ToggleLeft]
-        [LabelWidth(80f)]
-        public bool inRealTime;
+        #endregion
 
         public float InSeconds =>
             unit switch
@@ -29,16 +33,6 @@ namespace Appalachia.Core.Timing
                 TimeUnit.Minutes      => value * 60f,
                 TimeUnit.Hours        => value * 60f * 60f,
                 _                     => value * 60f * 60f * 24f
-            };
-
-        private float rangeMinimum =>
-            unit switch
-            {
-                TimeUnit.Milliseconds => 0f,
-                TimeUnit.Seconds      => 0f,
-                TimeUnit.Minutes      => 0f,
-                TimeUnit.Hours        => 0f,
-                _                     => 0f
             };
 
         private float rangeMaximum =>
@@ -51,24 +45,34 @@ namespace Appalachia.Core.Timing
                 _                     => 30f
             };
 
-        public static Duration ONE_SECOND()
-        {
-            return new() {value = 1.0f, unit = TimeUnit.Seconds};
-        }
+        private float rangeMinimum =>
+            unit switch
+            {
+                TimeUnit.Milliseconds => 0f,
+                TimeUnit.Seconds      => 0f,
+                TimeUnit.Minutes      => 0f,
+                TimeUnit.Hours        => 0f,
+                _                     => 0f
+            };
 
-        public static Duration ONE_MINUTE()
+        public static Duration ONE_DAY()
         {
-            return new() {value = 1.0f, unit = TimeUnit.Minutes};
+            return new() { value = 1.0f, unit = TimeUnit.Days };
         }
 
         public static Duration ONE_HOUR()
         {
-            return new() {value = 1.0f, unit = TimeUnit.Hours};
+            return new() { value = 1.0f, unit = TimeUnit.Hours };
         }
 
-        public static Duration ONE_DAY()
+        public static Duration ONE_MINUTE()
         {
-            return new() {value = 1.0f, unit = TimeUnit.Days};
+            return new() { value = 1.0f, unit = TimeUnit.Minutes };
+        }
+
+        public static Duration ONE_SECOND()
+        {
+            return new() { value = 1.0f, unit = TimeUnit.Seconds };
         }
     }
 }

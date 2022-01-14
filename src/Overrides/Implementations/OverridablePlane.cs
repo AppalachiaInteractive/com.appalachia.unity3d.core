@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridablePlane(bool overrideEnabled, Plane value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridablePlane(bool overrideEnabled, Plane value) : base(overrideEnabled, value)
         {
         }
 

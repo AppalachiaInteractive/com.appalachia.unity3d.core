@@ -5,6 +5,9 @@ namespace Appalachia.Core.Collections.Observable
 {
     public class ObservableList<T> : IList<T>
     {
+        public event ListChangedEventHandler<T> ItemAdded;
+        public event ListChangedEventHandler<T> ItemRemoved;
+
         public ObservableList() : this(0)
         {
         }
@@ -19,25 +22,20 @@ namespace Appalachia.Core.Collections.Observable
             m_List = new List<T>(collection);
         }
 
+        #region Fields and Autoproperties
+
         private readonly IList<T> m_List;
 
-        public bool IsReadOnly => false;
+        #endregion
 
-        public int Count => m_List.Count;
-
-        public T this[int index]
+        public void Add(params T[] items)
         {
-            get => m_List[index];
-            set
+            for (var index = 0; index < items.Length; index++)
             {
-                OnEvent(ItemRemoved, index, m_List[index]);
-                m_List[index] = value;
-                OnEvent(ItemAdded, index, value);
+                var i = items[index];
+                Add(i);
             }
         }
-
-        public event ListChangedEventHandler<T> ItemAdded;
-        public event ListChangedEventHandler<T> ItemRemoved;
 
         public int Remove(params T[] items)
         {
@@ -57,12 +55,28 @@ namespace Appalachia.Core.Collections.Observable
             return count;
         }
 
-        public void Add(params T[] items)
+        private void OnEvent(ListChangedEventHandler<T> e, int index, T item)
         {
-            for (var index = 0; index < items.Length; index++)
+            if (e != null)
             {
-                var i = items[index];
-                Add(i);
+                e(this, new ListChangedEventArgs<T>(index, item));
+            }
+        }
+
+        #region IList<T> Members
+
+        public bool IsReadOnly => false;
+
+        public int Count => m_List.Count;
+
+        public T this[int index]
+        {
+            get => m_List[index];
+            set
+            {
+                OnEvent(ItemRemoved, index, m_List[index]);
+                m_List[index] = value;
+                OnEvent(ItemAdded, index, value);
             }
         }
 
@@ -125,17 +139,11 @@ namespace Appalachia.Core.Collections.Observable
             OnEvent(ItemRemoved, index, item);
         }
 
-        private void OnEvent(ListChangedEventHandler<T> e, int index, T item)
-        {
-            if (e != null)
-            {
-                e(this, new ListChangedEventArgs<T>(index, item));
-            }
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
+        #endregion
     }
 }

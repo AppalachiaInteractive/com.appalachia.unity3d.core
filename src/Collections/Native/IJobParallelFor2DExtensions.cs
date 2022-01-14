@@ -12,6 +12,18 @@ namespace Appalachia.Core.Collections.Native
 {
     public static class IJobParallelFor2DExtensions
     {
+        public static unsafe void Run2D<T>(this T jobData, int length0, int length1)
+            where T : struct, IJobParallelFor2D
+        {
+            var parameters = new JobsUtility.JobScheduleParameters(
+                UnsafeUtility.AddressOf(ref jobData),
+                ParallelFor2DJobStruct<T>.Initialize(),
+                new JobHandle(),
+                ScheduleMode.Run
+            );
+            JobsUtility.ScheduleParallelFor(ref parameters, length0 * length1, length0 * length1);
+        }
+
         public static JobHandle Schedule2D<T, TE>(
             this T jobData,
             NativeArray2D<TE> array,
@@ -40,36 +52,27 @@ namespace Appalachia.Core.Collections.Native
             return JobsUtility.ScheduleParallelFor(ref parameters, length0 * length1, innerloopBatchCount);
         }
 
-        public static unsafe void Run2D<T>(this T jobData, int length0, int length1)
-            where T : struct, IJobParallelFor2D
-        {
-            var parameters = new JobsUtility.JobScheduleParameters(
-                UnsafeUtility.AddressOf(ref jobData),
-                ParallelFor2DJobStruct<T>.Initialize(),
-                new JobHandle(),
-                ScheduleMode.Run
-            );
-            JobsUtility.ScheduleParallelFor(ref parameters, length0 * length1, length0 * length1);
-        }
+        #region Nested type: ParallelFor2DJobStruct
 
         [StructLayout(LayoutKind.Sequential, Size = 1)]
         public struct ParallelFor2DJobStruct<T>
             where T : struct, IJobParallelFor2D
         {
+            public delegate void ExecuteJobFunction(
+                    ref T data,
+                    IntPtr additionalPtr,
+                    IntPtr bufferRangePatchData,
+                    ref JobRanges ranges,
+                    int jobIndex)
+
+                //where T : struct, IJobParallelFor2D
+                ;
+
+            #region Static Fields and Autoproperties
+
             public static IntPtr jobReflectionData;
 
-            public static IntPtr Initialize()
-            {
-                if (jobReflectionData == IntPtr.Zero)
-                {
-                    jobReflectionData = JobsUtility.CreateJobReflectionData(
-                        typeof(T),
-                        new ExecuteJobFunction(Execute)
-                    );
-                }
-
-                return jobReflectionData;
-            }
+            #endregion
 
             public static unsafe void Execute(
                 ref T jobData,
@@ -101,15 +104,20 @@ namespace Appalachia.Core.Collections.Native
                 goto label_5;
             }
 
-            public delegate void ExecuteJobFunction(
-                    ref T data,
-                    IntPtr additionalPtr,
-                    IntPtr bufferRangePatchData,
-                    ref JobRanges ranges,
-                    int jobIndex)
+            public static IntPtr Initialize()
+            {
+                if (jobReflectionData == IntPtr.Zero)
+                {
+                    jobReflectionData = JobsUtility.CreateJobReflectionData(
+                        typeof(T),
+                        new ExecuteJobFunction(Execute)
+                    );
+                }
 
-                //where T : struct, IJobParallelFor2D
-                ;
+                return jobReflectionData;
+            }
         }
+
+        #endregion
     }
 }

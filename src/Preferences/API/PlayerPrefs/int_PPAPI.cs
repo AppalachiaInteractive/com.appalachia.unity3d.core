@@ -8,6 +8,8 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 {
     public struct int_PPAPI : IPAPI<int>
     {
+        #region IPAPI<int> Members
+
         public int Get(string key, int defaultValue, int low, int high)
         {
             var val = UnityEngine.PlayerPrefs.GetInt(key, defaultValue);
@@ -28,5 +30,7 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 
             return val;*/
         }
+
+        #endregion
     }
 }

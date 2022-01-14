@@ -12,6 +12,22 @@ namespace Appalachia.Core.Collections.Native
 {
     public static class IJobParallelFor3DExtensions
     {
+        public static unsafe void Run3D<T>(this T jobData, int length0, int length1, int length2)
+            where T : struct, IJobParallelFor3D
+        {
+            var parameters = new JobsUtility.JobScheduleParameters(
+                UnsafeUtility.AddressOf(ref jobData),
+                ParallelFor3DJobStruct<T>.Initialize(),
+                new JobHandle(),
+                ScheduleMode.Run
+            );
+            JobsUtility.ScheduleParallelFor(
+                ref parameters,
+                length0 * length1 * length2,
+                length0 * length1 * length2
+            );
+        }
+
         public static JobHandle Schedule3D<T, TE>(
             this T jobData,
             NativeArray3D<TE> array,
@@ -52,40 +68,27 @@ namespace Appalachia.Core.Collections.Native
             );
         }
 
-        public static unsafe void Run3D<T>(this T jobData, int length0, int length1, int length2)
-            where T : struct, IJobParallelFor3D
-        {
-            var parameters = new JobsUtility.JobScheduleParameters(
-                UnsafeUtility.AddressOf(ref jobData),
-                ParallelFor3DJobStruct<T>.Initialize(),
-                new JobHandle(),
-                ScheduleMode.Run
-            );
-            JobsUtility.ScheduleParallelFor(
-                ref parameters,
-                length0 * length1 * length2,
-                length0 * length1 * length2
-            );
-        }
+        #region Nested type: ParallelFor3DJobStruct
 
         [StructLayout(LayoutKind.Sequential, Size = 1)]
         public struct ParallelFor3DJobStruct<T>
             where T : struct, IJobParallelFor3D
         {
+            public delegate void ExecuteJobFunction(
+                    ref T data,
+                    IntPtr additionalPtr,
+                    IntPtr bufferRangePatchData,
+                    ref JobRanges ranges,
+                    int jobIndex)
+
+                //where T : struct, IJobParallelFor3D
+                ;
+
+            #region Static Fields and Autoproperties
+
             public static IntPtr jobReflectionData;
 
-            public static IntPtr Initialize()
-            {
-                if (jobReflectionData == IntPtr.Zero)
-                {
-                    jobReflectionData = JobsUtility.CreateJobReflectionData(
-                        typeof(T),
-                        new ExecuteJobFunction(Execute)
-                    );
-                }
-
-                return jobReflectionData;
-            }
+            #endregion
 
             public static unsafe void Execute(
                 ref T jobData,
@@ -117,15 +120,20 @@ namespace Appalachia.Core.Collections.Native
                 goto label_5;
             }
 
-            public delegate void ExecuteJobFunction(
-                    ref T data,
-                    IntPtr additionalPtr,
-                    IntPtr bufferRangePatchData,
-                    ref JobRanges ranges,
-                    int jobIndex)
+            public static IntPtr Initialize()
+            {
+                if (jobReflectionData == IntPtr.Zero)
+                {
+                    jobReflectionData = JobsUtility.CreateJobReflectionData(
+                        typeof(T),
+                        new ExecuteJobFunction(Execute)
+                    );
+                }
 
-                //where T : struct, IJobParallelFor3D
-                ;
+                return jobReflectionData;
+            }
         }
+
+        #endregion
     }
 }

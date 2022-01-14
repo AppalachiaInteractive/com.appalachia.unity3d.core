@@ -9,6 +9,8 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 {
     public struct Flags_PPAPI<T> : IPAPI<T>
     {
+        #region IPAPI<T> Members
+
         public T Get(string key, T defaultValue, T low, T high)
         {
             var intDefaultValue = Convert.ToInt32(defaultValue);
@@ -20,7 +22,7 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
             var obj = Convert.ChangeType(intValue, underlyingType, CultureInfo.InvariantCulture);
             var result = Enum.ToObject(enumType, obj);
 
-            return (T) result;
+            return (T)result;
         }
 
         public void Save(string key, T value, T low, T high)
@@ -37,5 +39,7 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 
             return (T) (object) valueObj;*/
         }
+
+        #endregion
     }
 }

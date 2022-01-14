@@ -38,31 +38,6 @@ namespace Appalachia.Core.Collections.Native
         public struct ChunksEnumerable : IEnumerable<IEnumerable<T>>, IDisposable
         {
 	        /// <summary>
-	        ///     List whose chunks to enumerate
-	        /// </summary>
-	        private readonly NativeChunkedList<T> m_List;
-
-	        /// <summary>
-	        ///     Index of the first chunk to enumerate
-	        /// </summary>
-	        private readonly int m_StartChunksIndex;
-
-	        /// <summary>
-	        ///     Index of the element in the first chunk to enumerate
-	        /// </summary>
-	        private readonly int m_StartChunkIndex;
-
-	        /// <summary>
-	        ///     Index of the last chunk to enumerate
-	        /// </summary>
-	        private readonly int m_EndChunksIndex;
-
-	        /// <summary>
-	        ///     Index of the element in the last chunk to enumerate
-	        /// </summary>
-	        private readonly int m_EndChunkIndex;
-
-	        /// <summary>
 	        ///     Create the enumerable to enumerate the chunks of a given list
 	        ///     This operation has no access requirements on the enumerable's
 	        ///     associated list.
@@ -97,6 +72,35 @@ namespace Appalachia.Core.Collections.Native
                 m_EndChunkIndex = endChunkIndex;
             }
 
+	        #region Fields and Autoproperties
+
+	        /// <summary>
+	        ///     Index of the element in the last chunk to enumerate
+	        /// </summary>
+	        private readonly int m_EndChunkIndex;
+
+	        /// <summary>
+	        ///     Index of the last chunk to enumerate
+	        /// </summary>
+	        private readonly int m_EndChunksIndex;
+
+	        /// <summary>
+	        ///     Index of the element in the first chunk to enumerate
+	        /// </summary>
+	        private readonly int m_StartChunkIndex;
+
+	        /// <summary>
+	        ///     Index of the first chunk to enumerate
+	        /// </summary>
+	        private readonly int m_StartChunksIndex;
+
+	        /// <summary>
+	        ///     List whose chunks to enumerate
+	        /// </summary>
+	        private readonly NativeChunkedList<T> m_List;
+
+	        #endregion
+
 	        /// <summary>
 	        ///     Get an enumerator to enumerate the chunks of the list passed to
 	        ///     the constructor
@@ -114,6 +118,22 @@ namespace Appalachia.Core.Collections.Native
             {
                 return new(m_List, m_StartChunksIndex, m_StartChunkIndex, m_EndChunksIndex, m_EndChunkIndex);
             }
+
+	        #region IDisposable Members
+
+	        /// <summary>
+	        ///     Dispose of this enumerable. This is a no-op.
+	        ///     This operation has no access requirements on the enumerable's
+	        ///     associated list.
+	        ///     This operation is O(1).
+	        /// </summary>
+	        public void Dispose()
+	        {
+	        }
+
+	        #endregion
+
+	        #region IEnumerable<IEnumerable<T>> Members
 
 	        /// <summary>
 	        ///     Get an enumerator to enumerate the chunks of the list passed to
@@ -151,15 +171,7 @@ namespace Appalachia.Core.Collections.Native
                 return GetEnumerator();
             }
 
-	        /// <summary>
-	        ///     Dispose of this enumerable. This is a no-op.
-	        ///     This operation has no access requirements on the enumerable's
-	        ///     associated list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        public void Dispose()
-            {
-            }
+	        #endregion
         }
 
 	    /// <summary>
@@ -168,36 +180,6 @@ namespace Appalachia.Core.Collections.Native
 	    [StructLayout(LayoutKind.Sequential)]
         public struct ChunksEnumerator : IEnumerator<IEnumerable<T>>
         {
-	        /// <summary>
-	        ///     List whose chunks to enumerate
-	        /// </summary>
-	        private readonly NativeChunkedList<T> m_List;
-
-	        /// <summary>
-	        ///     Index of the current chunk
-	        /// </summary>
-	        private int m_Index;
-
-	        /// <summary>
-	        ///     Index of the first chunk to enumerate
-	        /// </summary>
-	        private readonly int m_StartChunksIndex;
-
-	        /// <summary>
-	        ///     Index of the element in the first chunk to enumerate
-	        /// </summary>
-	        private readonly int m_StartChunkIndex;
-
-	        /// <summary>
-	        ///     Index of the last chunk to enumerate
-	        /// </summary>
-	        private readonly int m_EndChunksIndex;
-
-	        /// <summary>
-	        ///     Index of the element in the last chunk to enumerate
-	        /// </summary>
-	        private readonly int m_EndChunkIndex;
-
 	        /// <summary>
 	        ///     Create the enumerator to enumerate over the chunks of the given
 	        ///     list. It is currently just before the first chunk, so call
@@ -236,23 +218,39 @@ namespace Appalachia.Core.Collections.Native
                 m_EndChunkIndex = endChunkIndex;
             }
 
-	        /// <summary>
-	        ///     Move the enumerator to the next chunk
-	        ///     This operation requires read access to the enumerator's
-	        ///     associated list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <returns>
-	        ///     If the enumerator hasn't moved beyond the last chunk and it is
-	        ///     therefore still safe to call <see cref="Current" />.
-	        /// </returns>
-	        public bool MoveNext()
-            {
-                m_List.CheckReadAccess();
+	        #region Fields and Autoproperties
 
-                m_Index++;
-                return m_Index <= m_EndChunksIndex;
-            }
+	        /// <summary>
+	        ///     Index of the element in the last chunk to enumerate
+	        /// </summary>
+	        private readonly int m_EndChunkIndex;
+
+	        /// <summary>
+	        ///     Index of the last chunk to enumerate
+	        /// </summary>
+	        private readonly int m_EndChunksIndex;
+
+	        /// <summary>
+	        ///     Index of the element in the first chunk to enumerate
+	        /// </summary>
+	        private readonly int m_StartChunkIndex;
+
+	        /// <summary>
+	        ///     Index of the first chunk to enumerate
+	        /// </summary>
+	        private readonly int m_StartChunksIndex;
+
+	        /// <summary>
+	        ///     List whose chunks to enumerate
+	        /// </summary>
+	        private readonly NativeChunkedList<T> m_List;
+
+	        /// <summary>
+	        ///     Index of the current chunk
+	        /// </summary>
+	        private int m_Index;
+
+	        #endregion
 
 	        /// <summary>
 	        ///     Get an enumerable for the current chunk
@@ -316,6 +314,43 @@ namespace Appalachia.Core.Collections.Native
             }
 
 	        /// <summary>
+	        ///     Set whether both read and write access should be allowed for the
+	        ///     enumerator's list. This is used for automated testing purposes
+	        ///     only.
+	        /// </summary>
+	        /// <param name="allowReadOrWriteAccess">
+	        ///     If both read and write access should be allowed for the
+	        ///     enumerator's list
+	        /// </param>
+	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	        public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
+	        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		        AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
+#endif
+	        }
+
+	        #region IEnumerator<IEnumerable<T>> Members
+
+	        /// <summary>
+	        ///     Move the enumerator to the next chunk
+	        ///     This operation requires read access to the enumerator's
+	        ///     associated list.
+	        ///     This operation is O(1).
+	        /// </summary>
+	        /// <returns>
+	        ///     If the enumerator hasn't moved beyond the last chunk and it is
+	        ///     therefore still safe to call <see cref="Current" />.
+	        /// </returns>
+	        public bool MoveNext()
+	        {
+		        m_List.CheckReadAccess();
+
+		        m_Index++;
+		        return m_Index <= m_EndChunksIndex;
+	        }
+
+	        /// <summary>
 	        ///     Get an enumerable for the current chunk
 	        ///     This operation requires read access to the enumerator's
 	        ///     associated list.
@@ -360,22 +395,7 @@ namespace Appalachia.Core.Collections.Native
             {
             }
 
-	        /// <summary>
-	        ///     Set whether both read and write access should be allowed for the
-	        ///     enumerator's list. This is used for automated testing purposes
-	        ///     only.
-	        /// </summary>
-	        /// <param name="allowReadOrWriteAccess">
-	        ///     If both read and write access should be allowed for the
-	        ///     enumerator's list
-	        /// </param>
-	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
-            {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
-#endif
-            }
+	        #endregion
         }
 
 	    /// <summary>
@@ -385,33 +405,6 @@ namespace Appalachia.Core.Collections.Native
 	    [StructLayout(LayoutKind.Sequential)]
         public struct ChunkEnumerable : IEnumerable<T>, IDisposable
         {
-	        /// <summary>
-	        ///     List whose chunk is being enumerated
-	        /// </summary>
-	        private readonly NativeChunkedList<T> m_List;
-
-	        /// <summary>
-	        ///     Chunk whose elements are being enumerated
-	        /// </summary>
-	        private readonly void* m_Chunk;
-
-	        /// <summary>
-	        ///     Index of the first element to enumerate
-	        /// </summary>
-	        private readonly int m_StartChunkIndex;
-
-	        /// <summary>
-	        ///     Index of the last element to enumerate
-	        /// </summary>
-	        private readonly int m_EndChunkIndex;
-
-	        /// <summary>
-	        ///     Overall list index of the first element of the chunk
-	        /// </summary>
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            private readonly int m_BaseIndex;
-#endif
-
 	        /// <summary>
 	        ///     Create the enumerable for a chunk
 	        /// </summary>
@@ -450,6 +443,37 @@ namespace Appalachia.Core.Collections.Native
 #endif
             }
 
+	        #region Fields and Autoproperties
+
+	        /// <summary>
+	        ///     Overall list index of the first element of the chunk
+	        /// </summary>
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+	        private readonly int m_BaseIndex;
+#endif
+
+	        /// <summary>
+	        ///     Index of the last element to enumerate
+	        /// </summary>
+	        private readonly int m_EndChunkIndex;
+
+	        /// <summary>
+	        ///     Index of the first element to enumerate
+	        /// </summary>
+	        private readonly int m_StartChunkIndex;
+
+	        /// <summary>
+	        ///     List whose chunk is being enumerated
+	        /// </summary>
+	        private readonly NativeChunkedList<T> m_List;
+
+	        /// <summary>
+	        ///     Chunk whose elements are being enumerated
+	        /// </summary>
+	        private readonly void* m_Chunk;
+
+	        #endregion
+
 	        /// <summary>
 	        ///     Create an enumerator for the elements of the chunk
 	        ///     This operation has no access requirements on the enumerable's
@@ -461,12 +485,33 @@ namespace Appalachia.Core.Collections.Native
 	        /// </returns>
 	        public ChunkEnumerator GetEnumerator()
             {
-                return new(m_List, m_Chunk, m_StartChunkIndex, m_EndChunkIndex
+	            return new(
+		            m_List,
+		            m_Chunk,
+		            m_StartChunkIndex,
+		            m_EndChunkIndex
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-                    , m_BaseIndex
+		            ,
+		            m_BaseIndex
 #endif
                 );
             }
+
+	        #region IDisposable Members
+
+	        /// <summary>
+	        ///     Dispose of this enumerable. This is a no-op.
+	        ///     This operation has no access requirements on the enumerable's
+	        ///     associated list.
+	        ///     This operation is O(1).
+	        /// </summary>
+	        public void Dispose()
+	        {
+	        }
+
+	        #endregion
+
+	        #region IEnumerable<T> Members
 
 	        /// <summary>
 	        ///     Create an enumerator for the elements of the chunk
@@ -496,15 +541,7 @@ namespace Appalachia.Core.Collections.Native
                 return GetEnumerator();
             }
 
-	        /// <summary>
-	        ///     Dispose of this enumerable. This is a no-op.
-	        ///     This operation has no access requirements on the enumerable's
-	        ///     associated list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        public void Dispose()
-            {
-            }
+	        #endregion
         }
 
 	    /// <summary>
@@ -514,38 +551,6 @@ namespace Appalachia.Core.Collections.Native
 	    [StructLayout(LayoutKind.Sequential)]
         public struct ChunkEnumerator : IEnumerator<T>
         {
-	        /// <summary>
-	        ///     List whose chunk is being enumerated
-	        /// </summary>
-	        private NativeChunkedList<T> m_List;
-
-	        /// <summary>
-	        ///     Chunk whose elements are being enumerated
-	        /// </summary>
-	        private readonly void* m_Chunk;
-
-	        /// <summary>
-	        ///     Current index into the chunk's elements
-	        /// </summary>
-	        private int m_Index;
-
-	        /// <summary>
-	        ///     Index of the first element to enumerate
-	        /// </summary>
-	        private readonly int m_StartChunkIndex;
-
-	        /// <summary>
-	        ///     Index of the last element to enumerate
-	        /// </summary>
-	        private readonly int m_EndChunkIndex;
-
-	        /// <summary>
-	        ///     Overall list index of the first element of the chunk
-	        /// </summary>
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            private readonly int m_BaseIndex;
-#endif
-
 	        /// <summary>
 	        ///     Create the enumerator for a chunk. It is initially just before
 	        ///     the first element. Call <see cref="MoveNext" /> to advance to
@@ -589,6 +594,85 @@ namespace Appalachia.Core.Collections.Native
                 m_BaseIndex = baseIndex;
 #endif
             }
+
+	        #region Fields and Autoproperties
+
+	        /// <summary>
+	        ///     Overall list index of the first element of the chunk
+	        /// </summary>
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+	        private readonly int m_BaseIndex;
+#endif
+
+	        /// <summary>
+	        ///     Index of the last element to enumerate
+	        /// </summary>
+	        private readonly int m_EndChunkIndex;
+
+	        /// <summary>
+	        ///     Index of the first element to enumerate
+	        /// </summary>
+	        private readonly int m_StartChunkIndex;
+
+	        /// <summary>
+	        ///     Chunk whose elements are being enumerated
+	        /// </summary>
+	        private readonly void* m_Chunk;
+
+	        /// <summary>
+	        ///     Current index into the chunk's elements
+	        /// </summary>
+	        private int m_Index;
+
+	        /// <summary>
+	        ///     List whose chunk is being enumerated
+	        /// </summary>
+	        private NativeChunkedList<T> m_List;
+
+	        #endregion
+
+	        /// <summary>
+	        ///     Set whether both read and write access should be allowed for the
+	        ///     enumerator's list. This is used for automated testing purposes
+	        ///     only.
+	        /// </summary>
+	        /// <param name="allowReadOrWriteAccess">
+	        ///     If both read and write access should be allowed for the
+	        ///     enumerator's list
+	        /// </param>
+	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	        public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
+	        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		        AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
+#endif
+	        }
+
+	        /// <summary>
+	        ///     Set the ParallelFor safety check ranges of the list this
+	        ///     enumerator is for. This is used for automated testing purposes
+	        ///     only.
+	        /// </summary>
+	        /// <param name="minIndex">
+	        ///     The minimum index that can safely be accessed. This is zero
+	        ///     outside of a job and in a regular, non-ParallelFor job but set
+	        ///     higher by ParallelFor jobs.
+	        /// </param>
+	        /// <param name="maxIndex">
+	        ///     The maximum index that can safely be accessed. This is equal to
+	        ///     (m_Length-1) outside of a job and in a regular, non-ParallelFor
+	        ///     job but set lower by ParallelFor jobs.
+	        /// </param>
+	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	        public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
+	        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		        m_List.m_MinIndex = minIndex;
+		        m_List.m_MaxIndex = maxIndex;
+#endif
+	        }
+
+	        #region IEnumerator<T> Members
 
 	        /// <summary>
 	        ///     Move to the next element of the chunk
@@ -671,22 +755,74 @@ namespace Appalachia.Core.Collections.Native
             {
             }
 
-	        /// <summary>
-	        ///     Set the ParallelFor safety check ranges of the list this
-	        ///     enumerator is for. This is used for automated testing purposes
-	        ///     only.
-	        /// </summary>
-	        /// <param name="minIndex">
-	        ///     The minimum index that can safely be accessed. This is zero
-	        ///     outside of a job and in a regular, non-ParallelFor job but set
-	        ///     higher by ParallelFor jobs.
-	        /// </param>
-	        /// <param name="maxIndex">
-	        ///     The maximum index that can safely be accessed. This is equal to
-	        ///     (m_Length-1) outside of a job and in a regular, non-ParallelFor
-	        ///     job but set lower by ParallelFor jobs.
-	        /// </param>
-	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	        #endregion
+        }
+
+	    /// <summary>
+	    ///     An enumerator for <see cref="NativeChunkedList{T}" />
+	    /// </summary>
+	    [StructLayout(LayoutKind.Sequential)]
+	    public struct Enumerator : IEnumerator<T>
+	    {
+		    /// <summary>
+		    ///     Create the enumerator for a particular element
+		    /// </summary>
+		    /// <param name="list">
+		    ///     List to iterate
+		    /// </param>
+		    internal Enumerator(NativeChunkedList<T> list)
+		    {
+			    m_Index = -1;
+			    m_List = list;
+		    }
+
+		    #region Fields and Autoproperties
+
+		    /// <summary>
+		    ///     Index of the element
+		    /// </summary>
+		    internal int m_Index;
+
+		    /// <summary>
+		    ///     List to iterate
+		    /// </summary>
+		    internal NativeChunkedList<T> m_List;
+
+		    #endregion
+
+		    /// <summary>
+		    ///     Set whether both read and write access should be allowed for the
+		    ///     enumerator's list. This is used for automated testing purposes
+		    ///     only.
+		    /// </summary>
+		    /// <param name="allowReadOrWriteAccess">
+		    ///     If both read and write access should be allowed for the
+		    ///     enumerator's list
+		    /// </param>
+		    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+		    public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
+		    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+			    AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
+#endif
+		    }
+
+		    /// <summary>
+		    ///     Set the ParallelFor safety check ranges of the list this
+		    ///     enumerator is for. This is used for automated testing purposes
+		    ///     only.
+		    /// </summary>
+		    /// <param name="minIndex">
+		    ///     The minimum index that can safely be accessed. This is zero
+		    ///     outside of a job and in a regular, non-ParallelFor job but set
+		    ///     higher by ParallelFor jobs.
+		    /// </param>
+		    /// <param name="maxIndex">
+		    ///     The maximum index that can safely be accessed. This is equal to
+		    ///     (m_Length-1) outside of a job and in a regular, non-ParallelFor
+		    ///     job but set lower by ParallelFor jobs.
+		    /// </param>
+		    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
             public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -695,62 +831,18 @@ namespace Appalachia.Core.Collections.Native
 #endif
             }
 
-	        /// <summary>
-	        ///     Set whether both read and write access should be allowed for the
-	        ///     enumerator's list. This is used for automated testing purposes
-	        ///     only.
-	        /// </summary>
-	        /// <param name="allowReadOrWriteAccess">
-	        ///     If both read and write access should be allowed for the
-	        ///     enumerator's list
-	        /// </param>
-	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
-            {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
-#endif
-            }
-        }
+		    #region IEnumerator<T> Members
 
-	    /// <summary>
-	    ///     An enumerator for <see cref="NativeChunkedList{T}" />
-	    /// </summary>
-	    [StructLayout(LayoutKind.Sequential)]
-        public struct Enumerator : IEnumerator<T>
-        {
-	        /// <summary>
-	        ///     Index of the element
-	        /// </summary>
-	        internal int m_Index;
-
-	        /// <summary>
-	        ///     List to iterate
-	        /// </summary>
-	        internal NativeChunkedList<T> m_List;
-
-	        /// <summary>
-	        ///     Create the enumerator for a particular element
-	        /// </summary>
-	        /// <param name="list">
-	        ///     List to iterate
-	        /// </param>
-	        internal Enumerator(NativeChunkedList<T> list)
-            {
-                m_Index = -1;
-                m_List = list;
-            }
-
-	        /// <summary>
-	        ///     Move to the next element of the list.
-	        ///     This operation requires read access to the enumerator's
-	        ///     associated list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <returns>
-	        ///     If this enumerator is before or at the end of the list
-	        /// </returns>
-	        public bool MoveNext()
+		    /// <summary>
+		    ///     Move to the next element of the list.
+		    ///     This operation requires read access to the enumerator's
+		    ///     associated list.
+		    ///     This operation is O(1).
+		    /// </summary>
+		    /// <returns>
+		    ///     If this enumerator is before or at the end of the list
+		    /// </returns>
+		    public bool MoveNext()
             {
                 m_List.CheckReadAccess();
 
@@ -758,98 +850,59 @@ namespace Appalachia.Core.Collections.Native
                 return m_Index < m_List.Length;
             }
 
-	        /// <summary>
-	        ///     Reset the enumerator to just before the start of the list.
-	        ///     This operation has no access requirements on the enumerator's
-	        ///     associated list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        public void Reset()
+		    /// <summary>
+		    ///     Reset the enumerator to just before the start of the list.
+		    ///     This operation has no access requirements on the enumerator's
+		    ///     associated list.
+		    ///     This operation is O(1).
+		    /// </summary>
+		    public void Reset()
             {
                 m_Index = -1;
             }
 
-	        /// <summary>
-	        ///     Get the element's value.
-	        ///     This operation requires read access to the element for the 'get'
-	        ///     and write access to the element for the 'set'
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <value>
-	        ///     The element's value
-	        /// </value>
-	        public T Current
+		    /// <summary>
+		    ///     Get the element's value.
+		    ///     This operation requires read access to the element for the 'get'
+		    ///     and write access to the element for the 'set'
+		    ///     This operation is O(1).
+		    /// </summary>
+		    /// <value>
+		    ///     The element's value
+		    /// </value>
+		    public T Current
             {
                 get => m_List[m_Index];
 
                 [WriteAccessRequired] set => m_List[m_Index] = value;
             }
 
-	        /// <summary>
-	        ///     Get a element's value. Prefer using the generic version of
-	        ///     <see cref="Current" /> as this will cause boxing when enumerating
-	        ///     value type element value. This is provided only for
-	        ///     compatibility with <see cref="IEnumerator" />. As such, there is
-	        ///     no 'set' for this non-generic property.
-	        ///     This operation requires read access to the element.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <value>
-	        ///     The element's value
-	        /// </value>
-	        object IEnumerator.Current => Current;
+		    /// <summary>
+		    ///     Get a element's value. Prefer using the generic version of
+		    ///     <see cref="Current" /> as this will cause boxing when enumerating
+		    ///     value type element value. This is provided only for
+		    ///     compatibility with <see cref="IEnumerator" />. As such, there is
+		    ///     no 'set' for this non-generic property.
+		    ///     This operation requires read access to the element.
+		    ///     This operation is O(1).
+		    /// </summary>
+		    /// <value>
+		    ///     The element's value
+		    /// </value>
+		    object IEnumerator.Current => Current;
 
-	        /// <summary>
-	        ///     Dispose the enumerator. This operation has no effect and exists
-	        ///     only to satisfy the requirements of <see cref="IDisposable" />.
-	        ///     This operation has no access requirements on the enumerator's
-	        ///     associated list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        public void Dispose()
+		    /// <summary>
+		    ///     Dispose the enumerator. This operation has no effect and exists
+		    ///     only to satisfy the requirements of <see cref="IDisposable" />.
+		    ///     This operation has no access requirements on the enumerator's
+		    ///     associated list.
+		    ///     This operation is O(1).
+		    /// </summary>
+		    public void Dispose()
             {
             }
 
-	        /// <summary>
-	        ///     Set the ParallelFor safety check ranges of the list this
-	        ///     enumerator is for. This is used for automated testing purposes
-	        ///     only.
-	        /// </summary>
-	        /// <param name="minIndex">
-	        ///     The minimum index that can safely be accessed. This is zero
-	        ///     outside of a job and in a regular, non-ParallelFor job but set
-	        ///     higher by ParallelFor jobs.
-	        /// </param>
-	        /// <param name="maxIndex">
-	        ///     The maximum index that can safely be accessed. This is equal to
-	        ///     (m_Length-1) outside of a job and in a regular, non-ParallelFor
-	        ///     job but set lower by ParallelFor jobs.
-	        /// </param>
-	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
-            {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-                m_List.m_MinIndex = minIndex;
-                m_List.m_MaxIndex = maxIndex;
-#endif
-            }
-
-	        /// <summary>
-	        ///     Set whether both read and write access should be allowed for the
-	        ///     enumerator's list. This is used for automated testing purposes
-	        ///     only.
-	        /// </summary>
-	        /// <param name="allowReadOrWriteAccess">
-	        ///     If both read and write access should be allowed for the
-	        ///     enumerator's list
-	        /// </param>
-	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
-            {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
-#endif
-            }
+		    #endregion
         }
 
 	    /// <summary>
@@ -946,7 +999,7 @@ namespace Appalachia.Core.Collections.Native
 
             // Allocate the state. The chunks and capacity are initialized in
             // the Capacity property set call below. It is freed in Dispose().
-            m_State = (NativeChunkedListState*) UnsafeUtility.Malloc(
+            m_State = (NativeChunkedListState*)UnsafeUtility.Malloc(
                 UnsafeUtility.SizeOf<NativeChunkedListState>(),
                 UnsafeUtility.AlignOf<NativeChunkedListState>(),
                 allocator
@@ -1023,7 +1076,7 @@ namespace Appalachia.Core.Collections.Native
                         chunksCapacity = min > grown ? min : grown;
 
                         // Allocate the new chunk pointers
-                        chunks = (NativeChunkedListChunk*) UnsafeUtility.Malloc(
+                        chunks = (NativeChunkedListChunk*)UnsafeUtility.Malloc(
                             sizeof(NativeChunkedListChunk*) * chunksCapacity,
                             sizeof(NativeChunkedListChunk*),
                             allocator

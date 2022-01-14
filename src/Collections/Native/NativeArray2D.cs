@@ -20,23 +20,6 @@ namespace Appalachia.Core.Collections.Native
     public unsafe struct NativeArray2D<T> : IDisposable, IEquatable<NativeArray2D<T>>
         where T : struct
     {
-        [NativeDisableUnsafePtrRestriction]
-        private void* m_Buffer;
-
-        internal int m_Length;
-        internal int m_MinIndex;
-        internal int m_MaxIndex;
-
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-
-        private AtomicSafetyHandle m_Safety;
-
-        [NativeSetClassTypeToNullOnSchedule]
-        private DisposeSentinel m_DisposeSentinel;
-#endif
-
-        internal Allocator m_AllocatorLabel;
-
         public NativeArray2D(
             int length0,
             int length1,
@@ -46,7 +29,7 @@ namespace Appalachia.Core.Collections.Native
             Allocate(length0, length1, allocator, out this);
             if (options == NativeArrayOptions.ClearMemory)
             {
-                UnsafeUtility.MemClear(m_Buffer, TotalLength * (long) UnsafeUtility.SizeOf<T>());
+                UnsafeUtility.MemClear(m_Buffer, TotalLength * (long)UnsafeUtility.SizeOf<T>());
             }
         }
 
@@ -70,30 +53,36 @@ namespace Appalachia.Core.Collections.Native
             CopyFromFlat(array);
         }
 
-        public int TotalCapacity => Capacity0 * Capacity1;
-
-        public int TotalLength => Length0 * Length1;
-
-        public int2 Capacity => new(Capacity0, Capacity1);
-
-        public int2 Length
-        {
-            get => new(_length0, _length1);
-            set
-            {
-                CheckWriteAccess();
-                SafetyUtility.RequireLengthWithinCapacity(value.x, Capacity0, 0);
-                Length0 = value.x;
-                SafetyUtility.RequireLengthWithinCapacity(value.y, Capacity1, 1);
-                Length1 = value.y;
-            }
-        }
+        #region Fields and Autoproperties
 
         public int Capacity0 { get; private set; }
 
         public int Capacity1 { get; private set; }
 
+        internal Allocator m_AllocatorLabel;
+
+        internal int m_Length;
+        internal int m_MaxIndex;
+        internal int m_MinIndex;
+
         private int _length0;
+
+        private int _length1;
+
+        [NativeDisableUnsafePtrRestriction]
+        private void* m_Buffer;
+
+        #endregion
+
+        public bool IsCreated => (IntPtr)m_Buffer != IntPtr.Zero;
+
+        public bool IsDisposed => m_Buffer == null;
+
+        public int TotalCapacity => Capacity0 * Capacity1;
+
+        public int TotalLength => Length0 * Length1;
+
+        public int2 Capacity => new(Capacity0, Capacity1);
 
         public int Length0
         {
@@ -108,8 +97,6 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        private int _length1;
-
         public int Length1
         {
             get => _length1;
@@ -123,15 +110,17 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        public int GetIndex(int index0, int index1)
+        public int2 Length
         {
-            return (index0 * Length1) + index1;
-        }
-
-        public void ReverseIndex(int index, out int index0, out int index1)
-        {
-            index1 = index % Length1;
-            index0 = index / Length1;
+            get => new(_length0, _length1);
+            set
+            {
+                CheckWriteAccess();
+                SafetyUtility.RequireLengthWithinCapacity(value.x, Capacity0, 0);
+                Length0 = value.x;
+                SafetyUtility.RequireLengthWithinCapacity(value.y, Capacity1, 1);
+                Length1 = value.y;
+            }
         }
 
         public T this[int index0, int index1]
@@ -174,50 +163,138 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckReadAccess()
+        [DebuggerStepThrough]
+        public static bool operator ==(NativeArray2D<T> a, NativeArray2D<T> b)
         {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            SafetyUtility.CheckReadAccess(m_Safety);
-#endif
+            return a.Equals(b);
         }
 
-        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckWriteAccess()
+        [DebuggerStepThrough]
+        public static bool operator !=(NativeArray2D<T> a, NativeArray2D<T> b)
         {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            SafetyUtility.CheckWriteAccess(m_Safety);
-#endif
+            return !a.Equals(b);
         }
 
-        public bool IsCreated => (IntPtr) m_Buffer != IntPtr.Zero;
+        [DebuggerStepThrough]
+        public override bool Equals(object other)
+        {
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
 
-        public bool IsDisposed => m_Buffer == null;
+            return other is NativeArray2D<T> && Equals((NativeArray2D<T>)other);
+        }
+
+        [DebuggerStepThrough]
+        public override int GetHashCode()
+        {
+            var result = (int)m_Buffer;
+            result = (result * 397) ^ Capacity0;
+            result = (result * 397) ^ Capacity1;
+            return result;
+        }
+
+        [WriteAccessRequired]
+        public void CopyFrom(T[,] array)
+        {
+            Copy(array, this);
+        }
+
+        [WriteAccessRequired]
+        public void CopyFrom(NativeArray2D<T> array)
+        {
+            Copy(array, this);
+        }
+
+        [WriteAccessRequired]
+        public void CopyFromFlat(T[] src)
+        {
+            CheckWriteAccess();
+
+            var sourceLength = src.Length;
+            var thisLength = TotalCapacity;
+
+            if (sourceLength != thisLength)
+            {
+                throw new ArgumentException("Array length must match the TotalCapacity of this array.");
+            }
+
+            for (var i = 0; i < src.Length; i++)
+            {
+                ReverseIndex(i, out var ix, out var iy);
+
+                this[ix, iy] = src[i];
+            }
+        }
+
+        public void CopyTo(T[,] array)
+        {
+            Copy(this, array);
+        }
+
+        public void CopyTo(NativeArray2D<T> array)
+        {
+            Copy(this, array);
+        }
+
+        public void CopyToFlat(T[] dest, out int2 dimensions)
+        {
+            CheckReadAccess();
+
+            var destinationLength = dest.Length;
+            var targetLength = TotalCapacity;
+
+            if (destinationLength != targetLength)
+            {
+                throw new ArgumentException(
+                    "Destination array length must match the TotalCapacity of the source."
+                );
+            }
+
+            dimensions = Length;
+
+            for (var index0 = 0; index0 < Length0; ++index0)
+            {
+                for (var index1 = 0; index1 < Length1; ++index1)
+                {
+                    var index = GetIndex(index0, index1);
+
+                    dest[index] = this[index0, index1];
+                }
+            }
+        }
+
+        public int GetIndex(int index0, int index1)
+        {
+            return (index0 * Length1) + index1;
+        }
+
+        public void ReverseIndex(int index, out int index0, out int index1)
+        {
+            index1 = index % Length1;
+            index0 = index / Length1;
+        }
 
         public bool ShouldAllocate()
         {
             return IsDisposed || !IsCreated;
         }
 
-        [WriteAccessRequired]
-        public void Dispose()
+        public T[,] ToArray()
         {
-            SafetyUtility.RequireValidAllocator<NativeArray2D<T>>(m_AllocatorLabel);
-
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
-#endif
-            Deallocate();
+            var dst = new T[Length0, Length1];
+            Copy(this, dst);
+            return dst;
         }
 
-        private void Deallocate()
+        public T[] ToArrayFlat(out int2 dimensions)
         {
-            UnsafeUtility.Free(m_Buffer, m_AllocatorLabel);
-            m_Buffer = null;
-            _length0 = 0;
-            _length1 = 0;
-            Capacity0 = 0;
-            Capacity1 = 0;
+            var result = new T[TotalCapacity];
+
+            CopyToFlat(result, out dimensions);
+
+            return result;
         }
 
         private static void Allocate(
@@ -257,72 +334,6 @@ namespace Appalachia.Core.Collections.Native
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             DisposeSentinel.Create(out array.m_Safety, out array.m_DisposeSentinel, 1, allocator);
 #endif
-        }
-
-        [WriteAccessRequired]
-        public void CopyFrom(T[,] array)
-        {
-            Copy(array, this);
-        }
-
-        [WriteAccessRequired]
-        public void CopyFrom(NativeArray2D<T> array)
-        {
-            Copy(array, this);
-        }
-
-        public void CopyTo(T[,] array)
-        {
-            Copy(this, array);
-        }
-
-        public void CopyTo(NativeArray2D<T> array)
-        {
-            Copy(this, array);
-        }
-
-        public T[,] ToArray()
-        {
-            var dst = new T[Length0, Length1];
-            Copy(this, dst);
-            return dst;
-        }
-
-        [DebuggerStepThrough] public bool Equals(NativeArray2D<T> other)
-        {
-            return (m_Buffer == other.m_Buffer) &&
-                   (Length0 == other.Length0) &&
-                   (Length1 == other.Length1) &&
-                   (Capacity0 == other.Capacity0) &&
-                   (Capacity1 == other.Capacity1);
-        }
-
-        [DebuggerStepThrough] public override bool Equals(object other)
-        {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            return other is NativeArray2D<T> && Equals((NativeArray2D<T>) other);
-        }
-
-        [DebuggerStepThrough] public override int GetHashCode()
-        {
-            var result = (int) m_Buffer;
-            result = (result * 397) ^ Capacity0;
-            result = (result * 397) ^ Capacity1;
-            return result;
-        }
-
-        [DebuggerStepThrough] public static bool operator ==(NativeArray2D<T> a, NativeArray2D<T> b)
-        {
-            return a.Equals(b);
-        }
-
-        [DebuggerStepThrough] public static bool operator !=(NativeArray2D<T> a, NativeArray2D<T> b)
-        {
-            return !a.Equals(b);
         }
 
         private static void Copy(NativeArray2D<T> src, NativeArray2D<T> dest)
@@ -406,61 +417,67 @@ namespace Appalachia.Core.Collections.Native
             throw new ArgumentException("Arrays must have the same size");
         }
 
-        public T[] ToArrayFlat(out int2 dimensions)
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        private void CheckReadAccess()
         {
-            var result = new T[TotalCapacity];
-
-            CopyToFlat(result, out dimensions);
-
-            return result;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            SafetyUtility.CheckReadAccess(m_Safety);
+#endif
         }
 
-        public void CopyToFlat(T[] dest, out int2 dimensions)
+        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+        private void CheckWriteAccess()
         {
-            CheckReadAccess();
-
-            var destinationLength = dest.Length;
-            var targetLength = TotalCapacity;
-
-            if (destinationLength != targetLength)
-            {
-                throw new ArgumentException(
-                    "Destination array length must match the TotalCapacity of the source."
-                );
-            }
-
-            dimensions = Length;
-
-            for (var index0 = 0; index0 < Length0; ++index0)
-            {
-                for (var index1 = 0; index1 < Length1; ++index1)
-                {
-                    var index = GetIndex(index0, index1);
-
-                    dest[index] = this[index0, index1];
-                }
-            }
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            SafetyUtility.CheckWriteAccess(m_Safety);
+#endif
         }
+
+        private void Deallocate()
+        {
+            UnsafeUtility.Free(m_Buffer, m_AllocatorLabel);
+            m_Buffer = null;
+            _length0 = 0;
+            _length1 = 0;
+            Capacity0 = 0;
+            Capacity1 = 0;
+        }
+
+        #region IDisposable Members
 
         [WriteAccessRequired]
-        public void CopyFromFlat(T[] src)
+        public void Dispose()
         {
-            CheckWriteAccess();
+            SafetyUtility.RequireValidAllocator<NativeArray2D<T>>(m_AllocatorLabel);
 
-            var sourceLength = src.Length;
-            var thisLength = TotalCapacity;
-
-            if (sourceLength != thisLength)
-            {
-                throw new ArgumentException("Array length must match the TotalCapacity of this array.");
-            }
-
-            for (var i = 0; i < src.Length; i++)
-            {
-                ReverseIndex(i, out var ix, out var iy);
-
-                this[ix, iy] = src[i];
-            }
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
+#endif
+            Deallocate();
         }
+
+        #endregion
+
+        #region IEquatable<NativeArray2D<T>> Members
+
+        [DebuggerStepThrough]
+        public bool Equals(NativeArray2D<T> other)
+        {
+            return (m_Buffer == other.m_Buffer) &&
+                   (Length0 == other.Length0) &&
+                   (Length1 == other.Length1) &&
+                   (Capacity0 == other.Capacity0) &&
+                   (Capacity1 == other.Capacity1);
+        }
+
+        #endregion
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+
+        private AtomicSafetyHandle m_Safety;
+
+        [NativeSetClassTypeToNullOnSchedule]
+        private DisposeSentinel m_DisposeSentinel;
+#endif
     }
 }

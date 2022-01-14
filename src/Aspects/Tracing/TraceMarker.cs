@@ -13,30 +13,33 @@ namespace Appalachia.Core.Aspects.Tracing
     [DebuggerStepThrough]
     public struct TraceMarker
     {
+        #region Constants and Static Readonly
+
+        public static readonly TraceMarker empty = default;
+
+        #endregion
+
         public TraceMarker(string message)
         {
             _traceMessage = message;
         }
 
-        public static readonly TraceMarker empty = default;
-
-        private readonly string _traceMessage;
+        #region Static Fields and Autoproperties
 
         private static string[] _indents = new string[100];
 
-        private static readonly ProfilerMarker _PRF_TraceMarker_Trace = new("TraceMarker.Trace");
+        #endregion
 
-        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_CheckAwake =
-            new("TraceMarker.Trace.CheckAwake");
+        #region Fields and Autoproperties
 
-        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_StackTrace =
-            new("TraceMarker.Trace.StackTrace");
+        private readonly string _traceMessage;
 
-        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_Format =
-            new("TraceMarker.Trace.Format");
+        #endregion
 
-        private static readonly ProfilerMarker _PRF_TraceMarker_EnsureInitialized =
-            new("TraceMarker.EnsureInitialized");
+        public AutoScope Auto(bool ignored = false)
+        {
+            return new(this, ignored);
+        }
 
         public void Trace(TraceType type, bool ignore = false)
         {
@@ -101,21 +104,11 @@ namespace Appalachia.Core.Aspects.Tracing
             }
         }
 
-        public AutoScope Auto(bool ignored = false)
-        {
-            return new(this, ignored);
-        }
+        #region Nested type: AutoScope
 
         [DebuggerStepThrough]
         public struct AutoScope : IDisposable
         {
-            private static readonly ProfilerMarker _PRF_AutoScope_AutoScope = new("AutoScope.AutoScope");
-
-            private static readonly ProfilerMarker _PRF_AutoScope_Dispose = new("AutoScope.Dispose");
-
-            internal TraceMarker _marker;
-            internal bool _ignore;
-
             internal AutoScope(TraceMarker marker, bool ignore)
             {
                 using (_PRF_AutoScope_AutoScope.Auto())
@@ -127,6 +120,16 @@ namespace Appalachia.Core.Aspects.Tracing
                 }
             }
 
+            #region Fields and Autoproperties
+
+            internal bool _ignore;
+
+            internal TraceMarker _marker;
+
+            #endregion
+
+            #region IDisposable Members
+
             public void Dispose()
             {
                 using (_PRF_AutoScope_Dispose.Auto())
@@ -134,6 +137,36 @@ namespace Appalachia.Core.Aspects.Tracing
                     _marker.Trace(TraceType.EXIT, _ignore);
                 }
             }
+
+            #endregion
+
+            #region Profiling
+
+            private static readonly ProfilerMarker _PRF_AutoScope_AutoScope = new("AutoScope.AutoScope");
+
+            private static readonly ProfilerMarker _PRF_AutoScope_Dispose = new("AutoScope.Dispose");
+
+            #endregion
         }
+
+        #endregion
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_EnsureInitialized =
+            new("TraceMarker.EnsureInitialized");
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_Trace = new("TraceMarker.Trace");
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_CheckAwake =
+            new("TraceMarker.Trace.CheckAwake");
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_Format =
+            new("TraceMarker.Trace.Format");
+
+        private static readonly ProfilerMarker _PRF_TraceMarker_Trace_StackTrace =
+            new("TraceMarker.Trace.StackTrace");
+
+        #endregion
     }
 }

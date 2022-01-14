@@ -29,6 +29,8 @@ namespace Appalachia.Core.Attributes.Editing
             DisableIf = disableIf;
         }
 
+        #region Fields and Autoproperties
+
         public bool Before;
 
         public bool Bold;
@@ -39,5 +41,7 @@ namespace Appalachia.Core.Attributes.Editing
 
         public string Label;
         public string MemberMethod;
+
+        #endregion
     }
 }

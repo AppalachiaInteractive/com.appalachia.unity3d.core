@@ -46,24 +46,25 @@ namespace Appalachia.Core.Attributes.Editing
 
         public bool Below;
         public bool Bold;
-        public bool Reversed;
         public bool HorizontalLine;
         public bool Indent;
-        public string Subtitle;
+        public bool Reversed;
         public string FallbackSubtitle;
+        public string FallbackTitle;
+        public string HideIfMemberName;
+        public string Subtitle;
         public string SubtitleColor;
         public string SubtitleFont;
         public string Title;
-        public string FallbackTitle;
         public string TitleColor;
         public string TitleFont;
-        public string HideIfMemberName;
-
-        public bool HasTitleFont => SubtitleFont.IsNotNullOrWhiteSpace();
-        public bool HasSubtitleFont => TitleFont.IsNotNullOrWhiteSpace();
-        public bool HasTitleColor => TitleColor.IsNotNullOrWhiteSpace();
-        public bool HasSubtitleColor => SubtitleColor.IsNotNullOrWhiteSpace();
 
         #endregion
+
+        public bool HasSubtitleColor => SubtitleColor.IsNotNullOrWhiteSpace();
+        public bool HasSubtitleFont => TitleFont.IsNotNullOrWhiteSpace();
+        public bool HasTitleColor => TitleColor.IsNotNullOrWhiteSpace();
+
+        public bool HasTitleFont => SubtitleFont.IsNotNullOrWhiteSpace();
     }
 }

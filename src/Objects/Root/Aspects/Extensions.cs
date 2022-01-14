@@ -10,6 +10,11 @@ namespace Appalachia.Core.Objects.Root
             using (_PRF_MarkAsModified.Auto())
             {
 #if UNITY_EDITOR
+                if (target.Owner == null)
+                {
+                    return;
+                }
+
                 if (Modifications.CanModifyAssets())
                 {
                     UnityEditor.EditorUtility.SetDirty(target.Owner);

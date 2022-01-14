@@ -8,7 +8,26 @@ namespace Appalachia.Core.Context.Elements
     [Serializable]
     public class AppaMenuSelection
     {
+        #region Static Fields and Autoproperties
+
         [NonSerialized] private static AppaContext _context;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
+        public int currentIndex;
+        public int currentVisibleIndex;
+        public int lastVisibleCount;
+        public int length;
+        public int visibleCount;
+        public Rect position;
+        private List<bool> _visibility;
+
+        private List<int> _indexToVisibleIndex;
+        private List<int> _visibleIndexToIndex;
+
+        #endregion
 
         private static AppaContext Context
         {
@@ -22,18 +41,8 @@ namespace Appalachia.Core.Context.Elements
                 return _context;
             }
         }
-        public int currentIndex;
-        public int currentVisibleIndex;
-        public int lastVisibleCount;
-        public int length;
-        public int visibleCount;
-        public Rect position;
-        private List<bool> _visibility;
 
-        private List<int> _indexToVisibleIndex;
-        private List<int> _visibleIndexToIndex;
-
-        public float scrollTime => currentVisibleIndex / (float) Mathf.Max(1, lastVisibleCount);
+        public float scrollTime => currentVisibleIndex / (float)Mathf.Max(1, lastVisibleCount);
 
         public int GetIndex(int visibilityIndex)
         {

@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableQuaternion(bool overrideEnabled, Quaternion value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableQuaternion(bool overrideEnabled, Quaternion value) : base(overrideEnabled, value)
         {
         }
 

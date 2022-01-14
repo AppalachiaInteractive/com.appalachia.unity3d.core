@@ -19,6 +19,13 @@ namespace Appalachia.Core.Objects.Root
 {
     public sealed partial class AppalachiaRepository
     {
+        #region Constants and Static Readonly
+
+        private const string COULD_NOT_INSTANTIATE_PREFAB_WITH_ADDRESS =
+            "Could not instantiate prefab with address [{0}]";
+
+        #endregion
+
         #region Fields and Autoproperties
 
         [SerializeField, InlineProperty, HideLabel, Title("Prefabs"), PropertyOrder(15)]
@@ -37,107 +44,121 @@ namespace Appalachia.Core.Objects.Root
 
         public async AppaTask<GameObject> FindPrefab(string prefabAddress)
         {
-            using (_PRF_FindPrefab.Auto())
+            if (!_prefabLookup.ContainsKey(prefabAddress))
             {
-                _prefabs ??= new AppalachiaRepositoryPrefabReferenceList();
+                Context.Log.Error(
+                    ZString.Format(
+                        "Could not find prefab {0} in the {1}!",
+                        prefabAddress,
+                        nameof(AppalachiaRepository).FormatForLogging()
+                    )
+                );
+                return null;
+            }
 
-                if (!_prefabLookup.ContainsKey(prefabAddress))
-                {
-                    Context.Log.Error(
-                        ZString.Format(
-                            "Could not find prefab {0} in the {1}!",
-                            prefabAddress,
-                            nameof(AppalachiaRepository).FormatForLogging()
-                        )
-                    );
-                    return null;
-                }
+            var reference = _prefabLookup[prefabAddress];
+            var assetReference = reference.assetReference;
 
-                var reference = _prefabLookup[prefabAddress];
-                var assetReference = reference.assetReference;
+            var isLoaded = assetReference.IsValid();
 
-                var isLoaded = assetReference.IsValid();
-
-                if (isLoaded)
-                {
-                    reference.prefab = assetReference.Asset as GameObject;
-
-                    return reference.prefab;
-                }
-
-                try
-                {
-#if UNITY_EDITOR
-                    if (!assetReference.RuntimeKeyIsValid())
-                    {
-                        reference.prefab = assetReference.editorAsset as GameObject;
-                    }
-                    else
-                    {
-#endif
-                        reference.prefab = await assetReference.LoadAssetAsync<GameObject>();
-#if UNITY_EDITOR
-                    }
-#endif
-                }
-                catch (Exception ex)
-                {
-                    Context.Log.Error(
-                        ZString.Format(
-                            "Failed to load singleton of address {0}: {1}",
-                            prefabAddress.FormatConstantForLogging(),
-                            ex.Message
-                        ),
-                        null,
-                        ex
-                    );
-
-                    return null;
-                }
+            if (isLoaded)
+            {
+                reference.prefab = assetReference.Asset as GameObject;
 
                 return reference.prefab;
             }
+
+            try
+            {
+#if UNITY_EDITOR
+                if (!assetReference.RuntimeKeyIsValid())
+                {
+                    reference.prefab = assetReference.editorAsset as GameObject;
+                }
+                else
+                {
+#endif
+                    reference.prefab = await assetReference.LoadAssetAsync<GameObject>();
+#if UNITY_EDITOR
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                Context.Log.Error(
+                    ZString.Format(
+                        "Failed to load singleton of address {0}: {1}",
+                        prefabAddress.FormatConstantForLogging(),
+                        ex.Message
+                    ),
+                    null,
+                    ex
+                );
+
+                return null;
+            }
+
+            return reference.prefab;
         }
 
         public async AppaTask<GameObject> InstantiatePrefab(
             string prefabAddress,
             GameObject parent,
-            bool resetTransform)
+            bool resetTransform,
+            string prefabName = null)
         {
-            using (_PRF_InstantiatePrefab.Auto())
-            {
-                return await InstantiatePrefab(prefabAddress, parent.transform, resetTransform);
-            }
+            return await InstantiatePrefab(prefabAddress, parent.transform, resetTransform, prefabName);
         }
 
         public async AppaTask<GameObject> InstantiatePrefab(
             string prefabAddress,
             Transform parent,
-            bool resetTransform)
+            bool resetTransform,
+            string prefabName = null)
         {
-            using (_PRF_InstantiatePrefab.Auto())
+            var prefabInstance = await InstantiatePrefab(prefabAddress, prefabName, parent);
+
+            if (resetTransform)
             {
-                var prefabInstance = await InstantiatePrefab(prefabAddress);
-
-                prefabInstance.transform.SetParent(parent);
-
-                if (resetTransform)
-                {
-                    prefabInstance.transform.SetToOrigin();
-                }
-
-                return prefabInstance;
+                prefabInstance.transform.SetToOrigin();
             }
+
+            return prefabInstance;
         }
 
-        public async AppaTask<GameObject> InstantiatePrefab(string prefabAddress)
+        public async AppaTask<GameObject> InstantiatePrefab(
+            string prefabAddress,
+            string prefabName = null,
+            Transform parent = null,
+            bool? worldPositionStays = null)
         {
-            using (_PRF_InstantiatePrefab.Auto())
-            {
-                var prefab = await FindPrefab(prefabAddress);
+            var prefab = await FindPrefab(prefabAddress);
 
-                return Instantiate(prefab);
+#if UNITY_EDITOR
+            var prefabInstance = UnityEditor.PrefabUtility.InstantiatePrefab(prefab, parent) as GameObject;
+#else
+                var prefabInstance = Instantiate(prefab, parent);
+#endif
+
+            if (prefabInstance == null)
+            {
+                Context.Log.Error(
+                    ZString.Format(
+                        COULD_NOT_INSTANTIATE_PREFAB_WITH_ADDRESS,
+                        prefabAddress.FormatConstantForLogging()
+                    )
+                );
+
+                throw new MissingReferenceException();
             }
+
+            if (worldPositionStays.HasValue && !worldPositionStays.Value)
+            {
+                prefabInstance.transform.SetToOrigin();
+            }
+
+            prefabInstance.name = prefabName ?? prefabAddress;
+            return prefabInstance;
         }
 
         private static void PopulatePrefabLookup(

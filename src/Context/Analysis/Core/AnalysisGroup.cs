@@ -13,53 +13,24 @@ namespace Appalachia.Core.Context.Analysis.Core
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
-        #region Profiling And Tracing Markers
+        #region Nested Types
 
-        private const string _PRF_PFX = nameof(AnalysisGroup<TA, TT, TE>) + ".";
-
-        private static readonly ProfilerMarker _PRF_Analyze = new ProfilerMarker(_PRF_PFX + nameof(Analyze));
-
-        private static readonly ProfilerMarker _PRF_CorrectAllIssues =
-            new ProfilerMarker(_PRF_PFX + nameof(CorrectAllIssues));
-
-        private static readonly ProfilerMarker _PRF_GetAnalysisByType =
-            new ProfilerMarker(_PRF_PFX + nameof(GetAnalysisByType));
-
-        private static readonly ProfilerMarker
-            _PRF_GetColor = new ProfilerMarker(_PRF_PFX + nameof(GetColor));
-
-        private static readonly ProfilerMarker _PRF_GetIssueCount =
-            new ProfilerMarker(_PRF_PFX + nameof(GetIssueCount));
-
-        private static readonly ProfilerMarker _PRF_HasIssues =
-            new ProfilerMarker(_PRF_PFX + nameof(HasIssues));
-
-        private static readonly ProfilerMarker _PRF_Reanalyze =
-            new ProfilerMarker(_PRF_PFX + nameof(Reanalyze));
-
-        private static readonly ProfilerMarker _PRF_SetAnalysisMetadata =
-            new ProfilerMarker(_PRF_PFX + nameof(SetAnalysisMetadata));
-
-        private static readonly ProfilerMarker _PRF_SetAnalysisTarget =
-            new ProfilerMarker(_PRF_PFX + nameof(SetAnalysisTarget));
-
-        private static readonly ProfilerMarker _PRF_ClearAnalysisResults =
-            new ProfilerMarker(_PRF_PFX + nameof(ClearAnalysisResults));
-
-        private static readonly ProfilerMarker _PRF_RegisterAnalysisType =
-            new ProfilerMarker(_PRF_PFX + nameof(RegisterAnalysisType));
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
-        private static readonly ProfilerMarker _PRF_Create = new ProfilerMarker(_PRF_PFX + nameof(Create));
+        public delegate void ReanalyzeHandler();
 
         #endregion
+
+        public event ReanalyzeHandler OnReanalyzeNecessary;
 
         protected AnalysisGroup()
         {
             Initialize();
         }
+
+        #region Fields and Autoproperties
+
+        public Color ResultColor { get; set; }
+
+        public int IssueDisplayColumns { get; set; } = 3;
 
         [NonSerialized] private bool _analyzing;
 
@@ -73,15 +44,13 @@ namespace Appalachia.Core.Context.Analysis.Core
 
         private TT _target;
 
-        public Color ResultColor { get; set; }
-
-        public int IssueDisplayColumns { get; set; } = 3;
+        #endregion
 
         public abstract Object Asset { get; }
 
         public bool AnyAutoCorrectableIssues => AllTypes.Any(a => a.HasAutoCorrectableIssues);
-        public bool AnyIssues => AllTypes.Any(a => a.HasIssues);
         public bool AnyCorrectableIssues => AllTypes.Any(a => a.HasCorrectableIssues);
+        public bool AnyIssues => AllTypes.Any(a => a.HasIssues);
 
         public IReadOnlyList<AnalysisType<TA, TT, TE>> AllTypes => _allTypes;
 
@@ -95,17 +64,6 @@ namespace Appalachia.Core.Context.Analysis.Core
         {
             get => _colors;
             set => _colors = value;
-        }
-
-        public event ReanalyzeHandler OnReanalyzeNecessary;
-
-        protected abstract void OnAnalyze();
-
-        protected abstract void RegisterAllAnalysis();
-
-        protected virtual void ExecuteReanalyzeNecessary()
-        {
-            OnReanalyzeNecessary?.Invoke();
         }
 
         public static TA Create(TT target)
@@ -123,76 +81,6 @@ namespace Appalachia.Core.Context.Analysis.Core
                 instance.Initialize();
 
                 return instance;
-            }
-        }
-
-        public AnalysisType<TA, TT, TE> GetAnalysisByType(TE type)
-        {
-            using (_PRF_GetAnalysisByType.Auto())
-            {
-                foreach (var issue in _allTypes)
-                {
-                    if (issue.Type.Equals(type))
-                    {
-                        return issue;
-                    }
-                }
-
-                throw new NotSupportedException(type.ToString());
-            }
-        }
-
-        public bool HasIssues(TE type)
-        {
-            using (_PRF_HasIssues.Auto())
-            {
-                var issue = GetAnalysisByType(type);
-
-                return issue.HasIssues;
-            }
-        }
-
-        public Color GetColor(TE type)
-        {
-            using (_PRF_GetColor.Auto())
-            {
-                foreach (var issue in AllTypes)
-                {
-                    if (Equals(issue.Type, type))
-                    {
-                        return issue.IssueColor;
-                    }
-                }
-
-                throw new NotSupportedException(type.ToString());
-            }
-        }
-
-        public Color GetColor(object colorable)
-        {
-            using (_PRF_GetColor.Auto())
-            {
-                if (_colors == null)
-                {
-                    _colors = new Dictionary<object, Color>();
-                }
-
-                if (_colors.ContainsKey(colorable))
-                {
-                    return _colors[colorable];
-                }
-
-                return ResultColor;
-            }
-        }
-
-        public int GetIssueCount(TE type)
-        {
-            using (_PRF_GetIssueCount.Auto())
-            {
-                var issue = GetAnalysisByType(type);
-
-                return issue.IssueCount;
             }
         }
 
@@ -248,6 +136,76 @@ namespace Appalachia.Core.Context.Analysis.Core
             }
         }
 
+        public AnalysisType<TA, TT, TE> GetAnalysisByType(TE type)
+        {
+            using (_PRF_GetAnalysisByType.Auto())
+            {
+                foreach (var issue in _allTypes)
+                {
+                    if (issue.Type.Equals(type))
+                    {
+                        return issue;
+                    }
+                }
+
+                throw new NotSupportedException(type.ToString());
+            }
+        }
+
+        public Color GetColor(TE type)
+        {
+            using (_PRF_GetColor.Auto())
+            {
+                foreach (var issue in AllTypes)
+                {
+                    if (Equals(issue.Type, type))
+                    {
+                        return issue.IssueColor;
+                    }
+                }
+
+                throw new NotSupportedException(type.ToString());
+            }
+        }
+
+        public Color GetColor(object colorable)
+        {
+            using (_PRF_GetColor.Auto())
+            {
+                if (_colors == null)
+                {
+                    _colors = new Dictionary<object, Color>();
+                }
+
+                if (_colors.ContainsKey(colorable))
+                {
+                    return _colors[colorable];
+                }
+
+                return ResultColor;
+            }
+        }
+
+        public int GetIssueCount(TE type)
+        {
+            using (_PRF_GetIssueCount.Auto())
+            {
+                var issue = GetAnalysisByType(type);
+
+                return issue.IssueCount;
+            }
+        }
+
+        public bool HasIssues(TE type)
+        {
+            using (_PRF_HasIssues.Auto())
+            {
+                var issue = GetAnalysisByType(type);
+
+                return issue.HasIssues;
+            }
+        }
+
         public void Reanalyze()
         {
             using (_PRF_Reanalyze.Auto())
@@ -258,7 +216,7 @@ namespace Appalachia.Core.Context.Analysis.Core
                 }
 
                 ExecuteReanalyzeNecessary();
-                
+
                 Analyze();
             }
         }
@@ -302,15 +260,13 @@ namespace Appalachia.Core.Context.Analysis.Core
             }
         }
 
-        protected T RegisterAnalysisType<T>(T analysis)
-            where T : AnalysisType<TA, TT, TE>
-        {
-            using (_PRF_RegisterAnalysisType.Auto())
-            {
-                _allTypes.Add(analysis);
+        protected abstract void OnAnalyze();
 
-                return analysis;
-            }
+        protected abstract void RegisterAllAnalysis();
+
+        protected virtual void ExecuteReanalyzeNecessary()
+        {
+            OnReanalyzeNecessary?.Invoke();
         }
 
         protected void ClearAnalysisResults()
@@ -330,10 +286,21 @@ namespace Appalachia.Core.Context.Analysis.Core
 
                 foreach (var analysisType in _allTypes)
                 {
-                    analysisType.ClearResults((TA) this, _target);
+                    analysisType.ClearResults((TA)this, _target);
                 }
 
                 _allTypes = null;
+            }
+        }
+
+        protected T RegisterAnalysisType<T>(T analysis)
+            where T : AnalysisType<TA, TT, TE>
+        {
+            using (_PRF_RegisterAnalysisType.Auto())
+            {
+                _allTypes.Add(analysis);
+
+                return analysis;
             }
         }
 
@@ -354,9 +321,46 @@ namespace Appalachia.Core.Context.Analysis.Core
             }
         }
 
-        #region Nested Types
+        #region Profiling
 
-        public delegate void ReanalyzeHandler();
+        private const string _PRF_PFX = nameof(AnalysisGroup<TA, TT, TE>) + ".";
+
+        private static readonly ProfilerMarker _PRF_Analyze = new ProfilerMarker(_PRF_PFX + nameof(Analyze));
+
+        private static readonly ProfilerMarker _PRF_CorrectAllIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(CorrectAllIssues));
+
+        private static readonly ProfilerMarker _PRF_GetAnalysisByType =
+            new ProfilerMarker(_PRF_PFX + nameof(GetAnalysisByType));
+
+        private static readonly ProfilerMarker
+            _PRF_GetColor = new ProfilerMarker(_PRF_PFX + nameof(GetColor));
+
+        private static readonly ProfilerMarker _PRF_GetIssueCount =
+            new ProfilerMarker(_PRF_PFX + nameof(GetIssueCount));
+
+        private static readonly ProfilerMarker _PRF_HasIssues =
+            new ProfilerMarker(_PRF_PFX + nameof(HasIssues));
+
+        private static readonly ProfilerMarker _PRF_Reanalyze =
+            new ProfilerMarker(_PRF_PFX + nameof(Reanalyze));
+
+        private static readonly ProfilerMarker _PRF_SetAnalysisMetadata =
+            new ProfilerMarker(_PRF_PFX + nameof(SetAnalysisMetadata));
+
+        private static readonly ProfilerMarker _PRF_SetAnalysisTarget =
+            new ProfilerMarker(_PRF_PFX + nameof(SetAnalysisTarget));
+
+        private static readonly ProfilerMarker _PRF_ClearAnalysisResults =
+            new ProfilerMarker(_PRF_PFX + nameof(ClearAnalysisResults));
+
+        private static readonly ProfilerMarker _PRF_RegisterAnalysisType =
+            new ProfilerMarker(_PRF_PFX + nameof(RegisterAnalysisType));
+
+        private static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker _PRF_Create = new ProfilerMarker(_PRF_PFX + nameof(Create));
 
         #endregion
     }

@@ -16,10 +16,14 @@ namespace Appalachia.Core.Collections.Native.Pointers
             m_Ptr = ptr;
         }
 
+        #region Fields and Autoproperties
+
         /// <summary>
         ///     The object to provide a debugger view for
         /// </summary>
         private NativeFloatPtr m_Ptr;
+
+        #endregion
 
         /// <summary>
         ///     Get the viewed object's value

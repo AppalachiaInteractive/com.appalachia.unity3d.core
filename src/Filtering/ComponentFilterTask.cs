@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Appalachia.Core.Extensions;
 using Appalachia.Core.Layers;
 using Appalachia.Utility.Extensions;
 using Unity.Profiling;
@@ -18,42 +17,6 @@ namespace Appalachia.Core.Filtering
                                                  IComponentFilterLimitedTask<T>
         where T : Component
     {
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_CheckValidity =
-            new("ComponentFilterTask.CheckValidity");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_Complete =
-            new("ComponentFilterTask.Complete");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ComponentFilterTask =
-            new("ComponentFilterTask.ComponentFilterTask");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExcludeTags =
-            new("ComponentFilterTask.ExcludeTags");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters =
-            new("ComponentFilterTask.ExecuteFilters");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_Activity =
-            new("ComponentFilterTask.ExecuteFilters.Activity");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfLayers =
-            new("ComponentFilterTask.ExecuteFilters.ExcludeIfLayers");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfPredicates =
-            new("ComponentFilterTask.ExecuteFilters.ExcludeIfPredicates");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfTags =
-            new("ComponentFilterTask.ExecuteFilters.ExcludeIfTags");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyLayers =
-            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyLayers");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyPredicates =
-            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyPredicates");
-
-        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyTags =
-            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyTags");
-
         public ComponentFilterTask(T[] input)
         {
             using (_PRF_ComponentFilterTask_ComponentFilterTask.Auto())
@@ -62,6 +25,8 @@ namespace Appalachia.Core.Filtering
                 _validity = new bool[_input.Length];
             }
         }
+
+        #region Fields and Autoproperties
 
         private readonly bool[] _validity;
         private readonly HashSet<int> _excludeLayers = new();
@@ -76,6 +41,159 @@ namespace Appalachia.Core.Filtering
         private Comparison<T> _sortComparison;
         private IComparer<T> _sortComparer;
         private int _resultLimit;
+
+        #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int CheckValidity()
+        {
+            using (_PRF_ComponentFilterTask_CheckValidity.Auto())
+            {
+                var sum = 0;
+                for (var i = 0; i < _validity.Length; i++)
+                {
+                    sum += _validity[i] ? 1 : 0;
+                }
+
+                return sum;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ExecuteFilters()
+        {
+            using (_PRF_ComponentFilterTask_ExecuteFilters.Auto())
+            {
+                for (var objectIndex = 0; objectIndex < _input.Length; objectIndex++)
+                {
+                    var obj = _input[objectIndex];
+
+                    var valid = true;
+                    _validity[objectIndex] = true;
+
+                    var tag = obj.tag;
+                    var layer = obj.gameObject.layer;
+
+                    using (_PRF_ComponentFilterTask_ExecuteFilters_Activity.Auto())
+                    {
+                        if (_active.HasValue && obj is Behaviour b)
+                        {
+                            if (_active.Value && !b.enabled)
+                            {
+                                valid = false;
+                            }
+                            else if (!_active.Value && b.enabled)
+                            {
+                                valid = false;
+                            }
+
+                            if (!valid)
+                            {
+                                _validity[objectIndex] = false;
+                                continue;
+                            }
+                        }
+                    }
+
+                    using (_PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyPredicates.Auto())
+                    {
+                        if (_includeOnlyPredicates.Count > 0)
+                        {
+                            for (var predicateIndex = 0;
+                                 predicateIndex < _includeOnlyPredicates.Count;
+                                 predicateIndex++)
+                            {
+                                var predicate = _includeOnlyPredicates[predicateIndex];
+                                if (!predicate(obj))
+                                {
+                                    valid = false;
+                                    break;
+                                }
+                            }
+
+                            if (!valid)
+                            {
+                                _validity[objectIndex] = false;
+                                continue;
+                            }
+                        }
+                    }
+
+                    using (_PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfPredicates.Auto())
+                    {
+                        if (_excludeIfPredicates.Count > 0)
+                        {
+                            for (var predicateIndex = 0;
+                                 predicateIndex < _excludeIfPredicates.Count;
+                                 predicateIndex++)
+                            {
+                                var predicate = _excludeIfPredicates[predicateIndex];
+                                if (predicate(obj))
+                                {
+                                    valid = false;
+                                    break;
+                                }
+                            }
+
+                            if (!valid)
+                            {
+                                _validity[objectIndex] = false;
+                                continue;
+                            }
+                        }
+                    }
+
+                    using (_PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyTags.Auto())
+                    {
+                        if (_includeOnlyTags.Count > 0)
+                        {
+                            if (!_includeOnlyTags.Contains(tag))
+                            {
+                                _validity[objectIndex] = false;
+                                continue;
+                            }
+                        }
+                    }
+
+                    using (_PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfTags.Auto())
+                    {
+                        if (_excludeTags.Count > 0)
+                        {
+                            if (_excludeTags.Contains(tag))
+                            {
+                                _validity[objectIndex] = false;
+                                continue;
+                            }
+                        }
+                    }
+
+                    using (_PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyLayers.Auto())
+                    {
+                        if (_includeOnlyLayers.Count > 0)
+                        {
+                            if (!_includeOnlyLayers.Contains(layer))
+                            {
+                                _validity[objectIndex] = false;
+                                continue;
+                            }
+                        }
+                    }
+
+                    using (_PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfLayers.Auto())
+                    {
+                        if (_excludeLayers.Count > 0)
+                        {
+                            if (_excludeLayers.Contains(layer))
+                            {
+                                _validity[objectIndex] = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        #region IComponentFilterTask<T> Members
 
         public IComponentFilterLimitedTask<T> LimitResults(int count)
         {
@@ -202,153 +320,46 @@ namespace Appalachia.Core.Filtering
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int CheckValidity()
-        {
-            using (_PRF_ComponentFilterTask_CheckValidity.Auto())
-            {
-                var sum = 0;
-                for (var i = 0; i < _validity.Length; i++)
-                {
-                    sum += _validity[i] ? 1 : 0;
-                }
+        #endregion
 
-                return sum;
-            }
-        }
+        #region Profiling
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ExecuteFilters()
-        {
-            using (_PRF_ComponentFilterTask_ExecuteFilters.Auto())
-            {
-                for (var objectIndex = 0; objectIndex < _input.Length; objectIndex++)
-                {
-                    var obj = _input[objectIndex];
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_CheckValidity =
+            new("ComponentFilterTask.CheckValidity");
 
-                    var valid = true;
-                    _validity[objectIndex] = true;
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_Complete =
+            new("ComponentFilterTask.Complete");
 
-                    var tag = obj.tag;
-                    var layer = obj.gameObject.layer;
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ComponentFilterTask =
+            new("ComponentFilterTask.ComponentFilterTask");
 
-                    using (_PRF_ComponentFilterTask_ExecuteFilters_Activity.Auto())
-                    {
-                        if (_active.HasValue && obj is Behaviour b)
-                        {
-                            if (_active.Value && !b.enabled)
-                            {
-                                valid = false;
-                            }
-                            else if (!_active.Value && b.enabled)
-                            {
-                                valid = false;
-                            }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExcludeTags =
+            new("ComponentFilterTask.ExcludeTags");
 
-                            if (!valid)
-                            {
-                                _validity[objectIndex] = false;
-                                continue;
-                            }
-                        }
-                    }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters =
+            new("ComponentFilterTask.ExecuteFilters");
 
-                    using (_PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyPredicates.Auto())
-                    {
-                        if (_includeOnlyPredicates.Count > 0)
-                        {
-                            for (var predicateIndex = 0;
-                                predicateIndex < _includeOnlyPredicates.Count;
-                                predicateIndex++)
-                            {
-                                var predicate = _includeOnlyPredicates[predicateIndex];
-                                if (!predicate(obj))
-                                {
-                                    valid = false;
-                                    break;
-                                }
-                            }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_Activity =
+            new("ComponentFilterTask.ExecuteFilters.Activity");
 
-                            if (!valid)
-                            {
-                                _validity[objectIndex] = false;
-                                continue;
-                            }
-                        }
-                    }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfLayers =
+            new("ComponentFilterTask.ExecuteFilters.ExcludeIfLayers");
 
-                    using (_PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfPredicates.Auto())
-                    {
-                        if (_excludeIfPredicates.Count > 0)
-                        {
-                            for (var predicateIndex = 0;
-                                predicateIndex < _excludeIfPredicates.Count;
-                                predicateIndex++)
-                            {
-                                var predicate = _excludeIfPredicates[predicateIndex];
-                                if (predicate(obj))
-                                {
-                                    valid = false;
-                                    break;
-                                }
-                            }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfPredicates =
+            new("ComponentFilterTask.ExecuteFilters.ExcludeIfPredicates");
 
-                            if (!valid)
-                            {
-                                _validity[objectIndex] = false;
-                                continue;
-                            }
-                        }
-                    }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfTags =
+            new("ComponentFilterTask.ExecuteFilters.ExcludeIfTags");
 
-                    using (_PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyTags.Auto())
-                    {
-                        if (_includeOnlyTags.Count > 0)
-                        {
-                            if (!_includeOnlyTags.Contains(tag))
-                            {
-                                _validity[objectIndex] = false;
-                                continue;
-                            }
-                        }
-                    }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyLayers =
+            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyLayers");
 
-                    using (_PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfTags.Auto())
-                    {
-                        if (_excludeTags.Count > 0)
-                        {
-                            if (_excludeTags.Contains(tag))
-                            {
-                                _validity[objectIndex] = false;
-                                continue;
-                            }
-                        }
-                    }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyPredicates =
+            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyPredicates");
 
-                    using (_PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyLayers.Auto())
-                    {
-                        if (_includeOnlyLayers.Count > 0)
-                        {
-                            if (!_includeOnlyLayers.Contains(layer))
-                            {
-                                _validity[objectIndex] = false;
-                                continue;
-                            }
-                        }
-                    }
+        private static readonly ProfilerMarker _PRF_ComponentFilterTask_ExecuteFilters_IncludeOnlyTags =
+            new("ComponentFilterTask.ExecuteFilters.IncludeOnlyTags");
 
-                    using (_PRF_ComponentFilterTask_ExecuteFilters_ExcludeIfLayers.Auto())
-                    {
-                        if (_excludeLayers.Count > 0)
-                        {
-                            if (_excludeLayers.Contains(layer))
-                            {
-                                _validity[objectIndex] = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        #endregion
     }
 }

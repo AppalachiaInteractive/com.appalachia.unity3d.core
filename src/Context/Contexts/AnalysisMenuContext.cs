@@ -17,11 +17,7 @@ namespace Appalachia.Core.Context.Contexts
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
-        #region Profiling And Tracing Markers
-
-        private const string _PRF_PFX = nameof(AnalysisMenuContext<TT, TA, TE>) + ".";
-
-        private const string _TRACE_PFX = nameof(AnalysisMenuContext<TT, TA, TE>) + ".";
+        #region Constants and Static Readonly
 
         private static readonly ProfilerMarker _PRF_ShouldShowInMenu =
             new(_PRF_PFX + nameof(ShouldShowInMenu));
@@ -31,11 +27,7 @@ namespace Appalachia.Core.Context.Contexts
 
         private static readonly ProfilerMarker _PRF_OnReset = new(_PRF_PFX + nameof(OnReset));
         private static readonly ProfilerMarker _PRF_OnInitialize = new(_PRF_PFX + nameof(OnInitialize));
-
         private static readonly TraceMarker _TRACE_OnInitialize = new(_TRACE_PFX + nameof(OnInitialize));
-
-        private static readonly ProfilerMarker _PRF_ValidateMenuSelection =
-            new(_PRF_PFX + nameof(ValidateMenuSelection));
 
         #endregion
 
@@ -45,9 +37,9 @@ namespace Appalachia.Core.Context.Contexts
 
         private PREF<TE> _issueType;
 
-        private PREF<bool> _onlyShowIssues;
-        
         private PREF<float> _menuWidth;
+
+        private PREF<bool> _onlyShowIssues;
 
         public PREF<bool> GenerateTestFiles => _generateTestFiles;
 
@@ -55,9 +47,9 @@ namespace Appalachia.Core.Context.Contexts
 
         public PREF<bool> OnlyShowIssues => _onlyShowIssues;
 
-        public override float MenuWidth => _menuWidth.v;
-
         #endregion
+
+        #region Fields and Autoproperties
 
         public int detailTabIndex;
 
@@ -65,15 +57,38 @@ namespace Appalachia.Core.Context.Contexts
 
         private AnalysisAggregate<TA, TT, TE> _aggregateAnalysis;
 
+        #endregion
+
         protected abstract string GetPreferencePrefix { get; }
 
         protected abstract string IssueTypeName { get; }
+
+        public override float MenuWidth => _menuWidth.v;
         public override IReadOnlyList<TA> MenuOneItems => items;
 
         public AnalysisAggregate<TA, TT, TE> AggregateAnalysis
         {
             get => _aggregateAnalysis;
             protected set => _aggregateAnalysis = value;
+        }
+
+        public virtual IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
+        {
+            drawer.RegisterFilterPref(OnlyShowIssues);
+
+            yield return null;
+
+            drawer.RegisterFilterPref(IssueType, () => OnlyShowIssues.v);
+
+            yield return null;
+
+            drawer.RegisterFilterPref(GenerateTestFiles);
+
+            yield return null;
+
+            drawer.RegisterFilterPref(_menuWidth);
+
+            yield return null;
         }
 
         public virtual bool ShouldShowInMenu(TA analysis)
@@ -100,25 +115,6 @@ namespace Appalachia.Core.Context.Contexts
 
                 return true;
             }
-        }
-
-        public virtual IEnumerator RegisterPreferences(IPreferencesDrawer drawer)
-        {
-            drawer.RegisterFilterPref(OnlyShowIssues);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(IssueType, () => OnlyShowIssues.v);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(GenerateTestFiles);
-
-            yield return null;
-
-            drawer.RegisterFilterPref(_menuWidth);
-
-            yield return null;
         }
 
         public override void ValidateMenuSelection(int menuIndex)
@@ -223,5 +219,20 @@ namespace Appalachia.Core.Context.Contexts
 
             _aggregateAnalysis.AddAll(allResults);
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(AnalysisMenuContext<TT, TA, TE>) + ".";
+
+        private static readonly ProfilerMarker _PRF_ValidateMenuSelection =
+            new(_PRF_PFX + nameof(ValidateMenuSelection));
+
+        #endregion
+
+        #region Tracing
+
+        private const string _TRACE_PFX = nameof(AnalysisMenuContext<TT, TA, TE>) + ".";
+
+        #endregion
     }
 }

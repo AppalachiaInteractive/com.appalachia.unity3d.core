@@ -1,7 +1,6 @@
 #region
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Appalachia.Core.Preferences;
 
@@ -12,10 +11,14 @@ namespace Appalachia.Core.Aspects.Tracing
     [DebuggerStepThrough]
     public static class TRACE
     {
+        #region Constants and Static Readonly
+
         internal const string _TRACE_LOG_LABEL = "Enable Logging";
 
         [NonSerialized]
         private static readonly PREF<bool> _enabled = PREFS.REG(PKG.Prefs.Group, _TRACE_LOG_LABEL, false);
+
+        #endregion
 
 #if UNITY_EDITOR
         private const string ENABLED = PKG.Menu.Appalachia.Debug.Base + "Trace Logging/Enabled";

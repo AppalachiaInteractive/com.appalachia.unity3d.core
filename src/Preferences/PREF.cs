@@ -17,6 +17,10 @@ namespace Appalachia.Core.Preferences
     [Serializable]
     public sealed class PREF<T> : PREF_BASE
     {
+        public delegate void OnAwakeCallback(PREF<T> awakened);
+
+        public event OnAwakeCallback OnAwake;
+
         internal PREF(
             string key,
             string grouping,
@@ -36,6 +40,8 @@ namespace Appalachia.Core.Preferences
             _reset = reset;
         }
 
+        #region Fields and Autoproperties
+
         private readonly IPAPI<T> _api;
         private readonly T _defaultValue;
         private readonly T _high;
@@ -48,6 +54,8 @@ namespace Appalachia.Core.Preferences
         [SerializeField]
         [InlineButton(nameof(Reset), " Reset ")]
         private T _value;
+
+        #endregion
 
         public T v
         {
@@ -72,7 +80,11 @@ namespace Appalachia.Core.Preferences
 
         internal T Low => _low;
 
-        public event OnAwakeCallback OnAwake;
+        [DebuggerStepThrough]
+        public static implicit operator T(PREF<T> o)
+        {
+            return o.Value;
+        }
 
         /*[HorizontalGroup("A", 52f)]
         [Button("Awake", ButtonSizes.Small)]
@@ -124,12 +136,5 @@ namespace Appalachia.Core.Preferences
                 _api.Save(_key, _value, _low, _high);
             }
         }
-
-        [DebuggerStepThrough] public static implicit operator T(PREF<T> o)
-        {
-            return o.Value;
-        }
-
-        public delegate void OnAwakeCallback(PREF<T> awakened);
     }
 }

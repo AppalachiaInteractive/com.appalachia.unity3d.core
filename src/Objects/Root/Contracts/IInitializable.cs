@@ -6,6 +6,7 @@ namespace Appalachia.Core.Objects.Root.Contracts
 {
     public interface IInitializable : INamed
     {
+        event InitializationCompleteHandler InitializationComplete;
         bool FullyInitialized { get; }
 
         bool HasInitializationStarted { get; }
@@ -13,18 +14,17 @@ namespace Appalachia.Core.Objects.Root.Contracts
         bool HasInvokedInitializationCompleted { get; }
 
         InitializationState initializationState { get; }
-        event InitializationCompleteHandler InitializationComplete;
+
+        void AfterInitialization();
+
+        void BeforeInitialization();
+
+        AppaTask ExecuteInitialization();
 
         void InitializationExceptionHandler(Exception ex);
 
         AppaTask Initialize(Initializer initializer);
 
         void InitializeSynchronous();
-
-        AppaTask ExecuteInitialization();
-
-        void AfterInitialization();
-
-        void BeforeInitialization();
     }
 }

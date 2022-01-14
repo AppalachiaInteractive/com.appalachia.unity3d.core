@@ -9,26 +9,6 @@ namespace Appalachia.Core.Math
 {
     public static class LerpHelper
     {
-        public static double Lerp(double start, double end, float sharpness, double deltaTime)
-        {
-            return LerpExact(start, end, GetTimeExact(sharpness, deltaTime));
-        }
-
-        public static double LerpExact(double start, double end, float percentage)
-        {
-            return Mathd.Lerp(start, end, percentage);
-        }
-
-        public static double LerpPhysical(double start, double end, float sharpness)
-        {
-            return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
-        }
-
-        public static double LerpVisual(double start, double end, float sharpness)
-        {
-            return Lerp(start, end, sharpness, CoreClock.VisualDelta);
-        }
-
         public static float GetPhysicalTime(float sharpness)
         {
             return GetTimeExact(sharpness, CoreClock.PhysicalDelta);
@@ -39,29 +19,14 @@ namespace Appalachia.Core.Math
             return GetTimeExact(sharpness, CoreClock.VisualDelta);
         }
 
-        public static float Lerp(float start, float end, float sharpness, double deltaTime)
+        public static double Lerp(double start, double end, float sharpness, double deltaTime)
         {
             return LerpExact(start, end, GetTimeExact(sharpness, deltaTime));
         }
 
-        public static float LerpExact(float start, float end, float percentage)
+        public static float Lerp(float start, float end, float sharpness, double deltaTime)
         {
-            return Mathf.Lerp(start, end, percentage);
-        }
-
-        public static float LerpPhysical(float start, float end, float sharpness)
-        {
-            return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
-        }
-
-        public static float LerpVisual(float start, float end, float sharpness)
-        {
-            return Lerp(start, end, sharpness, CoreClock.VisualDelta);
-        }
-
-        public static float SmoothStep(float start, float end, float percentage)
-        {
-            return Mathf.SmoothStep(start, end, percentage);
+            return LerpExact(start, end, GetTimeExact(sharpness, deltaTime));
         }
 
         public static Quaternion Lerp(Quaternion start, Quaternion end, float sharpness, double deltaTime)
@@ -69,9 +34,52 @@ namespace Appalachia.Core.Math
             return LerpExact(start, end, GetTimeExact(sharpness, deltaTime));
         }
 
+        public static Vector3 Lerp(Vector3 start, Vector3 end, float sharpness, double deltaTime)
+        {
+            return LerpExact(start, end, GetTimeExact(sharpness, deltaTime));
+        }
+
+        public static Vector3 Lerp(Vector3 start, Vector3 end, Vector3 sharpness, double deltaTime)
+        {
+            var xLerpTime = GetTimeExact(sharpness.x, deltaTime);
+            var yLerpTime = GetTimeExact(sharpness.y, deltaTime);
+            var zLerpTime = GetTimeExact(sharpness.z, deltaTime);
+
+            var lerpedX = LerpExact(start.x, end.x, xLerpTime);
+            var lerpedY = LerpExact(start.y, end.y, yLerpTime);
+            var lerpedZ = LerpExact(start.z, end.z, zLerpTime);
+
+            return new Vector3(lerpedX, lerpedY, lerpedZ);
+        }
+
+        public static double LerpExact(double start, double end, float percentage)
+        {
+            return Mathd.Lerp(start, end, percentage);
+        }
+
+        public static float LerpExact(float start, float end, float percentage)
+        {
+            return Mathf.Lerp(start, end, percentage);
+        }
+
         public static Quaternion LerpExact(Quaternion start, Quaternion end, float percentage)
         {
             return Quaternion.Lerp(start, end, percentage);
+        }
+
+        public static Vector3 LerpExact(Vector3 start, Vector3 end, float percentage)
+        {
+            return Vector3.Lerp(start, end, percentage);
+        }
+
+        public static double LerpPhysical(double start, double end, float sharpness)
+        {
+            return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
+        }
+
+        public static float LerpPhysical(float start, float end, float sharpness)
+        {
+            return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
         }
 
         public static Quaternion LerpPhysical(Quaternion start, Quaternion end, float sharpness)
@@ -79,7 +87,37 @@ namespace Appalachia.Core.Math
             return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
         }
 
+        public static Vector3 LerpPhysical(Vector3 start, Vector3 end, float sharpness)
+        {
+            return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
+        }
+
+        public static Vector3 LerpPhysical(Vector3 start, Vector3 end, Vector3 sharpness)
+        {
+            return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
+        }
+
+        public static double LerpVisual(double start, double end, float sharpness)
+        {
+            return Lerp(start, end, sharpness, CoreClock.VisualDelta);
+        }
+
+        public static float LerpVisual(float start, float end, float sharpness)
+        {
+            return Lerp(start, end, sharpness, CoreClock.VisualDelta);
+        }
+
         public static Quaternion LerpVisual(Quaternion start, Quaternion end, float sharpness)
+        {
+            return Lerp(start, end, sharpness, CoreClock.VisualDelta);
+        }
+
+        public static Vector3 LerpVisual(Vector3 start, Vector3 end, float sharpness)
+        {
+            return Lerp(start, end, sharpness, CoreClock.VisualDelta);
+        }
+
+        public static Vector3 LerpVisual(Vector3 start, Vector3 end, Vector3 sharpness)
         {
             return Lerp(start, end, sharpness, CoreClock.VisualDelta);
         }
@@ -118,47 +156,9 @@ namespace Appalachia.Core.Math
             return Slerp(start, end, sharpness, CoreClock.VisualDelta);
         }
 
-        public static Vector3 Lerp(Vector3 start, Vector3 end, float sharpness, double deltaTime)
+        public static float SmoothStep(float start, float end, float percentage)
         {
-            return LerpExact(start, end, GetTimeExact(sharpness, deltaTime));
-        }
-
-        public static Vector3 Lerp(Vector3 start, Vector3 end, Vector3 sharpness, double deltaTime)
-        {
-            var xLerpTime = GetTimeExact(sharpness.x, deltaTime);
-            var yLerpTime = GetTimeExact(sharpness.y, deltaTime);
-            var zLerpTime = GetTimeExact(sharpness.z, deltaTime);
-
-            var lerpedX = LerpExact(start.x, end.x, xLerpTime);
-            var lerpedY = LerpExact(start.y, end.y, yLerpTime);
-            var lerpedZ = LerpExact(start.z, end.z, zLerpTime);
-
-            return new Vector3(lerpedX, lerpedY, lerpedZ);
-        }
-
-        public static Vector3 LerpExact(Vector3 start, Vector3 end, float percentage)
-        {
-            return Vector3.Lerp(start, end, percentage);
-        }
-
-        public static Vector3 LerpPhysical(Vector3 start, Vector3 end, float sharpness)
-        {
-            return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
-        }
-
-        public static Vector3 LerpPhysical(Vector3 start, Vector3 end, Vector3 sharpness)
-        {
-            return Lerp(start, end, sharpness, CoreClock.PhysicalDelta);
-        }
-
-        public static Vector3 LerpVisual(Vector3 start, Vector3 end, float sharpness)
-        {
-            return Lerp(start, end, sharpness, CoreClock.VisualDelta);
-        }
-
-        public static Vector3 LerpVisual(Vector3 start, Vector3 end, Vector3 sharpness)
-        {
-            return Lerp(start, end, sharpness, CoreClock.VisualDelta);
+            return Mathf.SmoothStep(start, end, percentage);
         }
 
         private static float GetTimeExact(float sharpness, double deltaTime)
@@ -173,7 +173,7 @@ namespace Appalachia.Core.Math
                 return 0;
             }
 
-            return (float) (1 - Mathd.Exp(-sharpness * deltaTime));
+            return (float)(1 - Mathd.Exp(-sharpness * deltaTime));
         }
     }
 }

@@ -13,10 +13,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableULong(bool overrideEnabled, ulong value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableULong(bool overrideEnabled, ulong value) : base(overrideEnabled, value)
         {
         }
 

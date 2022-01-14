@@ -8,6 +8,8 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
     [Serializable]
     public class ColliderEqualityState : ComponentContentEqualityState<ColliderEqualityState, Collider>
     {
+        #region Fields and Autoproperties
+
         public bool convex;
         public ColliderType colliderType;
 
@@ -27,6 +29,8 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
         //public BoxCollider bc;
         public Vector3 center;
         public Vector3 size;
+
+        #endregion
 
         public override void Record(Collider c)
         {
@@ -54,9 +58,10 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             }
         }
 
-#region IEquatable
+        #region IEquatable
 
-        [DebuggerStepThrough] public override bool Equals(Collider other)
+        [DebuggerStepThrough]
+        public override bool Equals(Collider other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -75,7 +80,8 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                     (direction == cc.direction));
         }
 
-        [DebuggerStepThrough] public override bool Equals(ColliderEqualityState other)
+        [DebuggerStepThrough]
+        public override bool Equals(ColliderEqualityState other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -97,7 +103,8 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                    (direction == other.direction);
         }
 
-        [DebuggerStepThrough] public override bool Equals(object obj)
+        [DebuggerStepThrough]
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -114,14 +121,15 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                 return false;
             }
 
-            return Equals((ColliderEqualityState) obj);
+            return Equals((ColliderEqualityState)obj);
         }
 
-        [DebuggerStepThrough] public override int GetHashCode()
+        [DebuggerStepThrough]
+        public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = (int) colliderType;
+                var hashCode = (int)colliderType;
                 hashCode = (hashCode * 397) ^ (mesh != null ? mesh.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ convex.GetHashCode();
                 hashCode = (hashCode * 397) ^ center.GetHashCode();
@@ -133,16 +141,18 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             }
         }
 
-        [DebuggerStepThrough] public static bool operator ==(ColliderEqualityState left, ColliderEqualityState right)
+        [DebuggerStepThrough]
+        public static bool operator ==(ColliderEqualityState left, ColliderEqualityState right)
         {
             return Equals(left, right);
         }
 
-        [DebuggerStepThrough] public static bool operator !=(ColliderEqualityState left, ColliderEqualityState right)
+        [DebuggerStepThrough]
+        public static bool operator !=(ColliderEqualityState left, ColliderEqualityState right)
         {
             return !Equals(left, right);
         }
 
-#endregion
+        #endregion
     }
 }

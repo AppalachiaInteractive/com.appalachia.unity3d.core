@@ -11,6 +11,7 @@ namespace Appalachia.Core.Objects.Root
         #region Static Fields and Autoproperties
 
         [NonSerialized] private static AppalachiaRepository ___instance;
+        [NonSerialized] private static bool _hasInvokedInstanceAvailable;
 
         [NonSerialized] private static object _instanceLock;
 
@@ -67,7 +68,7 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                if (original == current) // no change in instance
+                if (_hasInvokedInstanceAvailable && (original == current)) // no change in instance
                 {
                     return;
                 }
@@ -76,6 +77,8 @@ namespace Appalachia.Core.Objects.Root
                 {
                     subscriber?.Invoke(current);
                 }
+
+                _hasInvokedInstanceAvailable = true;
             }
         }
 
@@ -142,8 +145,15 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class SingletonAppalachiaObject<T> : ISingleton<T>, ISingleton
     {
+        #region Constants and Static Readonly
+
+        private static readonly string _PRF_PFX4 = typeof(T).Name;
+
+        #endregion
+
         #region Static Fields and Autoproperties
 
+        [NonSerialized] private static bool _hasInvokedInstanceAvailable;
         [NonSerialized] private static object ___instanceLock;
         [NonSerialized] private static T ___instance;
 
@@ -198,7 +208,7 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                if (original == current) // no change in instance
+                if (_hasInvokedInstanceAvailable && (original == current)) // no change in instance
                 {
                     return;
                 }
@@ -207,6 +217,8 @@ namespace Appalachia.Core.Objects.Root
                 {
                     subscriber?.Invoke(current);
                 }
+
+                _hasInvokedInstanceAvailable = true;
             }
         }
 
@@ -253,10 +265,10 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_SetInstance =
-            new ProfilerMarker(_PRF_PFX + nameof(SetInstance));
+            new ProfilerMarker(_PRF_PFX4 + nameof(SetInstance));
 
         private static readonly ProfilerMarker _PRF_InvokeInstanceAvailable =
-            new ProfilerMarker(_PRF_PFX + nameof(InvokeInstanceAvailable));
+            new ProfilerMarker(_PRF_PFX4 + nameof(InvokeInstanceAvailable));
 
         #endregion
     }
@@ -271,7 +283,15 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class SingletonAppalachiaBehaviour<T> : ISingleton<T>, ISingleton, ISingletonBehaviour
     {
+        #region Constants and Static Readonly
+
+        private static readonly string _PRF_PFX2 = typeof(T).Name + ".";
+
+        #endregion
+
         #region Static Fields and Autoproperties
+
+        [NonSerialized] private static bool _hasInvokedInstanceAvailable;
 
         [NonSerialized] private static object ___instanceLock;
         [NonSerialized] private static T ___instance;
@@ -327,7 +347,7 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                if (original == current) // no change in instance
+                if (_hasInvokedInstanceAvailable && (original == current)) // no change in instance
                 {
                     return;
                 }
@@ -336,6 +356,8 @@ namespace Appalachia.Core.Objects.Root
                 {
                     subscriber?.Invoke(current);
                 }
+
+                _hasInvokedInstanceAvailable = true;
             }
         }
 
@@ -394,10 +416,10 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_SetInstance =
-            new ProfilerMarker(_PRF_PFX + nameof(SetInstance));
+            new ProfilerMarker(_PRF_PFX2 + nameof(SetInstance));
 
         private static readonly ProfilerMarker _PRF_InvokeInstanceAvailable =
-            new ProfilerMarker(_PRF_PFX + nameof(InvokeInstanceAvailable));
+            new ProfilerMarker(_PRF_PFX2 + nameof(InvokeInstanceAvailable));
 
         #endregion
     }

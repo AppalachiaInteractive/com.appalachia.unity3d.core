@@ -1,18 +1,16 @@
 #region
 
 using System;
-using Appalachia.CI.Integration.Assets;
-using Appalachia.Utility.Execution;
-using Appalachia.Utility.Reflection.Extensions;
+using System.IO;
+using Appalachia.Utility.Extensions;
 using Unity.Profiling;
-using UnityEditor;
 using UnityEngine;
 
 #endregion
 
 namespace Appalachia.Core.Extensions
 {
-    public static class TextureExtensions
+    public static partial class TextureExtensions
     {
         #region Static Fields and Autoproperties
 
@@ -27,10 +25,8 @@ namespace Appalachia.Core.Extensions
         {
             using (_PRF_Multiply.Auto())
             {
-                texture.ModifyPixels(pixel =>
-                    {
-                        return other.GetPixelBilinear(pixel.widthTime, pixel.heightTime);
-                    }
+                texture.ModifyPixels(
+                    pixel => { return other.GetPixelBilinear(pixel.widthTime, pixel.heightTime); }
                 );
             }
         }
@@ -154,75 +150,99 @@ namespace Appalachia.Core.Extensions
             }
         }
 
-        public static void SetReadable(this Texture2D texture)
+        public static Texture2D Resize(
+            this Texture2D source,
+            int width,
+            int height,
+            TextureFormat textureFormat = TextureFormat.ARGB32,
+            RenderTextureFormat renderTextureFormat = RenderTextureFormat.ARGB32,
+            bool linear = true)
         {
-            using (_PRF_SetReadable.Auto())
+            using (_PRF_Resize.Auto())
             {
-#if UNITY_EDITOR
+                var rt = new RenderTexture(
+                    width,
+                    height,
+                    0,
+                    renderTextureFormat,
+                    linear ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.sRGB
+                );
 
-                if (AppalachiaApplication.IsPlayingOrWillPlay)
+                var resultingResizedTexture = new Texture2D(width, height, textureFormat, true, linear);
+
+                try
                 {
-                    return;
-                }
-                
-                var importer = texture.GetTextureImporter();
+                    rt.DiscardContents();
 
-                if (importer == null)
+                    GL.sRGBWrite = (QualitySettings.activeColorSpace == ColorSpace.Linear) && !linear;
+
+                    Graphics.Blit(source, rt);
+                    GL.sRGBWrite = false;
+
+                    RenderTexture.active = rt;
+
+                    resultingResizedTexture.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+                    resultingResizedTexture.Apply(true);
+
+                    RenderTexture.active = null;
+                }
+                finally
                 {
-                    return;
+                    rt.Release();
+                    rt.DestroySafely();
                 }
 
-                if (importer.isReadable)
-                {
-                    return;
-                }
-
-                importer.isReadable = true;
-
-                importer.SaveAndReimport();
-#endif
+                return resultingResizedTexture;
             }
         }
 
-        public static void SetReadable(this Texture2D texture, bool normalTexture)
+        public static void WriteToJPGFile(this Texture2D texture, string outputFilePath)
         {
-#if UNITY_EDITOR
-            if (null == texture)
+            using (_PRF_WriteToJPGFile.Auto())
             {
-                return;
+                var bytes = texture.EncodeToJPG();
+                File.WriteAllBytes(outputFilePath, bytes);
             }
+        }
 
-            var assetPath = AssetDatabaseManager.GetAssetPath(texture);
-            var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-            if (tImporter != null)
+        public static void WriteToPNGFile(this Texture2D texture, string outputFilePath)
+        {
+            using (_PRF_WriteToPNGFile.Auto())
             {
-                tImporter.textureType = normalTexture
-                    ? TextureImporterType.NormalMap
-                    : TextureImporterType.Default;
-
-                if (tImporter.isReadable)
-                {
-                    return;
-                }
-
-                tImporter.isReadable = true;
-                tImporter.SaveAndReimport();
+                var bytes = texture.EncodeToPNG();
+                File.WriteAllBytes(outputFilePath, bytes);
             }
-#endif
+        }
+
+        public static void WriteToTGAFile(this Texture2D texture, string outputFilePath)
+        {
+            using (_PRF_WriteToTGAFile.Auto())
+            {
+                var bytes = texture.EncodeToTGA();
+                File.WriteAllBytes(outputFilePath, bytes);
+            }
         }
 
         #region Profiling
 
         private const string _PRF_PFX = nameof(TextureExtensions) + ".";
 
+        private static readonly ProfilerMarker _PRF_WriteToPNGFile =
+            new ProfilerMarker(_PRF_PFX + nameof(WriteToPNGFile));
+
+        private static readonly ProfilerMarker _PRF_WriteToJPGFile =
+            new ProfilerMarker(_PRF_PFX + nameof(WriteToJPGFile));
+
+        private static readonly ProfilerMarker _PRF_WriteToTGAFile =
+            new ProfilerMarker(_PRF_PFX + nameof(WriteToTGAFile));
+
+        private static readonly ProfilerMarker _PRF_Resize = new ProfilerMarker(_PRF_PFX + nameof(Resize));
+
         private static readonly ProfilerMarker _PRF_ModifyPixels =
             new ProfilerMarker(_PRF_PFX + nameof(ModifyPixels));
 
         private static readonly ProfilerMarker
             _PRF_Multiply = new ProfilerMarker(_PRF_PFX + nameof(Multiply));
-
-        private static readonly ProfilerMarker _PRF_SetReadable =
-            new ProfilerMarker(_PRF_PFX + nameof(SetReadable));
 
         private static readonly ProfilerMarker _PRF_GetAverageColor =
             new ProfilerMarker(_PRF_PFX + nameof(GetAverageColor));
@@ -231,162 +251,5 @@ namespace Appalachia.Core.Extensions
             new ProfilerMarker(_PRF_PFX + nameof(IteratePixels));
 
         #endregion
-
-#if UNITY_EDITOR
-        private static readonly ProfilerMarker _PRF_SetRgba32Format =
-            new ProfilerMarker(_PRF_PFX + nameof(SetRgba32Format));
-
-        public static void SetRgba32Format(this Texture2D texture)
-        {
-            using (_PRF_SetRgba32Format.Auto())
-            {
-                if (null == texture)
-                {
-                    return;
-                }
-
-                var assetPath = AssetDatabaseManager.GetAssetPath(texture);
-                var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-                if (tImporter != null)
-                {
-                    var pts = tImporter.GetDefaultPlatformTextureSettings();
-                    pts.format = TextureImporterFormat.RGBA32;
-                    tImporter.SetPlatformTextureSettings(pts);
-                    tImporter.SaveAndReimport();
-                }
-            }
-        }
-
-        private static readonly ProfilerMarker _PRF_SetTextureSGBA =
-            new ProfilerMarker(_PRF_PFX + nameof(SetTextureSGBA));
-
-        public static void SetTextureSGBA(this Texture2D texture, bool value)
-        {
-            using (_PRF_SetTextureSGBA.Auto())
-            {
-                if (null == texture)
-                {
-                    return;
-                }
-
-                var assetPath = AssetDatabaseManager.GetAssetPath(texture);
-                var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-                if (tImporter != null)
-                {
-                    tImporter.sRGBTexture = value;
-                    tImporter.SaveAndReimport();
-                }
-            }
-        }
-
-        private static readonly ProfilerMarker _PRF_GenerateOutline =
-            new ProfilerMarker(_PRF_PFX + nameof(GenerateOutline));
-
-        public static Vector2[][] GenerateOutline(
-            this Texture texture,
-            Rect rect,
-            float detail,
-            byte alphaTolerance,
-            bool holeDetection)
-        {
-            using (_PRF_GenerateOutline.Auto())
-            {
-                var opaths = new Vector2[0][];
-                object[] parameters = { texture, rect, detail, alphaTolerance, holeDetection, opaths };
-                var method = spriteType.GetMethod("GenerateOutline", ReflectionExtensions.PrivateStatic);
-                method.Invoke(null, parameters);
-                var paths = (Vector2[][])parameters[5];
-
-                return paths;
-            }
-        }
-
-        private static readonly ProfilerMarker _PRF_GetTextureImporter =
-            new ProfilerMarker(_PRF_PFX + nameof(GetTextureImporter));
-
-        public static TextureImporter GetTextureImporter(this Texture2D texture)
-        {
-            using (_PRF_GetTextureImporter.Auto())
-            {
-                var path = AssetDatabaseManager.GetAssetPath(texture);
-                return (TextureImporter)AssetImporter.GetAtPath(path);
-            }
-        }
-
-        private static readonly ProfilerMarker _PRF_HasCrunchCompression =
-            new ProfilerMarker(_PRF_PFX + nameof(HasCrunchCompression));
-
-        public static bool HasCrunchCompression(this Texture2D texture)
-        {
-            using (_PRF_HasCrunchCompression.Auto())
-            {
-                if (null == texture)
-                {
-                    return false;
-                }
-
-                var assetPath = AssetDatabaseManager.GetAssetPath(texture);
-                var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-                if (tImporter != null)
-                {
-                    return tImporter.crunchedCompression;
-                }
-
-                return false;
-            }
-        }
-
-        private static readonly ProfilerMarker _PRF_HasRgbaFormat =
-            new ProfilerMarker(_PRF_PFX + nameof(HasRgbaFormat));
-
-        public static bool HasRgbaFormat(this Texture2D texture)
-        {
-            using (_PRF_HasRgbaFormat.Auto())
-            {
-                if (null == texture)
-                {
-                    return false;
-                }
-
-                var assetPath = AssetDatabaseManager.GetAssetPath(texture);
-                var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-                if (tImporter != null)
-                {
-                    var pts = tImporter.GetDefaultPlatformTextureSettings();
-                    if ((pts.format == TextureImporterFormat.ARGB32) ||
-                        (pts.format == TextureImporterFormat.RGBA32))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                }
-
-                return false;
-            }
-        }
-
-        private static readonly ProfilerMarker _PRF_RemoveCrunchCompression =
-            new ProfilerMarker(_PRF_PFX + nameof(RemoveCrunchCompression));
-
-        public static void RemoveCrunchCompression(this Texture2D texture)
-        {
-            using (_PRF_RemoveCrunchCompression.Auto())
-            {
-                if (null == texture)
-                {
-                    return;
-                }
-
-                var assetPath = AssetDatabaseManager.GetAssetPath(texture);
-                var tImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-                if (tImporter != null)
-                {
-                    tImporter.crunchedCompression = false;
-                    tImporter.SaveAndReimport();
-                }
-            }
-        }
-#endif
     }
 }

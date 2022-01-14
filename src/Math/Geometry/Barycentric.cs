@@ -4,10 +4,6 @@ namespace Appalachia.Core.Math.Geometry
 {
     public struct Barycentric
     {
-        public float u;
-        public float v;
-        public float w;
-
         public Barycentric(float aU, float aV, float aW)
         {
             u = aU;
@@ -56,6 +52,14 @@ namespace Appalachia.Core.Math.Geometry
             v = ((bLen * ac) - (ab * bc)) / d;
             w = 1.0f - u - v;
         }
+
+        #region Fields and Autoproperties
+
+        public float u;
+        public float v;
+        public float w;
+
+        #endregion
 
         public bool IsInside =>
             (u >= 0.0f) && (u <= 1.0f) && (v >= 0.0f) && (v <= 1.0f) && (w >= 0.0f); //(w <= 1.0f)

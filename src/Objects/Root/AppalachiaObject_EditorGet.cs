@@ -49,6 +49,12 @@ namespace Appalachia.Core.Objects.Root
 
     public abstract partial class AppalachiaObject<T>
     {
+        #region Constants and Static Readonly
+
+        private static readonly string _PRF_PFX2 = typeof(T).Name + ".";
+
+        #endregion
+
         public static T[] GetAllOfType()
         {
             using (_PRF_GetAllOfType.Auto())
@@ -70,7 +76,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_GetAllOfType =
-            new ProfilerMarker(_PRF_PFX + nameof(GetAllOfType));
+            new ProfilerMarker(_PRF_PFX2 + nameof(GetAllOfType));
 
         #endregion
     }

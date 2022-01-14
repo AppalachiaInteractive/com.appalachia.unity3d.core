@@ -65,20 +65,20 @@ namespace Appalachia.Core.Attributes.Editing
         public bool HorizontalLine;
         public bool Indent;
         public bool Reversed;
+        public int SubtitleSize;
+        public int TitleHeight;
+        public int TitleSize;
+        public string BackgroundColor;
+        public string FallbackSubtitle;
+        public string FallbackTitle;
         public string Subtitle;
         public string SubtitleColor;
-        public string BackgroundColor;
         public string SubtitleFont;
+        public string SubtitleIcon;
         public string Title;
         public string TitleColor;
         public string TitleFont;
-        public int TitleSize;
         public string TitleIcon;
-        public int SubtitleSize;
-        public string SubtitleIcon;
-        public int TitleHeight;
-        public string FallbackTitle;
-        public string FallbackSubtitle;
 
         #endregion
 

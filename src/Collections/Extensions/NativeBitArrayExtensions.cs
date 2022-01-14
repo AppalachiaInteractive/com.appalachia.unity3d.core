@@ -4,26 +4,9 @@ namespace Appalachia.Core.Collections.Extensions
 {
     public static class NativeBitArrayExtensions
     {
-        public static bool[] ToArray(this NativeBitArray array)
-        {
-            var outArray = new bool[array.Length];
-
-            for (var i = 0; i < array.Length; ++i)
-            {
-                outArray[i] = array.IsSet(i);
-            }
-
-            return outArray;
-        }
-
         public static int CountAllBits(this NativeBitArray array)
         {
             return array.CountBits(0, array.Length - 1);
-        }
-
-        public static int Sum(this NativeBitArray array)
-        {
-            return array.CountAllBits();
         }
 
         public static NativeBitArray FromArray(this bool[] values)
@@ -41,6 +24,23 @@ namespace Appalachia.Core.Collections.Extensions
         public static void SetAllBits(this NativeBitArray array, bool value)
         {
             array.SetBits(0, value, array.Length - 1);
+        }
+
+        public static int Sum(this NativeBitArray array)
+        {
+            return array.CountAllBits();
+        }
+
+        public static bool[] ToArray(this NativeBitArray array)
+        {
+            var outArray = new bool[array.Length];
+
+            for (var i = 0; i < array.Length; ++i)
+            {
+                outArray[i] = array.IsSet(i);
+            }
+
+            return outArray;
         }
     }
 }

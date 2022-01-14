@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Objects.Dependencies;
 using Appalachia.Utility.Async;
+using Appalachia.Utility.Constants;
 using Appalachia.Utility.Enums;
 using Appalachia.Utility.Execution;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -36,6 +39,12 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaObject
     {
+        #region Static Fields and Autoproperties
+
+        private static string _deleted;
+
+        #endregion
+
         #region Fields and Autoproperties
 
         [NonSerialized] private int _awakeFrame;
@@ -57,6 +66,19 @@ namespace Appalachia.Core.Objects.Root
         [NonSerialized] private bool _hasBeenDisabled;
 
         #endregion
+
+        protected static string DELETED
+        {
+            get
+            {
+                if (_deleted == null)
+                {
+                    _deleted = "[DELETED]".Bold().FormatNameForLogging();
+                }
+
+                return _deleted;
+            }
+        }
 
         protected virtual bool LogEventFunctions => false;
         public bool HasBeenDisabled => _hasBeenDisabled;
@@ -82,7 +104,7 @@ namespace Appalachia.Core.Objects.Root
                     Context.Log.Info(nameof(Awake), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.Awake).Forget();
+                RemapUnityEvents(UnityEventFlags.Awake).Forget(LogRemapException);
             }
         }
 
@@ -95,7 +117,7 @@ namespace Appalachia.Core.Objects.Root
                     Context.Log.Info(nameof(Reset), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.Reset).Forget();
+                RemapUnityEvents(UnityEventFlags.Reset).Forget(LogRemapException);
             }
         }
 
@@ -110,7 +132,7 @@ namespace Appalachia.Core.Objects.Root
                     Context.Log.Info(nameof(OnEnable), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.OnEnable).Forget();
+                RemapUnityEvents(UnityEventFlags.OnEnable).Forget(LogRemapException);
             }
         }
 
@@ -125,7 +147,7 @@ namespace Appalachia.Core.Objects.Root
                     Context.Log.Info(nameof(OnDisable), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.OnDisable).Forget();
+                RemapUnityEvents(UnityEventFlags.OnDisable).Forget(LogRemapException);
             }
         }
 
@@ -138,7 +160,7 @@ namespace Appalachia.Core.Objects.Root
                     Context.Log.Info(nameof(OnDestroy), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.OnDestroy).Forget();
+                RemapUnityEvents(UnityEventFlags.OnDestroy).Forget(LogRemapException);
             }
         }
 
@@ -179,100 +201,303 @@ namespace Appalachia.Core.Objects.Root
             await AppaTask.CompletedTask;
         }
 
+        private void LogRemapException(Exception ex)
+        {
+            using (_PRF_LogRemapException.Auto())
+            {
+                var stackSplits = ex.StackTrace.Split('\n').Select(l => l.Trim()).ToArray();
+
+                Context.Log.Error(stackSplits[0], this, ex);
+            }
+        }
+
         private async AppaTask RemapUnityEvents(UnityEventFlags currentUnityEventType)
         {
-            using (_PRF_RemapUnityEvents.Auto())
+            if (this == null)
             {
-                await AppalachiaRepositoryDependencyManager.ValidateDependencies();
+                return;
+            }
 
-                _unityEventFlags |= currentUnityEventType;
+            try
+            {
+                await RemapUnityEventsInternal(currentUnityEventType);
+            }
+            catch (Exception ex)
+            {
+                Context.Log.Error(
+                    ZString.Format(
+                        "Error remapping {0} for {1} on {2}.",
+                        currentUnityEventType,
+                        GetType().FormatForLogging(),
+                        this == null ? DELETED : name.FormatNameForLogging()
+                    ),
+                    this,
+                    ex
+                );
 
-                switch (currentUnityEventType)
-                {
-                    case UnityEventFlags.Awake:
+                throw;
+            }
+        }
 
-                        _awakeFrame = Time.frameCount;
-                        _unityAwake = true;
+        private async AppaTask RemapUnityEventsInternal(UnityEventFlags currentUnityEventType)
+        {
+            await AppalachiaRepositoryDependencyManager.ValidateDependencies(GetType());
+
+            if (this == null)
+            {
+                return;
+            }
+
+            if (_unityEventFlags.HasFlag(UnityEventFlags.OnDestroy))
+            {
+                return;
+            }
+
+            _unityEventFlags |= currentUnityEventType;
+
+            switch (currentUnityEventType)
+            {
+                case UnityEventFlags.Awake:
+
+                    _awakeFrame = Time.frameCount;
+                    _unityAwake = true;
+                    try
+                    {
                         AwakeActual();
-
-                        break;
-                    case UnityEventFlags.OnEnable:
-
-                        _onEnableFrame = Time.frameCount;
-                        _unityOnEnable = true;
-                        OnEnableActual();
-
-                        break;
-                    case UnityEventFlags.Reset:
-
-                        _resetFrame = Time.frameCount;
-                        _unityReset = true;
-                        ResetActual();
-
-                        break;
-                    case UnityEventFlags.OnDisable:
-
-                        _onDisableFrame = Time.frameCount;
-                        _unityOnDisable = true;
-                        OnDisableActual();
-
-                        break;
-                    case UnityEventFlags.OnDestroy:
-
-                        _unityOnDestroy = true;
-                        OnDestroyActual();
-
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(
-                            nameof(_unityEventFlags),
-                            _unityEventFlags,
-                            null
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(AwakeActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
                         );
-                }
 
-                if (currentUnityEventType == UnityEventFlags.OnDestroy)
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.OnEnable:
+
+                    _onEnableFrame = Time.frameCount;
+                    _unityOnEnable = true;
+                    try
+                    {
+                        OnEnableActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(OnEnableActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.Reset:
+
+                    _resetFrame = Time.frameCount;
+                    _unityReset = true;
+                    try
+                    {
+                        ResetActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(ResetActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.OnDisable:
+
+                    _onDisableFrame = Time.frameCount;
+                    _unityOnDisable = true;
+                    try
+                    {
+                        OnDisableActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(OnDisableActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.OnDestroy:
+
+                    _unityOnDestroy = true;
+                    try
+                    {
+                        OnDestroyActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(OnDestroyActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_unityEventFlags), _unityEventFlags, null);
+            }
+
+            if (currentUnityEventType == UnityEventFlags.OnDestroy)
+            {
+                _eventFlags = AppalachiaEventFlags.None;
+                try
                 {
-                    _eventFlags = AppalachiaEventFlags.None;
                     await WhenDestroyed();
-
-                    _hasBeenInitialized = false;
-                    return;
                 }
-
-                if (currentUnityEventType == UnityEventFlags.OnDisable)
+                catch (Exception ex)
                 {
-                    _eventFlags = _eventFlags.UnsetFlag(AppalachiaEventFlags.Enabled);
-                    await WhenDisabled();
+                    Context.Log.Error(
+                        ZString.Format(
+                            "Error executing {0} for {1} on {2}.",
+                            nameof(WhenDestroyed).FormatMethodForLogging(),
+                            GetType().FormatForLogging(),
+                            this == null ? DELETED : name.FormatNameForLogging()
+                        ),
+                        this,
+                        ex
+                    );
 
-                    _hasBeenEnabled = false;
-                    _hasBeenDisabled = true;
-
-                    return;
+                    throw;
                 }
 
-                if (!_eventFlags.Has(AppalachiaEventFlags.Initialized))
+                _hasBeenInitialized = false;
+                return;
+            }
+
+            if (currentUnityEventType == UnityEventFlags.OnDisable)
+            {
+                _eventFlags = _eventFlags.UnsetFlag(AppalachiaEventFlags.Enabled);
+                try
+                {
+                    await WhenDisabled();
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error(
+                        ZString.Format(
+                            "Error executing {0} for {1} on {2}.",
+                            nameof(WhenDisabled).FormatMethodForLogging(),
+                            GetType().FormatForLogging(),
+                            this == null ? DELETED : name.FormatNameForLogging()
+                        ),
+                        this,
+                        ex
+                    );
+
+                    throw;
+                }
+
+                _hasBeenEnabled = false;
+                _hasBeenDisabled = true;
+
+                return;
+            }
+
+            if (!_eventFlags.Has(AppalachiaEventFlags.Initialized))
+            {
+                try
                 {
                     await ExecuteInitialization();
-
-                    _eventFlags |= AppalachiaEventFlags.Initialized;
                 }
-
-                if (currentUnityEventType == UnityEventFlags.OnEnable)
+                catch (Exception ex)
                 {
-                    _eventFlags = _eventFlags.SetFlag(AppalachiaEventFlags.Enabled);
-                    await WhenEnabled();
+                    Context.Log.Error(
+                        ZString.Format(
+                            "Error executing {0} for {1} on {2}.",
+                            nameof(ExecuteInitialization).FormatMethodForLogging(),
+                            GetType().FormatForLogging(),
+                            this == null ? DELETED : name.FormatNameForLogging()
+                        ),
+                        this,
+                        ex
+                    );
 
-                    _hasBeenEnabled = true;
-                    _hasBeenDisabled = false;
+                    throw;
                 }
+
+                _eventFlags |= AppalachiaEventFlags.Initialized;
+            }
+
+            if (currentUnityEventType == UnityEventFlags.OnEnable)
+            {
+                _eventFlags = _eventFlags.SetFlag(AppalachiaEventFlags.Enabled);
+                try
+                {
+                    await WhenEnabled();
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error(
+                        ZString.Format(
+                            "Error executing {0} for {1} on {2}.",
+                            nameof(WhenEnabled).FormatMethodForLogging(),
+                            GetType().FormatForLogging(),
+                            this == null ? DELETED : name.FormatNameForLogging()
+                        ),
+                        this,
+                        ex
+                    );
+
+                    throw;
+                }
+
+                _hasBeenEnabled = true;
+                _hasBeenDisabled = false;
             }
         }
 
         #region Profiling
 
-        private static readonly ProfilerMarker _PRF_RemapUnityEvents =
-            new ProfilerMarker(_PRF_PFX + nameof(RemapUnityEvents));
+        private static readonly ProfilerMarker _PRF_LogRemapException =
+            new ProfilerMarker(_PRF_PFX + nameof(LogRemapException));
 
         private static readonly ProfilerMarker _PRF_Reset = new ProfilerMarker(_PRF_PFX + nameof(Reset));
         private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + nameof(Awake));
@@ -289,7 +514,6 @@ namespace Appalachia.Core.Objects.Root
         #endregion
     }
 
-    
     public partial class AppalachiaRepository
     {
     }
@@ -304,6 +528,12 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBehaviour
     {
+        #region Static Fields and Autoproperties
+
+        private static string _deleted;
+
+        #endregion
+
         #region Fields and Autoproperties
 
         [NonSerialized] private int _awakeFrame;
@@ -328,7 +558,22 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
+        protected static string DELETED
+        {
+            get
+            {
+                if (_deleted == null)
+                {
+                    _deleted = "[DELETED]".Bold().FormatNameForLogging();
+                }
+
+                return _deleted;
+            }
+        }
+
         protected virtual bool LogEventFunctions => false;
+
+        protected virtual bool ShouldSkipUpdate => !FullyInitialized || AppalachiaApplication.IsCompiling;
         public bool HasBeenDisabled => _hasBeenDisabled;
         public bool HasBeenEnabled => _hasBeenEnabled;
 
@@ -349,12 +594,21 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_Awake.Auto())
             {
+                if ((this == null) || (gameObject == null))
+                {
+                    return;
+                }
+
                 if (LogEventFunctions)
                 {
                     Context.Log.Info(nameof(Awake), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.Awake).Forget();
+                var cancellationToken = this.GetCancellationTokenOnDestroy();
+
+                RemapUnityEvents(UnityEventFlags.Awake)
+                   .AttachExternalCancellation(cancellationToken)
+                   .Forget(LogRemapException);
             }
         }
 
@@ -362,6 +616,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_Reset.Auto())
             {
+                if ((this == null) || (gameObject == null))
+                {
+                    return;
+                }
+
                 if (LogEventFunctions)
                 {
                     Context.Log.Info(nameof(Reset), this);
@@ -370,7 +629,11 @@ namespace Appalachia.Core.Objects.Root
                 ___renderingBounds = default;
                 ___transform = default;
 
-                RemapUnityEvents(UnityEventFlags.Reset).Forget();
+                var cancellationToken = this.GetCancellationTokenOnDestroy();
+
+                RemapUnityEvents(UnityEventFlags.Reset)
+                   .AttachExternalCancellation(cancellationToken)
+                   .Forget(LogRemapException);
             }
         }
 
@@ -378,12 +641,21 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_Start.Auto())
             {
+                if ((this == null) || (gameObject == null))
+                {
+                    return;
+                }
+
                 if (LogEventFunctions)
                 {
                     Context.Log.Info(nameof(Start), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.Start).Forget();
+                var cancellationToken = this.GetCancellationTokenOnDestroy();
+
+                RemapUnityEvents(UnityEventFlags.Start)
+                   .AttachExternalCancellation(cancellationToken)
+                   .Forget(LogRemapException);
             }
         }
 
@@ -391,12 +663,21 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnEnable.Auto())
             {
+                if ((this == null) || (gameObject == null))
+                {
+                    return;
+                }
+
                 if (LogEventFunctions)
                 {
                     Context.Log.Info(nameof(OnEnable), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.OnEnable).Forget();
+                var cancellationToken = this.GetCancellationTokenOnDestroy();
+
+                RemapUnityEvents(UnityEventFlags.OnEnable)
+                   .AttachExternalCancellation(cancellationToken)
+                   .Forget(LogRemapException);
 
 #if UNITY_EDITOR
                 if (!AppalachiaApplication.IsPlayingOrWillPlay)
@@ -413,6 +694,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnDisable.Auto())
             {
+                if ((this == null) || (gameObject == null))
+                {
+                    return;
+                }
+
                 _onDisableFrame = Time.frameCount;
 
                 if (LogEventFunctions)
@@ -420,7 +706,11 @@ namespace Appalachia.Core.Objects.Root
                     Context.Log.Info(nameof(OnDisable), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.OnDisable).Forget();
+                var cancellationToken = this.GetCancellationTokenOnDestroy();
+
+                RemapUnityEvents(UnityEventFlags.OnDisable)
+                   .AttachExternalCancellation(cancellationToken)
+                   .Forget(LogRemapException);
             }
         }
 
@@ -428,12 +718,21 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnDestroy.Auto())
             {
+                if ((this == null) || (gameObject == null))
+                {
+                    return;
+                }
+
                 if (LogEventFunctions)
                 {
                     Context.Log.Info(nameof(OnDestroy), this);
                 }
 
-                RemapUnityEvents(UnityEventFlags.OnDestroy).Forget();
+                var cancellationToken = this.GetCancellationTokenOnDestroy();
+
+                RemapUnityEvents(UnityEventFlags.OnDestroy)
+                   .AttachExternalCancellation(cancellationToken)
+                   .Forget(LogRemapException);
             }
         }
 
@@ -478,120 +777,353 @@ namespace Appalachia.Core.Objects.Root
             await AppaTask.CompletedTask;
         }
 
-        private protected virtual async AppaTask Initialize()
+        private void LogRemapException(Exception ex)
         {
-            BeforeInitialization();
+            using (_PRF_LogRemapException.Auto())
+            {
+                if (ex is OperationCanceledException)
+                {
+                    return;
+                }
 
-            await AppaTask.CompletedTask;
+                var stackSplits = ex.StackTrace.Split('\n').Select(l => l.Trim()).ToArray();
 
-            AfterInitialization();
+                Context.Log.Error(stackSplits[0], this, ex);
+            }
         }
 
         private async AppaTask RemapUnityEvents(UnityEventFlags currentUnityEventType)
         {
-            using (_PRF_RemapUnityEvents.Auto())
+            if ((gameObject == null) || (this == null))
             {
-                await AppalachiaRepositoryDependencyManager.ValidateDependencies();
+                return;
+            }
 
-                _unityEventFlags |= currentUnityEventType;
+            try
+            {
+                await RemapUnityEventsInternal(currentUnityEventType);
+            }
+            catch (Exception ex)
+            {
+                Context.Log.Error(
+                    ZString.Format(
+                        "Error remapping {0} for {1} on {2}.",
+                        currentUnityEventType,
+                        GetType().FormatForLogging(),
+                        this == null ? DELETED : name.FormatNameForLogging()
+                    ),
+                    this,
+                    ex
+                );
 
-                switch (currentUnityEventType)
-                {
-                    case UnityEventFlags.Awake:
+                throw;
+            }
+        }
 
-                        _awakeFrame = Time.frameCount;
-                        _unityAwake = true;
+        private async AppaTask RemapUnityEventsInternal(UnityEventFlags currentUnityEventType)
+        {
+            await AppalachiaRepositoryDependencyManager.ValidateDependencies(GetType());
+
+            if ((this == null) || (gameObject == null))
+            {
+                return;
+            }
+
+            if (_unityEventFlags.HasFlag(UnityEventFlags.OnDestroy))
+            {
+                return;
+            }
+
+            _unityEventFlags |= currentUnityEventType;
+
+            switch (currentUnityEventType)
+            {
+                case UnityEventFlags.Awake:
+
+                    _awakeFrame = Time.frameCount;
+                    _unityAwake = true;
+                    try
+                    {
                         AwakeActual();
-
-                        break;
-                    case UnityEventFlags.OnEnable:
-
-                        _onEnableFrame = Time.frameCount;
-                        _unityOnEnable = true;
-                        OnEnableActual();
-
-                        break;
-                    case UnityEventFlags.Start:
-
-                        _startFrame = Time.frameCount;
-                        _unityStart = true;
-                        StartActual();
-
-                        break;
-                    case UnityEventFlags.Reset:
-
-                        _resetFrame = Time.frameCount;
-                        _unityReset = true;
-                        ResetActual();
-
-                        break;
-                    case UnityEventFlags.OnDisable:
-
-                        _onDisableFrame = Time.frameCount;
-                        _unityOnDisable = true;
-                        OnDisableActual();
-
-                        break;
-                    case UnityEventFlags.OnDestroy:
-
-                        _unityOnDestroy = true;
-                        OnDestroyActual();
-
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(
-                            nameof(_unityEventFlags),
-                            _unityEventFlags,
-                            null
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(AwakeActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
                         );
-                }
 
-                if (currentUnityEventType == UnityEventFlags.OnDestroy)
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.OnEnable:
+
+                    _onEnableFrame = Time.frameCount;
+                    _unityOnEnable = true;
+                    try
+                    {
+                        OnEnableActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(OnEnableActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.Start:
+
+                    _startFrame = Time.frameCount;
+                    _unityStart = true;
+                    try
+                    {
+                        StartActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(StartActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.Reset:
+
+                    _resetFrame = Time.frameCount;
+                    _unityReset = true;
+                    try
+                    {
+                        ResetActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(ResetActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.OnDisable:
+
+                    _onDisableFrame = Time.frameCount;
+                    _unityOnDisable = true;
+                    try
+                    {
+                        OnDisableActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(OnDisableActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                case UnityEventFlags.OnDestroy:
+
+                    _unityOnDestroy = true;
+                    try
+                    {
+                        OnDestroyActual();
+                    }
+                    catch (Exception ex)
+                    {
+                        Context.Log.Error(
+                            ZString.Format(
+                                "Error executing {0} for {1} on {2}.",
+                                nameof(OnDestroyActual).FormatMethodForLogging(),
+                                GetType().FormatForLogging(),
+                                this == null ? DELETED : name.FormatNameForLogging()
+                            ),
+                            this,
+                            ex
+                        );
+
+                        throw;
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_unityEventFlags), _unityEventFlags, null);
+            }
+
+            if ((this == null) || (gameObject == null))
+            {
+                return;
+            }
+
+            if (currentUnityEventType == UnityEventFlags.OnDestroy)
+            {
+                _eventFlags = AppalachiaEventFlags.None;
+
+                try
                 {
-                    _eventFlags = AppalachiaEventFlags.None;
-
                     await WhenDestroyed();
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error(
+                        ZString.Format(
+                            "Error executing {0} for {1} on {2}.",
+                            nameof(WhenDestroyed).FormatMethodForLogging(),
+                            GetType().FormatForLogging(),
+                            this == null ? DELETED : name.FormatNameForLogging()
+                        ),
+                        this,
+                        ex
+                    );
 
-                    _hasBeenInitialized = false;
-
-                    return;
+                    throw;
                 }
 
-                if (currentUnityEventType == UnityEventFlags.OnDisable)
-                {
-                    _eventFlags = _eventFlags.UnsetFlag(AppalachiaEventFlags.Enabled);
+                _hasBeenInitialized = false;
 
+                return;
+            }
+
+            if (currentUnityEventType == UnityEventFlags.OnDisable)
+            {
+                _eventFlags = _eventFlags.UnsetFlag(AppalachiaEventFlags.Enabled);
+
+                try
+                {
                     await WhenDisabled();
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error(
+                        ZString.Format(
+                            "Error executing {0} for {1} on {2}.",
+                            nameof(WhenDisabled).FormatMethodForLogging(),
+                            GetType().FormatForLogging(),
+                            this == null ? DELETED : name.FormatNameForLogging()
+                        ),
+                        this,
+                        ex
+                    );
 
-                    _hasBeenEnabled = false;
-                    _hasBeenDisabled = true;
-
-                    return;
+                    throw;
                 }
 
-                if (!_eventFlags.Has(AppalachiaEventFlags.Initialized))
-                {
-                    await Initialize();
+                _hasBeenEnabled = false;
+                _hasBeenDisabled = true;
 
-                    _hasBeenInitialized = true;
-                    _eventFlags |= AppalachiaEventFlags.Initialized;
+                return;
+            }
+
+            if ((this == null) || (gameObject == null))
+            {
+                return;
+            }
+
+            if (!_eventFlags.Has(AppalachiaEventFlags.Initialized))
+            {
+                try
+                {
+                    await ExecuteInitialization();
+                }
+                catch (Exception ex)
+                {
+                    Context.Log.Error(
+                        ZString.Format(
+                            "Error executing {0} for {1} on {2}.",
+                            nameof(ExecuteInitialization).FormatMethodForLogging(),
+                            GetType().FormatForLogging(),
+                            this == null ? DELETED : name.FormatNameForLogging()
+                        ),
+                        this,
+                        ex
+                    );
+
+                    throw;
                 }
 
-                if (currentUnityEventType == UnityEventFlags.OnEnable)
+                _hasBeenInitialized = true;
+                _eventFlags |= AppalachiaEventFlags.Initialized;
+            }
+
+            if ((this == null) || (gameObject == null))
+            {
+                return;
+            }
+
+            if ((currentUnityEventType == UnityEventFlags.OnEnable) && !_hasBeenEnabled)
+            {
+                _eventFlags = _eventFlags.SetFlag(AppalachiaEventFlags.Enabled);
+
+                try
                 {
-                    _eventFlags = _eventFlags.SetFlag(AppalachiaEventFlags.Enabled);
                     await WhenEnabled();
-
-                    _hasBeenEnabled = true;
-                    _hasBeenDisabled = false;
                 }
+                catch (Exception ex)
+                {
+                    Context.Log.Error(
+                        ZString.Format(
+                            "Error executing {0} for {1} on {2}.",
+                            nameof(WhenEnabled).FormatMethodForLogging(),
+                            GetType().FormatForLogging(),
+                            this == null ? DELETED : name.FormatNameForLogging()
+                        ),
+                        this,
+                        ex
+                    );
+
+                    throw;
+                }
+
+                _hasBeenEnabled = true;
+                _hasBeenDisabled = false;
             }
         }
 
         #region Profiling
 
-        private static readonly ProfilerMarker _PRF_RemapUnityEvents =
-            new ProfilerMarker(_PRF_PFX + nameof(RemapUnityEvents));
+        private static readonly ProfilerMarker _PRF_LogRemapException =
+            new ProfilerMarker(_PRF_PFX + nameof(LogRemapException));
 
         private static readonly ProfilerMarker _PRF_Reset = new ProfilerMarker(_PRF_PFX + nameof(Reset));
         private static readonly ProfilerMarker _PRF_Awake = new ProfilerMarker(_PRF_PFX + nameof(Awake));
@@ -612,6 +1144,7 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBehaviour<T>
     {
+        protected override bool ShouldSkipUpdate => base.ShouldSkipUpdate || !DependenciesAreReady;
     }
 
     public partial class SingletonAppalachiaBehaviour<T>
@@ -624,6 +1157,12 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBase : ISerializationCallbackReceiver
     {
+        #region Static Fields and Autoproperties
+
+        private static Queue<Func<AppaTask>> _initializationFunctions;
+
+        #endregion
+
         #region Fields and Autoproperties
 
         [NonSerialized] private bool _hasBeenInitialized;
@@ -631,6 +1170,8 @@ namespace Appalachia.Core.Objects.Root
         [NonSerialized] private bool _hasBeenDisabled;
 
         #endregion
+
+        public static Queue<Func<AppaTask>> InitializationFunctions => _initializationFunctions;
 
         protected virtual bool LogEventFunctions => false;
         public bool HasBeenDisabled => _hasBeenDisabled;
@@ -644,24 +1185,23 @@ namespace Appalachia.Core.Objects.Root
 
         private async AppaTask HandleInitialization()
         {
-            using (_PRF_HandleInitialization.Auto())
-            {
-                await AppaTask.NextFrame();
-                await AppalachiaRepositoryDependencyManager.ValidateDependencies();
+            await AppaTask.NextFrame();
+            await AppalachiaRepositoryDependencyManager.ValidateDependencies(GetType());
 
-                BeforeInitialization();
+            BeforeInitialization();
 
-                await Initialize(_initializer);
+            await Initialize(_initializer);
 
-                _hasBeenInitialized = true;
+            _hasBeenInitialized = true;
 
-                AfterInitialization();
+            AfterInitialization();
 
-                await WhenEnabled();
+            initializationState.hasInitializationFinished = true;
 
-                _hasBeenEnabled = true;
-                _hasBeenDisabled = false;
-            }
+            await WhenEnabled();
+
+            _hasBeenEnabled = true;
+            _hasBeenDisabled = false;
         }
 
         #region ISerializationCallbackReceiver Members
@@ -680,9 +1220,6 @@ namespace Appalachia.Core.Objects.Root
             _initializationFunctions ??= new Queue<Func<AppaTask>>();
             _initializationFunctions.Enqueue(HandleInitialization);
         }
-
-        private static Queue<Func<AppaTask>> _initializationFunctions;
-        public static Queue<Func<AppaTask>> InitializationFunctions => _initializationFunctions;
 
         #endregion
 

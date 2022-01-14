@@ -11,13 +11,11 @@ namespace Appalachia.Core.Math.Stats.Implementations
 {
     public class doubleStatsTracker : StatsTracker<double>
     {
-        private const string _PRF_PFX = nameof(doubleStatsTracker) + ".";
+        #region Constants and Static Readonly
 
         private static readonly Comparison<double> _comparison = (v1, v2) => v1.CompareTo(v2);
 
-        private static readonly ProfilerMarker _PRF_Format = new(_PRF_PFX + nameof(Format));
-        private static readonly ProfilerMarker _PRF_Transform = new(_PRF_PFX + nameof(Transform));
-        private static readonly ProfilerMarker _PRF_Suffix = new(_PRF_PFX + nameof(Suffix));
+        #endregion
 
         protected override Comparison<double> Comparer => _comparison;
 
@@ -55,6 +53,23 @@ namespace Appalachia.Core.Math.Stats.Implementations
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override string Suffix(double value, SuffixType type)
+        {
+            using (_PRF_Suffix.Auto())
+            {
+                switch (type)
+                {
+                    case SuffixType.None:
+                        return null;
+                    case SuffixType.FPS:
+                        return ZString.Format(suffix_fpx, value * 1000.0);
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override double Transform(double value, TransformationType type)
         {
             using (_PRF_Transform.Auto())
@@ -71,21 +86,14 @@ namespace Appalachia.Core.Math.Stats.Implementations
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override string Suffix(double value, SuffixType type)
-        {
-            using (_PRF_Suffix.Auto())
-            {
-                switch (type)
-                {
-                    case SuffixType.None:
-                        return null;
-                    case SuffixType.FPS:
-                        return ZString.Format(suffix_fpx, value * 1000.0);
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
-                }
-            }
-        }
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(doubleStatsTracker) + ".";
+
+        private static readonly ProfilerMarker _PRF_Format = new(_PRF_PFX + nameof(Format));
+        private static readonly ProfilerMarker _PRF_Transform = new(_PRF_PFX + nameof(Transform));
+        private static readonly ProfilerMarker _PRF_Suffix = new(_PRF_PFX + nameof(Suffix));
+
+        #endregion
     }
 }

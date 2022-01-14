@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 #region
 
 using Appalachia.CI.Integration.Assets;
@@ -10,7 +12,6 @@ using Unity.Profiling;
 
 namespace Appalachia.Core.Execution
 {
-#if UNITY_EDITOR
     [CallStaticConstructorInEditor]
     public sealed class ExecutionOrderManager
     {
@@ -60,5 +61,6 @@ namespace Appalachia.Core.Execution
 
         #endregion
     }
-#endif
 }
+
+#endif

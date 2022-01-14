@@ -5,13 +5,13 @@ namespace Appalachia.Core.Execution.Hooks
     public sealed class FrameEventDelegates<T>
         where T : FrameEventBehaviour<T>
     {
-        public event FrameActionCameraDelegate onPreCull;
         public event FrameActionDelegate awake;
         public event FrameActionDelegate fixedUpdate;
         public event FrameActionDelegate onApplicationQuit;
         public event FrameActionDelegate onDestroy;
         public event FrameActionDelegate onDisable;
         public event FrameActionDelegate onEnable;
+        public event FrameActionCameraDelegate onPreCull;
         public event FrameActionDelegate start;
         public event FrameActionDelegate update;
 

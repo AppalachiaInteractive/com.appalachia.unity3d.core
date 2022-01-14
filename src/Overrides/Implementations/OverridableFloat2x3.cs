@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableFloat2x3(bool overrideEnabled, float2x3 value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableFloat2x3(bool overrideEnabled, float2x3 value) : base(overrideEnabled, value)
         {
         }
 

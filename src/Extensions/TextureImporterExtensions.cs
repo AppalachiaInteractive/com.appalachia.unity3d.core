@@ -6,7 +6,7 @@ using Appalachia.CI.Integration.Assets;
 
 namespace Appalachia.Core.Extensions
 {
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     public static class TextureImporterExtensions
     {
         public static void WriteSettings(this UnityEditor.TextureImporter importer)
@@ -14,5 +14,5 @@ namespace Appalachia.Core.Extensions
             AssetDatabaseManager.WriteImportSettingsIfDirty(importer.assetPath);
         }
     }
-    #endif
+#endif
 }

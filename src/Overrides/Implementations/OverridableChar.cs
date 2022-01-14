@@ -13,10 +13,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableChar(bool overrideEnabled, char value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableChar(bool overrideEnabled, char value) : base(overrideEnabled, value)
         {
         }
 

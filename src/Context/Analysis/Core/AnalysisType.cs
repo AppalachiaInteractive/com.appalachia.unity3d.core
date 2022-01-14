@@ -15,20 +15,6 @@ namespace Appalachia.Core.Context.Analysis.Core
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
     {
-        [NonSerialized] private AppaContext _context;
-
-        protected AppaContext Context
-        {
-            get
-            {
-                if (_context == null)
-                {
-                    _context = new AppaContext(this);
-                }
-
-                return _context;
-            }
-        }
         protected AnalysisType(TA group)
         {
             _group = group;
@@ -37,6 +23,7 @@ namespace Appalachia.Core.Context.Analysis.Core
         #region Fields and Autoproperties
 
         protected Color _color;
+        [NonSerialized] private AppaContext _context;
 
         private Color _issueColor;
 
@@ -47,8 +34,6 @@ namespace Appalachia.Core.Context.Analysis.Core
         private TA _group;
 
         #endregion
-
-        
 
         public abstract string ShortName { get; }
 
@@ -123,6 +108,19 @@ namespace Appalachia.Core.Context.Analysis.Core
 
                     return _longName;
                 }
+            }
+        }
+
+        protected AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(this);
+                }
+
+                return _context;
             }
         }
 

@@ -3,10 +3,7 @@
 #region
 
 using System;
-using System.Collections.Generic;
 using Appalachia.CI.Integration.Assets;
-using Appalachia.CI.Integration.FileSystem;
-using Appalachia.Core.Objects.Collections;
 using Appalachia.Core.Objects.Models;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Execution;
@@ -25,9 +22,11 @@ namespace Appalachia.Core.Objects.Root
         #region Constants and Static Readonly
 
         private const int PREFAB_BOTTOM = REPO_BOTTOM + PREFAB_OFFSET;
+        private const int PREFAB_BOTTOM_CLEAR = PREFAB_BOTTOM + 20;
         private const int PREFAB_BOTTOM_SORT = PREFAB_BOTTOM + 10;
         private const int PREFAB_OFFSET = 25;
         private const int PREFAB_TOP = REPO_TOP + PREFAB_OFFSET;
+        private const int PREFAB_TOP_CLEAR = PREFAB_TOP + 20;
         private const int PREFAB_TOP_SORT = PREFAB_TOP + 10;
 
         #endregion
@@ -36,75 +35,88 @@ namespace Appalachia.Core.Objects.Root
         [ButtonGroup(nameof(PREFAB_BOTTOM), Order = PREFAB_BOTTOM)]
         public void UpdatePrefabs()
         {
+            const string prefabExtension = "prefab";
             using (_PRF_UpdatePrefabs.Auto())
             {
-                _prefabs ??= new AppalachiaRepositoryPrefabReferenceList();
-                _prefabLookup ??= new Dictionary<string, AppalachiaRepositoryPrefabReference>();
+                InitializePrefabs();
 
                 if (AppalachiaApplication.IsPlaying)
                 {
                     return;
                 }
 
-                _prefabs.Clear();
-                _prefabLookup.Clear();
-
                 var allAssetPaths = AssetDatabaseManager.GetAllAssetPaths();
+                var addedAny = false;
 
                 foreach (var path in allAssetPaths)
                 {
-                    if (!AppaFile.Exists(path))
+                    if (!path.HasExtension(prefabExtension))
                     {
                         continue;
                     }
 
-                    if (AppaDirectory.Exists(path))
+                    if (path.FileDoesNotExist)
                     {
                         continue;
                     }
 
-                    if (!path.EndsWith(".prefab"))
+                    if (path.DirectoryExists)
                     {
                         continue;
                     }
 
-                    var allObjectsAtPath = AssetDatabaseManager.LoadAllAssetsAtPath(path);
+                    var objectAtPath =
+                        AssetDatabaseManager.LoadMainAssetAtPath(path.relativePath) as GameObject;
 
-                    for (var i = 0; i < allObjectsAtPath.Length; i++)
+                    if (objectAtPath == null)
                     {
-                        var objectAtPath = allObjectsAtPath[i] as GameObject;
+                        continue;
+                    }
 
-                        if (objectAtPath == null)
+                    if (_prefabLookup.ContainsKey(objectAtPath.name))
+                    {
+                        var existingInstance = _prefabLookup[objectAtPath.name];
+
+                        if (existingInstance.assetReference.editorAsset != objectAtPath)
                         {
-                            continue;
-                        }
-
-                        if (!objectAtPath.IsAddressable(out var addressableInfo))
-                        {
-                            continue;
-                        }
-
-                        if (_prefabLookup.ContainsKey(objectAtPath.name))
-                        {
-                            var existingInstance = _prefabLookup[objectAtPath.name];
-
                             Context.Log.Error("Duplicate prefab names! (Instance 1)", objectAtPath);
                             Context.Log.Error(
                                 "Duplicate types! (Instance 2)",
                                 existingInstance.assetReference.editorAsset
                             );
-                            continue;
                         }
 
-                        StoreNewPrefabReference(objectAtPath, addressableInfo);
+                        continue;
                     }
+
+                    if (!objectAtPath.IsAddressable(out var addressableInfo))
+                    {
+                        continue;
+                    }
+
+                    addedAny = true;
+                    StoreNewPrefabReference(objectAtPath, addressableInfo);
                 }
 
-                Sort();
-                MarkAsModified();
+                if (addedAny)
+                {
+                    Sort();
+                    MarkAsModified();
 
-                AssetDatabaseManager.SaveAssets();
-                AssetDatabaseManager.Refresh();
+                    AssetDatabaseManager.SaveAssets();
+                    AssetDatabaseManager.Refresh();
+                }
+            }
+        }
+
+        [ButtonGroup(nameof(PREFAB_TOP),    Order = PREFAB_TOP_CLEAR)]
+        [ButtonGroup(nameof(PREFAB_BOTTOM), Order = PREFAB_BOTTOM_CLEAR)]
+        private void ClearPrefabs()
+        {
+            using (_PRF_ClearPrefabs.Auto())
+            {
+                _prefabs.Clear();
+                MarkAsModified();
             }
         }
 
@@ -158,6 +170,9 @@ namespace Appalachia.Core.Objects.Root
         }
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_ClearPrefabs =
+            new ProfilerMarker(_PRF_PFX + nameof(ClearPrefabs));
 
         private static readonly ProfilerMarker _PRF_UpdatePrefabs =
             new ProfilerMarker(_PRF_PFX + nameof(UpdatePrefabs));

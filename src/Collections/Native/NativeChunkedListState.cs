@@ -11,20 +11,13 @@ namespace Appalachia.Core.Collections.Native
     [StructLayout(LayoutKind.Sequential)]
     internal unsafe struct NativeChunkedListState
     {
-        /// <summary>
-        ///     The number of elements in a chunk
-        /// </summary>
-        internal int m_ChunkLength;
+        #region Fields and Autoproperties
 
         /// <summary>
-        ///     Array of chunks of elements. Length is <see cref="m_Capacity" />.
+        ///     Allocator used to create <see cref="m_Chunks" /> and
+        ///     <see cref="NativeChunkedListChunk.m_Values" />.
         /// </summary>
-        internal NativeChunkedListChunk* m_Chunks;
-
-        /// <summary>
-        ///     Number of elements contained
-        /// </summary>
-        internal int m_Length;
+        internal Allocator m_AllocatorLabel;
 
         /// <summary>
         ///     Number of elements that can be contained
@@ -32,9 +25,9 @@ namespace Appalachia.Core.Collections.Native
         internal int m_Capacity;
 
         /// <summary>
-        ///     Number of chunks contained
+        ///     The number of elements in a chunk
         /// </summary>
-        internal int m_ChunksLength;
+        internal int m_ChunkLength;
 
         /// <summary>
         ///     Number of chunks that can be contained
@@ -42,9 +35,20 @@ namespace Appalachia.Core.Collections.Native
         internal int m_ChunksCapacity;
 
         /// <summary>
-        ///     Allocator used to create <see cref="m_Chunks" /> and
-        ///     <see cref="NativeChunkedListChunk.m_Values" />.
+        ///     Number of chunks contained
         /// </summary>
-        internal Allocator m_AllocatorLabel;
+        internal int m_ChunksLength;
+
+        /// <summary>
+        ///     Number of elements contained
+        /// </summary>
+        internal int m_Length;
+
+        /// <summary>
+        ///     Array of chunks of elements. Length is <see cref="m_Capacity" />.
+        /// </summary>
+        internal NativeChunkedListChunk* m_Chunks;
+
+        #endregion
     }
 }

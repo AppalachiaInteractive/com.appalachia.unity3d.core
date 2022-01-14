@@ -12,6 +12,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 {
     public struct float4_EPAPI : IPAPI<float4>
     {
+        #region IPAPI<float4> Members
+
         public float4 Get(string key, float4 defaultValue, float4 low, float4 high)
         {
             var result = float4.zero;
@@ -34,6 +36,8 @@ namespace Appalachia.Core.Preferences.API.Editor
         {
             return EditorGUILayout.Vector4Field(label, value);
         }
+
+        #endregion
     }
 }
 

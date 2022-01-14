@@ -11,19 +11,25 @@ namespace Appalachia.Core.Collections
     [Serializable]
     public class AppaTemporalQueue<T> : AppaQueue<T>
     {
-        private const string _PRF_PFX = nameof(AppaTemporalQueue<T>) + ".";
-
-        private static readonly ProfilerMarker _PRF_Dequeue = new(_PRF_PFX + nameof(Dequeue));
-
-        private static readonly ProfilerMarker _PRF_ResetCurrent = new(_PRF_PFX + nameof(ResetCurrent));
-
-        private static readonly ProfilerMarker _PRF_CurrentOrNext = new(_PRF_PFX + nameof(CurrentOrNext));
+        #region Fields and Autoproperties
 
         [SerializeField] private T _current;
+
+        #endregion
 
         public bool HasCurrent => _current?.Equals(default) ?? false;
 
         public T Current => _current;
+
+        public override T Dequeue()
+        {
+            using (_PRF_Dequeue.Auto())
+            {
+                _current = base.Dequeue();
+
+                return _current;
+            }
+        }
 
         public T CurrentOrNext()
         {
@@ -51,14 +57,14 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        public override T Dequeue()
-        {
-            using (_PRF_Dequeue.Auto())
-            {
-                _current = base.Dequeue();
+        #region Profiling
 
-                return _current;
-            }
-        }
+        private const string _PRF_PFX = nameof(AppaTemporalQueue<T>) + ".";
+
+        private static readonly ProfilerMarker _PRF_Dequeue = new(_PRF_PFX + nameof(Dequeue));
+        private static readonly ProfilerMarker _PRF_ResetCurrent = new(_PRF_PFX + nameof(ResetCurrent));
+        private static readonly ProfilerMarker _PRF_CurrentOrNext = new(_PRF_PFX + nameof(CurrentOrNext));
+
+        #endregion
     }
 }

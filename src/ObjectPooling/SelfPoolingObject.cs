@@ -17,20 +17,6 @@ namespace Appalachia.Core.ObjectPooling
     public abstract class SelfPoolingObject<T> : SelfPoolingObject
         where T : SelfPoolingObject<T>, new()
     {
-        private static readonly ProfilerMarker _PRF_SelfPoolingObject_ExecuteInitialize =
-            new("SelfPoolingObject.ExecuteInitialize");
-
-        private static readonly ProfilerMarker _PRF_SelfPoolingObject_ExecuteReset =
-            new("SelfPoolingObject.ExecuteReset");
-
-        private static readonly ProfilerMarker _PRF_SelfPoolingObject_Get = new("SelfPoolingObject.Get");
-
-        private static readonly ProfilerMarker _PRF_SelfPoolingObject_Get_CreatePool =
-            new("SelfPoolingObject.Get.CreatePool");
-
-        private static readonly ProfilerMarker _PRF_SelfPoolingObject_Return =
-            new("SelfPoolingObject.Return");
-
         [Obsolete]
         protected SelfPoolingObject()
         {
@@ -40,16 +26,12 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
+        #region Static Fields and Autoproperties
+
         private static bool _initializing;
         private static ObjectPool<T> _internalPool;
 
-        public override void Return()
-        {
-            using (_PRF_SelfPoolingObject_Return.Auto())
-            {
-                _internalPool.Return((T) this);
-            }
-        }
+        #endregion
 
         public static T Get()
         {
@@ -72,6 +54,14 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
+        public override void Return()
+        {
+            using (_PRF_SelfPoolingObject_Return.Auto())
+            {
+                _internalPool.Return((T)this);
+            }
+        }
+
         private static void ExecuteInitialize(T obj)
         {
             using (_PRF_SelfPoolingObject_ExecuteInitialize.Auto())
@@ -87,5 +77,23 @@ namespace Appalachia.Core.ObjectPooling
                 obj.Reset();
             }
         }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_SelfPoolingObject_ExecuteInitialize =
+            new("SelfPoolingObject.ExecuteInitialize");
+
+        private static readonly ProfilerMarker _PRF_SelfPoolingObject_ExecuteReset =
+            new("SelfPoolingObject.ExecuteReset");
+
+        private static readonly ProfilerMarker _PRF_SelfPoolingObject_Get = new("SelfPoolingObject.Get");
+
+        private static readonly ProfilerMarker _PRF_SelfPoolingObject_Get_CreatePool =
+            new("SelfPoolingObject.Get.CreatePool");
+
+        private static readonly ProfilerMarker _PRF_SelfPoolingObject_Return =
+            new("SelfPoolingObject.Return");
+
+        #endregion
     }
 }

@@ -3,12 +3,10 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Preferences.API;
-using Appalachia.Core.Preferences.API.PlayerPrefs;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Mathematics;
 using Unity.Profiling;
 using UnityEngine;
-
 #if UNITY_EDITOR
 using Appalachia.Core.Preferences.API.Editor;
 #endif
@@ -19,16 +17,6 @@ namespace Appalachia.Core.Preferences
 {
     public class PREF_STATE<T> : PREF_STATE_BASE
     {
-        #region Profiling And Tracing Markers
-
-        private const string _PRF_PFX = nameof(PREF_STATE<T>) + ".";
-        private static readonly ProfilerMarker _PRF_PREF_STATE = new(_PRF_PFX + nameof(PREF_STATE<T>));
-        private static readonly ProfilerMarker _PRF_Add = new(_PRF_PFX + nameof(Add));
-        private static readonly ProfilerMarker _PRF_Sort = new(_PRF_PFX + nameof(Sort));
-        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
-
-        #endregion
-
         public PREF_STATE()
         {
             using (_PRF_PREF_STATE.Auto())
@@ -43,144 +31,144 @@ namespace Appalachia.Core.Preferences
                 if (typeT == typeof(bool))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    bool_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        bool_EPAPI
+#else
                     bool_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(Bounds))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    Bounds_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        Bounds_EPAPI
+#else
                     Bounds_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(Color))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    Color_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        Color_EPAPI
+#else
                     Color_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(Gradient))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    Gradient_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        Gradient_EPAPI
+#else
                     Gradient_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(double))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    double_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        double_EPAPI
+#else
                     double_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(float))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    float_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        float_EPAPI
+#else
                     float_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(float2))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    float2_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        float2_EPAPI
+#else
                     float2_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(float3))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    float3_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        float3_EPAPI
+#else
                     float3_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(float4))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    float4_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        float4_EPAPI
+#else
                     float4_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(int))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    int_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        int_EPAPI
+#else
                     int_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(quaternion))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    quaternion_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        quaternion_EPAPI
+#else
                     quaternion_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT == typeof(string))
                 {
                     API = new
-                    #if UNITY_EDITOR 
-                    string_EPAPI
-                    #else
+#if UNITY_EDITOR
+                        string_EPAPI
+#else
                     string_PPAPI
-                    #endif
-                    () as IPAPI<T>;
+#endif
+                        () as IPAPI<T>;
                 }
                 else if (typeT.IsEnum || (typeT == typeof(Enum)))
                 {
                     if (typeT.HasAttribute<FlagsAttribute>())
                     {
                         API = new
-                        #if UNITY_EDITOR 
-                        Flags_EPAPI
-                        #else
+#if UNITY_EDITOR
+                            Flags_EPAPI
+#else
                         Flags_PPAPI
-                        #endif
-                        <T>();   
+#endif
+                            <T>();
                     }
                     else
                     {
                         API = new
-                        #if UNITY_EDITOR 
-                        Enum_EPAPI
-                        #else
+#if UNITY_EDITOR
+                            Enum_EPAPI
+#else
                         Enum_PPAPI
-                        #endif
-                        <T>();                        
+#endif
+                            <T>();
                     }
                 }
                 else
@@ -203,9 +191,13 @@ namespace Appalachia.Core.Preferences
 
         #endregion
 
-        private bool _sorted;
+        #region Fields and Autoproperties
 
         public IPAPI<T> API { get; }
+
+        private bool _sorted;
+
+        #endregion
 
         public override void Awake()
         {
@@ -267,17 +259,12 @@ namespace Appalachia.Core.Preferences
             }
         }
 
+        #region Nested type: PrefComparer
+
         #region Nested Types
 
         public class PrefComparer : Comparer<PREF<T>>
         {
-            #region Profiling And Tracing Markers
-
-            private const string _PRF_PFX = nameof(PrefComparer) + ".";
-            private static readonly ProfilerMarker _PRF_Compare = new(_PRF_PFX + nameof(Compare));
-
-            #endregion
-
             public override int Compare(PREF<T> x, PREF<T> y)
             {
                 using (_PRF_Compare.Auto())
@@ -302,7 +289,26 @@ namespace Appalachia.Core.Preferences
                     return order != 0 ? order : string.Compare(x.Key, y.Key, StringComparison.Ordinal);
                 }
             }
+
+            #region Profiling
+
+            private const string _PRF_PFX = nameof(PrefComparer) + ".";
+            private static readonly ProfilerMarker _PRF_Compare = new(_PRF_PFX + nameof(Compare));
+
+            #endregion
         }
+
+        #endregion
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(PREF_STATE<T>) + ".";
+        private static readonly ProfilerMarker _PRF_PREF_STATE = new(_PRF_PFX + nameof(PREF_STATE<T>));
+        private static readonly ProfilerMarker _PRF_Add = new(_PRF_PFX + nameof(Add));
+        private static readonly ProfilerMarker _PRF_Sort = new(_PRF_PFX + nameof(Sort));
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
 
         #endregion
     }

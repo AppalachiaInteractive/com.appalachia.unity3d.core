@@ -16,7 +16,11 @@ namespace Appalachia.Core.Volumes.Parameters
             this.max = max;
         }
 
+        #region Fields and Autoproperties
+
         public float max;
+
+        #endregion
 
         public override float value
         {

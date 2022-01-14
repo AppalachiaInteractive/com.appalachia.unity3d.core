@@ -9,6 +9,8 @@ namespace Appalachia.Core.Objects.Dependencies
             AppalachiaRepositoryDependencyTracker dependent,
             AppalachiaRepositoryDependencyTracker dependency);
 
+        public event DependencyRegisteredHandler DependencyRegistered;
+
         public DependencyTrackingSubset(AppalachiaRepositoryDependencyTracker tracking)
         {
             _tracking = tracking;
@@ -20,46 +22,35 @@ namespace Appalachia.Core.Objects.Dependencies
         private readonly AppalachiaRepositoryDependencyTracker _tracking;
         private readonly List<AppalachiaRepositoryDependencyTracker> _dependencies;
 
-        private bool _dependenciesAreReady;
-
         #endregion
 
-        public bool DependenciesAreReady
+        public bool IsReady => DependenciesAreReady;
+
+        public IReadOnlyList<AppalachiaRepositoryDependencyTracker> Dependencies => _dependencies;
+
+        private bool DependenciesAreReady
         {
             get
             {
                 using (_PRF_DependenciesAreReady.Auto())
                 {
-                    if (_dependenciesAreReady)
-                    {
-                        return true;
-                    }
-
                     foreach (var dependency in _dependencies)
                     {
-                        if (!dependency.DependenciesAreReady)
+                        if (!dependency.IsReady)
                         {
                             return false;
                         }
                     }
-
-                    _dependenciesAreReady = true;
 
                     return true;
                 }
             }
         }
 
-        public IReadOnlyList<AppalachiaRepositoryDependencyTracker> Dependencies => _dependencies;
-
-        public event DependencyRegisteredHandler DependencyRegistered;
-
         internal void RegisterDependency(AppalachiaRepositoryDependencyTracker dependency)
         {
             using (_PRF_RegisterDependency.Auto())
             {
-                _dependenciesAreReady = false;
-
                 _dependencies.Add(dependency);
                 DependencyRegistered?.Invoke(_tracking, dependency);
             }

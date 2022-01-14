@@ -12,7 +12,11 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
+        #region Fields and Autoproperties
+
         private readonly TS[] _stats;
+
+        #endregion
 
         public TS this[int index] => _stats[index];
     }

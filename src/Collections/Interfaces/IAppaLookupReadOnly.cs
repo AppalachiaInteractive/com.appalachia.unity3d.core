@@ -15,11 +15,11 @@ namespace Appalachia.Core.Collections.Interfaces
         TValueList at { get; set; }
         TValue this[TKey key] { get; }
         bool ContainsKey(TKey key);
-        bool TryGet(TKey key, out TValue value);
-        int SumCounts(Func<TValue, int> counter);
-        TKey GetKeyByIndex(int i);
         TValue Get(TKey key);
         TValue GetByIndex(int i);
+        TKey GetKeyByIndex(int i);
         void IfPresent(TKey key, Action present, Action notPresent);
+        int SumCounts(Func<TValue, int> counter);
+        bool TryGet(TKey key, out TValue value);
     }
 }

@@ -154,7 +154,7 @@ namespace Appalachia.Core.Collections
         public void OnAfterDeserialize()
         {
             using var scope = APPASERIALIZE.OnAfterDeserialize();
-            
+
             using (_PRF_OnAfterDeserialize.Auto())
             {
                 _queue = new Queue<T>();
@@ -171,7 +171,7 @@ namespace Appalachia.Core.Collections
         public void OnBeforeSerialize()
         {
             using var scope = APPASERIALIZE.OnBeforeSerialize();
-            
+
             using (_PRF_OnBeforeSerialize.Auto())
             {
                 var length = _queue.Count;

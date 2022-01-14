@@ -11,6 +11,30 @@ namespace Appalachia.Core.Collections.Native
     public static class IJobParallelForRangedExtensions
     {
         /// <summary>
+        ///     Run a job synchronously
+        /// </summary>
+        /// <param name="jobData">
+        ///     Job to run
+        /// </param>
+        /// <param name="valuesLength">
+        ///     Length of the values to execute on.
+        /// </param>
+        /// <typeparam name="T">
+        ///     Type of job to run
+        /// </typeparam>
+        public static unsafe void RunRanged<T>(this T jobData, int valuesLength)
+            where T : struct, IJobParallelForRanged
+        {
+            var scheduleParams = new JobsUtility.JobScheduleParameters(
+                UnsafeUtility.AddressOf(ref jobData),
+                ParallelForJobStruct<T>.Initialize(),
+                new JobHandle(),
+                ScheduleMode.Run
+            );
+            JobsUtility.ScheduleParallelFor(ref scheduleParams, valuesLength, valuesLength);
+        }
+
+        /// <summary>
         ///     Run a job asynchronously
         /// </summary>
         /// <param name="jobData">
@@ -47,29 +71,7 @@ namespace Appalachia.Core.Collections.Native
             return JobsUtility.ScheduleParallelFor(ref scheduleParams, valuesLength, innerloopBatchCount);
         }
 
-        /// <summary>
-        ///     Run a job synchronously
-        /// </summary>
-        /// <param name="jobData">
-        ///     Job to run
-        /// </param>
-        /// <param name="valuesLength">
-        ///     Length of the values to execute on.
-        /// </param>
-        /// <typeparam name="T">
-        ///     Type of job to run
-        /// </typeparam>
-        public static unsafe void RunRanged<T>(this T jobData, int valuesLength)
-            where T : struct, IJobParallelForRanged
-        {
-            var scheduleParams = new JobsUtility.JobScheduleParameters(
-                UnsafeUtility.AddressOf(ref jobData),
-                ParallelForJobStruct<T>.Initialize(),
-                new JobHandle(),
-                ScheduleMode.Run
-            );
-            JobsUtility.ScheduleParallelFor(ref scheduleParams, valuesLength, valuesLength);
-        }
+        #region Nested type: ParallelForJobStruct
 
         /// <summary>
         ///     Supporting functionality for <see cref="IJobParallelForRanged" />
@@ -77,30 +79,6 @@ namespace Appalachia.Core.Collections.Native
         internal struct ParallelForJobStruct<TJob>
             where TJob : struct, IJobParallelForRanged
         {
-            /// <summary>
-            ///     Cached job type reflection data
-            /// </summary>
-            public static IntPtr jobReflectionData;
-
-            /// <summary>
-            ///     Initialize the job type
-            /// </summary>
-            /// <returns>
-            ///     Reflection data for the job type
-            /// </returns>
-            public static IntPtr Initialize()
-            {
-                if (jobReflectionData == IntPtr.Zero)
-                {
-                    jobReflectionData = JobsUtility.CreateJobReflectionData(
-                        typeof(TJob),
-                        (ExecuteJobFunction) Execute
-                    );
-                }
-
-                return jobReflectionData;
-            }
-
             /// <summary>
             ///     Delegate type for <see cref="Execute" />
             /// </summary>
@@ -110,6 +88,15 @@ namespace Appalachia.Core.Collections.Native
                 IntPtr bufferRangePatchData,
                 ref JobRanges ranges,
                 int jobIndex);
+
+            #region Static Fields and Autoproperties
+
+            /// <summary>
+            ///     Cached job type reflection data
+            /// </summary>
+            public static IntPtr jobReflectionData;
+
+            #endregion
 
             /// <summary>
             ///     Execute the job until there are no more work stealing ranges
@@ -152,6 +139,27 @@ namespace Appalachia.Core.Collections.Native
                     jobData.Execute(startIndex, endIndex);
                 }
             }
+
+            /// <summary>
+            ///     Initialize the job type
+            /// </summary>
+            /// <returns>
+            ///     Reflection data for the job type
+            /// </returns>
+            public static IntPtr Initialize()
+            {
+                if (jobReflectionData == IntPtr.Zero)
+                {
+                    jobReflectionData = JobsUtility.CreateJobReflectionData(
+                        typeof(TJob),
+                        (ExecuteJobFunction)Execute
+                    );
+                }
+
+                return jobReflectionData;
+            }
         }
+
+        #endregion
     }
 }

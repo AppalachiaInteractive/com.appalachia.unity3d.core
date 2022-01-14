@@ -8,6 +8,12 @@ namespace Appalachia.Core.Comparisons
     public class ObjectComparer<T> : IEqualityComparer<T>, IComparer<T>
         where T : Object
     {
+        #region Static Fields and Autoproperties
+
+        private static ObjectComparer<T> _instance;
+
+        #endregion
+
         public static ObjectComparer<T> Instance
         {
             get
@@ -21,7 +27,7 @@ namespace Appalachia.Core.Comparisons
             }
         }
 
-        private static ObjectComparer<T> _instance;
+        #region IComparer<T> Members
 
         public int Compare(T x, T y)
         {
@@ -43,7 +49,12 @@ namespace Appalachia.Core.Comparisons
             return string.Compare(x.name, y.name, StringComparison.Ordinal);
         }
 
-        [DebuggerStepThrough] public bool Equals(T x, T y)
+        #endregion
+
+        #region IEqualityComparer<T> Members
+
+        [DebuggerStepThrough]
+        public bool Equals(T x, T y)
         {
             if ((x == null) && (y == null))
             {
@@ -58,9 +69,12 @@ namespace Appalachia.Core.Comparisons
             return x.Equals(y);
         }
 
-        [DebuggerStepThrough] public int GetHashCode(T obj)
+        [DebuggerStepThrough]
+        public int GetHashCode(T obj)
         {
             return obj.GetHashCode();
         }
+
+        #endregion
     }
 }

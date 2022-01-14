@@ -48,11 +48,12 @@ namespace Appalachia.Core.Preferences
 
         #region Static Fields and Autoproperties
 
-        private static bool _updateRegistered;
         public static bool _safeToAwaken;
         public static float characterSize = 7f;
         public static float indentSize = 25f;
         public static List<string> _groupings = new(128);
+
+        private static bool _updateRegistered;
         private static Dictionary<Type, MethodInfo> _DoDrawLookup;
         private static Dictionary<Type, MethodInfo> _DoDrawUILookup;
         private static Dictionary<Type, MethodInfo> _GetEnumStateLookup;
@@ -559,7 +560,7 @@ namespace Appalachia.Core.Preferences
                     _updateRegistered = false;
                 }
 #endif
-                
+
                 _safeToAwaken = true;
 
                 _bools.Awake();
@@ -617,6 +618,5 @@ namespace Appalachia.Core.Preferences
             new ProfilerMarker(_PRF_PFX + nameof(InitializeReflectionDrawingMetadata));
 
         #endregion
-
     }
 }

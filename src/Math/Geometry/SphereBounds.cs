@@ -16,71 +16,19 @@ namespace Appalachia.Core.Math.Geometry
             this.radius = radius;
         }
 
-        public float3 center;
+        #region Fields and Autoproperties
+
         public float radius;
 
-        public bool Contains(Vector3 position)
-        {
-            return Contains((float3) position);
-        }
+        public float3 center;
 
-        public bool Contains(float3 position)
-        {
-            return math.distance(position, center) <= radius;
-        }
-
-        public bool Intersects(SphereBounds sb)
-        {
-            var distance = math.distance(sb.center, center);
-
-            return distance < (sb.radius + radius);
-        }
+        #endregion
 
         public bool ContainedBy(SphereBounds sb)
         {
             var dist = math.distance(sb.center, center);
 
             return (dist + radius) <= sb.radius;
-        }
-
-        public bool IsOutsideOf(SphereBounds b)
-        {
-            return !(ContainedBy(b) || Intersects(b));
-        }
-
-        public float DistanceToPlane(float3 planeNormal, float planeDistance, float3 point)
-        {
-            return math.dot(planeNormal, point) + planeDistance;
-        }
-
-        public bool IsInsidePlane(Plane p)
-        {
-            return IsInsidePlane(p.normal, p.distance);
-        }
-
-        public bool IsOutsidePlane(Plane p)
-        {
-            return IsOutsidePlane(p.normal, p.distance);
-        }
-
-        public bool IntersectsPlane(Plane p)
-        {
-            return IntersectsPlane(p.normal, p.distance);
-        }
-
-        public bool IsInsidePlane(float3 planeNormal, float planeDistance)
-        {
-            return -DistanceToPlane(planeNormal, planeDistance, center) > radius;
-        }
-
-        public bool IsOutsidePlane(float3 planeNormal, float planeDistance)
-        {
-            return DistanceToPlane(planeNormal, planeDistance, center) > radius;
-        }
-
-        public bool IntersectsPlane(float3 planeNormal, float planeDistance)
-        {
-            return math.abs(DistanceToPlane(planeNormal, planeDistance, center)) <= radius;
         }
 
         public bool ContainedBy(Bounds bounds)
@@ -118,6 +66,21 @@ namespace Appalachia.Core.Math.Geometry
             return true;
         }
 
+        public bool Contains(Vector3 position)
+        {
+            return Contains((float3)position);
+        }
+
+        public bool Contains(float3 position)
+        {
+            return math.distance(position, center) <= radius;
+        }
+
+        public float DistanceToPlane(float3 planeNormal, float planeDistance, float3 point)
+        {
+            return math.dot(planeNormal, point) + planeDistance;
+        }
+
         public bool DoesIntersectPlane(Plane p, out float3 intersectionPoint, out float radiusAtIntersection)
         {
             return DoesIntersectPlane(p.normal, p.distance, out intersectionPoint, out radiusAtIntersection);
@@ -134,6 +97,13 @@ namespace Appalachia.Core.Math.Geometry
             intersectionPoint = center - proj;
             radiusAtIntersection = math.sqrt(math.max((radius * radius) - (d * d), 0));
             return math.abs(d) <= radius;
+        }
+
+        public bool Intersects(SphereBounds sb)
+        {
+            var distance = math.distance(sb.center, center);
+
+            return distance < (sb.radius + radius);
         }
 
         public bool Intersects(Bounds b)
@@ -210,9 +180,44 @@ namespace Appalachia.Core.Math.Geometry
             return false;
         }
 
+        public bool IntersectsPlane(Plane p)
+        {
+            return IntersectsPlane(p.normal, p.distance);
+        }
+
+        public bool IntersectsPlane(float3 planeNormal, float planeDistance)
+        {
+            return math.abs(DistanceToPlane(planeNormal, planeDistance, center)) <= radius;
+        }
+
+        public bool IsInsidePlane(Plane p)
+        {
+            return IsInsidePlane(p.normal, p.distance);
+        }
+
+        public bool IsInsidePlane(float3 planeNormal, float planeDistance)
+        {
+            return -DistanceToPlane(planeNormal, planeDistance, center) > radius;
+        }
+
+        public bool IsOutsideOf(SphereBounds b)
+        {
+            return !(ContainedBy(b) || Intersects(b));
+        }
+
         public bool IsOutsideOf(Bounds b)
         {
             return !(ContainedBy(b) || Intersects(b));
+        }
+
+        public bool IsOutsidePlane(Plane p)
+        {
+            return IsOutsidePlane(p.normal, p.distance);
+        }
+
+        public bool IsOutsidePlane(float3 planeNormal, float planeDistance)
+        {
+            return DistanceToPlane(planeNormal, planeDistance, center) > radius;
         }
 
         /*public bool IntersectsRay(Ray r)

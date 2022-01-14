@@ -9,6 +9,8 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 {
     public struct Bounds_PPAPI : IPAPI<Bounds>
     {
+        #region IPAPI<Bounds> Members
+
         public Bounds Get(string key, Bounds defaultValue, Bounds low, Bounds high)
         {
             var result = default(Bounds);
@@ -52,5 +54,7 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
             return value;
             /*return EditorGUILayout.BoundsField(label, value);*/
         }
+
+        #endregion
     }
 }

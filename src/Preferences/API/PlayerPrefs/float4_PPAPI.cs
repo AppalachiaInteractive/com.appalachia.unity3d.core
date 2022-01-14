@@ -9,6 +9,8 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 {
     public struct float4_PPAPI : IPAPI<float4>
     {
+        #region IPAPI<float4> Members
+
         public float4 Get(string key, float4 defaultValue, float4 low, float4 high)
         {
             var result = float4.zero;
@@ -28,9 +30,11 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
         }
 
         public float4 Draw(string key, string label, float4 value, float4 low, float4 high)
-        {            
+        {
             return value;
             /*return EditorGUILayout.Vector4Field(label, value);*/
         }
+
+        #endregion
     }
 }

@@ -8,17 +8,15 @@ namespace Appalachia.Core.Context.Contexts
 {
     public abstract class AppaMenuContext : AppaUIContext
     {
-        #region Profiling And Tracing Markers
-
-        private const string _PRF_PFX = nameof(AppaMenuContext) + ".";
-
-        #endregion
-
-        private AppaMenuSelection[] _menuSelections;
+        #region Fields and Autoproperties
 
         public virtual bool NeedsProgressDraw { get; }
 
         public string ProgressVerb { get; set; }
+
+        private AppaMenuSelection[] _menuSelections;
+
+        #endregion
 
         public abstract int RequiredMenuCount { get; }
         public virtual float MenuWidth => 300f;
@@ -39,21 +37,9 @@ namespace Appalachia.Core.Context.Contexts
 
         public abstract void ValidateMenuSelection(int menuIndex);
 
-        protected abstract void OnReset();
-
         public virtual AppaProgress GetProgress()
         {
             return default;
-        }
-
-        // ReSharper disable once UnusedParameter.Global
-        protected virtual void OnAfterChangeMenuSelection(int menuIndex)
-        {
-        }
-
-        // ReSharper disable once UnusedParameter.Global
-        protected virtual void OnBeforeChangeMenuSelection(int menuIndex)
-        {
         }
 
         public bool ChangeMenuSelection(int menuIndex, bool up)
@@ -115,6 +101,18 @@ namespace Appalachia.Core.Context.Contexts
             OnReset();
         }
 
+        protected abstract void OnReset();
+
+        // ReSharper disable once UnusedParameter.Global
+        protected virtual void OnAfterChangeMenuSelection(int menuIndex)
+        {
+        }
+
+        // ReSharper disable once UnusedParameter.Global
+        protected virtual void OnBeforeChangeMenuSelection(int menuIndex)
+        {
+        }
+
         protected override IEnumerable<AppaProgress> OnPostInitialize(AppaProgressCounter pc)
         {
             InitializeMenuSelections();
@@ -159,5 +157,11 @@ namespace Appalachia.Core.Context.Contexts
                 }
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(AppaMenuContext) + ".";
+
+        #endregion
     }
 }

@@ -10,8 +10,6 @@ namespace Appalachia.Core.Aspects.Profiling
 {
     public class ProfilerMarkerSet : DisposableAspectSet<ProfilerMarker>
     {
-        private static readonly ProfilerMarker _marker_Create = new("ProfilerMarkerSet.Create");
-
         public override IDisposable Initiate(ProfilerMarker instance)
         {
             return instance.Auto();
@@ -38,5 +36,11 @@ namespace Appalachia.Core.Aspects.Profiling
                 return marker;
             }
         }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _marker_Create = new("ProfilerMarkerSet.Create");
+
+        #endregion
     }
 }

@@ -16,30 +16,42 @@ namespace Appalachia.Core.Overrides
     [ResolverPriority(500)]
     public class OverrideableAttributeProcessor : OdinAttributeProcessor
     {
+        #region Constants and Static Readonly
+
+        private const string VALUE_FIELD_NAME = "_value";
+
+        #endregion
+
         public override void ProcessChildMemberAttributes(
             InspectorProperty parentProperty,
             MemberInfo member,
             List<Attribute> attributes)
         {
-            if (member.Name != "value")
+            var overridableFieldNames = new HashSet<string> { VALUE_FIELD_NAME };
+
+            if (!overridableFieldNames.Contains(member.Name))
             {
                 return;
             }
 
-            var thisType = member.GetReturnType();
+            var parentFieldInfo = parentProperty.Info.GetMemberInfo();
 
-            var atties = parentProperty.Info.GetMemberInfo()?.GetAttributes_CACHE();
+            var atties = parentFieldInfo?.GetAttributes_CACHE(true);
 
-            if (atties != null)
+            if (atties == null)
             {
-                foreach (var attribute in atties)
+                return;
+            }
+
+            for (var index = 0; index < atties.Length; index++)
+            {
+                var attribute = atties[index];
+
+                if (member.Name == VALUE_FIELD_NAME)
                 {
                     if (ShouldPushToChildren(attribute))
                     {
-                        if (member.Name == "value")
-                        {
-                            attributes.Add(attribute);
-                        }
+                        attributes.Add(attribute);
                     }
                 }
             }
@@ -68,11 +80,6 @@ namespace Appalachia.Core.Overrides
 
         private static bool ShouldPushToChildren(Attribute a)
         {
-            if (a is OnValueChangedAttribute)
-            {
-                return true;
-            }
-
             if (a is PropertyRangeAttribute)
             {
                 return true;

@@ -12,6 +12,10 @@ namespace Appalachia.Core.Volumes.Components
             this.menu = menu;
         }
 
+        #region Fields and Autoproperties
+
         public readonly string menu;
+
+        #endregion
     }
 }

@@ -418,13 +418,13 @@ namespace Appalachia.Core.Collections
             set => initializerCount = value;
         }
 
-        public void SetObjectOwnership(Object owner)
+        public void SetSerializationOwner(Object owner)
         {
             _object = owner;
             _markAsModifiedAction = owner.MarkAsModified;
         }
 
-        public void SetObjectOwnership(Object owner, Action markAsModifiedAction)
+        public void SetSerializationOwner(Object owner, Action markAsModifiedAction)
         {
             _markAsModifiedAction = markAsModifiedAction;
             _object = owner;

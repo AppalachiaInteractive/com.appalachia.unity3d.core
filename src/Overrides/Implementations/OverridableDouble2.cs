@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableDouble2(bool overrideEnabled, double2 value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableDouble2(bool overrideEnabled, double2 value) : base(overrideEnabled, value)
         {
         }
 

@@ -6,14 +6,20 @@ namespace Appalachia.Core.Math.Probability
 {
     public struct WeightedRandomizer
     {
+        #region Fields and Autoproperties
+
         public List<float> weights;
 
-        [DebuggerStepThrough] public static implicit operator WeightedRandomizer(int _)
+        #endregion
+
+        [DebuggerStepThrough]
+        public static implicit operator WeightedRandomizer(int _)
         {
-            return new() {weights = new List<float>()};
+            return new() { weights = new List<float>() };
         }
 
-        [DebuggerStepThrough] public static int operator %(WeightedRandomizer rand, int count)
+        [DebuggerStepThrough]
+        public static int operator %(WeightedRandomizer rand, int count)
         {
             float sum;
             int i;

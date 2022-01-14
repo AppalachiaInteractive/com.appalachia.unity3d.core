@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableRect(bool overrideEnabled, Rect value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableRect(bool overrideEnabled, Rect value) : base(overrideEnabled, value)
         {
         }
 

@@ -10,6 +10,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 {
     public struct string_EPAPI : IPAPI<string>
     {
+        #region IPAPI<string> Members
+
         public string Get(string key, string defaultValue, string low, string high)
         {
             return EditorPrefs.GetString(key, defaultValue);
@@ -24,6 +26,8 @@ namespace Appalachia.Core.Preferences.API.Editor
         {
             return EditorGUILayout.TextField(label, value);
         }
+
+        #endregion
     }
 }
 

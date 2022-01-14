@@ -9,7 +9,11 @@ namespace Appalachia.Core.Collections.Native
             _mArray = array;
         }
 
+        #region Fields and Autoproperties
+
         private readonly NativeKeyArray2D<TK, TV> _mArray;
+
+        #endregion
 
         public TK[] Keys => _mArray.ToKeyArray();
 

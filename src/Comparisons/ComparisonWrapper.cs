@@ -10,11 +10,19 @@ namespace Appalachia.Core.Comparisons
             _comparison = comparison;
         }
 
+        #region Fields and Autoproperties
+
         private readonly Comparison<T> _comparison;
+
+        #endregion
+
+        #region IComparer<T> Members
 
         public int Compare(T x, T y)
         {
             return _comparison?.Invoke(x, y) ?? 0;
         }
+
+        #endregion
     }
 }

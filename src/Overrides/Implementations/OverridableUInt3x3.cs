@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableUInt3x3(bool overrideEnabled, uint3x3 value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableUInt3x3(bool overrideEnabled, uint3x3 value) : base(overrideEnabled, value)
         {
         }
 

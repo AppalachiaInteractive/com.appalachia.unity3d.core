@@ -6,14 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
-using Appalachia.CI.Integration.FileSystem;
 using Appalachia.Core.Objects.Collections;
 using Appalachia.Core.Objects.Models;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
-using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -24,11 +22,17 @@ namespace Appalachia.Core.Objects.Root
 {
     public sealed partial class AppalachiaRepository
     {
-        private const int SINGLETON_OFFSET = 50;
+        #region Constants and Static Readonly
+
         private const int SINGLETON_BOTTOM = REPO_BOTTOM + SINGLETON_OFFSET;
-        private const int SINGLETON_TOP = REPO_TOP + SINGLETON_OFFSET;
+        private const int SINGLETON_BOTTOM_CLEAR = SINGLETON_BOTTOM + 20;
         private const int SINGLETON_BOTTOM_SORT = SINGLETON_BOTTOM + 10;
+        private const int SINGLETON_OFFSET = 50;
+        private const int SINGLETON_TOP = REPO_TOP + SINGLETON_OFFSET;
+        private const int SINGLETON_TOP_CLEAR = SINGLETON_TOP + 20;
         private const int SINGLETON_TOP_SORT = SINGLETON_TOP + 10;
+
+        #endregion
 
         #region Fields and Autoproperties
 
@@ -47,20 +51,39 @@ namespace Appalachia.Core.Objects.Root
         [ButtonGroup(nameof(SINGLETON_BOTTOM), Order = SINGLETON_BOTTOM)]
         public void UpdateSingletons()
         {
+            const string assetExtension = "asset";
+
             using (_PRF_UpdateSingletons.Auto())
             {
-                _singletons ??= new AppalachiaRepositorySingletonReferenceList();
-                _editorSingletons ??= new AppalachiaRepositorySingletonReferenceList();
-                _singletonLookup ??= new Dictionary<Type, AppalachiaRepositorySingletonReference>();
+                InitializeSingletons();
+
+                for (var index = _singletons.Count - 1; index >= 0; index--)
+                {
+                    var singleton = _singletons[index];
+                    if (singleton.assetReference.AssetGUID.IsNullOrWhiteSpace())
+                    {
+                        _singletons.RemoveAt(index);
+                    }
+                }
+
+                for (var index = _editorSingletons.Count - 1; index >= 0; index--)
+                {
+                    var singleton = _editorSingletons[index];
+
+                    if (singleton.editorAsset == null)
+                    {
+                        _editorSingletons.RemoveAt(index);
+                    }
+                }
+
+                _singletonLookup.Clear();
+                PopulateSingletonLookup(_singletonLookup, _singletons);
+                PopulateSingletonLookup(_singletonLookup, _editorSingletons);
 
                 if (AppalachiaApplication.IsPlaying)
                 {
                     return;
                 }
-
-                _singletons.Clear();
-                _editorSingletons.Clear();
-                _singletonLookup.Clear();
 
                 var baseSingletonObjectType = typeof(SingletonAppalachiaObject<>);
 
@@ -70,70 +93,75 @@ namespace Appalachia.Core.Objects.Root
                                                        .Select(ms => ms.GetClass())
                                                        .ToHashSet();
 
+                var addedAny = false;
+
                 foreach (var path in allAssetPaths)
                 {
-                    if (!AppaFile.Exists(path))
+                    if (!path.HasExtension(assetExtension))
                     {
                         continue;
                     }
 
-                    if (AppaDirectory.Exists(path))
+                    if (path.FileDoesNotExist)
                     {
                         continue;
                     }
 
-                    if (!path.EndsWith(".asset"))
+                    var objectAtPath =
+                        AssetDatabaseManager.LoadMainAssetAtPath(path.relativePath) as ScriptableObject;
+
+                    if (objectAtPath == null)
                     {
                         continue;
                     }
 
-                    var allObjectsAtPath = AssetDatabaseManager.LoadAllAssetsAtPath(path);
+                    var typeAtPath = objectAtPath.GetType();
 
-                    for (var i = 0; i < allObjectsAtPath.Length; i++)
+                    if (!typeAtPath.InheritsFrom(baseSingletonObjectType))
                     {
-                        var objectAtPath = allObjectsAtPath[i] as ScriptableObject;
-
-                        if (objectAtPath == null)
-                        {
-                            continue;
-                        }
-
-                        var typeAtPath = objectAtPath.GetType();
-
-                        if (!typeAtPath.InheritsFrom(baseSingletonObjectType))
-                        {
-                            continue;
-                        }
-
-                        if (objectAtPath.name != typeAtPath.Name)
-                        {
-                            objectAtPath.name = typeAtPath.Name;
-
-                            var directory = AppaPath.GetDirectoryName(path);
-                            var extension = AppaPath.GetExtension(path);
-
-                            var newName = AppaPath.Combine(
-                                directory,
-                                ZString.Format("{0}{1}", typeAtPath.Name, extension)
-                            );
-
-                            AppaFile.Move(path, newName);
-                        }
-
-                        if (_singletonLookup.ContainsKey(typeAtPath))
-                        {
-                            var existingInstance = _singletonLookup[typeAtPath];
-
-                            Context.Log.Error("Duplicate types! (Instance 1)", objectAtPath);
-                            Context.Log.Error(
-                                "Duplicate types! (Instance 2)",
-                                existingInstance.assetReference
-                            );
-                            continue;
-                        }
-
-                        StoreNewSingletonReference(objectAtPath, typeAtPath, runtimeTypes);
+                        continue;
                     }
+
+                    if (_singletonLookup.ContainsKey(typeAtPath))
+                    {
+                        var existingInstance = _singletonLookup[typeAtPath];
+
+                        if ((existingInstance.assetReference.editorAsset == null) &&
+                            (existingInstance.TypeName == objectAtPath.name))
+                        {
+                            continue; // editor only reference
+                        }
+
+                        if (existingInstance.assetReference.editorAsset == objectAtPath)
+                        {
+                            continue;
+                        }
+
+                        Context.Log.Error("Duplicate types! (Instance 1)", objectAtPath);
+                        Context.Log.Error("Duplicate types! (Instance 2)", existingInstance.assetReference);
+
+                        continue;
+                    }
+
+                    if (objectAtPath.name != typeAtPath.Name)
+                    {
+                        objectAtPath.name = typeAtPath.Name;
+
+                        AssetDatabaseManager.RenameAsset(path.relativePath, typeAtPath.Name);
+                        /*
+                         var directory = AppaPath.GetDirectoryName(path.relativePath);
+                        var extension = path.extension;
+
+                        var newName = AppaPath.Combine(
+                            directory,
+                            ZString.Format("{0}{1}", typeAtPath.Name, extension)
+                        );
+
+                        AppaFile.Move(path.relativePath, newName);*/
+                    }
+
+                    addedAny = true;
+                    StoreNewSingletonReference(objectAtPath, typeAtPath, runtimeTypes);
                 }
 
                 var concreteSingletonObjectTypes = baseSingletonObjectType.GetAllConcreteInheritors();
@@ -142,17 +170,17 @@ namespace Appalachia.Core.Objects.Root
                 {
                     var concreteSingletonObjectType = concreteSingletonObjectTypes[index];
 
+                    if (_singletonLookup.ContainsKey(concreteSingletonObjectType))
+                    {
+                        continue;
+                    }
+
                     if (concreteSingletonObjectType.IsAbstract)
                     {
                         continue;
                     }
 
                     if (concreteSingletonObjectType == typeof(AppalachiaRepository))
-                    {
-                        continue;
-                    }
-
-                    if (_singletonLookup.ContainsKey(concreteSingletonObjectType))
                     {
                         continue;
                     }
@@ -172,14 +200,31 @@ namespace Appalachia.Core.Objects.Root
                         );
                     }
 
+                    addedAny = true;
                     StoreNewSingletonReference(assetInstance, concreteSingletonObjectType, runtimeTypes);
                 }
 
-                Sort();
-                MarkAsModified();
+                if (addedAny)
+                {
+                    Sort();
+                    MarkAsModified();
 
-                AssetDatabaseManager.SaveAssets();
-                AssetDatabaseManager.Refresh();
+                    AssetDatabaseManager.SaveAssets();
+                    AssetDatabaseManager.Refresh();
+                }
+            }
+        }
+
+        [ButtonGroup(nameof(SINGLETON_TOP),    Order = SINGLETON_TOP_CLEAR)]
+        [ButtonGroup(nameof(SINGLETON_BOTTOM), Order = SINGLETON_BOTTOM_CLEAR)]
+        private void ClearSingletons()
+        {
+            using (_PRF_ClearSingletons.Auto())
+            {
+                _singletons.Clear();
+                _editorSingletons.Clear();
+
+                MarkAsModified();
             }
         }
 
@@ -192,8 +237,8 @@ namespace Appalachia.Core.Objects.Root
                 _singletons.Sort(
                     (s1, s2) => string.Compare(s1.TypeName, s2.TypeName, StringComparison.Ordinal)
                 );
-                _prefabs.Sort(
-                    (s1, s2) => string.Compare(s1.PrefabAddress, s2.PrefabAddress, StringComparison.Ordinal)
+                _editorSingletons.Sort(
+                    (s1, s2) => string.Compare(s1.TypeName, s2.TypeName, StringComparison.Ordinal)
                 );
                 MarkAsModified();
             }
@@ -232,11 +277,21 @@ namespace Appalachia.Core.Objects.Root
                     _editorSingletons.Add(repositorySingletonAssetReference);
                 }
 
-                _singletonLookup.Add(typeAtPath, repositorySingletonAssetReference);
+                if (_singletonLookup.ContainsKey(typeAtPath))
+                {
+                    _singletonLookup[typeAtPath] = repositorySingletonAssetReference;
+                }
+                else
+                {
+                    _singletonLookup.Add(typeAtPath, repositorySingletonAssetReference);
+                }
             }
         }
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_ClearSingletons =
+            new ProfilerMarker(_PRF_PFX + nameof(ClearSingletons));
 
         private static readonly ProfilerMarker _PRF_SortSingletons =
             new ProfilerMarker(_PRF_PFX + nameof(SortSingletons));

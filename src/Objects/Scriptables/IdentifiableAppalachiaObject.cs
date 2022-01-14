@@ -40,12 +40,6 @@ namespace Appalachia.Core.Objects.Scriptables
         protected virtual bool ShowIDProperties => true;
 #endif
 
-        #region Profiling
-
-        private const string _PRF_PFX = nameof(IdentifiableAppalachiaObject<T>) + ".";
-
-        #endregion
-
         #region IComparable
 
         [DebuggerStepThrough]
@@ -225,9 +219,6 @@ namespace Appalachia.Core.Objects.Scriptables
                 }
             }
         }
-
-        private static readonly ProfilerMarker _PRF_AwakeActual =
-            new ProfilerMarker(_PRF_PFX + nameof(AwakeActual));
 
         protected override void AwakeActual()
         {

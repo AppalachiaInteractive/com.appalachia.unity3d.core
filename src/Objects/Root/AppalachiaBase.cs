@@ -1,4 +1,5 @@
 using Appalachia.Utility.Async;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Core.Objects.Root
@@ -41,7 +42,13 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(AppalachiaBase<T>) + ".";
+        protected const string _PRF_PFX = nameof(AppalachiaBase<T>) + ".";
+
+        protected static readonly ProfilerMarker _PRF_Initialize =
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        protected static readonly ProfilerMarker _PRF_WhenEnabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenEnabled));
 
         #endregion
     }

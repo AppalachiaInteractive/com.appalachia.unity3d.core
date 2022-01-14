@@ -13,6 +13,10 @@ namespace Appalachia.Core.Attributes
             Order = order;
         }
 
+        #region Fields and Autoproperties
+
         public short Order;
+
+        #endregion
     }
 }

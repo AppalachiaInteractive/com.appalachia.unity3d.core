@@ -8,40 +8,6 @@ namespace Appalachia.Core.ObjectPooling
     public class ObjectPool<T> : IDisposable
         where T : class
     {
-        private static readonly ProfilerMarker _PRF_ObjectPool_Dispose = new("ObjectPool.Dispose");
-        private static readonly ProfilerMarker _PRF_ObjectPool_Get = new("ObjectPool.Get");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Get_CustomPreGet =
-            new("ObjectPool.Get.CustomPreGet");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Get_DisposalCheck =
-            new("ObjectPool.Get.DisposalCheck");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck =
-            new("ObjectPool.Get.ListCheck");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck_Add =
-            new("ObjectPool.Get.ListCheck.Add");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck_GetLast =
-            new("ObjectPool.Get.ListCheck.GetLast");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck_RemoveLast =
-            new("ObjectPool.Get.ListCheck.RemoveLast");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_ObjectPool = new("ObjectPool.ObjectPool");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Return = new("ObjectPool.Return");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Return_CustomReset =
-            new("ObjectPool.Return.CustomReset");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Return_OnReset =
-            new("ObjectPool.Return.CustomReset");
-
-        private static readonly ProfilerMarker _PRF_ObjectPool_Return_SelfPoolReset =
-            new("ObjectPool.Return.SelfPoolReset");
-
         public ObjectPool(Func<T> customAdd) : this(customAdd, null)
         {
         }
@@ -65,6 +31,8 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
+        #region Fields and Autoproperties
+
         protected volatile bool _isDisposed;
 
         private protected readonly AppaList<T> _list;
@@ -75,6 +43,8 @@ namespace Appalachia.Core.ObjectPooling
         private readonly bool _selfPooling;
 
         private readonly Func<T> _customAdd;
+
+        #endregion
 
         public bool IsDisposed => _isDisposed;
 
@@ -148,16 +118,6 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
-        public void Dispose()
-        {
-            using (_PRF_ObjectPool_Dispose.Auto())
-            {
-                _isDisposed = true;
-
-                OnDispose();
-            }
-        }
-
         protected virtual void OnDispose()
         {
         }
@@ -170,5 +130,57 @@ namespace Appalachia.Core.ObjectPooling
         {
             _list.Add(obj);
         }
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            using (_PRF_ObjectPool_Dispose.Auto())
+            {
+                _isDisposed = true;
+
+                OnDispose();
+            }
+        }
+
+        #endregion
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Dispose = new("ObjectPool.Dispose");
+        private static readonly ProfilerMarker _PRF_ObjectPool_Get = new("ObjectPool.Get");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Get_CustomPreGet =
+            new("ObjectPool.Get.CustomPreGet");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Get_DisposalCheck =
+            new("ObjectPool.Get.DisposalCheck");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck =
+            new("ObjectPool.Get.ListCheck");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck_Add =
+            new("ObjectPool.Get.ListCheck.Add");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck_GetLast =
+            new("ObjectPool.Get.ListCheck.GetLast");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Get_ListCheck_RemoveLast =
+            new("ObjectPool.Get.ListCheck.RemoveLast");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_ObjectPool = new("ObjectPool.ObjectPool");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Return = new("ObjectPool.Return");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Return_CustomReset =
+            new("ObjectPool.Return.CustomReset");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Return_OnReset =
+            new("ObjectPool.Return.CustomReset");
+
+        private static readonly ProfilerMarker _PRF_ObjectPool_Return_SelfPoolReset =
+            new("ObjectPool.Return.SelfPoolReset");
+
+        #endregion
     }
 }

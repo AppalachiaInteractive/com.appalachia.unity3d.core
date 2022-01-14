@@ -2,21 +2,27 @@ using UnityEngine;
 
 namespace Appalachia.Core.Extensions
 {
-    public  readonly struct TexturePixel
+    public readonly struct TexturePixel
     {
-        public TexturePixel(Color pixel, int x, int y, int index, Texture2D texture, Color[] pixels)
+        public TexturePixel(
+            Color pixel,
+            int x,
+            int y,
+            int index,
+            Texture2D texture,
+            Color[] pixels)
         {
-            this.color = pixel;
+            color = pixel;
             this.x = x;
             this.y = y;
             this.index = index;
-            this.width = texture.width;
-            this.height = texture.height;
-            this.widthTime = x / (float)(texture.width - 1);
-            this.heightTime = y / (float)(texture.height - 1);
+            width = texture.width;
+            height = texture.height;
+            widthTime = x / (float)(texture.width - 1);
+            heightTime = y / (float)(texture.height - 1);
             this.pixels = pixels;
         }
-        
+
         #region Fields and Autoproperties
 
         public readonly Color color;

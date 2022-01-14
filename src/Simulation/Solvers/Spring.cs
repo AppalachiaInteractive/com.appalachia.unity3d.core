@@ -5,8 +5,24 @@ namespace Appalachia.Core.Simulation.Solvers
 {
     public struct Spring
     {
+        #region Fields and Autoproperties
+
         public Vector3 position;
         public Vector3 velocity;
+
+        #endregion
+
+        [DebuggerStepThrough]
+        public static implicit operator Vector3(Spring s)
+        {
+            return s.position;
+        }
+
+        [DebuggerStepThrough]
+        public override string ToString()
+        {
+            return position.ToString();
+        }
 
         public Spring Update(
             Vector3 target,
@@ -58,16 +74,6 @@ namespace Appalachia.Core.Simulation.Solvers
             position += velocity;
             velocity *= Mathf.Clamp01(1f - (dampening * dt));
             return this;
-        }
-
-        [DebuggerStepThrough] public static implicit operator Vector3(Spring s)
-        {
-            return s.position;
-        }
-
-        [DebuggerStepThrough] public override string ToString()
-        {
-            return position.ToString();
         }
     }
 } // Hapki.Solvers

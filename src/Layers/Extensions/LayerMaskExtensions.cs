@@ -11,9 +11,6 @@ namespace Appalachia.Core.Layers.Extensions
 {
     public static class LayerMaskExtensions
     {
-        private static readonly ProfilerMarker _PRF_LayerMaskExtensions_IsLayerInMask =
-            new("LayerMaskExtensions.IsLayerInMask");
-
         [BurstCompile]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsLayerInMask(this LayerMask layerMask, int layer)
@@ -23,5 +20,12 @@ namespace Appalachia.Core.Layers.Extensions
                 return layerMask == (layerMask | (1 << layer));
             }
         }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_LayerMaskExtensions_IsLayerInMask =
+            new("LayerMaskExtensions.IsLayerInMask");
+
+        #endregion
     }
 }

@@ -13,10 +13,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableDecimal(bool overrideEnabled, decimal value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableDecimal(bool overrideEnabled, decimal value) : base(overrideEnabled, value)
         {
         }
 

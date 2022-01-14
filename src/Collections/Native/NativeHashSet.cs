@@ -37,15 +37,19 @@ namespace Appalachia.Core.Collections.Native
         /// </summary>
         private struct NativeMultiHashSetIterator
         {
-            /// <summary>
-            ///     Currently iterated item
-            /// </summary>
-            internal T Item;
+            #region Fields and Autoproperties
 
             /// <summary>
             ///     Index of the next entry in the set
             /// </summary>
             internal int NextEntryIndex;
+
+            /// <summary>
+            ///     Currently iterated item
+            /// </summary>
+            internal T Item;
+
+            #endregion
         }
 
         /// <summary>
@@ -107,7 +111,7 @@ namespace Appalachia.Core.Collections.Native
             m_AllocatorLabel = allocator;
 
             // Allocate the state
-            var state = (NativeHashSetState*) UnsafeUtility.Malloc(
+            var state = (NativeHashSetState*)UnsafeUtility.Malloc(
                 sizeof(NativeHashSetState),
                 UnsafeUtility.AlignOf<NativeHashSetState>(),
                 allocator
@@ -124,7 +128,7 @@ namespace Appalachia.Core.Collections.Native
             int nextOffset;
             int bucketOffset;
             var totalSize = CalculateDataLayout(capacity, bucketLength, out nextOffset, out bucketOffset);
-            state->Items = (byte*) UnsafeUtility.Malloc(totalSize, JobsUtility.CacheLineSize, allocator);
+            state->Items = (byte*)UnsafeUtility.Malloc(totalSize, JobsUtility.CacheLineSize, allocator);
             state->Next = state->Items + nextOffset;
             state->Buckets = state->Items + bucketOffset;
 
@@ -155,13 +159,13 @@ namespace Appalachia.Core.Collections.Native
                 CheckReadAccess();
 
                 var state = m_State;
-                var nextPtrs = (int*) state->Next;
+                var nextPtrs = (int*)state->Next;
                 var freeListSize = 0;
                 for (var tls = 0; tls < JobsUtility.MaxJobThreadCount; ++tls)
                 {
                     for (var freeIdx = state->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine];
-                        freeIdx >= 0;
-                        freeIdx = nextPtrs[freeIdx])
+                         freeIdx >= 0;
+                         freeIdx = nextPtrs[freeIdx])
                     {
                         ++freeListSize;
                     }
@@ -224,7 +228,7 @@ namespace Appalachia.Core.Collections.Native
                     if (m_State->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine] >= 0)
                     {
                         idx = m_State->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine];
-                        nextPtrs = (int*) m_State->Next;
+                        nextPtrs = (int*)m_State->Next;
                         m_State->FirstFreeTLS[tls * NativeHashSetState.IntsPerCacheLine] = nextPtrs[idx];
                         nextPtrs[idx] = -1;
                         m_State->FirstFreeTLS[0] = idx;
@@ -244,7 +248,7 @@ namespace Appalachia.Core.Collections.Native
             idx = m_State->FirstFreeTLS[0];
             if (idx >= 0)
             {
-                m_State->FirstFreeTLS[0] = ((int*) m_State->Next)[idx];
+                m_State->FirstFreeTLS[0] = ((int*)m_State->Next)[idx];
             }
             else
             {
@@ -257,8 +261,8 @@ namespace Appalachia.Core.Collections.Native
             var bucket = item.GetHashCode() & m_State->BucketCapacityMask;
 
             // Add the index to the hash-set
-            var buckets = (int*) m_State->Buckets;
-            nextPtrs = (int*) m_State->Next;
+            var buckets = (int*)m_State->Buckets;
+            nextPtrs = (int*)m_State->Next;
 
             nextPtrs[idx] = buckets[bucket];
             buckets[bucket] = idx;
@@ -274,13 +278,13 @@ namespace Appalachia.Core.Collections.Native
         {
             CheckWriteAccess();
 
-            var buckets = (int*) m_State->Buckets;
+            var buckets = (int*)m_State->Buckets;
             for (var i = 0; i <= m_State->BucketCapacityMask; ++i)
             {
                 buckets[i] = -1;
             }
 
-            var nextPtrs = (int*) m_State->Next;
+            var nextPtrs = (int*)m_State->Next;
             for (var i = 0; i < m_State->ItemCapacity; ++i)
             {
                 nextPtrs[i] = -1;
@@ -310,8 +314,8 @@ namespace Appalachia.Core.Collections.Native
             CheckWriteAccess();
 
             // First find the slot based on the hash
-            var buckets = (int*) m_State->Buckets;
-            var nextPtrs = (int*) m_State->Next;
+            var buckets = (int*)m_State->Buckets;
+            var nextPtrs = (int*)m_State->Next;
             var bucket = item.GetHashCode() & m_State->BucketCapacityMask;
             var prevEntry = -1;
             var entryIdx = buckets[bucket];
@@ -419,7 +423,7 @@ namespace Appalachia.Core.Collections.Native
 #endif
 
             // Schedule the job
-            var disposeJob = new DisposeJob {Set = this};
+            var disposeJob = new DisposeJob { Set = this };
             var jobHandle = disposeJob.Schedule(inputDeps);
 
             // Release the atomic safety handle now that the job is scheduled
@@ -436,12 +440,20 @@ namespace Appalachia.Core.Collections.Native
         /// </summary>
         private struct DisposeJob : IJob
         {
+            #region Fields and Autoproperties
+
             internal NativeHashSet<T> Set;
+
+            #endregion
+
+            #region IJob Members
 
             public void Execute()
             {
                 Set.Deallocate();
             }
+
+            #endregion
         }
 
         /// <summary>
@@ -472,8 +484,8 @@ namespace Appalachia.Core.Collections.Native
                 array = new NativeArray<T>(length + index, m_AllocatorLabel);
             }
 
-            var bucketArray = (int*) m_State->Buckets;
-            var bucketNext = (int*) m_State->Next;
+            var bucketArray = (int*)m_State->Buckets;
+            var bucketNext = (int*)m_State->Next;
             for (var i = 0; i <= m_State->BucketCapacityMask; ++i)
             {
                 for (var b = bucketArray[i]; b != -1; b = bucketNext[b])
@@ -534,7 +546,7 @@ namespace Appalachia.Core.Collections.Native
         private static int AllocFreeListEntry(NativeHashSetState* state, int threadIndex)
         {
             int idx;
-            var nextPtrs = (int*) state->Next;
+            var nextPtrs = (int*)state->Next;
             do
             {
                 idx = state->FirstFreeTLS[threadIndex * NativeHashSetState.IntsPerCacheLine];
@@ -588,8 +600,8 @@ namespace Appalachia.Core.Collections.Native
                     {
                         again = false;
                         for (var other = (threadIndex + 1) % JobsUtility.MaxJobThreadCount;
-                            other != threadIndex;
-                            other = (other + 1) % JobsUtility.MaxJobThreadCount)
+                             other != threadIndex;
+                             other = (other + 1) % JobsUtility.MaxJobThreadCount)
                         {
                             do
                             {
@@ -648,7 +660,7 @@ namespace Appalachia.Core.Collections.Native
             }
 
             // First find the slot based on the hash
-            var buckets = (int*) state->Buckets;
+            var buckets = (int*)state->Buckets;
             var bucket = item.GetHashCode() & state->BucketCapacityMask;
             it.NextEntryIndex = buckets[bucket];
             return TryGetNextValueAtomic(state, ref it);
@@ -665,7 +677,7 @@ namespace Appalachia.Core.Collections.Native
                 return false;
             }
 
-            var nextPtrs = (int*) state->Next;
+            var nextPtrs = (int*)state->Next;
             while (!UnsafeUtility.ReadArrayElement<T>(state->Items, entryIdx).Equals(it.Item))
             {
                 entryIdx = nextPtrs[entryIdx];
@@ -687,13 +699,7 @@ namespace Appalachia.Core.Collections.Native
         [NativeContainerIsAtomicWriteOnly]
         public struct ParallelWriter
         {
-            /// <summary>
-            ///     State of the set or null if the list is created with the default
-            ///     constructor or <see cref="Dispose()" /> has been called. This is
-            ///     shared among all instances of the set.
-            /// </summary>
-            [NativeDisableUnsafePtrRestriction]
-            internal NativeHashSetState* m_State;
+            #region Fields and Autoproperties
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             /// <summary>
@@ -711,6 +717,16 @@ namespace Appalachia.Core.Collections.Native
             internal int m_ThreadIndex;
 
             /// <summary>
+            ///     State of the set or null if the list is created with the default
+            ///     constructor or <see cref="Dispose()" /> has been called. This is
+            ///     shared among all instances of the set.
+            /// </summary>
+            [NativeDisableUnsafePtrRestriction]
+            internal NativeHashSetState* m_State;
+
+            #endregion
+
+            /// <summary>
             ///     Get or set the set's capacity to hold items. The capacity can't
             ///     be set to be lower than it currently is.
             ///     The 'get' operation requires read access and the 'set' operation
@@ -725,6 +741,21 @@ namespace Appalachia.Core.Collections.Native
 #endif
                     return m_State->ItemCapacity;
                 }
+            }
+
+            /// <summary>
+            ///     Set whether both read and write access should be allowed for the
+            ///     set. This is used for automated testing purposes only.
+            /// </summary>
+            /// <param name="allowReadOrWriteAccess">
+            ///     If both read and write access should be allowed for the set
+            /// </param>
+            [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+            public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
+            {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_Safety, allowReadOrWriteAccess);
+#endif
             }
 
             /// <summary>
@@ -757,10 +788,10 @@ namespace Appalachia.Core.Collections.Native
                 var bucket = item.GetHashCode() & m_State->BucketCapacityMask;
 
                 // Add the index to the hash-map
-                var buckets = (int*) m_State->Buckets;
+                var buckets = (int*)m_State->Buckets;
                 if (Interlocked.CompareExchange(ref buckets[bucket], idx, -1) != -1)
                 {
-                    var nextPtrs = (int*) m_State->Next;
+                    var nextPtrs = (int*)m_State->Next;
                     do
                     {
                         nextPtrs[idx] = buckets[bucket];
@@ -787,21 +818,6 @@ namespace Appalachia.Core.Collections.Native
                 }
 
                 return true;
-            }
-
-            /// <summary>
-            ///     Set whether both read and write access should be allowed for the
-            ///     set. This is used for automated testing purposes only.
-            /// </summary>
-            /// <param name="allowReadOrWriteAccess">
-            ///     If both read and write access should be allowed for the set
-            /// </param>
-            [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
-            {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_Safety, allowReadOrWriteAccess);
-#endif
             }
         }
 
@@ -838,11 +854,7 @@ namespace Appalachia.Core.Collections.Native
                 out nextOffset,
                 out bucketOffset
             );
-            var newData = (byte*) UnsafeUtility.Malloc(
-                totalSize,
-                JobsUtility.CacheLineSize,
-                m_AllocatorLabel
-            );
+            var newData = (byte*)UnsafeUtility.Malloc(totalSize, JobsUtility.CacheLineSize, m_AllocatorLabel);
             var newItems = newData;
             var newNext = newData + nextOffset;
             var newBuckets = newData + bucketOffset;
@@ -853,20 +865,20 @@ namespace Appalachia.Core.Collections.Native
             UnsafeUtility.MemCpy(newNext, m_State->Next, m_State->ItemCapacity * UnsafeUtility.SizeOf<int>());
             for (var emptyNext = m_State->ItemCapacity; emptyNext < newCapacity; ++emptyNext)
             {
-                ((int*) newNext)[emptyNext] = -1;
+                ((int*)newNext)[emptyNext] = -1;
             }
 
             // Re-hash the buckets, first clear the new bucket list, then insert
             // all values from the old list
             for (var bucket = 0; bucket < newBucketCapacity; ++bucket)
             {
-                ((int*) newBuckets)[bucket] = -1;
+                ((int*)newBuckets)[bucket] = -1;
             }
 
             for (var bucket = 0; bucket <= m_State->BucketCapacityMask; ++bucket)
             {
-                var buckets = (int*) m_State->Buckets;
-                var nextPtrs = (int*) newNext;
+                var buckets = (int*)m_State->Buckets;
+                var nextPtrs = (int*)newNext;
                 while (buckets[bucket] >= 0)
                 {
                     var curEntry = buckets[bucket];
@@ -874,8 +886,8 @@ namespace Appalachia.Core.Collections.Native
                     var newBucket =
                         UnsafeUtility.ReadArrayElement<T>(m_State->Items, curEntry).GetHashCode() &
                         (newBucketCapacity - 1);
-                    nextPtrs[curEntry] = ((int*) newBuckets)[newBucket];
-                    ((int*) newBuckets)[newBucket] = curEntry;
+                    nextPtrs[curEntry] = ((int*)newBuckets)[newBucket];
+                    ((int*)newBuckets)[newBucket] = curEntry;
                 }
             }
 

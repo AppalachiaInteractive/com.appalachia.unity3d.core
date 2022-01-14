@@ -12,17 +12,11 @@ namespace Appalachia.Core.Collections.Special
         where T : IEquatable<T>
         where TList : AppaList<T>, new()
     {
+        #region Fields and Autoproperties
+
         public bool defaultStateIsDirty = true;
 
-        public bool IsDirty(T check)
-        {
-            if (!ContainsKey(check))
-            {
-                AddOrUpdate(check, defaultStateIsDirty);
-            }
-
-            return this[check];
-        }
+        #endregion
 
         public void Clean(T check)
         {
@@ -43,6 +37,16 @@ namespace Appalachia.Core.Collections.Special
             {
                 at[i] = true;
             }
+        }
+
+        public bool IsDirty(T check)
+        {
+            if (!ContainsKey(check))
+            {
+                AddOrUpdate(check, defaultStateIsDirty);
+            }
+
+            return this[check];
         }
     }
 }

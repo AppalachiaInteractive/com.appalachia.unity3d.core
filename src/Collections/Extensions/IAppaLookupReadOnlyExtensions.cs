@@ -73,7 +73,6 @@ namespace Appalachia.Core.Collections.Extensions
             }
         }
 
-
         #region Profiling
 
         private const string _PRF_PFX = nameof(IAppaLookupReadOnlyExtensions) + ".";

@@ -12,14 +12,6 @@ namespace Appalachia.Core.Objects.Root
     {
         public delegate void InstanceAvailableHandler(AppalachiaRepository instance);
 
-        #region Static Fields and Autoproperties
-
-        private static HashSet<InstanceAvailableHandler> _instanceAvailableSubscribers;
-
-        #endregion
-
-        public static bool IsInstanceAvailable => instance != null;
-
         public static event InstanceAvailableHandler InstanceAvailable
         {
             add
@@ -41,6 +33,14 @@ namespace Appalachia.Core.Objects.Root
                 _instanceAvailableSubscribers.Remove(value);
             }
         }
+
+        #region Static Fields and Autoproperties
+
+        private static HashSet<InstanceAvailableHandler> _instanceAvailableSubscribers;
+
+        #endregion
+
+        public static bool IsInstanceAvailable => instance != null;
     }
 
     public partial class AppalachiaObject<T>
@@ -51,27 +51,17 @@ namespace Appalachia.Core.Objects.Root
     {
         public delegate void InstanceAvailableHandler(T instance);
 
-        #region Static Fields and Autoproperties
-
-        private static HashSet<InstanceAvailableHandler> _instanceAvailableSubscribers;
-
-        #endregion
-
-        public static bool IsInstanceAvailable => instance != null;
-
         public static event InstanceAvailableHandler InstanceAvailable
         {
             add
             {
                 _instanceAvailableSubscribers ??= new HashSet<InstanceAvailableHandler>();
 
+                _instanceAvailableSubscribers.Add(value);
+                
                 if (IsInstanceAvailable)
                 {
                     value?.Invoke(instance);
-                }
-                else
-                {
-                    _instanceAvailableSubscribers.Add(value);
                 }
             }
             remove
@@ -80,6 +70,14 @@ namespace Appalachia.Core.Objects.Root
                 _instanceAvailableSubscribers.Remove(value);
             }
         }
+
+        #region Static Fields and Autoproperties
+
+        private static HashSet<InstanceAvailableHandler> _instanceAvailableSubscribers;
+
+        #endregion
+
+        public static bool IsInstanceAvailable => instance != null;
     }
 
     public partial class AppalachiaBehaviour
@@ -94,14 +92,6 @@ namespace Appalachia.Core.Objects.Root
     {
         public delegate void InstanceAvailableHandler(T instance);
 
-        #region Static Fields and Autoproperties
-
-        private static HashSet<InstanceAvailableHandler> _instanceAvailableSubscribers;
-
-        #endregion
-
-        public static bool IsInstanceAvailable => instance != null;
-
         public static event InstanceAvailableHandler InstanceAvailable
         {
             add
@@ -123,6 +113,14 @@ namespace Appalachia.Core.Objects.Root
                 _instanceAvailableSubscribers.Remove(value);
             }
         }
+
+        #region Static Fields and Autoproperties
+
+        private static HashSet<InstanceAvailableHandler> _instanceAvailableSubscribers;
+
+        #endregion
+
+        public static bool IsInstanceAvailable => instance != null;
     }
 
     public partial class AppalachiaSimpleBase

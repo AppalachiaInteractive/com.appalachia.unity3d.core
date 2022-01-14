@@ -4,11 +4,7 @@ namespace Appalachia.Core.Simulation.Solvers
 {
     public static class InverseKinematics
     {
-        public static void Update(
-            Transform tracked,
-            int mask,
-            Vector3 target,
-            float sqrThreshold = 0.000001f)
+        public static void Update(Transform tracked, int mask, Vector3 target, float sqrThreshold = 0.000001f)
         {
             for (var bone = tracked; mask != 0; mask >>= 1)
             {

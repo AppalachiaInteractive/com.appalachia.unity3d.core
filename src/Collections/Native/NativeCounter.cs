@@ -17,22 +17,11 @@ namespace Appalachia.Core.Collections.Native
     [NativeContainer]
     public unsafe struct NativeCounter
     {
-        // The actual pointer to the allocated count needs to have restrictions relaxed so jobs can be schedled with this container
-        [NativeDisableUnsafePtrRestriction]
-        private int* m_Counter;
+        #region Constants and Static Readonly
 
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-        private AtomicSafetyHandle m_Safety;
+        public const int IntsPerCacheLine = JobsUtility.CacheLineSize / sizeof(int);
 
-        // The dispose sentinel tracks memory leaks. It is a managed type so it is cleared to null when scheduling a job
-        // The job cannot dispose the container, and no one else can dispose it until the job has run, so it is ok to not pass it along
-        // This attribute is required, without it this NativeContainer cannot be passed to a job; since that would give the job access to a managed object
-        [NativeSetClassTypeToNullOnSchedule]
-        private DisposeSentinel m_DisposeSentinel;
-#endif
-
-        // Keep track of where the memory for this was allocated
-        private readonly Allocator m_AllocatorLabelLabel;
+        #endregion
 
         public NativeCounter(Allocator label)
         {
@@ -49,7 +38,7 @@ namespace Appalachia.Core.Collections.Native
             m_AllocatorLabelLabel = label;
 
             // Allocate native memory for a single integer// One full cache line (integers per cacheline * size of integer) for each potential worker index, JobsUtility.MaxJobThreadCount
-            m_Counter = (int*) UnsafeUtility.Malloc(
+            m_Counter = (int*)UnsafeUtility.Malloc(
                 UnsafeUtility.SizeOf<int>() * IntsPerCacheLine * JobsUtility.MaxJobThreadCount,
                 4,
                 label
@@ -64,15 +53,18 @@ namespace Appalachia.Core.Collections.Native
             Count = 0;
         }
 
-        public void Increment()
-        {
-            // Verify that the caller has write permission on this data. 
-            // This is the race condition protection, without these checks the AtomicSafetyHandle is useless
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
-#endif
-            (*m_Counter)++;
-        }
+        #region Fields and Autoproperties
+
+        // Keep track of where the memory for this was allocated
+        private readonly Allocator m_AllocatorLabelLabel;
+
+        // The actual pointer to the allocated count needs to have restrictions relaxed so jobs can be schedled with this container
+        [NativeDisableUnsafePtrRestriction]
+        private int* m_Counter;
+
+        #endregion
+
+        public bool IsCreated => m_Counter != null;
 
         public int Count
         {
@@ -110,19 +102,6 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-        public bool IsCreated => m_Counter != null;
-
-        public void Dispose()
-        {
-            // Let the dispose sentinel know that the data has been freed so it does not report any memory leaks
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
-#endif
-
-            UnsafeUtility.Free(m_Counter, m_AllocatorLabelLabel);
-            m_Counter = null;
-        }
-
         /// <summary>
         ///     Create a <see cref="ParallelWriter" /> that writes to this set.
         ///     This operation has no access requirements, but using the writer
@@ -143,7 +122,28 @@ namespace Appalachia.Core.Collections.Native
             return writer;
         }
 
-        public const int IntsPerCacheLine = JobsUtility.CacheLineSize / sizeof(int);
+        public void Dispose()
+        {
+            // Let the dispose sentinel know that the data has been freed so it does not report any memory leaks
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
+#endif
+
+            UnsafeUtility.Free(m_Counter, m_AllocatorLabelLabel);
+            m_Counter = null;
+        }
+
+        public void Increment()
+        {
+            // Verify that the caller has write permission on this data. 
+            // This is the race condition protection, without these checks the AtomicSafetyHandle is useless
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+#endif
+            (*m_Counter)++;
+        }
+
+        #region Nested type: ParallelWriter
 
         /// <summary>
         ///     Implements parallel writer. Use AsParallelWriter to obtain it from container.
@@ -152,8 +152,7 @@ namespace Appalachia.Core.Collections.Native
         [NativeContainerIsAtomicWriteOnly]
         public struct ParallelWriter
         {
-            [NativeDisableUnsafePtrRestriction]
-            internal int* m_Counter;
+            #region Fields and Autoproperties
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             internal AtomicSafetyHandle m_Safety;
@@ -162,7 +161,13 @@ namespace Appalachia.Core.Collections.Native
             // The current worker thread index; it must use this exact name since it is injected
             [NativeSetThreadIndex] internal int m_ThreadIndex;
 
-            [DebuggerStepThrough] public static implicit operator ParallelWriter(NativeCounter cnt)
+            [NativeDisableUnsafePtrRestriction]
+            internal int* m_Counter;
+
+            #endregion
+
+            [DebuggerStepThrough]
+            public static implicit operator ParallelWriter(NativeCounter cnt)
             {
                 ParallelWriter concurrent;
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -186,5 +191,17 @@ namespace Appalachia.Core.Collections.Native
                 ++m_Counter[IntsPerCacheLine * m_ThreadIndex];
             }
         }
+
+        #endregion
+
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+        private AtomicSafetyHandle m_Safety;
+
+        // The dispose sentinel tracks memory leaks. It is a managed type so it is cleared to null when scheduling a job
+        // The job cannot dispose the container, and no one else can dispose it until the job has run, so it is ok to not pass it along
+        // This attribute is required, without it this NativeContainer cannot be passed to a job; since that would give the job access to a managed object
+        [NativeSetClassTypeToNullOnSchedule]
+        private DisposeSentinel m_DisposeSentinel;
+#endif
     }
 }

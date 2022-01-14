@@ -8,7 +8,11 @@ namespace Appalachia.Core.Collections.Native
             _mArray = array;
         }
 
+        #region Fields and Autoproperties
+
         private readonly NativeArray2D<T> _mArray;
+
+        #endregion
 
         public T[,] Items => _mArray.ToArray();
     }

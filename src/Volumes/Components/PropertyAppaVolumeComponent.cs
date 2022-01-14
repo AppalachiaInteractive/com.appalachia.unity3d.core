@@ -7,11 +7,6 @@ namespace Appalachia.Core.Volumes.Components
     public abstract class PropertyAppaVolumeComponent<T> : PropertyAppaVolumeComponentBase
         where T : PropertyAppaVolumeComponent<T>
     {
-        private const string _PRF_PFX = nameof(PropertyAppaVolumeComponent<T>) + ".";
-
-        private static readonly ProfilerMarker _PRF_PropertyAppaVolumeComponent =
-            new(_PRF_PFX + nameof(PropertyAppaVolumeComponent<T>));
-
         static PropertyAppaVolumeComponent()
         {
             using (_PRF_PropertyAppaVolumeComponent.Auto())
@@ -19,5 +14,14 @@ namespace Appalachia.Core.Volumes.Components
                 PropertyMaster.componentTypes.Add(typeof(T));
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(PropertyAppaVolumeComponent<T>) + ".";
+
+        private static readonly ProfilerMarker _PRF_PropertyAppaVolumeComponent =
+            new(_PRF_PFX + nameof(PropertyAppaVolumeComponent<T>));
+
+        #endregion
     }
 }

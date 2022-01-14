@@ -25,9 +25,13 @@ namespace Appalachia.Core.Volumes.Parameters
             this.overrideState = overrideState;
         }
 
+        #region Fields and Autoproperties
+
         public bool hdr;
         public bool showAlpha = true;
         public bool showEyeDropper = true;
+
+        #endregion
 
         public override void Interp(Color from, Color to, float t)
         {

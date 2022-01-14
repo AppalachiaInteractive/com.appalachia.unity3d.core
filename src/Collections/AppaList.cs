@@ -594,7 +594,7 @@ namespace Appalachia.Core.Collections
 
                         Context.Log.Error(message);
                         APPADEBUG.BREAKPOINT(() => message, null);
-                        
+
                         hadNulls = true;
                         RemoveAt(i);
                         removedIndicesSafeOrdered.Add(i);
@@ -721,21 +721,6 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        private sealed class DynamicComparer : Comparer<T>
-        {
-            public DynamicComparer(Comparison<T> comparison)
-            {
-                this.comparison = comparison;
-            }
-
-            private readonly Comparison<T> comparison;
-
-            public override int Compare(T x, T y)
-            {
-                return comparison(x, y);
-            }
-        }
-        
         public void Sort(Comparison<T> comparison)
         {
             using (_PRF_Sort.Auto())
@@ -1090,6 +1075,29 @@ namespace Appalachia.Core.Collections
             }
 
             #endregion
+        }
+
+        #endregion
+
+        #region Nested type: DynamicComparer
+
+        private sealed class DynamicComparer : Comparer<T>
+        {
+            public DynamicComparer(Comparison<T> comparison)
+            {
+                this.comparison = comparison;
+            }
+
+            #region Fields and Autoproperties
+
+            private readonly Comparison<T> comparison;
+
+            #endregion
+
+            public override int Compare(T x, T y)
+            {
+                return comparison(x, y);
+            }
         }
 
         #endregion

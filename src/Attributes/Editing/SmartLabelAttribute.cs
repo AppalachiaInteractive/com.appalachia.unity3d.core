@@ -48,15 +48,8 @@ namespace Appalachia.Core.Attributes.Editing
             Padding = sla.Padding;
         }
 
-        private readonly string _text;
-        private bool _bold;
-        private bool _postfix;
-        private bool _shallowColor;
-        private int _hue;
-        private int _saturation;
-        private int _value;
+        #region Fields and Autoproperties
 
-        private string _propertyColor;
         public bool HasHue { get; private set; }
 
         public bool HasPropertyColor { get; private set; }
@@ -71,6 +64,18 @@ namespace Appalachia.Core.Attributes.Editing
         public string AlignWith { get; set; }
 
         public string Text { get; set; }
+
+        private readonly string _text;
+        private bool _bold;
+        private bool _postfix;
+        private bool _shallowColor;
+        private int _hue;
+        private int _saturation;
+        private int _value;
+
+        private string _propertyColor;
+
+        #endregion
 
         public bool Bold
         {

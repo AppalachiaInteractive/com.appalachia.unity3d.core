@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableRay(bool overrideEnabled, Ray value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableRay(bool overrideEnabled, Ray value) : base(overrideEnabled, value)
         {
         }
 

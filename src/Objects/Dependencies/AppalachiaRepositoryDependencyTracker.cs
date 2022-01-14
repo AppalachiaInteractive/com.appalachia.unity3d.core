@@ -14,7 +14,16 @@ namespace Appalachia.Core.Objects.Dependencies
     {
         public delegate void DependenciesReadyHandler();
 
-        public ISingleton instance;
+        public event DependenciesReadyHandler DependenciesReady;
+
+        #region Constants and Static Readonly
+
+        private const BindingFlags DEPENDENCY_TRACKER_FLAGS =
+            AppalachiaRootConstants.DEPENDENCY_TRACKER_FLAGS;
+
+        private const string DEPENDENCY_TRACKER_NAME = AppalachiaRootConstants.DEPENDENCY_TRACKER_NAME;
+
+        #endregion
 
         internal AppalachiaRepositoryDependencyTracker(Type t)
         {
@@ -31,7 +40,7 @@ namespace Appalachia.Core.Objects.Dependencies
             {
                 ownerType = DependencyType.Behaviour;
             }
-            
+
             _repositoryDependencies = new DependencyTrackingSubset(this);
             _objectDependencies = new DependencyTrackingSubset(this);
             _behaviourDependencies = new DependencyTrackingSubset(this);
@@ -45,34 +54,20 @@ namespace Appalachia.Core.Objects.Dependencies
 
         public readonly DependencyType ownerType;
 
+        public ISingleton instance;
+
         public Type Owner { get; }
 
         private readonly DependencyTrackingSubset[] _subsets;
+
+        private bool _isReady;
         private DependencyTrackingSubset _behaviourDependencies;
         private DependencyTrackingSubset _objectDependencies;
         private DependencyTrackingSubset _repositoryDependencies;
 
         #endregion
 
-        public bool DependenciesAreReady
-        {
-            get
-            {
-                using (_PRF_DependenciesAreReady.Auto())
-                {
-                    for (var index = 0; index < subsets.Length; index++)
-                    {
-                        var d = subsets[index];
-                        if (!d.DependenciesAreReady)
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                }
-            }
-        }
+        public bool IsReady => _isReady && DependenciesAreReady;
 
         public DependencyTrackingSubset behaviourDependencies
         {
@@ -104,11 +99,51 @@ namespace Appalachia.Core.Objects.Dependencies
             }
         }
 
+        public IEnumerable<AppalachiaRepositoryDependencyTracker> AllDependencies
+        {
+            get
+            {
+                foreach (var dependency in repositoryDependencies.Dependencies)
+                {
+                    yield return dependency;
+                }
+
+                foreach (var dependency in objectDependencies.Dependencies)
+                {
+                    yield return dependency;
+                }
+
+                foreach (var dependency in behaviourDependencies.Dependencies)
+                {
+                    yield return dependency;
+                }
+            }
+        }
+
+        internal bool DependenciesAreReady
+        {
+            get
+            {
+                using (_PRF_DependenciesAreReady.Auto())
+                {
+                    for (var index = 0; index < subsets.Length; index++)
+                    {
+                        var d = subsets[index];
+
+                        if (!d.IsReady)
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            }
+        }
+
         private DependencyTrackingSubset[] subsets => _subsets;
 
         private string typeName => Owner.FullName;
-
-        public event DependenciesReadyHandler DependenciesReady;
 
         public static bool operator >(
             AppalachiaRepositoryDependencyTracker left,
@@ -138,11 +173,24 @@ namespace Appalachia.Core.Objects.Dependencies
             return Comparer<AppalachiaRepositoryDependencyTracker>.Default.Compare(left, right) <= 0;
         }
 
+        public override string ToString()
+        {
+            return $"{ownerType}: {Owner.Name}";
+        }
+
         public void InvokeDependenciesReady()
         {
             using (_PRF_InvokeDependenciesReady.Auto())
             {
                 DependenciesReady?.Invoke();
+            }
+        }
+
+        public void MarkReady()
+        {
+            using (_PRF_MarkReady.Auto())
+            {
+                _isReady = true;
             }
         }
 
@@ -152,6 +200,8 @@ namespace Appalachia.Core.Objects.Dependencies
         {
             using (_PRF_RegisterDependency.Auto())
             {
+                _isReady = false;
+
                 AppalachiaRepository.InstanceAvailable += handler;
 
                 repositoryDependencies.RegisterDependency(dependentOn);
@@ -165,16 +215,13 @@ namespace Appalachia.Core.Objects.Dependencies
         {
             using (_PRF_RegisterDependency.Auto())
             {
+                _isReady = false;
+
                 SingletonAppalachiaBehaviour<TDependency>.InstanceAvailable += handler;
 
                 behaviourDependencies.RegisterDependency(dependentOn);
             }
         }
-
-        private const BindingFlags DEPENDENCY_TRACKER_FLAGS =
-            AppalachiaRootConstants.DEPENDENCY_TRACKER_FLAGS;
-
-        private const string DEPENDENCY_TRACKER_NAME = AppalachiaRootConstants.DEPENDENCY_TRACKER_NAME;
 
         public void RegisterDependency<TDependency>(
             SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
@@ -183,6 +230,8 @@ namespace Appalachia.Core.Objects.Dependencies
         {
             using (_PRF_RegisterDependency.Auto())
             {
+                _isReady = false;
+
                 var property = typeof(AppalachiaObject<TDependency>).GetField_CACHE(
                     DEPENDENCY_TRACKER_NAME,
                     DEPENDENCY_TRACKER_FLAGS
@@ -202,6 +251,8 @@ namespace Appalachia.Core.Objects.Dependencies
         {
             using (_PRF_RegisterDependency.Auto())
             {
+                _isReady = false;
+
                 var property = typeof(AppalachiaBehaviour<TDependency>).GetField_CACHE(
                     DEPENDENCY_TRACKER_NAME,
                     DEPENDENCY_TRACKER_FLAGS
@@ -213,7 +264,6 @@ namespace Appalachia.Core.Objects.Dependencies
                 RegisterDependency(cast, handler);
             }
         }
-
 
         public void RegisterDependency<TDependency>(
             AppalachiaRepositoryDependencyTracker dependentOn,
@@ -270,14 +320,12 @@ namespace Appalachia.Core.Objects.Dependencies
 
         #endregion
 
-        public override string ToString()
-        {
-            return $"{ownerType}: {Owner.Name}";
-        }
-
         #region Profiling
 
         private const string _PRF_PFX = nameof(AppalachiaRepositoryDependencyManager) + ".";
+
+        private static readonly ProfilerMarker _PRF_MarkReady =
+            new ProfilerMarker(_PRF_PFX + nameof(MarkReady));
 
         private static readonly ProfilerMarker _PRF_InvokeDependenciesReady =
             new ProfilerMarker(_PRF_PFX + nameof(InvokeDependenciesReady));

@@ -9,6 +9,38 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 {
     public struct quaternion_PPAPI : IPAPI<quaternion>
     {
+        private static float3 ToEuler(quaternion quat)
+        {
+            var q = quat.value;
+            float3 angles;
+
+            // roll (x-axis rotation)
+            var sinr_cosp = 2.0 * ((q.w * q.x) + (q.y * q.z));
+            var cosr_cosp = 1.0 - (2.0 * ((q.x * q.x) + (q.y * q.y)));
+            angles.x = (float)math.atan2(sinr_cosp, cosr_cosp);
+
+            // pitch (y-axis rotation)
+            var sinp = 2.0 * ((q.w * q.y) - (q.z * q.x));
+            if (math.abs(sinp) >= 1.0)
+            {
+                const double val = math.PI / 2.0;
+                angles.y = (float)(math.sign(sinp) >= 0.0 ? val : -val);
+            }
+            else
+            {
+                angles.y = (float)math.asin(sinp);
+            }
+
+            // yaw (z-axis rotation)
+            var siny_cosp = 2.0 * ((q.w * q.z) + (q.x * q.y));
+            var cosy_cosp = 1.0 - (2.0 * ((q.y * q.y) + (q.z * q.z)));
+            angles.z = (float)math.atan2(siny_cosp, cosy_cosp);
+
+            return angles;
+        }
+
+        #region IPAPI<quaternion> Members
+
         public quaternion Get(string key, quaternion defaultValue, quaternion low, quaternion high)
         {
             var result = quaternion.identity;
@@ -37,35 +69,7 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
 
             return quaternion.Euler(euler.x, euler.y, euler.z);*/
         }
-        
-        private static float3 ToEuler(quaternion quat)
-        {
-            var q = quat.value;
-            float3 angles;
 
-            // roll (x-axis rotation)
-            var sinr_cosp = 2.0 * ((q.w * q.x) + (q.y * q.z));
-            var cosr_cosp = 1.0 - (2.0 * ((q.x * q.x) + (q.y * q.y)));
-            angles.x = (float) math.atan2(sinr_cosp, cosr_cosp);
-
-            // pitch (y-axis rotation)
-            var sinp = 2.0 * ((q.w * q.y) - (q.z * q.x));
-            if (math.abs(sinp) >= 1.0)
-            {
-                const double val = math.PI / 2.0;
-                angles.y = (float) (math.sign(sinp) >= 0.0 ? val : -val);
-            }
-            else
-            {
-                angles.y = (float) math.asin(sinp);
-            }
-
-            // yaw (z-axis rotation)
-            var siny_cosp = 2.0 * ((q.w * q.z) + (q.x * q.y));
-            var cosy_cosp = 1.0 - (2.0 * ((q.y * q.y) + (q.z * q.z)));
-            angles.z = (float) math.atan2(siny_cosp, cosy_cosp);
-
-            return angles;
-        }
+        #endregion
     }
 }

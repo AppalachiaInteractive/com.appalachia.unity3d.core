@@ -20,6 +20,11 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaObject : IInitializable
     {
+        /// <summary>
+        ///     Offers a chance to respond to the completion of initialization.
+        /// </summary>
+        public event InitializationCompleteHandler InitializationComplete;
+
         #region Fields and Autoproperties
 
         [SmartTitleGroup(
@@ -80,6 +85,22 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        protected internal async AppaTask ExecuteInitialization()
+        {
+            if (initializationState.hasInitializationFinished)
+            {
+                return;
+            }
+
+            BeforeInitialization();
+
+            await initializationState.Initialize(InitializationComplete, this);
+
+            AfterInitialization();
+
+            initializationState.hasInitializationFinished = true;
+        }
+
         /// <summary>
         ///     Runs immediately after <see cref="Initialize" /> to allow any necessary cleanup or subsequent initialization tasks.
         /// </summary>
@@ -111,23 +132,18 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
+                if (initializationState.hasInitializationFinished)
+                {
+                    return;
+                }
+
                 BeforeInitialization();
-                
+
                 initializationState.InitializeSynchronous(InitializationComplete, this);
 
                 AfterInitialization();
-            }
-        }
 
-        protected internal async AppaTask ExecuteInitialization()
-        {
-            using (_PRF_ExecuteInitialization.Auto())
-            {
-                BeforeInitialization();
-
-                await initializationState.Initialize(InitializationComplete, this);
-
-                AfterInitialization();
+                initializationState.hasInitializationFinished = true;
             }
         }
 
@@ -147,11 +163,6 @@ namespace Appalachia.Core.Objects.Root
 
         public bool HasInvokedInitializationCompleted =>
             initializationState.hasInvokedInitializationCompleted;
-
-        /// <summary>
-        ///     Offers a chance to respond to the completion of initialization.
-        /// </summary>
-        public event InitializationCompleteHandler InitializationComplete;
 
         InitializationState IInitializable.initializationState => initializationState;
 
@@ -214,6 +225,11 @@ namespace Appalachia.Core.Objects.Root
 
     public abstract partial class AppalachiaBehaviour : IInitializable
     {
+        /// <summary>
+        ///     Offers a chance to respond to the completion of initialization.
+        /// </summary>
+        public event InitializationCompleteHandler InitializationComplete;
+
         #region Fields and Autoproperties
 
         [SmartTitleGroup(
@@ -274,6 +290,25 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        protected internal async AppaTask ExecuteInitialization()
+        {
+            using (_PRF_ExecuteInitialization.Auto())
+            {
+                if (initializationState.hasInitializationStarted)
+                {
+                    return;
+                }
+
+                BeforeInitialization();
+
+                await initializationState.Initialize(InitializationComplete, this);
+
+                AfterInitialization();
+
+                initializationState.hasInitializationFinished = true;
+            }
+        }
+
         /// <summary>
         ///     Runs immediately after <see cref="Initialize(Appalachia.Core.Objects.Initialization.Initializer)" /> to allow any necessary cleanup or subsequent
         ///     initialization tasks.
@@ -307,23 +342,18 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
+                if (initializationState.hasInitializationFinished)
+                {
+                    return;
+                }
+
                 BeforeInitialization();
-                
+
                 initializationState.InitializeSynchronous(InitializationComplete, this);
 
                 AfterInitialization();
-            }
-        }
 
-        protected internal async AppaTask ExecuteInitialization()
-        {
-            using (_PRF_ExecuteInitialization.Auto())
-            {
-                BeforeInitialization();
-
-                await initializationState.Initialize(InitializationComplete, this);
-
-                AfterInitialization();
+                initializationState.hasInitializationFinished = true;
             }
         }
 
@@ -334,20 +364,15 @@ namespace Appalachia.Core.Objects.Root
                 Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), this, ex);
             }
         }
-        
+
         #region IInitializable Members
 
-        public bool FullyInitialized => initializationState.hasInitializationFinished;
+        public virtual bool FullyInitialized => initializationState.hasInitializationFinished;
 
         public bool HasInitializationStarted => initializationState.hasInitializationStarted;
 
         public bool HasInvokedInitializationCompleted =>
             initializationState.hasInvokedInitializationCompleted;
-
-        /// <summary>
-        ///     Offers a chance to respond to the completion of initialization.
-        /// </summary>
-        public event InitializationCompleteHandler InitializationComplete;
 
         InitializationState IInitializable.initializationState => initializationState;
 
@@ -410,6 +435,11 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBase : IInitializable
     {
+        /// <summary>
+        ///     Offers a chance to respond to the completion of initialization.
+        /// </summary>
+        public event InitializationCompleteHandler InitializationComplete;
+
         #region Fields and Autoproperties
 
         [SmartTitleGroup(
@@ -471,6 +501,25 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        protected internal async AppaTask ExecuteInitialization()
+        {
+            using (_PRF_ExecuteInitialization.Auto())
+            {
+                if (initializationState.hasInitializationFinished)
+                {
+                    return;
+                }
+
+                BeforeInitialization();
+
+                await initializationState.Initialize(InitializationComplete, this);
+
+                AfterInitialization();
+
+                initializationState.hasInitializationFinished = true;
+            }
+        }
+
         /// <summary>
         ///     Runs immediately after <see cref="Initialize" /> to allow any necessary cleanup or subsequent initialization tasks.
         /// </summary>
@@ -502,23 +551,18 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
+                if (initializationState.hasInitializationFinished)
+                {
+                    return;
+                }
+
                 BeforeInitialization();
-                
+
                 initializationState.InitializeSynchronous(InitializationComplete, this);
 
                 AfterInitialization();
-            }
-        }
 
-        protected internal async AppaTask ExecuteInitialization()
-        {
-            using (_PRF_ExecuteInitialization.Auto())
-            {
-                BeforeInitialization();
-
-                await initializationState.Initialize(InitializationComplete, this);
-
-                AfterInitialization();
+                initializationState.hasInitializationFinished = true;
             }
         }
 
@@ -538,11 +582,6 @@ namespace Appalachia.Core.Objects.Root
 
         public bool HasInvokedInitializationCompleted =>
             initializationState.hasInvokedInitializationCompleted;
-
-        /// <summary>
-        ///     Offers a chance to respond to the completion of initialization.
-        /// </summary>
-        public event InitializationCompleteHandler InitializationComplete;
 
         InitializationState IInitializable.initializationState => initializationState;
 
@@ -601,6 +640,11 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaSimplePlayable : IInitializable
     {
+        /// <summary>
+        ///     Offers a chance to respond to the completion of initialization.
+        /// </summary>
+        public event InitializationCompleteHandler InitializationComplete;
+
         #region Fields and Autoproperties
 
         [SmartTitleGroup(
@@ -662,6 +706,25 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        protected internal async AppaTask ExecuteInitialization()
+        {
+            using (_PRF_ExecuteInitialization.Auto())
+            {
+                if (initializationState.hasInitializationFinished)
+                {
+                    return;
+                }
+
+                BeforeInitialization();
+
+                await initializationState.Initialize(InitializationComplete, this);
+
+                AfterInitialization();
+
+                initializationState.hasInitializationFinished = true;
+            }
+        }
+
         /// <summary>
         ///     Offers an opportunity to initialize any required components.
         /// </summary>
@@ -690,25 +753,21 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializeSynchronous.Auto())
             {
+                if (initializationState.hasInitializationFinished)
+                {
+                    return;
+                }
+
                 BeforeInitialization();
-                
+
                 initializationState.InitializeSynchronous(InitializationComplete, this);
 
                 AfterInitialization();
+
+                initializationState.hasInitializationFinished = true;
             }
         }
 
-        protected internal async AppaTask ExecuteInitialization()
-        {
-            using (_PRF_ExecuteInitialization.Auto())
-            {
-                BeforeInitialization();
-
-                await initializationState.Initialize(InitializationComplete, this);
-
-                AfterInitialization();
-            }
-        }
         private void InitializationExceptionHandler(Exception ex)
         {
             using (_PRF_InitializationExceptionHandler.Auto())
@@ -725,11 +784,6 @@ namespace Appalachia.Core.Objects.Root
 
         public bool HasInvokedInitializationCompleted =>
             initializationState.hasInvokedInitializationCompleted;
-
-        /// <summary>
-        ///     Offers a chance to respond to the completion of initialization.
-        /// </summary>
-        public event InitializationCompleteHandler InitializationComplete;
 
         InitializationState IInitializable.initializationState => initializationState;
 
@@ -762,7 +816,7 @@ namespace Appalachia.Core.Objects.Root
         {
             await ExecuteInitialization(null);
         }
-        
+
         #endregion
 
         #region Profiling

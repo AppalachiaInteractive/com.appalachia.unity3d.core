@@ -10,18 +10,15 @@ namespace Appalachia.Core.ArrayPooling
 {
     public sealed class DefaultArrayPool<T> : ArrayPool<T>
     {
+        #region Constants and Static Readonly
+
         /// <summary>The default maximum length of each array in the pool (2^20).</summary>
         private const int DefaultMaxArrayLength = 1024 * 1024;
 
         /// <summary>The default maximum number of arrays per bucket that are available for rent.</summary>
         private const int DefaultMaxNumberOfArraysPerBucket = 50;
 
-        private static readonly ProfilerMarker _PRF_DefaultArrayPool_DefaultArrayPool =
-            new("DefaultArrayPool.DefaultArrayPool");
-
-        private static readonly ProfilerMarker _PRF_DefaultArrayPool_Rent = new("DefaultArrayPool.Rent");
-
-        private static readonly ProfilerMarker _PRF_DefaultArrayPool_Return = new("DefaultArrayPool.Return");
+        #endregion
 
         public DefaultArrayPool() : this(DefaultMaxArrayLength, DefaultMaxNumberOfArraysPerBucket)
         {
@@ -66,10 +63,18 @@ namespace Appalachia.Core.ArrayPooling
             }
         }
 
+        #region Static Fields and Autoproperties
+
         /// <summary>Lazily-allocated empty array used when arrays of length 0 are requested.</summary>
         private static T[] s_emptyArray; // we support contracts earlier than those with Array.Empty<T>()
 
+        #endregion
+
+        #region Fields and Autoproperties
+
         private readonly Bucket[] _buckets;
+
+        #endregion
 
         /// <summary>Gets an ID for the pool to use with events.</summary>
         private int Id => GetHashCode();
@@ -175,6 +180,8 @@ namespace Appalachia.Core.ArrayPooling
             }
         }
 
+        #region Nested type: Bucket
+
         /// <summary>Provides a thread-safe bucket containing buffers that can be Rent'd and Return'd.</summary>
         private sealed class Bucket
         {
@@ -189,12 +196,16 @@ namespace Appalachia.Core.ArrayPooling
                 _poolId = poolId;
             }
 
+            #region Fields and Autoproperties
+
             internal readonly int _bufferLength;
             private readonly int _poolId;
 
             private readonly object _lock; // do not make this readonly; it's a mutable struct
             private readonly T[][] _buffers;
             private int _index;
+
+            #endregion
 
             /// <summary>Gets an ID for the bucket to use with events.</summary>
             internal int Id => GetHashCode();
@@ -275,5 +286,18 @@ namespace Appalachia.Core.ArrayPooling
                 }
             }
         }
+
+        #endregion
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_DefaultArrayPool_DefaultArrayPool =
+            new("DefaultArrayPool.DefaultArrayPool");
+
+        private static readonly ProfilerMarker _PRF_DefaultArrayPool_Rent = new("DefaultArrayPool.Rent");
+
+        private static readonly ProfilerMarker _PRF_DefaultArrayPool_Return = new("DefaultArrayPool.Return");
+
+        #endregion
     }
 }

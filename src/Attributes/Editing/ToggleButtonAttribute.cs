@@ -14,15 +14,6 @@ namespace Appalachia.Core.Attributes.Editing
     [Conditional("UNITY_EDITOR")]
     public sealed class ToggleButtonAttribute : Attribute
     {
-        public bool Bold;
-
-        public Colors.Enum False;
-
-        public string Label;
-        public string MemberMethod;
-
-        public Colors.Enum True;
-
         public ToggleButtonAttribute(
             string memberMethod,
             string label = null,
@@ -36,5 +27,18 @@ namespace Appalachia.Core.Attributes.Editing
             MemberMethod = memberMethod;
             Label = label;
         }
+
+        #region Fields and Autoproperties
+
+        public bool Bold;
+
+        public Colors.Enum False;
+
+        public Colors.Enum True;
+
+        public string Label;
+        public string MemberMethod;
+
+        #endregion
     }
 }

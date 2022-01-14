@@ -19,13 +19,19 @@ namespace Appalachia.Core.Math.Stats
     [Serializable]
     public abstract class StatsTracker
     {
+        #region Static Fields and Autoproperties
+
         protected static Random ___random = new();
         protected static Unity.Mathematics.Random _random;
+
+        #endregion
     }
 
     [Serializable]
     public abstract class StatsTracker<T> : StatsTracker
     {
+        #region Constants and Static Readonly
+
         protected const string _F0 = "F0";
         protected const string _F1 = "F1";
         protected const string _F2 = "F2";
@@ -37,7 +43,6 @@ namespace Appalachia.Core.Math.Stats
         private const string _formattedLong = "{0}{1}{2}{3}{4}";
 
         private const string _formattedLongest = "{0}{1}{2}{3}{4}{5}{6}";
-        private const string _PRF_PFX = nameof(StatsTracker<T>) + ".";
 
         private const string _seperator = " | ";
 
@@ -47,22 +52,7 @@ namespace Appalachia.Core.Math.Stats
         private const string MED = "Median";
         private const string MIN = "Min";
 
-        private static readonly ProfilerMarker _PRF_StatsTracker = new(_PRF_PFX + nameof(StatsTracker));
-
-        private static readonly ProfilerMarker _PRF_Median = new(_PRF_PFX + nameof(Median));
-        private static readonly ProfilerMarker _PRF_Minimum = new(_PRF_PFX + nameof(Minimum));
-        private static readonly ProfilerMarker _PRF_Maximum = new(_PRF_PFX + nameof(Maximum));
-        private static readonly ProfilerMarker _PRF_Sum = new(_PRF_PFX + nameof(Sum));
-        private static readonly ProfilerMarker _PRF_Average = new(_PRF_PFX + nameof(Average));
-
-        private static readonly ProfilerMarker _PRF_Calculate = new(_PRF_PFX + nameof(Calculate));
-
-        private static readonly ProfilerMarker _PRF_Track = new(_PRF_PFX + nameof(Track));
-        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + nameof(Reset));
-        private static readonly ProfilerMarker _PRF_ToString = new(_PRF_PFX + nameof(ToString));
-
-        private static readonly ProfilerMarker _PRF_GetFormattedString =
-            new(_PRF_PFX + nameof(GetFormattedString));
+        #endregion
 
         protected StatsTracker(bool trackMedian = false, int limit = 256)
         {
@@ -75,7 +65,7 @@ namespace Appalachia.Core.Math.Stats
 
                 if (_random.state == 0)
                 {
-                    var seed = (uint) math.abs(___random.Next(1, 1024000));
+                    var seed = (uint)math.abs(___random.Next(1, 1024000));
                     _random.InitState(seed);
                 }
 
@@ -84,6 +74,8 @@ namespace Appalachia.Core.Math.Stats
                 _limit = limit;
             }
         }
+
+        #region Fields and Autoproperties
 
         [SmartLabel]
         [HorizontalGroup("Meta")]
@@ -131,6 +123,10 @@ namespace Appalachia.Core.Math.Stats
         [HorizontalGroup("Stats")]
         [SerializeField]
         private T _sum;
+
+        #endregion
+
+        protected abstract Comparison<T> Comparer { get; }
 
         public int Count => _values.Count;
 
@@ -201,34 +197,50 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        protected abstract Comparison<T> Comparer { get; }
-
         private bool ShouldCalculate => _calculatedAt != _values.Count;
 
         public abstract string Format(T value, FormatType format);
-        protected abstract string Suffix(T value, SuffixType type);
 
-        protected abstract T Add(T a, T b);
-        protected abstract T Divide(T dividend, int divisor);
+        [DebuggerStepThrough]
+        public override string ToString()
+        {
+            return ToString(_trackMedian, SuffixType.None, TransformationType.None, _seperator);
+        }
 
-        protected abstract T Transform(T value, TransformationType type);
+        public void Reset()
+        {
+            using (_PRF_Reset.Auto())
+            {
+                _values.Clear();
+                _average = default;
+                _maximum = default;
+                _median = default;
+                _minimum = default;
+                _sum = default;
+                _calculatedAt = 0;
+            }
+        }
 
-        [DebuggerStepThrough] public string ToString(SuffixType suffix)
+        [DebuggerStepThrough]
+        public string ToString(SuffixType suffix)
         {
             return ToString(_trackMedian, suffix, TransformationType.None, _seperator);
         }
 
-        [DebuggerStepThrough] public string ToString(TransformationType transformation)
+        [DebuggerStepThrough]
+        public string ToString(TransformationType transformation)
         {
             return ToString(_trackMedian, SuffixType.None, transformation, _seperator);
         }
 
-        [DebuggerStepThrough] public string ToString(SuffixType suffix, TransformationType transformation)
+        [DebuggerStepThrough]
+        public string ToString(SuffixType suffix, TransformationType transformation)
         {
             return ToString(_trackMedian, suffix, transformation, _seperator);
         }
 
-        [DebuggerStepThrough] public string ToString(
+        [DebuggerStepThrough]
+        public string ToString(
             bool includeMedian,
             SuffixType suffix,
             TransformationType transformation,
@@ -256,20 +268,6 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        public void Reset()
-        {
-            using (_PRF_Reset.Auto())
-            {
-                _values.Clear();
-                _average = default;
-                _maximum = default;
-                _median = default;
-                _minimum = default;
-                _sum = default;
-                _calculatedAt = 0;
-            }
-        }
-
         public void Track(T value)
         {
             using (_PRF_Track.Auto())
@@ -294,28 +292,11 @@ namespace Appalachia.Core.Math.Stats
             }
         }
 
-        [DebuggerStepThrough] public override string ToString()
-        {
-            return ToString(_trackMedian, SuffixType.None, TransformationType.None, _seperator);
-        }
+        protected abstract T Add(T a, T b);
+        protected abstract T Divide(T dividend, int divisor);
+        protected abstract string Suffix(T value, SuffixType type);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string GetFormattedString(
-            T value,
-            string prefix,
-            SuffixType suffix,
-            TransformationType transformation,
-            FormatType format)
-        {
-            using (_PRF_GetFormattedString.Auto())
-            {
-                var sfx = Suffix(value, suffix);
-                var v = Transform(value, transformation);
-
-                var vs = Format(v, format);
-                return ZString.Format(_formatted, prefix, vs, sfx);
-            }
-        }
+        protected abstract T Transform(T value, TransformationType type);
 
         private void Calculate()
         {
@@ -357,5 +338,44 @@ namespace Appalachia.Core.Math.Stats
                 _average = Divide(_sum, _values.Count);
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string GetFormattedString(
+            T value,
+            string prefix,
+            SuffixType suffix,
+            TransformationType transformation,
+            FormatType format)
+        {
+            using (_PRF_GetFormattedString.Auto())
+            {
+                var sfx = Suffix(value, suffix);
+                var v = Transform(value, transformation);
+
+                var vs = Format(v, format);
+                return ZString.Format(_formatted, prefix, vs, sfx);
+            }
+        }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(StatsTracker<T>) + ".";
+        private static readonly ProfilerMarker _PRF_StatsTracker = new(_PRF_PFX + nameof(StatsTracker));
+        private static readonly ProfilerMarker _PRF_Median = new(_PRF_PFX + nameof(Median));
+        private static readonly ProfilerMarker _PRF_Minimum = new(_PRF_PFX + nameof(Minimum));
+        private static readonly ProfilerMarker _PRF_Maximum = new(_PRF_PFX + nameof(Maximum));
+        private static readonly ProfilerMarker _PRF_Sum = new(_PRF_PFX + nameof(Sum));
+        private static readonly ProfilerMarker _PRF_Average = new(_PRF_PFX + nameof(Average));
+
+        private static readonly ProfilerMarker _PRF_Calculate = new(_PRF_PFX + nameof(Calculate));
+
+        private static readonly ProfilerMarker _PRF_Track = new(_PRF_PFX + nameof(Track));
+        private static readonly ProfilerMarker _PRF_Reset = new(_PRF_PFX + nameof(Reset));
+        private static readonly ProfilerMarker _PRF_ToString = new(_PRF_PFX + nameof(ToString));
+
+        private static readonly ProfilerMarker _PRF_GetFormattedString =
+            new(_PRF_PFX + nameof(GetFormattedString));
+
+        #endregion
     }
 }

@@ -1,11 +1,9 @@
-#region
-
-#endregion
-
 namespace Appalachia.Core.Preferences.API.PlayerPrefs
 {
     public struct string_PPAPI : IPAPI<string>
     {
+        #region IPAPI<string> Members
+
         public string Get(string key, string defaultValue, string low, string high)
         {
             return UnityEngine.PlayerPrefs.GetString(key, defaultValue);
@@ -21,5 +19,7 @@ namespace Appalachia.Core.Preferences.API.PlayerPrefs
             //return EditorGUILayout.TextField(label, value);
             return value;
         }
+
+        #endregion
     }
 }

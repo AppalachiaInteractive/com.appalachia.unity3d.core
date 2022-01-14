@@ -22,8 +22,12 @@ namespace Appalachia.Core.ObjectPooling
             _inner = inner;
         }
 
+        #region Fields and Autoproperties
+
         private readonly ConditionalWeakTable<T, Tracker> _trackers = new();
         private readonly ObjectPool<T> _inner;
+
+        #endregion
 
         public T Get()
         {
@@ -43,6 +47,8 @@ namespace Appalachia.Core.ObjectPooling
 
             _inner.Return(obj);
         }
+
+        #region Nested type: Tracker
 
         private class Tracker : IDisposable
         {
@@ -66,14 +72,24 @@ namespace Appalachia.Core.ObjectPooling
                 }
             }
 
+            #region Fields and Autoproperties
+
             private readonly string _stack;
             private bool _disposed;
+
+            #endregion
+
+            #region IDisposable Members
 
             public void Dispose()
             {
                 _disposed = true;
                 GC.SuppressFinalize(this);
             }
+
+            #endregion
         }
+
+        #endregion
     }
 }

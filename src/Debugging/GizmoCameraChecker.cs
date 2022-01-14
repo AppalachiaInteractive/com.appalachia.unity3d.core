@@ -5,13 +5,12 @@ namespace Appalachia.Core.Debugging
 {
     public static class GizmoCameraChecker
     {
-        private const string _PRF_PFX = nameof(GizmoCameraChecker) + ".";
+        #region Static Fields and Autoproperties
 
         private static Camera _mainCamera;
         private static Camera _sceneViewCamera;
 
-        private static readonly ProfilerMarker _PRF_ShouldRenderGizmos =
-            new(_PRF_PFX + nameof(ShouldRenderGizmos));
+        #endregion
 
         public static bool ShouldRenderGizmos()
         {
@@ -41,5 +40,14 @@ namespace Appalachia.Core.Debugging
                 return true;
             }
         }
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(GizmoCameraChecker) + ".";
+
+        private static readonly ProfilerMarker _PRF_ShouldRenderGizmos =
+            new(_PRF_PFX + nameof(ShouldRenderGizmos));
+
+        #endregion
     }
 }

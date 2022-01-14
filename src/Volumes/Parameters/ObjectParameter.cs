@@ -18,7 +18,11 @@ namespace Appalachia.Core.Volumes.Parameters
             this.value = value;
         }
 
+        #region Fields and Autoproperties
+
         internal ReadOnlyCollection<AppaVolumeParameter> parameters { get; private set; }
+
+        #endregion
 
         // Force override state to true for container objects
         public override bool overrideState
@@ -47,7 +51,7 @@ namespace Appalachia.Core.Volumes.Parameters
                                     .GetFields_CACHE(ReflectionExtensions.PublicInstance)
                                     .Where(t => t.FieldType.IsSubclassOf(typeof(AppaVolumeParameter)))
                                     .OrderBy(t => t.MetadataToken) // Guaranteed order
-                                    .Select(t => (AppaVolumeParameter) t.GetValue(m_Value))
+                                    .Select(t => (AppaVolumeParameter)t.GetValue(m_Value))
                                     .ToList()
                                     .AsReadOnly();
             }
@@ -61,8 +65,8 @@ namespace Appalachia.Core.Volumes.Parameters
             }
 
             var paramOrigin = parameters;
-            var paramFrom = ((ObjectParameter<T>) from).parameters;
-            var paramTo = ((ObjectParameter<T>) to).parameters;
+            var paramFrom = ((ObjectParameter<T>)from).parameters;
+            var paramTo = ((ObjectParameter<T>)to).parameters;
 
             for (var i = 0; i < paramFrom.Count; i++)
             {

@@ -22,10 +22,14 @@ namespace Appalachia.Core.Collections.Native
             m_Ptr = ptr;
         }
 
+        #region Fields and Autoproperties
+
         /// <summary>
         ///     The object to provide a debugger view for
         /// </summary>
         private SharedDisposable<TDisposable> m_Ptr;
+
+        #endregion
 
         /// <summary>
         ///     Get the viewed object's disposable

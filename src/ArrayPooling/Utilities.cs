@@ -19,7 +19,7 @@ namespace Appalachia.Core.ArrayPooling
         {
             Assert.IsTrue(bufferSize > 0);
 
-            var bitsRemaining = ((uint) bufferSize - 1) >> 4;
+            var bitsRemaining = ((uint)bufferSize - 1) >> 4;
 
             var poolIndex = 0;
             if (bitsRemaining > 0xFFFF)
@@ -52,7 +52,7 @@ namespace Appalachia.Core.ArrayPooling
                 poolIndex += 1;
             }
 
-            return poolIndex + (int) bitsRemaining;
+            return poolIndex + (int)bitsRemaining;
         }
     }
 }

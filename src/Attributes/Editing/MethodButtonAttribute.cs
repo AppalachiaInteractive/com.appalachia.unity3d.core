@@ -19,10 +19,14 @@ namespace Appalachia.Core.Attributes.Editing
             MethodNames = args;
         }
 
+        #region Fields and Autoproperties
+
         /// <summary>
         ///     Array of different method names for which a button will be displayed.
         ///     <para>"MethodOne", MethodTwo" ... "MethodN"</para>
         /// </summary>
         public string[] MethodNames { get; }
+
+        #endregion
     }
 }

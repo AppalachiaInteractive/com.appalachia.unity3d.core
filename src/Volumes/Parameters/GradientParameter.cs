@@ -12,8 +12,12 @@ namespace Appalachia.Core.Volumes.Parameters
             _alphaKeys = new GradientAlphaKey[8];
         }
 
+        #region Fields and Autoproperties
+
         private GradientAlphaKey[] _alphaKeys;
         private GradientColorKey[] _colorKeys;
+
+        #endregion
 
         // XXX: this is hardly efficient
 
@@ -27,8 +31,8 @@ namespace Appalachia.Core.Volumes.Parameters
                 var toColor = to.Evaluate(atTime);
                 var newColor = Color.Lerp(fromColor, toColor, t);
 
-                _colorKeys[i] = new GradientColorKey {color = newColor, time = atTime};
-                _alphaKeys[i] = new GradientAlphaKey {alpha = newColor.a, time = atTime};
+                _colorKeys[i] = new GradientColorKey { color = newColor, time = atTime };
+                _alphaKeys[i] = new GradientAlphaKey { alpha = newColor.a, time = atTime };
 
                 atTime += 0.125f;
             }

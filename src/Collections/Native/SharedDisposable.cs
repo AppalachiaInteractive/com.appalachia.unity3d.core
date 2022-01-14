@@ -25,42 +25,6 @@ namespace Appalachia.Core.Collections.Native
         where TDisposable : IDisposable
     {
 	    /// <summary>
-	    ///     Pointer to the ref count in native memory. Must be named exactly
-	    ///     this way to allow for
-	    ///     [NativeContainerSupportsDeallocateOnJobCompletion]
-	    /// </summary>
-	    [NativeDisableUnsafePtrRestriction]
-        internal int* m_Buffer;
-
-	    /// <summary>
-	    ///     Allocator used to create the backing memory
-	    ///     This field must be named this way to comply with
-	    ///     [NativeContainerSupportsDeallocateOnJobCompletion]
-	    /// </summary>
-	    internal readonly Allocator m_AllocatorLabelLabel;
-
-	    /// <summary>
-	    ///     Disposable that is being shared
-	    /// </summary>
-	    private readonly TDisposable m_Disposable;
-
-        // These fields are all required when safety checks are enabled
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-	    /// <summary>
-	    ///     A handle to information about what operations can be safely
-	    ///     performed on the object at any given time.
-	    /// </summary>
-	    internal AtomicSafetyHandle m_Safety;
-
-	    /// <summary>
-	    ///     A handle that can be used to tell if the object has been disposed
-	    ///     yet or not, which allows for error-checking double disposal.
-	    /// </summary>
-	    [NativeSetClassTypeToNullOnSchedule]
-        private DisposeSentinel m_DisposeSentinel;
-#endif
-
-	    /// <summary>
 	    ///     Allocate memory and save the disposable
 	    /// </summary>
 	    /// <param name="disposable">
@@ -83,7 +47,7 @@ namespace Appalachia.Core.Collections.Native
             }
 
             // Allocate the memory for the ref count and initialize to 1
-            m_Buffer = (int*) UnsafeUtility.Malloc(sizeof(int), UnsafeUtility.AlignOf<int>(), allocator);
+            m_Buffer = (int*)UnsafeUtility.Malloc(sizeof(int), UnsafeUtility.AlignOf<int>(), allocator);
             *m_Buffer = 1;
 
             // Store the allocator to use when deallocating
@@ -102,21 +66,29 @@ namespace Appalachia.Core.Collections.Native
             m_Disposable = disposable;
         }
 
+	    #region Fields and Autoproperties
+
 	    /// <summary>
-	    ///     Get or set the contained disposable
-	    ///     This operation requires read access.
+	    ///     Allocator used to create the backing memory
+	    ///     This field must be named this way to comply with
+	    ///     [NativeContainerSupportsDeallocateOnJobCompletion]
 	    /// </summary>
-	    /// <value>
-	    ///     The contained disposable
-	    /// </value>
-	    public TDisposable Value
-        {
-            get
-            {
-                CheckReadAccess();
-                return m_Disposable;
-            }
-        }
+	    internal readonly Allocator m_AllocatorLabelLabel;
+
+	    /// <summary>
+	    ///     Pointer to the ref count in native memory. Must be named exactly
+	    ///     this way to allow for
+	    ///     [NativeContainerSupportsDeallocateOnJobCompletion]
+	    /// </summary>
+	    [NativeDisableUnsafePtrRestriction]
+	    internal int* m_Buffer;
+
+	    /// <summary>
+	    ///     Disposable that is being shared
+	    /// </summary>
+	    private readonly TDisposable m_Disposable;
+
+	    #endregion
 
 	    /// <summary>
 	    ///     Check if the underlying unmanaged memory has been created and not
@@ -136,6 +108,22 @@ namespace Appalachia.Core.Collections.Native
 	    public bool IsCreated => m_Buffer != null;
 
 	    /// <summary>
+	    ///     Get or set the contained disposable
+	    ///     This operation requires read access.
+	    /// </summary>
+	    /// <value>
+	    ///     The contained disposable
+	    /// </value>
+	    public TDisposable Value
+	    {
+		    get
+		    {
+			    CheckReadAccess();
+			    return m_Disposable;
+		    }
+	    }
+
+	    /// <summary>
 	    ///     Increment the reference count.
 	    ///     This operation requires write access.
 	    /// </summary>
@@ -148,6 +136,45 @@ namespace Appalachia.Core.Collections.Native
             *m_Buffer = *m_Buffer + 1;
             return this;
         }
+
+	    /// <summary>
+	    ///     Set whether both read and write access should be allowed. This is
+	    ///     used for automated testing purposes only.
+	    /// </summary>
+	    /// <param name="allowReadOrWriteAccess">
+	    ///     If both read and write access should be allowed
+	    /// </param>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_Safety, allowReadOrWriteAccess);
+#endif
+	    }
+
+	    /// <summary>
+	    ///     Throw an exception if the object isn't readable
+	    /// </summary>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    private void CheckReadAccess()
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
+#endif
+	    }
+
+	    /// <summary>
+	    ///     Throw an exception if the object isn't writable
+	    /// </summary>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    private void CheckWriteAccess()
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+#endif
+	    }
+
+	    #region IDisposable Members
 
 	    /// <summary>
 	    ///     Release the object's unmanaged memory. Do not use it after this. Do
@@ -181,41 +208,22 @@ namespace Appalachia.Core.Collections.Native
             }
         }
 
-	    /// <summary>
-	    ///     Set whether both read and write access should be allowed. This is
-	    ///     used for automated testing purposes only.
-	    /// </summary>
-	    /// <param name="allowReadOrWriteAccess">
-	    ///     If both read and write access should be allowed
-	    /// </param>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
-        {
+	    #endregion
+
+	    // These fields are all required when safety checks are enabled
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_Safety, allowReadOrWriteAccess);
-#endif
-        }
+	    /// <summary>
+	    ///     A handle to information about what operations can be safely
+	    ///     performed on the object at any given time.
+	    /// </summary>
+	    internal AtomicSafetyHandle m_Safety;
 
 	    /// <summary>
-	    ///     Throw an exception if the object isn't readable
+	    ///     A handle that can be used to tell if the object has been disposed
+	    ///     yet or not, which allows for error-checking double disposal.
 	    /// </summary>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckReadAccess()
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
+	    [NativeSetClassTypeToNullOnSchedule]
+	    private DisposeSentinel m_DisposeSentinel;
 #endif
-        }
-
-	    /// <summary>
-	    ///     Throw an exception if the object isn't writable
-	    /// </summary>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckWriteAccess()
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
-#endif
-        }
     }
 }

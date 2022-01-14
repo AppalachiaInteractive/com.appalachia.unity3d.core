@@ -2,6 +2,8 @@ namespace Appalachia.Core.Labels
 {
     public static class LABELS
     {
+        #region Constants and Static Readonly
+
         public const string LABEL_AquaticPlant = "AquaticPlant";
         public const string LABEL_AssemblyHuge = "AssemblyHuge";
         public const string LABEL_AssemblyLarge = "AssemblyLarge";
@@ -51,5 +53,7 @@ namespace Appalachia.Core.Labels
         public const string LABEL_VegetationVeryLarge = "VegetationVeryLarge";
 
         public const string LABEL_VegetationVerySmall = "VegetationVerySmall";
+
+        #endregion
     }
 }

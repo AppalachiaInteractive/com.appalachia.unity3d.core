@@ -10,7 +10,6 @@ using Appalachia.Core.Collections.Exceptions;
 using Appalachia.Core.Collections.Interfaces;
 using Appalachia.Core.Collections.NonSerialized;
 using Appalachia.Utility.Constants;
-using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Extensions.Debugging;
 using Appalachia.Utility.Strings;
@@ -656,7 +655,10 @@ namespace Appalachia.Core.Collections
 
                 INTERNAL_INITIALIZE_EXECUTE(inConstructor);
 
-                var keyCountsMatch = _lookup?.Count == keys?.Count;
+                var lookupCount = _lookup?.Count ?? -1;
+                var keyCount = keys?.Count ?? -2;
+
+                var keyCountsMatch = lookupCount == keyCount;
 
                 var hasLookupCountIssue = _hasInitializedPreviously && !keyCountsMatch;
 
@@ -1113,13 +1115,13 @@ namespace Appalachia.Core.Collections
                     return false;
                 }
 
-                if (!APPASERIALIZE.InSerializationWindow)
+                /*if (!APPASERIALIZE.InSerializationWindow)
                 {
-                    if (AppalachiaApplication.IsPlaying)
+                    if (!AppalachiaApplication.IsPlaying)
                     {
                         return false;
                     }
-                }
+                }*/
 
                 if (_tempRemovedIndices == null)
                 {
@@ -1561,7 +1563,7 @@ namespace Appalachia.Core.Collections
 
         #region IAppaLookupState<TKey,TValue> Members
 
-        public void SetObjectOwnership(Object owner)
+        public void SetSerializationOwner(Object owner)
         {
             _object = owner;
             _markAsModifiedAction = owner.MarkAsModified;
@@ -1575,7 +1577,7 @@ namespace Appalachia.Core.Collections
             set => initializerCount = value;
         }
 
-        public void SetObjectOwnership(Object owner, Action markAsModifiedAction)
+        public void SetSerializationOwner(Object owner, Action markAsModifiedAction)
         {
             _markAsModifiedAction = markAsModifiedAction;
             _object = owner;

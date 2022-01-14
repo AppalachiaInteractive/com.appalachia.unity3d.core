@@ -11,6 +11,25 @@ namespace Appalachia.Core.Collections.Native
     [StructLayout(LayoutKind.Explicit)]
     internal unsafe struct NativeHashSetState
     {
+        #region Constants and Static Readonly
+
+        /// <summary>
+        ///     Number of ints that fit in one cache line
+        /// </summary>
+        internal const int IntsPerCacheLine = JobsUtility.CacheLineSize / sizeof(int);
+
+        #endregion
+
+        #region Fields and Autoproperties
+
+        // 4-byte padding on 32-bit architectures here
+
+        /// <summary>
+        ///     Bucket data
+        /// </summary>
+        [FieldOffset(16)]
+        internal byte* Buckets;
+
         /// <summary>
         ///     Item data
         /// </summary>
@@ -25,13 +44,17 @@ namespace Appalachia.Core.Collections.Native
         [FieldOffset(8)]
         internal byte* Next;
 
-        // 4-byte padding on 32-bit architectures here
+        /// <summary>
+        ///     Allocated index length
+        /// </summary>
+        [FieldOffset(32)]
+        internal int AllocatedIndexLength;
 
         /// <summary>
-        ///     Bucket data
+        ///     Bucket capacity - 1
         /// </summary>
-        [FieldOffset(16)]
-        internal byte* Buckets;
+        [FieldOffset(28)]
+        internal int BucketCapacityMask;
 
         // 4-byte padding on 32-bit architectures here
 
@@ -42,26 +65,11 @@ namespace Appalachia.Core.Collections.Native
         internal int ItemCapacity;
 
         /// <summary>
-        ///     Bucket capacity - 1
-        /// </summary>
-        [FieldOffset(28)]
-        internal int BucketCapacityMask;
-
-        /// <summary>
-        ///     Allocated index length
-        /// </summary>
-        [FieldOffset(32)]
-        internal int AllocatedIndexLength;
-
-        /// <summary>
         ///     Array indexed by thread index of first free
         /// </summary>
         [FieldOffset(JobsUtility.CacheLineSize < 64 ? 64 : JobsUtility.CacheLineSize)]
         internal fixed int FirstFreeTLS[JobsUtility.MaxJobThreadCount * IntsPerCacheLine];
 
-        /// <summary>
-        ///     Number of ints that fit in one cache line
-        /// </summary>
-        internal const int IntsPerCacheLine = JobsUtility.CacheLineSize / sizeof(int);
+        #endregion
     }
 }

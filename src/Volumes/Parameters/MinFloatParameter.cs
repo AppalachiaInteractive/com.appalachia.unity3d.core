@@ -16,7 +16,11 @@ namespace Appalachia.Core.Volumes.Parameters
             this.min = min;
         }
 
+        #region Fields and Autoproperties
+
         public float min;
+
+        #endregion
 
         public override float value
         {

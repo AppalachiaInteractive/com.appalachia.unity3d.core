@@ -19,6 +19,17 @@ namespace Appalachia.Core.Overrides
     public abstract class Overridable<T, TO> : IEquatable<Overridable<T, TO>>
         where TO : Overridable<T, TO>, new()
     {
+        public delegate void OverridableChangedHandler(TO overridable);
+
+        public delegate void OverrideEnabledChangedHandler(TO overridable);
+
+        public delegate void ValueChangedHandler(TO overridable);
+
+        public event OverridableChangedHandler OverridableChanged;
+
+        public event OverrideEnabledChangedHandler OverrideEnabledChanged;
+        public event ValueChangedHandler ValueChanged;
+
         protected Overridable(bool overrideEnabled, T value)
         {
             //this.isOverridingAllowed = isOverridingAllowed;
@@ -45,6 +56,7 @@ namespace Appalachia.Core.Overrides
         [HorizontalGroup("A", .02f)]
         [PropertyOrder(10)]
         [FormerlySerializedAs("overrideEnabled")]
+        [OnValueChanged(nameof(OnOverrideEnabledChanged))]
         private bool _overrideEnabled;
 
         [SerializeField]
@@ -55,6 +67,7 @@ namespace Appalachia.Core.Overrides
         [HorizontalGroup("A", .98f)]
         [PropertyOrder(0)]
         [FormerlySerializedAs("value")]
+        [OnValueChanged(nameof(OnValueChanged))]
         private T _value;
 
         #endregion
@@ -165,6 +178,24 @@ namespace Appalachia.Core.Overrides
             }
         }
 
+        private void OnOverrideEnabledChanged()
+        {
+            using (_PRF_OnOverrideEnabledChanged.Auto())
+            {
+                OverrideEnabledChanged?.Invoke(this as TO);
+                OverridableChanged?.Invoke(this as TO);
+            }
+        }
+
+        private void OnValueChanged()
+        {
+            using (_PRF_OnValueChanged.Auto())
+            {
+                ValueChanged?.Invoke(this as TO);
+                OverridableChanged?.Invoke(this as TO);
+            }
+        }
+
         #region IEquatable<Overridable<T,TO>> Members
 
         [DebuggerStepThrough]
@@ -193,6 +224,12 @@ namespace Appalachia.Core.Overrides
         #region Profiling
 
         private const string _PRF_PFX = nameof(Overridable<T, TO>) + ".";
+
+        private static readonly ProfilerMarker _PRF_OnOverrideEnabledChanged =
+            new ProfilerMarker(_PRF_PFX + nameof(OnOverrideEnabledChanged));
+
+        private static readonly ProfilerMarker _PRF_OnValueChanged =
+            new ProfilerMarker(_PRF_PFX + nameof(OnValueChanged));
 
         private static readonly ProfilerMarker _PRF_op_Implicit =
             new ProfilerMarker(_PRF_PFX + "op_Implicit");

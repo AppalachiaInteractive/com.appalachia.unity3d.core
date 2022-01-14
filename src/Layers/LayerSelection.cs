@@ -15,7 +15,13 @@ namespace Appalachia.Core.Layers
     [InlineProperty]
     public struct LayerSelection
     {
+        #region Static Fields and Autoproperties
+
         private static ValueDropdownList<int> _layers;
+
+        #endregion
+
+        #region Fields and Autoproperties
 
         [ValueDropdown(nameof(GetLayers))]
         [HideLabel]
@@ -24,6 +30,8 @@ namespace Appalachia.Core.Layers
         public int layer;
 
         private LayerMask mask;
+
+        #endregion
 
         public LayerMask Mask
         {
@@ -36,6 +44,23 @@ namespace Appalachia.Core.Layers
 
                 return mask;
             }
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator int(LayerSelection l)
+        {
+            return l.layer;
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator LayerSelection(int l)
+        {
+            return new() { layer = l };
+        }
+
+        public bool IsLayerInMask(int layer)
+        {
+            return mask.IsLayerInMask(layer);
         }
 
         private ValueDropdownList<int> GetLayers()
@@ -58,24 +83,9 @@ namespace Appalachia.Core.Layers
             return _layers;
         }
 
-        [DebuggerStepThrough] public static implicit operator int(LayerSelection l)
-        {
-            return l.layer;
-        }
-
-        [DebuggerStepThrough] public static implicit operator LayerSelection(int l)
-        {
-            return new() {layer = l};
-        }
-
         private void ResetMask()
         {
             mask = default;
-        }
-
-        public bool IsLayerInMask(int layer)
-        {
-            return mask.IsLayerInMask(layer);
         }
     }
 }

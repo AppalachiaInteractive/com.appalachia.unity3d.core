@@ -7,10 +7,14 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
     [Serializable]
     public class MeshEqualityState : ComponentContentEqualityState<MeshEqualityState, Mesh>
     {
+        #region Fields and Autoproperties
+
         [SerializeField] public Bounds bounds;
         [SerializeField] public int triangleCount;
         [SerializeField] public int vertexCount;
         [SerializeField] public Mesh mesh;
+
+        #endregion
 
         public override void Record(Mesh m)
         {
@@ -20,9 +24,10 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             bounds = m.bounds;
         }
 
-#region IEquatable
+        #region IEquatable
 
-        [DebuggerStepThrough] public override bool Equals(Mesh other)
+        [DebuggerStepThrough]
+        public override bool Equals(Mesh other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -35,7 +40,8 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                    bounds.Equals(other.bounds);
         }
 
-        [DebuggerStepThrough] public override bool Equals(MeshEqualityState other)
+        [DebuggerStepThrough]
+        public override bool Equals(MeshEqualityState other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -53,7 +59,8 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                    bounds.Equals(other.bounds);
         }
 
-        [DebuggerStepThrough] public override bool Equals(object obj)
+        [DebuggerStepThrough]
+        public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
@@ -70,10 +77,11 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                 return false;
             }
 
-            return Equals((MeshEqualityState) obj);
+            return Equals((MeshEqualityState)obj);
         }
 
-        [DebuggerStepThrough] public override int GetHashCode()
+        [DebuggerStepThrough]
+        public override int GetHashCode()
         {
             unchecked
             {
@@ -85,16 +93,18 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             }
         }
 
-        [DebuggerStepThrough] public static bool operator ==(MeshEqualityState left, MeshEqualityState right)
+        [DebuggerStepThrough]
+        public static bool operator ==(MeshEqualityState left, MeshEqualityState right)
         {
             return Equals(left, right);
         }
 
-        [DebuggerStepThrough] public static bool operator !=(MeshEqualityState left, MeshEqualityState right)
+        [DebuggerStepThrough]
+        public static bool operator !=(MeshEqualityState left, MeshEqualityState right)
         {
             return !Equals(left, right);
         }
 
-#endregion
+        #endregion
     }
 }

@@ -10,9 +10,16 @@ using Random = UnityEngine.Random;
 namespace Appalachia.Core.Math.Probability
 {
     [Serializable]
-    public class ProbabilitySet 
+    public class ProbabilitySet
     {
+        #region Fields and Autoproperties
+
+        public double sum;
+
+        public ProbabilityPair[] pairs;
         [NonSerialized] private AppaContext _context;
+
+        #endregion
 
         protected AppaContext Context
         {
@@ -26,9 +33,6 @@ namespace Appalachia.Core.Math.Probability
                 return _context;
             }
         }
-        public double sum;
-
-        public ProbabilityPair[] pairs;
 
         public int GetNextIndex()
         {
@@ -96,7 +100,7 @@ namespace Appalachia.Core.Math.Probability
                     var denom = sum == 0.0 ? 1.0 : sum;
                     var end = start + ((prefab.Enabled ? prefab.Probability : 0.0) / denom);
 
-                    pairs[i] = new ProbabilityPair {inclusiveStart = start, exclusiveEnd = end};
+                    pairs[i] = new ProbabilityPair { inclusiveStart = start, exclusiveEnd = end };
 
                     previousEnd = end;
                 }

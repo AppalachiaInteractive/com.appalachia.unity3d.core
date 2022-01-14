@@ -28,6 +28,12 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaObject<T> : ICrossAssemblySerializable
     {
+        #region Constants and Static Readonly
+
+        private static readonly string _PRF_PFX5 = typeof(T).Name + ".";
+
+        #endregion
+
         #region ICrossAssemblySerializable Members
 
         public ScriptableObject GetSerializable()
@@ -43,7 +49,7 @@ namespace Appalachia.Core.Objects.Root
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_GetSerializable =
-            new ProfilerMarker(_PRF_PFX + nameof(GetSerializable));
+            new ProfilerMarker(_PRF_PFX5 + nameof(GetSerializable));
 
         #endregion
     }

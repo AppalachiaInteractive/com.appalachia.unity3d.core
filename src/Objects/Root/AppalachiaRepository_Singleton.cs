@@ -39,32 +39,54 @@ namespace Appalachia.Core.Objects.Root
         public async AppaTask<T> Find<T>()
             where T : SingletonAppalachiaObject<T>, ISingleton<T>
         {
-            using (_PRF_Find.Auto())
+            var result = await Find(typeof(T));
+
+            if (result is not null)
             {
-                var result = await Find(typeof(T));
-
-                if (result is not null)
-                {
-                    result.SetSingletonInstance(result);
-
-                    return result as T;
-                }
-
-                return null;
+                return result as T;
             }
+
+            return null;
         }
 
-        public async AppaTask<ISingleton> Find(Type t)
+        internal async AppaTask<ISingleton> Find(Type t)
         {
-            using (_PRF_Find.Auto())
-            {
-                _singletons ??= new AppalachiaRepositorySingletonReferenceList();
+            _singletons ??= new AppalachiaRepositorySingletonReferenceList();
 
-                if (!_singletonLookup.ContainsKey(t))
+            if (!_singletonLookup.ContainsKey(t))
+            {
+                Context.Log.Error(
+                    ZString.Format(
+                        "Could not find type {0} in the {1}!",
+                        t,
+                        nameof(AppalachiaRepository).FormatForLogging()
+                    )
+                );
+                return null;
+            }
+
+            var reference = _singletonLookup[t];
+            var assetReference = reference.assetReference;
+            ISingleton result;
+
+            var isLoading = assetReference.IsValid() && (assetReference.OperationHandle.PercentComplete > 0f);
+
+            if (isLoading)
+            {
+                await AppaTask.WaitUntil(() => assetReference.IsDone);
+            }
+
+            var isLoaded = assetReference.IsValid() && assetReference.IsDone;
+
+            if (isLoaded)
+            {
+                result = assetReference.Asset as ISingleton;
+
+                if (result == null)
                 {
                     Context.Log.Error(
                         ZString.Format(
-                            "Could not find type {0} in the {1}!",
+                            "Null reference for type {0} in the {1}!",
                             t,
                             nameof(AppalachiaRepository).FormatForLogging()
                         )
@@ -72,68 +94,55 @@ namespace Appalachia.Core.Objects.Root
                     return null;
                 }
 
-                var reference = _singletonLookup[t];
-                var assetReference = reference.assetReference;
-                ISingleton result;
+                return result;
+            }
 
-                var isLoaded = assetReference.IsValid();
-
-                //var isReferenceValid = referenceSingleton.RuntimeKeyIsValid();
-
-                if (isLoaded)
-                {
-                    result = assetReference.Asset as ISingleton;
-
-                    result?.SetSingletonInstance(result);
-
-                    return result;
-                }
-
-                try
-                {
+            try
+            {
 #if UNITY_EDITOR
-                    if (!assetReference.RuntimeKeyIsValid())
+                if (!assetReference.RuntimeKeyIsValid())
+                {
+                    if (reference.editorAsset != null)
                     {
-                        if (assetReference.editorAsset == null)
-                        {
-                            var referenceType = reference.GetReferenceType();
-                            result = AssetDatabaseManager.FindFirstAssetMatch(referenceType) as ISingleton;
-                        }
-                        else
-                        {
-                            result = assetReference.editorAsset as ISingleton;
-                        }
+                        result = reference.editorAsset as ISingleton;
+                    }
+                    else if (assetReference.editorAsset != null)
+                    {
+                        result = assetReference.editorAsset as ISingleton;
                     }
                     else
                     {
-#endif
-                        result = await assetReference.LoadAssetAsync<ISingleton>();
-#if UNITY_EDITOR
+                        var referenceType = reference.GetReferenceType();
+                        result = AssetDatabaseManager.FindFirstAssetMatch(referenceType) as ISingleton;
                     }
-#endif
                 }
-                catch (Exception ex)
+                else
                 {
-                    Context.Log.Error(
-                        ZString.Format(
-                            "Failed to load singleton of type {0}: {1}",
-                            t.FormatForLogging(),
-                            ex.Message
-                        ),
-                        null,
-                        ex
-                    );
-
-                    return null;
+                    result = await assetReference.LoadAssetAsync<ISingleton>();
                 }
-
-                result?.SetSingletonInstance(result);
-
-                return result;
+#else
+                result = await assetReference.LoadAssetAsync<ISingleton>();
+#endif
             }
+            catch (Exception ex)
+            {
+                Context.Log.Error(
+                    ZString.Format(
+                        "Failed to load singleton of type {0}: {1}",
+                        t.FormatForLogging(),
+                        ex.Message
+                    ),
+                    null,
+                    ex
+                );
+
+                return null;
+            }
+
+            return result;
         }
 
-        public bool IsTypeInRepository<T>()
+        internal bool IsTypeInRepository<T>()
         {
             using (_PRF_IsTypeInRepository.Auto())
             {
@@ -141,7 +150,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
-        public bool IsTypeInRepository(Type t)
+        internal bool IsTypeInRepository(Type t)
         {
             using (_PRF_IsTypeInRepository.Auto())
             {

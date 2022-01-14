@@ -11,6 +11,8 @@ namespace Appalachia.Core.Volumes.Components
     [Serializable]
     public sealed class LightProperties : PropertyAppaVolumeComponent<LightProperties>
     {
+        #region Fields and Autoproperties
+
         public ClampedFloatParameter colorTemperature = new(5500f, 1000f, 20000f);
         public ColorParameter color = new(Color.white);
         public ExposedLightReferenceParameter target = new(default);
@@ -20,6 +22,8 @@ namespace Appalachia.Core.Volumes.Components
         public TextureParameter cookie = new(null);
 
         public Vector3Parameter rotation = new(Vector3.zero);
+
+        #endregion
 
         public override void OverrideProperties(PropertyMaster master)
         {

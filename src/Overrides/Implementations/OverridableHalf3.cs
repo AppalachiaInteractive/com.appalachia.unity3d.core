@@ -14,10 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableHalf3(bool overrideEnabled, half3 value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableHalf3(bool overrideEnabled, half3 value) : base(overrideEnabled, value)
         {
         }
 

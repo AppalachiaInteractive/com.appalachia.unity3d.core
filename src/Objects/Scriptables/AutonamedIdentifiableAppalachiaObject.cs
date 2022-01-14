@@ -68,51 +68,28 @@ namespace Appalachia.Core.Objects.Scriptables
             return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) <= 0;
         }
 
-        public void UpdateName()
-        {
-            using (_PRF_UpdateName.Auto())
-            {
-#if UNITY_EDITOR
-                if (name != profileName)
-                {
-                    Rename(profileName);
-
-                    UpdateAllIDs();
-                }
-#endif
-            }
-        }
-
         protected override async AppaTask Initialize(Initializer initializer)
         {
+            await base.Initialize(initializer);
+
             using (_PRF_Initialize.Auto())
             {
-                await initializer.Do(
+                initializer.Do(
                     this,
                     nameof(profileName),
                     profileName.IsNullOrWhiteSpace(),
                     () =>
                     {
-                        profileName = name;
+                        using (_PRF_Initialize.Auto())
+                        {
+                            profileName = name;
 
-                        UpdateName();
+                            UpdateName();
+                        }
                     }
                 );
             }
         }
-
-#if UNITY_EDITOR
-        protected override void OnUpdateAllIDs()
-        {
-            using (_PRF_OnUpateAllIDs.Auto())
-            {
-                if (string.IsNullOrWhiteSpace(profileName))
-                {
-                    Rename(profileName);
-                }
-            }
-        }
-#endif
 
         #region IComparable Members
 
@@ -174,22 +151,47 @@ namespace Appalachia.Core.Objects.Scriptables
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(AutonamedIdentifiableAppalachiaObject<T>) + ".";
+        private static readonly ProfilerMarker _PRF_CompareTo =
+            new ProfilerMarker(_PRF_PFX + nameof(CompareTo));
+
+        #endregion
+
+#if UNITY_EDITOR
+
+        public void UpdateName()
+        {
+            using (_PRF_UpdateName.Auto())
+            {
+                if (name != profileName)
+                {
+                    Rename(profileName);
+
+                    UpdateAllIDs();
+                }
+            }
+        }
+
+        protected override void OnUpdateAllIDs()
+        {
+            using (_PRF_OnUpateAllIDs.Auto())
+            {
+                if (string.IsNullOrWhiteSpace(profileName))
+                {
+                    Rename(profileName);
+                }
+            }
+        }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_OnUpateAllIDs =
+            new ProfilerMarker(_PRF_PFX + nameof(OnUpdateAllIDs));
 
         private static readonly ProfilerMarker _PRF_UpdateName =
             new ProfilerMarker(_PRF_PFX + nameof(UpdateName));
 
-#if UNITY_EDITOR
-        private static readonly ProfilerMarker _PRF_OnUpateAllIDs =
-            new ProfilerMarker(_PRF_PFX + nameof(OnUpdateAllIDs));
-#endif
-
-        private static readonly ProfilerMarker _PRF_CompareTo =
-            new ProfilerMarker(_PRF_PFX + nameof(CompareTo));
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
         #endregion
+
+#endif
     }
 }

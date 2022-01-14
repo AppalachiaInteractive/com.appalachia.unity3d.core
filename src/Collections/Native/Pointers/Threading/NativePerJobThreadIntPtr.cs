@@ -28,152 +28,14 @@ namespace Appalachia.Core.Collections.Native.Pointers.Threading
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct NativePerJobThreadIntPtr : IDisposable
     {
-	    /// <summary>
-	    ///     An atomic write-only version of the object suitable for use in a
-	    ///     ParallelFor job
-	    /// </summary>
-	    [NativeContainer]
-        [NativeContainerIsAtomicWriteOnly]
-        public struct Parallel
-        {
-	        /// <summary>
-	        ///     Pointer to the value in native memory
-	        /// </summary>
-	        [NativeDisableUnsafePtrRestriction]
-            internal readonly int* m_Buffer;
-
-	        /// <summary>
-	        ///     Thread index of the job using this object. This is set by Unity
-	        ///     and must have this exact name and type.
-	        /// </summary>
-	        [NativeSetThreadIndex]
-            internal readonly int m_ThreadIndex;
-
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-	        /// <summary>
-	        ///     A handle to information about what operations can be safely
-	        ///     performed on the object at any given time.
-	        /// </summary>
-	        internal AtomicSafetyHandle m_Safety;
-
-	        /// <summary>
-	        ///     Create a parallel version of the object
-	        /// </summary>
-	        /// <param name="value">
-	        ///     Pointer to the value
-	        /// </param>
-	        /// <param name="safety">
-	        ///     Atomic safety handle for the object
-	        /// </param>
-	        internal Parallel(int* value, AtomicSafetyHandle safety)
-            {
-                m_Buffer = value;
-                m_ThreadIndex = 0;
-                m_Safety = safety;
-            }
-#else
-			/// <summary>
-			/// Create a parallel version of the object
-			/// </summary>
-			/// 
-			/// <param name="value">
-			/// Pointer to the value
-			/// </param>
-			internal Parallel(int* value)
-			{
-				m_Buffer = value;
-				m_ThreadIndex = 0;
-			}
-#endif
-
-	        /// <summary>
-	        ///     Increment the stored value
-	        /// </summary>
-	        /// <returns>
-	        ///     This object
-	        /// </returns>
-	        [WriteAccessRequired]
-            public void Increment()
-            {
-                CheckWriteAccess();
-                m_Buffer[IntsPerCacheLine * m_ThreadIndex]++;
-            }
-
-	        /// <summary>
-	        ///     Decrement the stored value
-	        /// </summary>
-	        /// <returns>
-	        ///     This object
-	        /// </returns>
-	        [WriteAccessRequired]
-            public void Decrement()
-            {
-                CheckWriteAccess();
-                m_Buffer[IntsPerCacheLine * m_ThreadIndex]--;
-            }
-
-	        /// <summary>
-	        ///     Add to the stored value
-	        /// </summary>
-	        /// <param name="value">
-	        ///     Value to add. Use negative values for subtraction.
-	        /// </param>
-	        /// <returns>
-	        ///     This object
-	        /// </returns>
-	        [WriteAccessRequired]
-            public void Add(int value)
-            {
-                CheckWriteAccess();
-                m_Buffer[IntsPerCacheLine * m_ThreadIndex] += value;
-            }
-
-	        /// <summary>
-	        ///     Throw an exception if the object isn't writable
-	        /// </summary>
-	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-            private void CheckWriteAccess()
-            {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-                AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
-#endif
-            }
-        }
-
-	    /// <summary>
-	    ///     Pointer to the value in native memory. Must be named exactly this
-	    ///     way to allow for [NativeContainerSupportsDeallocateOnJobCompletion]
-	    /// </summary>
-	    [NativeDisableUnsafePtrRestriction]
-        internal int* m_Buffer;
-
-	    /// <summary>
-	    ///     Allocator used to create the backing memory
-	    ///     This field must be named this way to comply with
-	    ///     [NativeContainerSupportsDeallocateOnJobCompletion]
-	    /// </summary>
-	    internal Allocator m_AllocatorLabelLabel;
-
-        // These fields are all required when safety checks are enabled
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-	    /// <summary>
-	    ///     A handle to information about what operations can be safely
-	    ///     performed on the object at any given time.
-	    /// </summary>
-	    internal AtomicSafetyHandle m_Safety;
-
-	    /// <summary>
-	    ///     A handle that can be used to tell if the object has been disposed
-	    ///     yet or not, which allows for error-checking double disposal.
-	    /// </summary>
-	    [NativeSetClassTypeToNullOnSchedule]
-        private DisposeSentinel m_DisposeSentinel;
-#endif
+	    #region Constants and Static Readonly
 
 	    /// <summary>
 	    ///     The number of integers that fit into a CPU cache line
 	    /// </summary>
 	    private const int IntsPerCacheLine = JobsUtility.CacheLineSize / sizeof(int);
+
+	    #endregion
 
 	    /// <summary>
 	    ///     Allocate memory and set the initial value
@@ -196,7 +58,7 @@ namespace Appalachia.Core.Collections.Native.Pointers.Threading
             }
 
             // Allocate the memory for the values
-            m_Buffer = (int*) UnsafeUtility.Malloc(
+            m_Buffer = (int*)UnsafeUtility.Malloc(
                 JobsUtility.CacheLineSize * JobsUtility.MaxJobThreadCount,
                 UnsafeUtility.AlignOf<int>(),
                 allocator
@@ -217,6 +79,41 @@ namespace Appalachia.Core.Collections.Native.Pointers.Threading
             // Set the initial value
             Value = initialValue;
         }
+
+	    #region Fields and Autoproperties
+
+	    /// <summary>
+	    ///     Allocator used to create the backing memory
+	    ///     This field must be named this way to comply with
+	    ///     [NativeContainerSupportsDeallocateOnJobCompletion]
+	    /// </summary>
+	    internal Allocator m_AllocatorLabelLabel;
+
+	    /// <summary>
+	    ///     Pointer to the value in native memory. Must be named exactly this
+	    ///     way to allow for [NativeContainerSupportsDeallocateOnJobCompletion]
+	    /// </summary>
+	    [NativeDisableUnsafePtrRestriction]
+	    internal int* m_Buffer;
+
+	    #endregion
+
+	    /// <summary>
+	    ///     Check if the underlying unmanaged memory has been created and not
+	    ///     freed via a call to <see cref="Dispose" />.
+	    ///     This operation has no access requirements.
+	    ///     This operation is O(1).
+	    /// </summary>
+	    /// <value>
+	    ///     Initially true when a non-default constructor is called but
+	    ///     initially false when the default constructor is used. After
+	    ///     <see cref="Dispose" /> is called, this becomes false. Note that
+	    ///     calling <see cref="Dispose" /> on one copy of this object doesn't
+	    ///     result in this becoming false for all copies if it was true before.
+	    ///     This property should <i>not</i> be used to check whether the object
+	    ///     is usable, only to check whether it was <i>ever</i> usable.
+	    /// </value>
+	    public bool IsCreated => m_Buffer != null;
 
 	    /// <summary>
 	    ///     Get or set the contained value
@@ -270,21 +167,43 @@ namespace Appalachia.Core.Collections.Native.Pointers.Threading
         }
 
 	    /// <summary>
-	    ///     Check if the underlying unmanaged memory has been created and not
-	    ///     freed via a call to <see cref="Dispose" />.
-	    ///     This operation has no access requirements.
-	    ///     This operation is O(1).
+	    ///     Set whether both read and write access should be allowed. This is
+	    ///     used for automated testing purposes only.
 	    /// </summary>
-	    /// <value>
-	    ///     Initially true when a non-default constructor is called but
-	    ///     initially false when the default constructor is used. After
-	    ///     <see cref="Dispose" /> is called, this becomes false. Note that
-	    ///     calling <see cref="Dispose" /> on one copy of this object doesn't
-	    ///     result in this becoming false for all copies if it was true before.
-	    ///     This property should <i>not</i> be used to check whether the object
-	    ///     is usable, only to check whether it was <i>ever</i> usable.
-	    /// </value>
-	    public bool IsCreated => m_Buffer != null;
+	    /// <param name="allowReadOrWriteAccess">
+	    ///     If both read and write access should be allowed
+	    /// </param>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_Safety, allowReadOrWriteAccess);
+#endif
+	    }
+
+	    /// <summary>
+	    ///     Throw an exception if the object isn't readable
+	    /// </summary>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    private void CheckReadAccess()
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
+#endif
+	    }
+
+	    /// <summary>
+	    ///     Throw an exception if the object isn't writable
+	    /// </summary>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    private void CheckWriteAccess()
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+#endif
+	    }
+
+	    #region IDisposable Members
 
 	    /// <summary>
 	    ///     Release the object's unmanaged memory. Do not use it after this. Do
@@ -311,41 +230,138 @@ namespace Appalachia.Core.Collections.Native.Pointers.Threading
             m_Buffer = null;
         }
 
-	    /// <summary>
-	    ///     Set whether both read and write access should be allowed. This is
-	    ///     used for automated testing purposes only.
-	    /// </summary>
-	    /// <param name="allowReadOrWriteAccess">
-	    ///     If both read and write access should be allowed
-	    /// </param>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_Safety, allowReadOrWriteAccess);
-#endif
-        }
+	    #endregion
+
+	    #region Nested type: Parallel
 
 	    /// <summary>
-	    ///     Throw an exception if the object isn't readable
+	    ///     An atomic write-only version of the object suitable for use in a
+	    ///     ParallelFor job
 	    /// </summary>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckReadAccess()
-        {
+	    [NativeContainer]
+	    [NativeContainerIsAtomicWriteOnly]
+	    public struct Parallel
+	    {
+		    /// <summary>
+		    ///     Pointer to the value in native memory
+		    /// </summary>
+		    [NativeDisableUnsafePtrRestriction]
+		    internal readonly int* m_Buffer;
+
+		    /// <summary>
+		    ///     Thread index of the job using this object. This is set by Unity
+		    ///     and must have this exact name and type.
+		    /// </summary>
+		    [NativeSetThreadIndex]
+		    internal readonly int m_ThreadIndex;
+
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
+		    /// <summary>
+		    ///     A handle to information about what operations can be safely
+		    ///     performed on the object at any given time.
+		    /// </summary>
+		    internal AtomicSafetyHandle m_Safety;
+
+		    /// <summary>
+		    ///     Create a parallel version of the object
+		    /// </summary>
+		    /// <param name="value">
+		    ///     Pointer to the value
+		    /// </param>
+		    /// <param name="safety">
+		    ///     Atomic safety handle for the object
+		    /// </param>
+		    internal Parallel(int* value, AtomicSafetyHandle safety)
+		    {
+			    m_Buffer = value;
+			    m_ThreadIndex = 0;
+			    m_Safety = safety;
+		    }
+#else
+			/// <summary>
+			/// Create a parallel version of the object
+			/// </summary>
+			/// 
+			/// <param name="value">
+			/// Pointer to the value
+			/// </param>
+			internal Parallel(int* value)
+			{
+				m_Buffer = value;
+				m_ThreadIndex = 0;
+			}
 #endif
-        }
+
+		    /// <summary>
+		    ///     Increment the stored value
+		    /// </summary>
+		    /// <returns>
+		    ///     This object
+		    /// </returns>
+		    [WriteAccessRequired]
+		    public void Increment()
+		    {
+			    CheckWriteAccess();
+			    m_Buffer[IntsPerCacheLine * m_ThreadIndex]++;
+		    }
+
+		    /// <summary>
+		    ///     Decrement the stored value
+		    /// </summary>
+		    /// <returns>
+		    ///     This object
+		    /// </returns>
+		    [WriteAccessRequired]
+		    public void Decrement()
+		    {
+			    CheckWriteAccess();
+			    m_Buffer[IntsPerCacheLine * m_ThreadIndex]--;
+		    }
+
+		    /// <summary>
+		    ///     Add to the stored value
+		    /// </summary>
+		    /// <param name="value">
+		    ///     Value to add. Use negative values for subtraction.
+		    /// </param>
+		    /// <returns>
+		    ///     This object
+		    /// </returns>
+		    [WriteAccessRequired]
+		    public void Add(int value)
+		    {
+			    CheckWriteAccess();
+			    m_Buffer[IntsPerCacheLine * m_ThreadIndex] += value;
+		    }
+
+		    /// <summary>
+		    ///     Throw an exception if the object isn't writable
+		    /// </summary>
+		    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+		    private void CheckWriteAccess()
+		    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+			    AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+#endif
+		    }
+	    }
+
+	    #endregion
+
+	    // These fields are all required when safety checks are enabled
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+	    /// <summary>
+	    ///     A handle to information about what operations can be safely
+	    ///     performed on the object at any given time.
+	    /// </summary>
+	    internal AtomicSafetyHandle m_Safety;
 
 	    /// <summary>
-	    ///     Throw an exception if the object isn't writable
+	    ///     A handle that can be used to tell if the object has been disposed
+	    ///     yet or not, which allows for error-checking double disposal.
 	    /// </summary>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckWriteAccess()
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+	    [NativeSetClassTypeToNullOnSchedule]
+	    private DisposeSentinel m_DisposeSentinel;
 #endif
-        }
     }
 }

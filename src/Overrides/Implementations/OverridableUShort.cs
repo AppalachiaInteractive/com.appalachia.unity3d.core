@@ -13,10 +13,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableUShort(bool overrideEnabled, ushort value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableUShort(bool overrideEnabled, ushort value) : base(overrideEnabled, value)
         {
         }
 

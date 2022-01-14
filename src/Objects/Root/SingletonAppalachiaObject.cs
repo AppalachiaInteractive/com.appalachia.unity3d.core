@@ -81,8 +81,6 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(SingletonAppalachiaObject<T>) + ".";
-
         private static readonly ProfilerMarker _PRF_InitializeSingletonUsage =
             new(_PRF_PFX + nameof(GetSingletonInternal));
 

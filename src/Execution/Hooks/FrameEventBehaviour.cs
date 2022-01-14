@@ -16,17 +16,6 @@ namespace Appalachia.Core.Execution.Hooks
     {
         #region Static Fields and Autoproperties
 
-        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
-        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
-        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
-        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
-        private static readonly ProfilerMarker _PRF_Update = new(_PRF_PFX + nameof(Update));
-        private static readonly ProfilerMarker _PRF_FixedUpdate = new(_PRF_PFX + nameof(FixedUpdate));
-
-        private static readonly ProfilerMarker _PRF_OnApplicationQuit =
-            new(_PRF_PFX + nameof(OnApplicationQuit));
-
-        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
         private static FrameEventDelegates<T> _eventDelegates;
 
         #endregion
@@ -56,11 +45,11 @@ namespace Appalachia.Core.Execution.Hooks
         {
             using (_PRF_Update.Auto())
             {
-                if (!DependenciesAreReady || !FullyInitialized)
+                if (ShouldSkipUpdate)
                 {
                     return;
                 }
-                
+
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_DISABLE.v)
                 {
@@ -91,39 +80,6 @@ namespace Appalachia.Core.Execution.Hooks
 #endif
 
                 EventDelegates.InvokeFixedUpdate();
-            }
-        }
-
-        protected override async AppaTask WhenDisabled()
-        {
-            {
-                await base.WhenDisabled();
-
-#if UNITY_EDITOR
-                if (FrameEventSettings._ENABLE_DISABLE.v)
-                {
-                    Context.Log.Info(ZString.Format("[{0}]: [OnDisable]", GetReadableName()));
-                }
-#endif
-
-                EventDelegates.InvokeOnDisable();
-            }
-        }
-
-        protected override async AppaTask WhenDestroyed()
-        {
-            using (_PRF_OnDestroy.Auto())
-            {
-                await base.WhenDestroyed();
-
-#if UNITY_EDITOR
-                if (FrameEventSettings._ENABLE_DESTROY.v)
-                {
-                    Context.Log.Info(ZString.Format("[{0}]: [OnDestroy]", GetReadableName()));
-                }
-#endif
-
-                EventDelegates.InvokeOnDestroy();
             }
         }
 
@@ -184,8 +140,6 @@ namespace Appalachia.Core.Execution.Hooks
             {
                 base.OnEnableActual();
 
-                StaticApplicationState.HasOnEnableExecuted = true;
-
 #if UNITY_EDITOR
                 if (FrameEventSettings._ENABLE_ENABLE.v)
                 {
@@ -214,9 +168,48 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
+        protected override async AppaTask WhenDestroyed()
+        {
+            await base.WhenDestroyed();
+
+            using (_PRF_OnDestroy.Auto())
+            {
+#if UNITY_EDITOR
+                if (FrameEventSettings._ENABLE_DESTROY.v)
+                {
+                    Context.Log.Info(ZString.Format("[{0}]: [OnDestroy]", GetReadableName()));
+                }
+#endif
+
+                EventDelegates.InvokeOnDestroy();
+            }
+        }
+
+        protected override async AppaTask WhenDisabled()
+        {
+            await base.WhenDisabled();
+
+#if UNITY_EDITOR
+            if (FrameEventSettings._ENABLE_DISABLE.v)
+            {
+                Context.Log.Info(ZString.Format("[{0}]: [OnDisable]", GetReadableName()));
+            }
+#endif
+
+            EventDelegates.InvokeOnDisable();
+        }
+
         #region Profiling
 
-        private const string _PRF_PFX = nameof(FrameEventBehaviour<T>) + ".";
+        private static readonly ProfilerMarker _PRF_Awake = new(_PRF_PFX + nameof(Awake));
+
+        private static readonly ProfilerMarker _PRF_OnApplicationQuit =
+            new(_PRF_PFX + nameof(OnApplicationQuit));
+
+        private static readonly ProfilerMarker _PRF_OnDestroy = new(_PRF_PFX + nameof(OnDestroy));
+        private static readonly ProfilerMarker _PRF_OnDisable = new(_PRF_PFX + nameof(OnDisable));
+        private static readonly ProfilerMarker _PRF_OnEnable = new(_PRF_PFX + nameof(OnEnable));
+        private static readonly ProfilerMarker _PRF_Start = new(_PRF_PFX + nameof(Start));
 
         #endregion
 

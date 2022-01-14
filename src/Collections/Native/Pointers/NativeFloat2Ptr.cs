@@ -22,6 +22,193 @@ namespace Appalachia.Core.Collections.Native.Pointers
     public unsafe struct NativeFloat2Ptr : IDisposable
     {
 	    /// <summary>
+	    ///     Allocate memory and set the initial value
+	    /// </summary>
+	    /// <param name="allocator">
+	    ///     Allocator to allocate and deallocate with. Must be valid.
+	    /// </param>
+	    /// <param name="initialValue">
+	    ///     Initial value of the allocated memory
+	    /// </param>
+	    public NativeFloat2Ptr(Allocator allocator, float2 initialValue = default)
+	    {
+		    // Require a valid allocator
+		    if (allocator <= Allocator.None)
+		    {
+			    throw new ArgumentException(
+				    "Allocator must be Temp, TempJob or Persistent",
+				    nameof(allocator)
+			    );
+		    }
+
+		    // Allocate the memory for the value
+		    m_Buffer = (float2*)UnsafeUtility.Malloc(
+			    sizeof(float2),
+			    UnsafeUtility.AlignOf<float2>(),
+			    allocator
+		    );
+
+		    // Store the allocator to use when deallocating
+		    m_AllocatorLabelLabel = allocator;
+
+		    // Create the dispose sentinel
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+#if UNITY_2018_3_OR_NEWER
+		    DisposeSentinel.Create(out m_Safety, out m_DisposeSentinel, 0, allocator);
+#else
+			DisposeSentinel.Create(out m_Safety, out m_DisposeSentinel, 0);
+#endif
+#endif
+
+		    // Set the initial value
+		    *m_Buffer = initialValue;
+	    }
+
+	    #region Fields and Autoproperties
+
+	    /// <summary>
+	    ///     Allocator used to create the backing memory
+	    ///     This field must be named this way to comply with
+	    ///     [NativeContainerSupportsDeallocateOnJobCompletion]
+	    /// </summary>
+	    internal readonly Allocator m_AllocatorLabelLabel;
+
+	    /// <summary>
+	    ///     Pointer to the value in native memory. Must be named exactly this
+	    ///     way to allow for [NativeContainerSupportsDeallocateOnJobCompletion]
+	    /// </summary>
+	    [NativeDisableUnsafePtrRestriction]
+	    internal float2* m_Buffer;
+
+	    #endregion
+
+	    /// <summary>
+	    ///     Check if the underlying unmanaged memory has been created and not
+	    ///     freed via a call to <see cref="Dispose" />.
+	    ///     This operation has no access requirements.
+	    ///     This operation is O(1).
+	    /// </summary>
+	    /// <value>
+	    ///     Initially true when a non-default constructor is called but
+	    ///     initially false when the default constructor is used. After
+	    ///     <see cref="Dispose" /> is called, this becomes false. Note that
+	    ///     calling <see cref="Dispose" /> on one copy of this object doesn't
+	    ///     result in this becoming false for all copies if it was true before.
+	    ///     This property should <i>not</i> be used to check whether the object
+	    ///     is usable, only to check whether it was <i>ever</i> usable.
+	    /// </value>
+	    public bool IsCreated => m_Buffer != null;
+
+	    /// <summary>
+	    ///     Get or set the contained value
+	    ///     This operation requires read access to the node for 'get' and write
+	    ///     access to the node for 'set'.
+	    /// </summary>
+	    /// <value>
+	    ///     The contained value
+	    /// </value>
+	    public float2 Value
+	    {
+		    get
+		    {
+			    CheckReadAccess();
+			    return *m_Buffer;
+		    }
+
+		    [WriteAccessRequired]
+		    set
+		    {
+			    CheckWriteAccess();
+			    *m_Buffer = value;
+		    }
+	    }
+
+	    /// <summary>
+	    ///     Get a version of this object suitable for use in a ParallelFor job
+	    /// </summary>
+	    /// <returns>
+	    ///     A version of this object suitable for use in a ParallelFor job
+	    /// </returns>
+	    public Parallel GetParallel()
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    var parallel = new Parallel(m_Buffer, m_Safety);
+		    AtomicSafetyHandle.UseSecondaryVersion(ref parallel.m_Safety);
+#else
+			Parallel parallel = new Parallel(m_Buffer);
+#endif
+		    return parallel;
+	    }
+
+	    /// <summary>
+	    ///     Set whether both read and write access should be allowed. This is
+	    ///     used for automated testing purposes only.
+	    /// </summary>
+	    /// <param name="allowReadOrWriteAccess">
+	    ///     If both read and write access should be allowed
+	    /// </param>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_Safety, allowReadOrWriteAccess);
+#endif
+	    }
+
+	    /// <summary>
+	    ///     Throw an exception if the object isn't readable
+	    /// </summary>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    private void CheckReadAccess()
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
+#endif
+	    }
+
+	    /// <summary>
+	    ///     Throw an exception if the object isn't writable
+	    /// </summary>
+	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+	    private void CheckWriteAccess()
+	    {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+		    AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
+#endif
+	    }
+
+	    #region IDisposable Members
+
+	    /// <summary>
+	    ///     Release the object's unmanaged memory. Do not use it after this. Do
+	    ///     not call <see cref="Dispose" /> on copies of the object either.
+	    ///     This operation requires write access.
+	    ///     This complexity of this operation is O(1) plus the allocator's
+	    ///     deallocation complexity.
+	    /// </summary>
+	    [WriteAccessRequired]
+	    public void Dispose()
+	    {
+		    CheckWriteAccess();
+
+// Make sure we're not double-disposing
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+#if UNITY_2018_3_OR_NEWER
+		    DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
+#else
+			DisposeSentinel.Dispose(m_Safety, ref m_DisposeSentinel);
+#endif
+#endif
+
+		    UnsafeUtility.Free(m_Buffer, m_AllocatorLabelLabel);
+		    m_Buffer = null;
+	    }
+
+	    #endregion
+
+	    #region Nested type: Parallel
+
+	    /// <summary>
 	    ///     An atomic write-only version of the object suitable for use in a
 	    ///     ParallelFor job
 	    /// </summary>
@@ -146,19 +333,7 @@ namespace Appalachia.Core.Collections.Native.Pointers
             }
         }
 
-	    /// <summary>
-	    ///     Pointer to the value in native memory. Must be named exactly this
-	    ///     way to allow for [NativeContainerSupportsDeallocateOnJobCompletion]
-	    /// </summary>
-	    [NativeDisableUnsafePtrRestriction]
-        internal float2* m_Buffer;
-
-	    /// <summary>
-	    ///     Allocator used to create the backing memory
-	    ///     This field must be named this way to comply with
-	    ///     [NativeContainerSupportsDeallocateOnJobCompletion]
-	    /// </summary>
-	    internal readonly Allocator m_AllocatorLabelLabel;
+	    #endregion
 
         // These fields are all required when safety checks are enabled
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -175,168 +350,5 @@ namespace Appalachia.Core.Collections.Native.Pointers
 	    [NativeSetClassTypeToNullOnSchedule]
         private DisposeSentinel m_DisposeSentinel;
 #endif
-
-	    /// <summary>
-	    ///     Allocate memory and set the initial value
-	    /// </summary>
-	    /// <param name="allocator">
-	    ///     Allocator to allocate and deallocate with. Must be valid.
-	    /// </param>
-	    /// <param name="initialValue">
-	    ///     Initial value of the allocated memory
-	    /// </param>
-	    public NativeFloat2Ptr(Allocator allocator, float2 initialValue = default)
-        {
-            // Require a valid allocator
-            if (allocator <= Allocator.None)
-            {
-                throw new ArgumentException(
-                    "Allocator must be Temp, TempJob or Persistent",
-                    nameof(allocator)
-                );
-            }
-
-            // Allocate the memory for the value
-            m_Buffer = (float2*) UnsafeUtility.Malloc(
-                sizeof(float2),
-                UnsafeUtility.AlignOf<float2>(),
-                allocator
-            );
-
-            // Store the allocator to use when deallocating
-            m_AllocatorLabelLabel = allocator;
-
-            // Create the dispose sentinel
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-#if UNITY_2018_3_OR_NEWER
-            DisposeSentinel.Create(out m_Safety, out m_DisposeSentinel, 0, allocator);
-#else
-			DisposeSentinel.Create(out m_Safety, out m_DisposeSentinel, 0);
-#endif
-#endif
-
-            // Set the initial value
-            *m_Buffer = initialValue;
-        }
-
-	    /// <summary>
-	    ///     Get or set the contained value
-	    ///     This operation requires read access to the node for 'get' and write
-	    ///     access to the node for 'set'.
-	    /// </summary>
-	    /// <value>
-	    ///     The contained value
-	    /// </value>
-	    public float2 Value
-        {
-            get
-            {
-                CheckReadAccess();
-                return *m_Buffer;
-            }
-
-            [WriteAccessRequired]
-            set
-            {
-                CheckWriteAccess();
-                *m_Buffer = value;
-            }
-        }
-
-	    /// <summary>
-	    ///     Get a version of this object suitable for use in a ParallelFor job
-	    /// </summary>
-	    /// <returns>
-	    ///     A version of this object suitable for use in a ParallelFor job
-	    /// </returns>
-	    public Parallel GetParallel()
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            var parallel = new Parallel(m_Buffer, m_Safety);
-            AtomicSafetyHandle.UseSecondaryVersion(ref parallel.m_Safety);
-#else
-			Parallel parallel = new Parallel(m_Buffer);
-#endif
-            return parallel;
-        }
-
-	    /// <summary>
-	    ///     Check if the underlying unmanaged memory has been created and not
-	    ///     freed via a call to <see cref="Dispose" />.
-	    ///     This operation has no access requirements.
-	    ///     This operation is O(1).
-	    /// </summary>
-	    /// <value>
-	    ///     Initially true when a non-default constructor is called but
-	    ///     initially false when the default constructor is used. After
-	    ///     <see cref="Dispose" /> is called, this becomes false. Note that
-	    ///     calling <see cref="Dispose" /> on one copy of this object doesn't
-	    ///     result in this becoming false for all copies if it was true before.
-	    ///     This property should <i>not</i> be used to check whether the object
-	    ///     is usable, only to check whether it was <i>ever</i> usable.
-	    /// </value>
-	    public bool IsCreated => m_Buffer != null;
-
-	    /// <summary>
-	    ///     Release the object's unmanaged memory. Do not use it after this. Do
-	    ///     not call <see cref="Dispose" /> on copies of the object either.
-	    ///     This operation requires write access.
-	    ///     This complexity of this operation is O(1) plus the allocator's
-	    ///     deallocation complexity.
-	    /// </summary>
-	    [WriteAccessRequired]
-        public void Dispose()
-        {
-            CheckWriteAccess();
-
-// Make sure we're not double-disposing
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-#if UNITY_2018_3_OR_NEWER
-            DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
-#else
-			DisposeSentinel.Dispose(m_Safety, ref m_DisposeSentinel);
-#endif
-#endif
-
-            UnsafeUtility.Free(m_Buffer, m_AllocatorLabelLabel);
-            m_Buffer = null;
-        }
-
-	    /// <summary>
-	    ///     Set whether both read and write access should be allowed. This is
-	    ///     used for automated testing purposes only.
-	    /// </summary>
-	    /// <param name="allowReadOrWriteAccess">
-	    ///     If both read and write access should be allowed
-	    /// </param>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_Safety, allowReadOrWriteAccess);
-#endif
-        }
-
-	    /// <summary>
-	    ///     Throw an exception if the object isn't readable
-	    /// </summary>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckReadAccess()
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
-#endif
-        }
-
-	    /// <summary>
-	    ///     Throw an exception if the object isn't writable
-	    /// </summary>
-	    [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-        private void CheckWriteAccess()
-        {
-#if ENABLE_UNITY_COLLECTIONS_CHECKS
-            AtomicSafetyHandle.CheckWriteAndThrow(m_Safety);
-#endif
-        }
     }
 }

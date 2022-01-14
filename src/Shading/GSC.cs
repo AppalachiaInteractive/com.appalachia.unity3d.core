@@ -2,46 +2,90 @@ namespace Appalachia.Core.Shading
 {
     public static class GSC
     {
+        #region Nested type: DEBUG
+
         public static class DEBUG
         {
+            #region Constants and Static Readonly
+
             public const string _DEBUG_MAX = "_DEBUG_MAX";
 
             public const string _DEBUG_MIN = "_DEBUG_MIN";
             public const string _DEBUG_MODE = "_DEBUG_MODE";
+
+            #endregion
         }
+
+        #endregion
+
+        #region Nested type: FIRE
 
         public static class FIRE
         {
+            #region Constants and Static Readonly
+
             public const string _BURNABLE_ON = "_BURNABLE_ON";
 
             public const string _Burned = "_Burned";
             public const string _Heat = "_Heat";
             public const string _Seasoned = "_Seasoned";
             public const string _WindProtection = "_WindProtection";
+
+            #endregion
         }
+
+        #endregion
+
+        #region Nested type: GENERAL
 
         public static class GENERAL
         {
+            #region Constants and Static Readonly
+
             public const string _Cutoff = "_Cutoff";
             public const string _CutoffHighNear = "_CutoffHighNear";
             public const string _CutoffLowNear = "_CutoffLowNear";
             public const string _MainTex = "_MainTex";
+
+            #endregion
         }
+
+        #endregion
+
+        #region Nested type: OCCLUSION
 
         public static class OCCLUSION
         {
+            #region Constants and Static Readonly
+
             public const string _OCCLUSION_PROBE_GLOBAL = "_OCCLUSION_PROBE_GLOBAL";
             public const string _OCCLUSION_PROBE_TERRAIN = "_OCCLUSION_PROBE_TERRAIN";
             public const string _OCCLUSION_PROBE_TERRAIN_BLEND = "_OCCLUSION_PROBE_TERRAIN_BLEND";
+
+            #endregion
         }
+
+        #endregion
+
+        #region Nested type: SKY
 
         public static class SKY
         {
+            #region Constants and Static Readonly
+
             public const string _GLOBAL_SOLAR_TIME = "_GLOBAL_SOLAR_TIME";
+
+            #endregion
         }
+
+        #endregion
+
+        #region Nested type: TOUCHBEND
 
         public static class TOUCHBEND
         {
+            #region Constants and Static Readonly
+
             public const string _GENERATION_BACKGROUND = "_GENERATION_BACKGROUND";
 
             public const string _GENERATION_MASK = "_GENERATION_MASK";
@@ -65,19 +109,35 @@ namespace Appalachia.Core.Shading
             public const string _TOUCHBEND_CURRENT_STATE_MAP_SPATIAL = "_TOUCHBEND_CURRENT_STATE_MAP_SPATIAL";
 
             public const string _VELOCITY = "_VELOCITY";
+
+            #endregion
         }
+
+        #endregion
+
+        #region Nested type: WETNESS
 
         public static class WETNESS
         {
+            #region Constants and Static Readonly
+
             public const string _RainWetness = "_RainWetness";
             public const string _SubmersionWetness = "_SubmersionWetness";
             public const string _WETABBLE_ON = "_WETTABLE_ON";
 
             public const string _Wetness = "_Wetness";
+
+            #endregion
         }
+
+        #endregion
+
+        #region Nested type: WIND
 
         public static class WIND
         {
+            #region Constants and Static Readonly
+
             public const string _WIND_AUDIO_INFLUENCE = "_WIND_AUDIO_INFLUENCE";
             public const string _WIND_BASE_AMPLITUDE = "_WIND_BASE_AMPLITUDE";
             public const string _WIND_BASE_BRANCH_CYCLE_TIME = "_WIND_BASE_BRANCH_CYCLE_TIME";
@@ -188,6 +248,10 @@ namespace Appalachia.Core.Shading
             public const string _WIND_PLANT_STRENGTH = "_WIND_PLANT_STRENGTH";
 
             public const string _WIND_TRUNK_STRENGTH = "_WIND_TRUNK_STRENGTH";
+
+            #endregion
         }
+
+        #endregion
     }
 }

@@ -11,6 +11,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 {
     public struct int_EPAPI : IPAPI<int>
     {
+        #region IPAPI<int> Members
+
         public int Get(string key, int defaultValue, int low, int high)
         {
             var val = EditorPrefs.GetInt(key, defaultValue);
@@ -30,6 +32,8 @@ namespace Appalachia.Core.Preferences.API.Editor
 
             return val;
         }
+
+        #endregion
     }
 }
 
