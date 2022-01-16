@@ -1,11 +1,12 @@
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Reflection.Extensions;
+using Appalachia.Utility.Strings;
 
 namespace Appalachia.Core.Objects.Root
 {
     public partial class AppalachiaObject : INamed
     {
-        #region IInitializable Members
+        #region INamed Members
 
         public string Name => name;
 
@@ -26,7 +27,7 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBehaviour : INamed
     {
-        #region IInitializable Members
+        #region INamed Members
 
         public string Name => name;
 
@@ -85,7 +86,7 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
-        #region IInitializable Members
+        #region INamed Members
 
         public virtual string Name
         {
@@ -111,5 +112,37 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaPlayable<T>
     {
+    }
+
+    public partial class AppalachiaSelectable<T>
+    {
+        #region Constants and Static Readonly
+
+        private const string COMPONENT_FORMAT_STRING = "{0}.{1}";
+
+        #endregion
+
+        #region Fields and Autoproperties
+
+        private string _name;
+
+        #endregion
+
+        #region IInitializable Members
+
+        public string Name
+        {
+            get
+            {
+                if (_name == null)
+                {
+                    _name = ZString.Format(COMPONENT_FORMAT_STRING, gameObject.name, typeof(T).Name);
+                }
+
+                return _name;
+            }
+        }
+
+        #endregion
     }
 }

@@ -145,12 +145,6 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class SingletonAppalachiaObject<T> : ISingleton<T>, ISingleton
     {
-        #region Constants and Static Readonly
-
-        private static readonly string _PRF_PFX4 = typeof(T).Name;
-
-        #endregion
-
         #region Static Fields and Autoproperties
 
         [NonSerialized] private static bool _hasInvokedInstanceAvailable;
@@ -264,6 +258,8 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        private static readonly string _PRF_PFX4 = typeof(T).Name;
+
         private static readonly ProfilerMarker _PRF_SetInstance =
             new ProfilerMarker(_PRF_PFX4 + nameof(SetInstance));
 
@@ -283,12 +279,6 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class SingletonAppalachiaBehaviour<T> : ISingleton<T>, ISingleton, ISingletonBehaviour
     {
-        #region Constants and Static Readonly
-
-        private static readonly string _PRF_PFX2 = typeof(T).Name + ".";
-
-        #endregion
-
         #region Static Fields and Autoproperties
 
         [NonSerialized] private static bool _hasInvokedInstanceAvailable;
@@ -415,6 +405,8 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        private static readonly string _PRF_PFX2 = typeof(T).Name + ".";
+
         private static readonly ProfilerMarker _PRF_SetInstance =
             new ProfilerMarker(_PRF_PFX2 + nameof(SetInstance));
 
@@ -445,6 +437,10 @@ namespace Appalachia.Core.Objects.Root
     }
 
     public partial class AppalachiaPlayable<T>
+    {
+    }
+
+    public partial class AppalachiaSelectable<T>
     {
     }
 }

@@ -17,7 +17,7 @@ namespace Appalachia.Core.Transitions
 
         #region Constants and Static Readonly
 
-        public const string MethodsMenuPrefix = "Lean/Transition/Methods/";
+        public const string MethodsMenuPrefix = PKG.Menu.GameObjects.Base;
 
         public const string MethodsMenuSuffix = " Transition ";
 

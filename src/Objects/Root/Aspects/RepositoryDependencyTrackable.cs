@@ -58,7 +58,7 @@ namespace Appalachia.Core.Objects.Root
                 _instanceAvailableSubscribers ??= new HashSet<InstanceAvailableHandler>();
 
                 _instanceAvailableSubscribers.Add(value);
-                
+
                 if (IsInstanceAvailable)
                 {
                     value?.Invoke(instance);
@@ -144,6 +144,10 @@ namespace Appalachia.Core.Objects.Root
     }
 
     public partial class AppalachiaPlayable<T>
+    {
+    }
+
+    public partial class AppalachiaSelectable<T>
     {
     }
 }

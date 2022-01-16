@@ -89,4 +89,8 @@ namespace Appalachia.Core.Objects.Root
     public partial class AppalachiaPlayable<T>
     {
     }
+
+    public partial class AppalachiaSelectable<T>
+    {
+    }
 }

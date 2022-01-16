@@ -279,4 +279,53 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
     }
+
+    public partial class AppalachiaSelectable<T> : IContextual
+    {
+        #region Static Fields and Autoproperties
+
+        [NonSerialized] protected static AppaContext _staticContext;
+
+        #endregion
+
+        #region Fields and Autoproperties
+
+        [NonSerialized] protected AppaContext _context;
+
+        #endregion
+
+        protected static AppaContext StaticContext
+        {
+            get
+            {
+                if (_staticContext == null)
+                {
+                    _staticContext = new AppaContext(typeof(T));
+                }
+
+                return _staticContext;
+            }
+        }
+
+        protected AppaContext Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    _context = new AppaContext(this);
+                }
+
+                return _context;
+            }
+        }
+
+        #region IContextual Members
+
+        AppaContext IContextualInstance.Context => Context;
+
+        AppaContext IContextualStatic.StaticContext => StaticContext;
+
+        #endregion
+    }
 }

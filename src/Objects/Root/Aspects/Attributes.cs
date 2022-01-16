@@ -97,4 +97,11 @@ namespace Appalachia.Core.Objects.Root
     public partial class AppalachiaPlayable<T>
     {
     }
+
+    [DoNotReorderFields]
+    [Serializable]
+    [SmartLabelChildren]
+    public partial class AppalachiaSelectable<T>
+    {
+    }
 }

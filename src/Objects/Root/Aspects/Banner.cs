@@ -243,4 +243,49 @@ namespace Appalachia.Core.Objects.Root
     public partial class AppalachiaPlayable<T>
     {
     }
+
+    [InspectorIcon(Brand.AppalachiaSelectable.Icon)]
+    public partial class AppalachiaSelectable<T>
+    {
+        #region Constants and Static Readonly
+
+        public const string GAMEOBJECTICON = Brand.Squirrel.Outline;
+
+        #endregion
+
+        protected virtual string GetBackgroundColor()
+        {
+            return Brand.AppalachiaSelectable.Banner;
+        }
+
+        protected virtual string GetFallbackSubtitle()
+        {
+            return Brand.Subtitle.Fallback;
+        }
+
+        protected virtual string GetFallbackTitle()
+        {
+            return Brand.AppalachiaSelectable.Fallback;
+        }
+
+        protected virtual string GetGameObjectIcon()
+        {
+            return GAMEOBJECTICON;
+        }
+
+        protected virtual string GetSubtitle()
+        {
+            return Brand.Subtitle.Text;
+        }
+
+        protected virtual string GetTitle()
+        {
+            return Brand.AppalachiaSelectable.Text;
+        }
+
+        protected virtual string GetTitleColor()
+        {
+            return Brand.AppalachiaSelectable.Color;
+        }
+    }
 }

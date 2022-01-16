@@ -143,4 +143,26 @@ namespace Appalachia.Core.Objects.Root
     public partial class AppalachiaPlayable<T>
     {
     }
+
+    public partial class AppalachiaSelectable<T>
+    {
+        #region Constants and Static Readonly
+
+        protected const BindingFlags DEPENDENCY_TRACKER_FLAGS =
+            AppalachiaRootConstants.DEPENDENCY_TRACKER_FLAGS;
+
+        protected const string BASE = AppalachiaRootConstants.BASE;
+
+        protected const string DEPENDENCY_TRACKER_NAME = AppalachiaRootConstants.DEPENDENCY_TRACKER_NAME;
+        protected const string GROUP = AppalachiaRootConstants.GROUP;
+        protected const string GROUP_BUTTONS = AppalachiaRootConstants.GROUP_BUTTONS;
+        protected const string GROUP_WORKFLOW = AppalachiaRootConstants.GROUP_WORKFLOW;
+        protected const string GROUP_WORKFLOW_PROD = AppalachiaRootConstants.GROUP_WORKFLOW_PROD;
+        protected const string SHOW_WORKFLOW = AppalachiaRootConstants.SHOW_WORKFLOW;
+
+        #endregion
+
+        protected virtual bool ShowMetadata => true;
+        protected virtual bool ShowWorkflow => false;
+    }
 }

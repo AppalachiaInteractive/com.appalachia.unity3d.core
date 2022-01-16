@@ -49,12 +49,6 @@ namespace Appalachia.Core.Objects.Root
     [CallStaticConstructorInEditor]
     public abstract partial class AppalachiaObject<T> : IRepositoryDependencyTracker<T>
     {
-        #region Constants and Static Readonly
-
-        private static readonly string _PRF_PFX4 = typeof(T).Name + ".";
-
-        #endregion
-
         static AppalachiaObject()
         {
             _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T));
@@ -100,6 +94,8 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        private static readonly string _PRF_PFX4 = typeof(T).Name + ".";
+
         private static readonly ProfilerMarker _PRF_RegisterDependency =
             new(_PRF_PFX4 + nameof(RegisterDependency));
 
@@ -109,12 +105,6 @@ namespace Appalachia.Core.Objects.Root
     [CallStaticConstructorInEditor]
     public partial class SingletonAppalachiaObject<T>
     {
-        #region Constants and Static Readonly
-
-        private static readonly string _PRF_PFX5 = typeof(T).Name;
-
-        #endregion
-
         static SingletonAppalachiaObject()
         {
             _dependencyTracker.RegisterDependency(
@@ -142,6 +132,8 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        private static readonly string _PRF_PFX5 = typeof(T).Name;
+
         private static readonly ProfilerMarker _PRF_ValidateTypeIsInRepository =
             new(_PRF_PFX5 + nameof(ValidateTypeIsInRepository));
 
@@ -155,12 +147,6 @@ namespace Appalachia.Core.Objects.Root
     [CallStaticConstructorInEditor]
     public abstract partial class AppalachiaBehaviour<T> : IRepositoryDependencyTracker<T>
     {
-        #region Constants and Static Readonly
-
-        private static readonly string _PRF_PFX3 = typeof(T).Name + ".";
-
-        #endregion
-
         static AppalachiaBehaviour()
         {
             _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T));
@@ -216,6 +202,8 @@ namespace Appalachia.Core.Objects.Root
         #endregion
 
         #region Profiling
+
+        private static readonly string _PRF_PFX3 = typeof(T).Name + ".";
 
         private static readonly ProfilerMarker _PRF_RegisterDependency =
             new(_PRF_PFX3 + nameof(RegisterDependency));
@@ -303,12 +291,6 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaPlayable<T> : IRepositoryDependencyTracker<T>
     {
-        #region Constants and Static Readonly
-
-        private static readonly string _PRF_PFX2 = typeof(T).Name + ".";
-
-        #endregion
-
         static AppalachiaPlayable()
         {
             _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T));
@@ -354,8 +336,82 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        private static readonly string _PRF_PFX2 = typeof(T).Name + ".";
+
         private static readonly ProfilerMarker _PRF_RegisterDependency =
             new(_PRF_PFX2 + nameof(RegisterDependency));
+
+        #endregion
+    }
+
+    [CallStaticConstructorInEditor]
+    public partial class AppalachiaSelectable<T> : IRepositoryDependencyTracker<T>
+    {
+        static AppalachiaSelectable()
+        {
+            _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(T));
+            _dependencyTracker.RegisterDependency(
+                AppalachiaRepository.DependencyTracker,
+                i => _appalachiaRepository = i
+            );
+
+            if (s_SelectableCount < 0)
+            {
+                s_SelectableCount = 0;
+            }
+        }
+
+        #region Static Fields and Autoproperties
+
+        protected internal static AppalachiaRepositoryDependencyTracker _dependencyTracker;
+
+        private static AppalachiaRepository _appalachiaRepository;
+
+        #endregion
+
+        public static AppalachiaRepositoryDependencyTracker DependencyTracker => _dependencyTracker;
+
+        public static bool DependenciesAreReady => _dependencyTracker.DependenciesAreReady;
+
+        protected static AppalachiaRepository AppalachiaRepository => _appalachiaRepository;
+
+        protected static void RegisterDependency<TDependency>(
+            SingletonAppalachiaBehaviour<TDependency>.InstanceAvailableHandler handler)
+            where TDependency : SingletonAppalachiaBehaviour<TDependency>,
+            IRepositoryDependencyTracker<TDependency>
+        {
+            using (_PRF_RegisterDependency.Auto())
+            {
+                _dependencyTracker.RegisterDependency(handler);
+            }
+        }
+
+        protected static void RegisterDependency<TDependency>(
+            SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
+            where TDependency : SingletonAppalachiaObject<TDependency>,
+            IRepositoryDependencyTracker<TDependency>
+        {
+            using (_PRF_RegisterDependency.Auto())
+            {
+                _dependencyTracker.RegisterDependency(handler);
+            }
+        }
+
+        #region IRepositoryDependencyTracker<T> Members
+
+        bool IRepositoryDependencyTracker<T>.DependenciesAreReady => DependenciesAreReady;
+
+        AppalachiaRepositoryDependencyTracker IRepositoryDependencyTracker<T>.DependencyTracker =>
+            DependencyTracker;
+
+        #endregion
+
+        #region Profiling
+
+        private static readonly string _PRF_PFX3 = typeof(T).Name + ".";
+
+        private static readonly ProfilerMarker _PRF_RegisterDependency =
+            new(_PRF_PFX3 + nameof(RegisterDependency));
 
         #endregion
     }

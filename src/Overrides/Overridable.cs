@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Objects.Delegates;
+using Appalachia.Core.Objects.Delegates.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -19,16 +21,9 @@ namespace Appalachia.Core.Overrides
     public abstract class Overridable<T, TO> : IEquatable<Overridable<T, TO>>
         where TO : Overridable<T, TO>, new()
     {
-        public delegate void OverridableChangedHandler(TO overridable);
-
-        public delegate void OverrideEnabledChangedHandler(TO overridable);
-
-        public delegate void ValueChangedHandler(TO overridable);
-
-        public event OverridableChangedHandler OverridableChanged;
-
-        public event OverrideEnabledChangedHandler OverrideEnabledChanged;
-        public event ValueChangedHandler ValueChanged;
+        public event ValueArgs<TO>.Handler OverridableChanged;
+        public event ValueArgs<TO>.Handler OverrideEnabledChanged;
+        public event ValueArgs<TO>.Handler ValueChanged;
 
         protected Overridable(bool overrideEnabled, T value)
         {
@@ -182,8 +177,8 @@ namespace Appalachia.Core.Overrides
         {
             using (_PRF_OnOverrideEnabledChanged.Auto())
             {
-                OverrideEnabledChanged?.Invoke(this as TO);
-                OverridableChanged?.Invoke(this as TO);
+                OverrideEnabledChanged?.RaiseEvent(this as TO);
+                OverridableChanged?.RaiseEvent(this as TO);
             }
         }
 
@@ -191,8 +186,8 @@ namespace Appalachia.Core.Overrides
         {
             using (_PRF_OnValueChanged.Auto())
             {
-                ValueChanged?.Invoke(this as TO);
-                OverridableChanged?.Invoke(this as TO);
+                ValueChanged?.RaiseEvent(this as TO);
+                OverridableChanged?.RaiseEvent(this as TO);
             }
         }
 
