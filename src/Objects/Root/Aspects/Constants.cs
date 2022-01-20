@@ -17,6 +17,10 @@ namespace Appalachia.Core.Objects.Root
         public const string DEPENDENCY_TRACKER_NAME = "_dependencyTracker";
         public const string GROUP = APPASTR.ASPECTS.GROUP;
         public const string GROUP_BUTTONS = APPASTR.ASPECTS.GROUP_BUTTONS;
+        public const string GROUP_BUTTONS2 = APPASTR.ASPECTS.GROUP_BUTTONS2;
+        public const string GROUP_BUTTONS3 = APPASTR.ASPECTS.GROUP_BUTTONS3;
+        public const string GROUP_BUTTONS4 = APPASTR.ASPECTS.GROUP_BUTTONS4;
+        public const string GROUP_BUTTONS5 = APPASTR.ASPECTS.GROUP_BUTTONS5;
         public const string GROUP_WORKFLOW = APPASTR.ASPECTS.GROUP_WORKFLOW;
         public const string GROUP_WORKFLOW_PROD = APPASTR.ASPECTS.GROUP_WORKFLOW_PROD;
         public const string SHOW_WORKFLOW = APPASTR.ASPECTS.SHOW_WORKFLOW;
@@ -36,6 +40,10 @@ namespace Appalachia.Core.Objects.Root
         protected const string DEPENDENCY_TRACKER_NAME = AppalachiaRootConstants.DEPENDENCY_TRACKER_NAME;
         protected const string GROUP = AppalachiaRootConstants.GROUP;
         protected const string GROUP_BUTTONS = AppalachiaRootConstants.GROUP_BUTTONS;
+        protected const string GROUP_BUTTONS2 = APPASTR.ASPECTS.GROUP_BUTTONS2;
+        protected const string GROUP_BUTTONS3 = APPASTR.ASPECTS.GROUP_BUTTONS3;
+        protected const string GROUP_BUTTONS4 = APPASTR.ASPECTS.GROUP_BUTTONS4;
+        protected const string GROUP_BUTTONS5 = APPASTR.ASPECTS.GROUP_BUTTONS5;
         protected const string GROUP_WORKFLOW = AppalachiaRootConstants.GROUP_WORKFLOW;
         protected const string GROUP_WORKFLOW_PROD = AppalachiaRootConstants.GROUP_WORKFLOW_PROD;
         protected const string SHOW_WORKFLOW = AppalachiaRootConstants.SHOW_WORKFLOW;
@@ -100,6 +108,10 @@ namespace Appalachia.Core.Objects.Root
         protected const string DEPENDENCY_TRACKER_NAME = AppalachiaRootConstants.DEPENDENCY_TRACKER_NAME;
         protected const string GROUP = AppalachiaRootConstants.GROUP;
         protected const string GROUP_BUTTONS = AppalachiaRootConstants.GROUP_BUTTONS;
+        protected const string GROUP_BUTTONS2 = APPASTR.ASPECTS.GROUP_BUTTONS2;
+        protected const string GROUP_BUTTONS3 = APPASTR.ASPECTS.GROUP_BUTTONS3;
+        protected const string GROUP_BUTTONS4 = APPASTR.ASPECTS.GROUP_BUTTONS4;
+        protected const string GROUP_BUTTONS5 = APPASTR.ASPECTS.GROUP_BUTTONS5;
         protected const string GROUP_WORKFLOW = AppalachiaRootConstants.GROUP_WORKFLOW;
         protected const string GROUP_WORKFLOW_PROD = AppalachiaRootConstants.GROUP_WORKFLOW_PROD;
         protected const string SHOW_WORKFLOW = AppalachiaRootConstants.SHOW_WORKFLOW;

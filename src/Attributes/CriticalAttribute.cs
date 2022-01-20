@@ -1,3 +1,4 @@
+/*
 #region
 
 using System;
@@ -10,3 +11,4 @@ namespace Appalachia.Core.Attributes
     {
     }
 }
+*/

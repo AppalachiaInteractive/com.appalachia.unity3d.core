@@ -27,8 +27,8 @@ namespace Appalachia.Core.Objects.Root
         protected event ValueArgs<PointerEventData>.Handler _Drag;
         protected event ValueArgs<PointerEventData>.Handler _DragBegin;
         protected event ValueArgs<PointerEventData>.Handler _DragEnd;
-        protected event ValueArgs<BaseEventData>.Handler _HoverBegin;
-        protected event ValueArgs<BaseEventData>.Handler _HoverEnd;
+        protected event ValueArgs<PointerEventData>.Handler _HoverBegin;
+        protected event ValueArgs<PointerEventData>.Handler _HoverEnd;
         protected event EventHandler _Interactable;
         protected event EventHandler _NonInteractable;
         protected event ValueArgs<PointerEventData>.Handler _Pressed;

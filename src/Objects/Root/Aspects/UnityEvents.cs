@@ -227,7 +227,7 @@ namespace Appalachia.Core.Objects.Root
                 Context.Log.Error(
                     ZString.Format(
                         "Error remapping {0} for {1} on {2}.",
-                        currentUnityEventType,
+                        currentUnityEventType.ToString().FormatMethodForLogging(),
                         GetType().FormatForLogging(),
                         this == null ? DELETED : name.FormatNameForLogging()
                     ),
@@ -808,7 +808,7 @@ namespace Appalachia.Core.Objects.Root
                 Context.Log.Error(
                     ZString.Format(
                         "Error remapping {0} for {1} on {2}.",
-                        currentUnityEventType,
+                        currentUnityEventType.ToString().FormatMethodForLogging(),
                         GetType().FormatForLogging(),
                         this == null ? DELETED : name.FormatNameForLogging()
                     ),
@@ -1539,7 +1539,7 @@ namespace Appalachia.Core.Objects.Root
                 Context.Log.Error(
                     ZString.Format(
                         "Error remapping {0} for {1} on {2}.",
-                        currentUnityEventType,
+                        currentUnityEventType.ToString().FormatMethodForLogging(),
                         GetType().FormatForLogging(),
                         this == null ? DELETED : name.FormatNameForLogging()
                     ),

@@ -1,4 +1,6 @@
 using Appalachia.CI.Integration.Attributes;
+using Appalachia.Utility.Reflection.Extensions;
+using Unity.Profiling;
 
 namespace Appalachia.Core.Objects.Root
 {
@@ -167,6 +169,12 @@ namespace Appalachia.Core.Objects.Root
     [InspectorIcon(Brand.AppalachiaBase.Icon)]
     public partial class AppalachiaBase
     {
+        #region Fields and Autoproperties
+
+        private string _displayTypeName;
+
+        #endregion
+
         protected virtual string GetBackgroundColor()
         {
             return Brand.AppalachiaBase.Banner;
@@ -174,28 +182,48 @@ namespace Appalachia.Core.Objects.Root
 
         protected virtual string GetFallbackSubtitle()
         {
-            return Brand.Subtitle.Fallback;
+            return Brand.AppalachiaBase.SubtitleText;
         }
 
         protected virtual string GetFallbackTitle()
         {
-            return Brand.AppalachiaBase.Fallback;
+            using (_PRF_GetFallbackTitle.Auto())
+            {
+                _displayTypeName ??= GetType().GetSimpleReadableName();
+
+                return _displayTypeName;
+            }
         }
 
         protected virtual string GetSubtitle()
         {
-            return Brand.Subtitle.Text;
+            return Brand.AppalachiaBase.SubtitleText;
         }
 
         protected virtual string GetTitle()
         {
-            return Brand.AppalachiaBase.Text;
+            using (_PRF_GetTitle.Auto())
+            {
+                _displayTypeName ??= GetType().GetSimpleReadableName();
+
+                return _displayTypeName;
+            }
         }
 
         protected virtual string GetTitleColor()
         {
             return Brand.AppalachiaBase.Color;
         }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_GetFallbackTitle =
+            new ProfilerMarker(_PRF_PFX + nameof(GetFallbackTitle));
+
+        private static readonly ProfilerMarker _PRF_GetTitle =
+            new ProfilerMarker(_PRF_PFX + nameof(GetTitle));
+
+        #endregion
     }
 
     public partial class AppalachiaBase<T>

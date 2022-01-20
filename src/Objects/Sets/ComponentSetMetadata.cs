@@ -4,17 +4,34 @@ using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Async;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
+using UnityEngine;
 
 namespace Appalachia.Core.Objects.Sets
 {
     [Serializable]
-    [InlineProperty, FoldoutGroup("Components"), HideLabel]
+    [InlineEditor(InlineEditorObjectFieldModes.Foldout)]
     public abstract class ComponentSetMetadata<TSet, TSetMetadata> : AppalachiaObject<TSetMetadata>,
                                                                      IComponentSetMetadata<TSet, TSetMetadata>
-        where TSet : ComponentSet<TSet, TSetMetadata>
+        where TSet : ComponentSet<TSet, TSetMetadata>, new()
         where TSetMetadata : ComponentSetMetadata<TSet, TSetMetadata>,
         IComponentSetMetadata<TSet, TSetMetadata>
     {
+        public void PrepareAndConfigure(ref TSet target, GameObject parent, string setName)
+        {
+            using (_PRF_PrepareAndConfigure.Auto())
+            {
+                if (target == null)
+                {
+                    target = new TSet();
+                }
+
+                target.GetOrAddComponents(parent, setName, this as TSetMetadata);
+
+                ConfigureComponents(target);
+            }
+        }
+
+        [ButtonGroup(GROUP_BUTTONS)]
         protected virtual void InitializeMetadata()
         {
             using (_PRF_InitializeMetadata.Auto())
@@ -47,6 +64,9 @@ namespace Appalachia.Core.Objects.Sets
 
         protected static readonly ProfilerMarker _PRF_ConfigureComponents =
             new ProfilerMarker(_PRF_PFX + nameof(ConfigureComponents));
+
+        private static readonly ProfilerMarker _PRF_PrepareAndConfigure =
+            new ProfilerMarker(_PRF_PFX + nameof(PrepareAndConfigure));
 
         protected static readonly ProfilerMarker _PRF_InitializeMetadata =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeMetadata));

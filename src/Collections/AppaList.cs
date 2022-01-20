@@ -21,6 +21,10 @@ namespace Appalachia.Core.Collections
                                         ISerializationCallbackReceiver,
                                         IList<T>
     {
+        public delegate void CollectionEventHandler(T element, int index);
+
+        public event CollectionEventHandler Added;
+        
         #region Constants and Static Readonly
 
         protected const int _DEFAULT_CAPACITY = 4;
@@ -179,9 +183,15 @@ namespace Appalachia.Core.Collections
                     IncreaseCapacity();
                 }
 
-                _values[Count] = item;
-                Count = ++Count;
-                return Count - 1;
+                var index = Count;
+
+                _values[index] = item;
+
+                Count += 1;
+
+                Added?.Invoke(item, index);
+
+                return index;
             }
         }
 
@@ -189,13 +199,8 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_Add.Auto())
             {
-                if ((Count + 1) >= _values.Length)
-                {
-                    IncreaseCapacity();
-                }
-
-                _values[Count++] = item;
-                _values[Count++] = item2;
+                Add(item);
+                Add(item2);
             }
         }
 
@@ -203,14 +208,9 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_Add.Auto())
             {
-                if ((Count + 2) >= _values.Length)
-                {
-                    IncreaseCapacity();
-                }
-
-                _values[Count++] = item;
-                _values[Count++] = item2;
-                _values[Count++] = item3;
+                Add(item);
+                Add(item2);
+                Add(item3);
             }
         }
 
@@ -218,15 +218,10 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_Add.Auto())
             {
-                if ((Count + 3) >= _values.Length)
-                {
-                    IncreaseCapacity();
-                }
-
-                _values[Count++] = item;
-                _values[Count++] = item2;
-                _values[Count++] = item3;
-                _values[Count++] = item4;
+                Add(item);
+                Add(item2);
+                Add(item3);
+                Add(item4);
             }
         }
 
@@ -234,16 +229,11 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_Add.Auto())
             {
-                if ((Count + 4) >= _values.Length)
-                {
-                    IncreaseCapacity();
-                }
-
-                _values[Count++] = item;
-                _values[Count++] = item2;
-                _values[Count++] = item3;
-                _values[Count++] = item4;
-                _values[Count++] = item5;
+                Add(item);
+                Add(item2);
+                Add(item3);
+                Add(item4);
+                Add(item5);
             }
         }
 
@@ -303,7 +293,7 @@ namespace Appalachia.Core.Collections
             }
         }
 
-        // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /*// [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual int AddThreadSafe(T item)
         {
             using (_PRF_AddThreadSafe.Auto())
@@ -320,7 +310,7 @@ namespace Appalachia.Core.Collections
                     return Count - 1;
                 }
             }
-        }
+        }*/
 
         public virtual void ChangeRange(int startIndex, T[] arrayItems)
         {
@@ -1109,7 +1099,7 @@ namespace Appalachia.Core.Collections
         private static readonly ProfilerMarker _PRF_Add = new(_PRF_PFX + nameof(Add));
         private static readonly ProfilerMarker _PRF_AddRange = new(_PRF_PFX + nameof(AddRange));
 
-        private static readonly ProfilerMarker _PRF_AddThreadSafe = new(_PRF_PFX + nameof(AddThreadSafe));
+        /*private static readonly ProfilerMarker _PRF_AddThreadSafe = new(_PRF_PFX + nameof(AddThreadSafe));*/
 
         private static readonly ProfilerMarker _PRF_AddUnique = new(_PRF_PFX + nameof(AddUnique));
         private static readonly ProfilerMarker _PRF_ChangeRange = new(_PRF_PFX + nameof(ChangeRange));

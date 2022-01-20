@@ -62,7 +62,7 @@ MonoBehaviour:
       - Roboto-LightItalic
       - Roboto-MediumItalic
       - Roboto-ThinItalic
-      - VarelaRound-Regular
+      - sui-generis-rg_dynamic
       - Consola
       - DroidSansMono
       - orange kid
@@ -91,9 +91,8 @@ MonoBehaviour:
       - RobotoMono-Regular
       - sui generis bold
       - sui generis rg
-      - sui-generis-rg_dynamic
       noTracking: 0
-      _count: 68
+      _count: 67
     values:
       _capacityIncreaseMultiplier: 2
       _values:
@@ -135,7 +134,7 @@ MonoBehaviour:
       - {fileID: 12800000, guid: 5e63515167650a541b309ba3bfd4db3d, type: 3}
       - {fileID: 12800000, guid: d93c1bc57fdf1ac4dad1bf04fac05464, type: 3}
       - {fileID: 12800000, guid: b2ea3b3f1765e544b9eb5bd1a93a91ce, type: 3}
-      - {fileID: 12800000, guid: d54323c94c164de478170d5e7d0273be, type: 3}
+      - {fileID: 12800000, guid: e2fe2ab669d30c04cb7450c2e29a1ec6, type: 3}
       - {fileID: 12800000, guid: 78753e46f39c8a24e87a1fca523f3f72, type: 3}
       - {fileID: 12800000, guid: 928f503de488e44408a8625d75d54c61, type: 3}
       - {fileID: 12800000, guid: 0f03458534bea45e4bba9ab3411321b2, type: 3}
@@ -164,6 +163,5 @@ MonoBehaviour:
       - {fileID: 12800000, guid: aa35aec7f2cbcf44a8eb564cd037f319, type: 3}
       - {fileID: 12800000, guid: 87416143913912b45858aa5c537ff097, type: 3}
       - {fileID: 12800000, guid: 9e5f8fcfcbfe4494d9c37a8825204428, type: 3}
-      - {fileID: 12800000, guid: e2fe2ab669d30c04cb7450c2e29a1ec6, type: 3}
       noTracking: 0
-      _count: 68
+      _count: 67

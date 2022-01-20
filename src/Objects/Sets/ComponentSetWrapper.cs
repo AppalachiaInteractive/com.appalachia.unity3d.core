@@ -1,3 +1,4 @@
+/*
 using System;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Constants;
@@ -15,7 +16,7 @@ namespace Appalachia.Core.Objects.Sets
             ref TSetWrapper assignTo,
             GameObject parent,
             string identifier /*,
-            string prefixOverride = null*/)
+            string prefixOverride = null#1#)
             where TSetWrapper : ComponentSetWrapper<TSet, TSetMetadata>, new()
             where TSet : ComponentSet<TSet, TSetMetadata>, new()
             where TSetMetadata : ComponentSetMetadata<TSet, TSetMetadata>
@@ -27,7 +28,7 @@ namespace Appalachia.Core.Objects.Sets
                     assignTo = new TSetWrapper();
                 }
 
-                assignTo.EnsureReady(parent, identifier /*, prefixOverride*/);
+                assignTo.EnsureReady(parent, identifier /*, prefixOverride#1#);
             }
         }
 
@@ -66,7 +67,7 @@ namespace Appalachia.Core.Objects.Sets
             set => _metadata = value;
         }
 
-        public void EnsureReady(GameObject parent, string identifier /*, string prefixOverride = null*/)
+        public void EnsureReady(GameObject parent, string identifier /*, string prefixOverride = null#1#)
         {
             using (_PRF_EnsureReady.Auto())
             {
@@ -89,7 +90,7 @@ namespace Appalachia.Core.Objects.Sets
                 }
 
                 _set = new TSet();
-                _set.CreateComponents(parent, identifier /*, prefixOverride*/);
+                _set.GetOrAddComponents(parent, identifier, _metadata /*, prefixOverride#1#);
             }
         }
 
@@ -103,3 +104,4 @@ namespace Appalachia.Core.Objects.Sets
         #endregion
     }
 }
+*/

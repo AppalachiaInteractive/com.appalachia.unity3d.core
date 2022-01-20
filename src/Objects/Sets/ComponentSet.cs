@@ -10,10 +10,10 @@ using UnityEngine;
 namespace Appalachia.Core.Objects.Sets
 {
     [Serializable]
-    [InlineProperty, FoldoutGroup("Components"), HideLabel]
-    public abstract class ComponentSet<TSet, TSetMetadata> : AppalachiaSimpleBase,
-                                                             IComponentSet<TSet, TSetMetadata>
-        where TSet : ComponentSet<TSet, TSetMetadata>
+    [InlineProperty, HideLabel]
+    public abstract partial class ComponentSet<TSet, TSetMetadata> : AppalachiaSimpleBase,
+                                                                     IComponentSet<TSet, TSetMetadata>
+        where TSet : ComponentSet<TSet, TSetMetadata>, new()
         where TSetMetadata : ComponentSetMetadata<TSet, TSetMetadata>
     {
         #region Constants and Static Readonly
@@ -24,13 +24,16 @@ namespace Appalachia.Core.Objects.Sets
 
         #region Fields and Autoproperties
 
-        [SerializeField] private GameObject gameObject;
+        [PropertyOrder(-250)]
+        [SerializeField]
+        private GameObject gameObject;
 
-        [SerializeField] private Initializer _initialer;
+        [SerializeField, HideInInspector]
+        private Initializer _initialer;
 
         #endregion
 
-        public abstract string ComponentSetName { get; }
+        public abstract ComponentSetSorting DesiredComponentOrder { get; }
 
         protected Initializer initializer
         {
@@ -53,15 +56,27 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
+        private int GetDesiredSiblingIndex(int currentIndex, int siblingCount)
+        {
+            return SiblingIndexCalculator.GetDesiredSiblingIndex(
+                DesiredComponentOrder,
+                currentIndex,
+                siblingCount
+            );
+        }
+
         #region IComponentSet<TSet,TSetMetadata> Members
+
+        public abstract string ComponentSetName { get; }
 
         public GameObject GameObject => gameObject;
 
-        public virtual void CreateComponents(
+        public virtual void GetOrAddComponents(
             GameObject parent,
-            string name /*, string prefixOverride = null*/)
+            string name,
+            TSetMetadata data /*, string prefixOverride = null*/)
         {
-            using (_PRF_CreateComponents.Auto())
+            using (_PRF_GetOrAddComponents.Auto())
             {
                 var nameFormatString = /*prefixOverride.IsNullOrWhiteSpace()
                     ? */GetGameObjectNameFormat()
@@ -71,10 +86,26 @@ namespace Appalachia.Core.Objects.Sets
 
                 if (gameObject == null)
                 {
-                    parent.GetOrCreateChild(ref gameObject, targetName, true);
+                    parent.GetOrAddChild(ref gameObject, targetName, true);
                 }
 
                 gameObject.name = targetName;
+
+                var siblingCount = parent.transform.childCount - 1;
+
+                if (siblingCount == 0)
+                {
+                    return;
+                }
+
+                var currentIndex = gameObject.transform.GetSiblingIndex();
+
+                var targetIndex = GetDesiredSiblingIndex(currentIndex, siblingCount);
+
+                if (currentIndex != targetIndex)
+                {
+                    gameObject.transform.SetSiblingIndex(targetIndex);
+                }
             }
         }
 
@@ -84,11 +115,11 @@ namespace Appalachia.Core.Objects.Sets
 
         protected static readonly string _PRF_PFX = typeof(TSet).Name + ".";
 
-        protected static readonly ProfilerMarker _PRF_CreateComponents =
-            new ProfilerMarker(_PRF_PFX + nameof(CreateComponents));
-
         private static readonly ProfilerMarker _PRF_GetGameObjectNameFormat =
             new ProfilerMarker(_PRF_PFX + nameof(GetGameObjectNameFormat));
+
+        protected static readonly ProfilerMarker _PRF_GetOrAddComponents =
+            new ProfilerMarker(_PRF_PFX + nameof(GetOrAddComponents));
 
         #endregion
     }

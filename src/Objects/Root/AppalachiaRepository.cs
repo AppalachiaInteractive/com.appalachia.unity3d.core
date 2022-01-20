@@ -16,7 +16,6 @@ using UnityEngine.AddressableAssets;
 
 namespace Appalachia.Core.Objects.Root
 {
-    [Critical]
     public sealed partial class AppalachiaRepository : AppalachiaObject
     {
         #region Static Fields and Autoproperties

@@ -455,12 +455,12 @@ namespace Appalachia.Core.Objects.Root
             titleFont: Brand.Font.ObjectFont,
             subtitleColor: "$" + nameof(GetTitleColor),
             subtitleFont: Brand.Font.ObjectFont,
-            titleSize: Brand.Title.Size,
-            subtitleSize: Brand.Subtitle.Size,
+            titleSize: Brand.AppalachiaBase.TitleSize,
+            subtitleSize: Brand.AppalachiaBase.SubtitleSize,
             titleIcon: null,
             subtitleIcon: null,
             backgroundColor: "$" + nameof(GetBackgroundColor),
-            titleHeight: Brand.Title.Height
+            titleHeight: Brand.AppalachiaBase.TitleHeight
         )]
         [SmartFoldoutGroup(
             GROUP,
@@ -475,6 +475,11 @@ namespace Appalachia.Core.Objects.Root
         [FormerlySerializedAs("_initializationData")]
         [SerializeField]
         private Initializer _initializer;
+
+        protected Initializer GetInitializer()
+        {
+            return _initializer ??= new Initializer();
+        }
 
         [NonSerialized] private InitializationState _initializationState;
 

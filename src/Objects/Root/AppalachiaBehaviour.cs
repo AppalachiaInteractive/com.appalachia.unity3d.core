@@ -1,5 +1,6 @@
 using System;
 using Appalachia.Utility.Execution;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Framing;
 using Unity.Mathematics;
 using Unity.Profiling;
@@ -15,6 +16,7 @@ namespace Appalachia.Core.Objects.Root
 
         [NonSerialized] private Bounds ___renderingBounds;
         [NonSerialized] private Transform ___transform;
+        [NonSerialized] private RectTransform ___rectTransform;
 
         #endregion
 
@@ -41,6 +43,19 @@ namespace Appalachia.Core.Objects.Root
                 }
 
                 return ___transform;
+            }
+        }
+
+        protected RectTransform _rectTransform
+        {
+            get
+            {
+                if (___rectTransform == null)
+                {
+                    gameObject.GetOrAddComponent(ref ___rectTransform);
+                }
+
+                return ___rectTransform;
             }
         }
 
