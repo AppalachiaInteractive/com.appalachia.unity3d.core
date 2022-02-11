@@ -21,12 +21,6 @@ namespace Appalachia.Core.Objects.Initialization
             NonSerialized = 100
         }
 
-        #region Constants and Static Readonly
-
-        private const string GROUP = "Internal";
-
-        #endregion
-
         #region Fields and Autoproperties
 
         [NonSerialized] private HashSet<string> _nonSerializedTagsHash;
@@ -724,7 +718,7 @@ namespace Appalachia.Core.Objects.Initialization
             }
         }
 
-        [Button, ButtonGroup(GROUP)]
+        [Button]
         private void ResetInitializationData()
         {
             using (_PRF_ResetInitializationData.Auto())

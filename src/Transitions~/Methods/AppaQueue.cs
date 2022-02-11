@@ -10,7 +10,7 @@ namespace Appalachia.Core.Transitions.Methods
     {
         #region Fields and Autoproperties
 
-        [Tooltip("The next transition will only begin after this transition has finished.")]
+        [PropertyTooltip("The next transition will only begin after this transition has finished.")]
         public AppaMethodWithState Target;
 
         #endregion

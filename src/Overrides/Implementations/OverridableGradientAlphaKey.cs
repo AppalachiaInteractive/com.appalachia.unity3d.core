@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 #endregion
@@ -17,8 +18,8 @@ namespace Appalachia.Core.Overrides.Implementations
 
         public OverridableGradientAlphaKey(
             bool isOverridingAllowed,
-            bool overrideEnabled,
-            GradientAlphaKey value) : base(overrideEnabled, value)
+            bool overriding,
+            GradientAlphaKey value) : base(overriding, value)
         {
         }
 

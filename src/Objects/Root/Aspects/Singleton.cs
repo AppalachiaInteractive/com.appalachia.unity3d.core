@@ -1,5 +1,7 @@
 using System;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 
 // ReSharper disable StaticMemberInGenericType
@@ -17,6 +19,7 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
+        public static Type PrimaryOwnerType { get; set; }
         public static bool HasInstance => ___instance != null;
 
         private static AppalachiaRepository instance => ___instance;
@@ -84,7 +87,7 @@ namespace Appalachia.Core.Objects.Root
 
         #region ISingleton Members
 
-        bool ISingleton.IsReady => HasInstance;
+        bool ISingleton.HasInstance => HasInstance;
 
         object ISingleton.InstanceWriteLock => InstanceWriteLock;
 
@@ -207,8 +210,24 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                foreach (var subscriber in _instanceAvailableSubscribers)
+                _instanceAvailableSubscribers.SplitByType(
+                    e => e.Target is AvailabilityData<T>,
+                    e => e.Target as AvailabilityData<T>,
+                    out var otherSubscribers,
+                    out var availabilityDatas
+                );
+
+                availabilityDatas.Sort(AvailabilityData.SortOrderComparer);
+
+                for (var index = 0; index < availabilityDatas.Count; index++)
                 {
+                    var subscriber = availabilityDatas[index];
+                    subscriber?.HandleAvailability(current);
+                }
+
+                for (var index = 0; index < otherSubscribers.Count; index++)
+                {
+                    var subscriber = otherSubscribers[index];
                     subscriber?.Invoke(current);
                 }
 
@@ -218,7 +237,7 @@ namespace Appalachia.Core.Objects.Root
 
         #region ISingleton Members
 
-        bool ISingleton.IsReady => HasInstance;
+        bool ISingleton.HasInstance => HasInstance;
 
         object ISingleton.InstanceWriteLock => InstanceWriteLock;
 
@@ -342,8 +361,24 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                foreach (var subscriber in _instanceAvailableSubscribers)
+                _instanceAvailableSubscribers.SplitByType(
+                    e => e.Target is AvailabilityData<T>,
+                    e => e.Target as AvailabilityData<T>,
+                    out var otherSubscribers,
+                    out var availabilityDatas
+                );
+
+                availabilityDatas.Sort(AvailabilityData.SortOrderComparer);
+
+                for (var index = 0; index < availabilityDatas.Count; index++)
                 {
+                    var subscriber = availabilityDatas[index];
+                    subscriber?.HandleAvailability(current);
+                }
+
+                for (var index = 0; index < otherSubscribers.Count; index++)
+                {
+                    var subscriber = otherSubscribers[index];
                     subscriber?.Invoke(current);
                 }
 
@@ -353,7 +388,7 @@ namespace Appalachia.Core.Objects.Root
 
         #region ISingleton Members
 
-        bool ISingleton.IsReady => HasInstance;
+        bool ISingleton.HasInstance => HasInstance;
 
         object ISingleton.InstanceWriteLock => InstanceWriteLock;
 

@@ -1,6 +1,8 @@
 #region
 
 using System;
+using Appalachia.Utility.Constants;
+using Appalachia.Utility.Logging;
 using Appalachia.Utility.Reflection.Extensions;
 using Appalachia.Utility.Strings;
 using Unity.Profiling;
@@ -11,6 +13,11 @@ namespace Appalachia.Core.Preferences
 {
     public static class PREFS
     {
+        public static void RegisterPreSettingsProviderAction(Action action)
+        {
+            PREF_STATES.PreSettingsProviderActions.Add(action);
+        }
+        
         public static PREF<TR> REG<TR>(
             string grouping,
             string label,
@@ -33,8 +40,20 @@ namespace Appalachia.Core.Preferences
                     label.ToLower().Replace(" ", string.Empty).Trim()
                 );
 
-                PREF_STATES._keys.Add(key);
-                PREF_STATES._groupings.Add(grouping);
+                PREF_STATES.Keys.Add(key);
+
+                if (PREF_STATES.HasProvidedSettings && !PREF_STATES.Groupings.Contains(grouping))
+                {
+                    AppaLog.Context.Preferences.Error(
+                        ZString.Format(
+                            "The preference {0} in group {1} was registered too late to be displayed.",
+                            label.FormatNameForLogging(),
+                            grouping.FormatConstantForLogging()
+                        )
+                    );
+                }
+
+                PREF_STATES.Groupings.Add(grouping);
 
                 if (InternalRegistration(
                         key,

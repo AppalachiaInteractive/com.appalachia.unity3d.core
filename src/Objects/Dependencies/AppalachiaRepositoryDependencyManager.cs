@@ -75,7 +75,7 @@ namespace Appalachia.Core.Objects.Dependencies
                     tracker.objectDependencies.DependencyRegistered += OnObjectDependencyRegistered;
                     tracker.behaviourDependencies.DependencyRegistered += OnBehaviourDependencyRegistered;
 
-                    LogContext.Trace(ZString.Format("Now tracking {0}.", tracker.Owner.FormatForLogging()));
+                    /*LogContext.Trace(ZString.Format("Now tracking {0}.", tracker.Owner.FormatForLogging()));*/
                 }
                 catch (Exception ex)
                 {
@@ -125,14 +125,14 @@ namespace Appalachia.Core.Objects.Dependencies
             {
                 var trackedType = dependent.Owner;
 
-                LogContext.Trace(
+                /*LogContext.Trace(
                     ZString.Format(
                         "Tracked type {0} has registered a new {1} dependency on {2}.",
                         trackedType.FormatForLogging(),
                         dependency.ownerType.FormatEnumForLogging(),
                         dependency.Owner.FormatForLogging()
                     )
-                );
+                );*/
 
                 _trackerGraph.AddVertex(dependent);
                 _trackerGraph.AddVertex(dependency);
@@ -321,13 +321,13 @@ namespace Appalachia.Core.Objects.Dependencies
 
             if (!singleton)
             {
-                LogContext.Trace(
+                /*LogContext.Trace(
                     ZString.Format(
                         "Successfully prepared static dependencies for {0} {1}.",
                         tracker.ownerType,
                         tracker.Owner
                     )
-                );
+                );*/
 
                 tracker.MarkReady();
                 return;
@@ -358,14 +358,14 @@ namespace Appalachia.Core.Objects.Dependencies
                 return;
             }
 
-            LogContext.Trace(
+            /*LogContext.Trace(
                 ZString.Format(
                     "Successfully resolved {0} {1} instance.  Now preparing.",
                     tracker.ownerType,
                     tracker.Owner
                 ),
                 tracker.instance
-            );
+            );*/
 
             if (tracker.instance is ISingletonBehaviour sb)
             {
@@ -380,10 +380,10 @@ namespace Appalachia.Core.Objects.Dependencies
 
             tracker.InvokeDependenciesReady();
 
-            LogContext.Trace(
+            /*LogContext.Trace(
                 ZString.Format("Successfully prepared {0} {1} instance.", tracker.ownerType, tracker.Owner),
                 tracker.instance
-            );
+            );*/
         }
 
         private static async AppaTask ResolveDependencies(AppalachiaRepositoryDependencyTracker tracker)

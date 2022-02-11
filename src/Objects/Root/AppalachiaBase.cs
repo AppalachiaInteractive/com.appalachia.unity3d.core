@@ -1,38 +1,30 @@
 using System;
+using System.Collections.Generic;
 using Appalachia.Utility.Async;
+using Appalachia.Utility.Constants;
 using Unity.Profiling;
-using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Objects.Root
 {
     public abstract partial class AppalachiaBase : AppalachiaSimpleBase
     {
-        [Obsolete]
-        protected AppalachiaBase()
-        {
-        }
-
         protected AppalachiaBase(Object owner)
         {
             _owner = owner;
-            HandleInitialization().Forget();
+
+            if (AppaTask.ExecutionIsAllowed && !APPASERIALIZE.CouldBeInSerializationWindow)
+            {
+                HandleInitialization().Forget();
+            }
+            else
+            {
+                _initializationFunctions ??= new Queue<Func<AppaTask>>();
+                _initializationFunctions.Enqueue(HandleInitialization);
+            }
         }
 
-        #region Fields and Autoproperties
-
-        [SerializeField, HideInInspector]
-        protected internal Object _owner;
-
-        #endregion
-
-        public Object Owner => _owner;
-
-        public void SetOwner(Object owner)
-        {
-            _owner = owner;
-        }
-
+       
         #region Profiling
 
         private const string _PRF_PFX = nameof(AppalachiaBase) + ".";
@@ -44,11 +36,11 @@ namespace Appalachia.Core.Objects.Root
         where T : AppalachiaBase<T>, new()
     {
 #pragma warning disable CS0612
-        protected AppalachiaBase()
+        protected AppalachiaBase() : base(null)
 #pragma warning restore CS0612
         {
         }
-        
+
         protected AppalachiaBase(Object owner) : base(owner)
         {
         }

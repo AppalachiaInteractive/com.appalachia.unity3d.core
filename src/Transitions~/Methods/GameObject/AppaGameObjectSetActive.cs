@@ -50,7 +50,7 @@ namespace Appalachia.Core.Transitions.Methods.GameObject
 
             #region Fields and Autoproperties
 
-            [Tooltip("The state we will transition to.")]
+            [PropertyTooltip("The state we will transition to.")]
             public bool Active;
 
             #endregion

@@ -1,5 +1,5 @@
-﻿using Appalachia.Core.Objects.Delegates;
-using Appalachia.Core.Objects.Delegates.Extensions;
+﻿using Appalachia.Core.Events.Extensions;
+using Appalachia.Core.Objects.Root.Contracts;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,28 +14,21 @@ namespace Appalachia.Core.Objects.Root
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
     public abstract partial class AppalachiaSelectable<T> : UnityEngine.UI.Selectable,
+                                                            ISelectable,
                                                             IPointerClickHandler,
                                                             IDragHandler,
                                                             IBeginDragHandler,
                                                             IEndDragHandler,
-                                                            ISubmitHandler
+                                                            ISubmitHandler,
+                                                            IMoveHandler,
+                                                            IPointerDownHandler,
+                                                            IPointerUpHandler,
+                                                            IPointerEnterHandler,
+                                                            IPointerExitHandler,
+                                                            ISelectHandler,
+                                                            IDeselectHandler
         where T : AppalachiaSelectable<T>
     {
-        protected event ValueArgs<PointerEventData>.Handler _Clicked;
-        protected event ValueArgs<BaseEventData>.Handler _Deselected;
-        protected event ValueArgs<PointerEventData>.Handler _DoubleClicked;
-        protected event ValueArgs<PointerEventData>.Handler _Drag;
-        protected event ValueArgs<PointerEventData>.Handler _DragBegin;
-        protected event ValueArgs<PointerEventData>.Handler _DragEnd;
-        protected event ValueArgs<PointerEventData>.Handler _HoverBegin;
-        protected event ValueArgs<PointerEventData>.Handler _HoverEnd;
-        protected event EventHandler _Interactable;
-        protected event EventHandler _NonInteractable;
-        protected event ValueArgs<PointerEventData>.Handler _Pressed;
-        protected event ValueArgs<PointerEventData>.Handler _Released;
-        protected event ValueArgs<BaseEventData>.Handler _Selected;
-        protected event ValueArgs<BaseEventData>.Handler _Submit;
-
         #region Fields and Autoproperties
 
         private bool _isHovered;
@@ -51,6 +44,44 @@ namespace Appalachia.Core.Objects.Root
         private bool _isSelected;
 
         #endregion
+
+        #region Event Functions
+
+        protected override void OnCanvasGroupChanged()
+        {
+            using (_PRF_OnCanvasGroupChanged.Auto())
+            {
+                base.OnCanvasGroupChanged();
+
+                UpdateInteractable();
+            }
+        }
+
+        #endregion
+
+        private void UpdateInteractable()
+        {
+            using (_PRF_UpdateInteractable.Auto())
+            {
+                var currentInteractable = IsInteractable();
+
+                if (currentInteractable != expectedInteractable)
+                {
+                    expectedInteractable = currentInteractable;
+
+                    if (expectedInteractable)
+                    {
+                        _Interactable.RaiseEvent();
+                    }
+                    else
+                    {
+                        _NonInteractable.RaiseEvent();
+                    }
+                }
+            }
+        }
+
+        #region ISelectable Members
 
         public bool IsDragging => _isDragging;
 
@@ -85,20 +116,6 @@ namespace Appalachia.Core.Objects.Root
 
             get => base.interactable;
         }
-
-        #region Event Functions
-
-        protected override void OnCanvasGroupChanged()
-        {
-            using (_PRF_OnCanvasGroupChanged.Auto())
-            {
-                base.OnCanvasGroupChanged();
-
-                UpdateInteractable();
-            }
-        }
-
-        #endregion
 
         public override void OnDeselect(BaseEventData eventData)
         {
@@ -171,30 +188,6 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
-        private void UpdateInteractable()
-        {
-            using (_PRF_UpdateInteractable.Auto())
-            {
-                var currentInteractable = IsInteractable();
-
-                if (currentInteractable != expectedInteractable)
-                {
-                    expectedInteractable = currentInteractable;
-
-                    if (expectedInteractable)
-                    {
-                        _Interactable.RaiseEvent();
-                    }
-                    else
-                    {
-                        _NonInteractable.RaiseEvent();
-                    }
-                }
-            }
-        }
-
-        #region IBeginDragHandler Members
-
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
             using (_PRF_OnBeginDrag.Auto())
@@ -204,10 +197,6 @@ namespace Appalachia.Core.Objects.Root
                 _DragBegin.RaiseEvent(eventData);
             }
         }
-
-        #endregion
-
-        #region IDragHandler Members
 
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
@@ -219,10 +208,6 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
-        #endregion
-
-        #region IEndDragHandler Members
-
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             using (_PRF_OnEndDrag.Auto())
@@ -232,10 +217,6 @@ namespace Appalachia.Core.Objects.Root
                 _DragEnd.RaiseEvent(eventData);
             }
         }
-
-        #endregion
-
-        #region IPointerClickHandler Members
 
         void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
@@ -252,15 +233,19 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
-        #endregion
-
-        #region ISubmitHandler Members
-
         void ISubmitHandler.OnSubmit(BaseEventData eventData)
         {
             using (_PRF_OnSubmit.Auto())
             {
                 _Submit.RaiseEvent(eventData);
+            }
+        }
+
+        public void OnInitializePotentialDrag(PointerEventData eventData)
+        {
+            using (_PRF_OnInitializePotentialDrag.Auto())
+            {
+                _InitializePotentialDrag.RaiseEvent(eventData);
             }
         }
 
@@ -285,6 +270,9 @@ namespace Appalachia.Core.Objects.Root
         protected static readonly ProfilerMarker _PRF_OnDrag = new ProfilerMarker(_PRF_PFX + "OnDrag");
 
         protected static readonly ProfilerMarker _PRF_OnEndDrag = new ProfilerMarker(_PRF_PFX + "OnEndDrag");
+
+        private static readonly ProfilerMarker _PRF_OnInitializePotentialDrag =
+            new ProfilerMarker(_PRF_PFX + nameof(OnInitializePotentialDrag));
 
         protected static readonly ProfilerMarker _PRF_OnPointerClick =
             new ProfilerMarker(_PRF_PFX + "OnPointerClick");

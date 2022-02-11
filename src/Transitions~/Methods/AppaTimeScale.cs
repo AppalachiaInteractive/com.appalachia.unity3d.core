@@ -49,10 +49,10 @@ namespace Appalachia.Core.Transitions.Methods
 
             #region Fields and Autoproperties
 
-            [Tooltip("The ease method that will be used for the transition.")]
+            [PropertyTooltip("The ease method that will be used for the transition.")]
             public AppaEase Ease = AppaEase.Smooth;
 
-            [Tooltip("The timeScale we will transition to.")]
+            [PropertyTooltip("The timeScale we will transition to.")]
             public float TimeScale = 1.0f;
 
             [System.NonSerialized] private float oldTimeScale;

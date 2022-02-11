@@ -19,8 +19,12 @@ namespace Appalachia.Core.Objects.Sets
                 {
                     switch (order)
                     {
+                        case ComponentSetSorting.Anywhere:
+                            return currentIndex;
                         case ComponentSetSorting.First:
                             return GetIndexForFirst(currentIndex, siblingCount);
+                        case ComponentSetSorting.Second:
+                            return GetIndexForSecond(currentIndex, siblingCount);
                         case ComponentSetSorting.NotFirst:
                             return GetIndexForNotFirst(currentIndex, siblingCount);
                         case ComponentSetSorting.CloseToStart:
@@ -104,6 +108,14 @@ namespace Appalachia.Core.Objects.Sets
                 using (_PRF_GetIndexForFirst.Auto())
                 {
                     return 0;
+                }
+            }
+
+            private static int GetIndexForSecond(int currentIndex, int siblingCount)
+            {
+                using (_PRF_GetIndexForFirst.Auto())
+                {
+                    return 1;
                 }
             }
 

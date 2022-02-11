@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Appalachia.Utility.Timing;
 using UnityEngine;
 
 namespace Appalachia.Core.Simulation.Solvers
@@ -32,7 +33,7 @@ namespace Appalachia.Core.Simulation.Solvers
             float threshold = 0.01f)
         {
             return Update(
-                Time.deltaTime,
+                CoreClock.Instance.DeltaTime,
                 target,
                 mass,
                 dampening,
@@ -48,7 +49,7 @@ namespace Appalachia.Core.Simulation.Solvers
             Vector3 coefficients,
             float threshold = 0.01f)
         {
-            return Update(Time.deltaTime, target, mass, dampening, coefficients, threshold);
+            return Update(CoreClock.Instance.DeltaTime, target, mass, dampening, coefficients, threshold);
         }
 
         public Spring Update(

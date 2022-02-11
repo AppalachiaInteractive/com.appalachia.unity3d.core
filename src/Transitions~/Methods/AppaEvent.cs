@@ -56,7 +56,7 @@ namespace Appalachia.Core.Transitions.Methods
 
             [System.NonSerialized] public System.Action Action;
 
-            [Tooltip("The event that will be invoked.")]
+            [PropertyTooltip("The event that will be invoked.")]
             public UnityEvent Event;
 
             #endregion

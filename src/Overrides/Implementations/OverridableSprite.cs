@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableSprite(bool overrideEnabled, Sprite value) : base(overrideEnabled, value)
+        public OverridableSprite(bool overriding, Sprite value) : base(overriding, value)
         {
         }
 

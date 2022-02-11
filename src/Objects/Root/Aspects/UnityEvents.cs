@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Objects.Dependencies;
+using Appalachia.Core.Objects.Routing;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Enums;
 using Appalachia.Utility.Execution;
 using Appalachia.Utility.Strings;
+using Appalachia.Utility.Timing;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -86,10 +88,10 @@ namespace Appalachia.Core.Objects.Root
 
         public bool HasBeenInitialized => _hasBeenInitialized;
 
-        public int AwakeDuration => Time.frameCount - _awakeFrame;
+        public int AwakeDuration => CoreClock.Instance.FrameCount - _awakeFrame;
         public int AwakeFrame => _awakeFrame;
-        public int DisabledDuration => Time.frameCount - _onDisableFrame;
-        public int EnabledDuration => Time.frameCount - _onEnableFrame;
+        public int DisabledDuration => CoreClock.Instance.FrameCount - _onDisableFrame;
+        public int EnabledDuration => CoreClock.Instance.FrameCount - _onEnableFrame;
         public int OnDisableFrame => _onDisableFrame;
         public int OnEnableFrame => _onEnableFrame;
 
@@ -125,7 +127,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnEnable.Auto())
             {
-                _onEnableFrame = Time.frameCount;
+                _onEnableFrame = CoreClock.Instance.FrameCount;
 
                 if (LogEventFunctions)
                 {
@@ -140,7 +142,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnDisable.Auto())
             {
-                _onDisableFrame = Time.frameCount;
+                _onDisableFrame = CoreClock.Instance.FrameCount;
 
                 if (LogEventFunctions)
                 {
@@ -259,7 +261,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 case UnityEventFlags.Awake:
 
-                    _awakeFrame = Time.frameCount;
+                    _awakeFrame = CoreClock.Instance.FrameCount;
                     _unityAwake = true;
                     try
                     {
@@ -284,7 +286,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.OnEnable:
 
-                    _onEnableFrame = Time.frameCount;
+                    _onEnableFrame = CoreClock.Instance.FrameCount;
                     _unityOnEnable = true;
                     try
                     {
@@ -309,7 +311,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.Reset:
 
-                    _resetFrame = Time.frameCount;
+                    _resetFrame = CoreClock.Instance.FrameCount;
                     _unityReset = true;
                     try
                     {
@@ -334,7 +336,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.OnDisable:
 
-                    _onDisableFrame = Time.frameCount;
+                    _onDisableFrame = CoreClock.Instance.FrameCount;
                     _unityOnDisable = true;
                     try
                     {
@@ -464,6 +466,8 @@ namespace Appalachia.Core.Objects.Root
                 }
 
                 _eventFlags |= AppalachiaEventFlags.Initialized;
+                _hasBeenInitialized = true;
+                await AppaTask.Yield();
             }
 
             if (currentUnityEventType == UnityEventFlags.OnEnable)
@@ -571,21 +575,25 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        protected virtual bool ReInitializeOnEnable => false;
+        protected virtual bool GuaranteedEventRouting => false;
+
         protected virtual bool LogEventFunctions => false;
 
-        protected virtual bool ShouldSkipUpdate => !FullyInitialized || AppalachiaApplication.IsCompiling;
+        protected virtual bool ShouldSkipUpdate =>
+            !FullyInitialized || !HasBeenEnabled || AppalachiaApplication.IsCompiling;
         public bool HasBeenDisabled => _hasBeenDisabled;
         public bool HasBeenEnabled => _hasBeenEnabled;
 
         public bool HasBeenInitialized => _hasBeenInitialized;
 
-        public int AwakeDuration => enabled ? Time.frameCount - _awakeFrame : 0;
+        public int AwakeDuration => enabled ? CoreClock.Instance.FrameCount - _awakeFrame : 0;
         public int AwakeFrame => _awakeFrame;
-        public int DisabledDuration => enabled ? 0 : Time.frameCount - _onDisableFrame;
-        public int EnabledDuration => enabled ? Time.frameCount - _onEnableFrame : 0;
+        public int DisabledDuration => enabled ? 0 : CoreClock.Instance.FrameCount - _onDisableFrame;
+        public int EnabledDuration => enabled ? CoreClock.Instance.FrameCount - _onEnableFrame : 0;
         public int OnDisableFrame => _onDisableFrame;
         public int OnEnableFrame => _onEnableFrame;
-        public int StartedDuration => enabled ? Time.frameCount - _startFrame : 0;
+        public int StartedDuration => enabled ? CoreClock.Instance.FrameCount - _startFrame : 0;
         public int StartFrame => _startFrame;
 
         #region Event Functions
@@ -626,8 +634,11 @@ namespace Appalachia.Core.Objects.Root
                     Context.Log.Info(nameof(Reset), this);
                 }
 
-                ___renderingBounds = default;
-                ___transform = default;
+                _renderingBounds = default;
+                _cachedTransform = default;
+                _cachedRectTransform = default;
+                _hasCachedRectTransform = false;
+                _hasCachedTransform = false;
 
                 var cancellationToken = this.GetCancellationTokenOnDestroy();
 
@@ -682,9 +693,13 @@ namespace Appalachia.Core.Objects.Root
 #if UNITY_EDITOR
                 if (!AppalachiaApplication.IsPlayingOrWillPlay)
                 {
-                    var iconName = GetGameObjectIcon();
-                    var icon = AssetDatabaseManager.FindFirstAssetMatch<Texture2D>(iconName);
-                    UnityEditor.EditorGUIUtility.SetIconForObject(gameObject, icon);
+                    var icon = GetGameObjectIcon();
+                    var currentIcon = UnityEditor.EditorGUIUtility.GetIconForObject(gameObject);
+
+                    if (currentIcon != icon)
+                    {
+                        UnityEditor.EditorGUIUtility.SetIconForObject(gameObject, icon);
+                    }
                 }
 #endif
             }
@@ -699,7 +714,7 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                _onDisableFrame = Time.frameCount;
+                _onDisableFrame = CoreClock.Instance.FrameCount;
 
                 if (LogEventFunctions)
                 {
@@ -840,7 +855,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 case UnityEventFlags.Awake:
 
-                    _awakeFrame = Time.frameCount;
+                    _awakeFrame = CoreClock.Instance.FrameCount;
                     _unityAwake = true;
                     try
                     {
@@ -865,7 +880,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.OnEnable:
 
-                    _onEnableFrame = Time.frameCount;
+                    _onEnableFrame = CoreClock.Instance.FrameCount;
                     _unityOnEnable = true;
                     try
                     {
@@ -890,7 +905,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.Start:
 
-                    _startFrame = Time.frameCount;
+                    _startFrame = CoreClock.Instance.FrameCount;
                     _unityStart = true;
                     try
                     {
@@ -915,7 +930,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.Reset:
 
-                    _resetFrame = Time.frameCount;
+                    _resetFrame = CoreClock.Instance.FrameCount;
                     _unityReset = true;
                     try
                     {
@@ -940,7 +955,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.OnDisable:
 
-                    _onDisableFrame = Time.frameCount;
+                    _onDisableFrame = CoreClock.Instance.FrameCount;
                     _unityOnDisable = true;
                     try
                     {
@@ -1052,6 +1067,11 @@ namespace Appalachia.Core.Objects.Root
                 _hasBeenEnabled = false;
                 _hasBeenDisabled = true;
 
+                if (ReInitializeOnEnable)
+                {
+                    _eventFlags = _eventFlags.UnsetFlag(AppalachiaEventFlags.Initialized);
+                }
+
                 return;
             }
 
@@ -1084,6 +1104,7 @@ namespace Appalachia.Core.Objects.Root
 
                 _hasBeenInitialized = true;
                 _eventFlags |= AppalachiaEventFlags.Initialized;
+                await AppaTask.Yield();
             }
 
             if ((this == null) || (gameObject == null))
@@ -1117,6 +1138,8 @@ namespace Appalachia.Core.Objects.Root
 
                 _hasBeenEnabled = true;
                 _hasBeenDisabled = false;
+
+                ObjectEnableEventRouter.Notify(GetType(), this, GuaranteedEventRouting);
             }
         }
 
@@ -1208,10 +1231,13 @@ namespace Appalachia.Core.Objects.Root
 
         public void OnBeforeSerialize()
         {
+            using var scope = APPASERIALIZE.OnBeforeSerialize();
         }
 
         public void OnAfterDeserialize()
         {
+            using var scope = APPASERIALIZE.OnAfterDeserialize();
+
             if (_hasBeenInitialized)
             {
                 return;
@@ -1285,23 +1311,28 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        protected virtual bool GuaranteeEnableEventRouting => false;
+
         protected virtual bool LogEventFunctions => false;
 
         protected virtual bool ShouldSkipUpdate =>
-            !FullyInitialized || !DependenciesAreReady || AppalachiaApplication.IsCompiling;
+            !FullyInitialized ||
+            !DependenciesAreReady ||
+            !HasBeenEnabled ||
+            AppalachiaApplication.IsCompiling;
 
         public bool HasBeenDisabled => _hasBeenDisabled;
         public bool HasBeenEnabled => _hasBeenEnabled;
 
         public bool HasBeenInitialized => _hasBeenInitialized;
 
-        public int AwakeDuration => enabled ? Time.frameCount - _awakeFrame : 0;
+        public int AwakeDuration => enabled ? CoreClock.Instance.FrameCount - _awakeFrame : 0;
         public int AwakeFrame => _awakeFrame;
-        public int DisabledDuration => enabled ? 0 : Time.frameCount - _onDisableFrame;
-        public int EnabledDuration => enabled ? Time.frameCount - _onEnableFrame : 0;
+        public int DisabledDuration => enabled ? 0 : CoreClock.Instance.FrameCount - _onDisableFrame;
+        public int EnabledDuration => enabled ? CoreClock.Instance.FrameCount - _onEnableFrame : 0;
         public int OnDisableFrame => _onDisableFrame;
         public int OnEnableFrame => _onEnableFrame;
-        public int StartedDuration => enabled ? Time.frameCount - _startFrame : 0;
+        public int StartedDuration => enabled ? CoreClock.Instance.FrameCount - _startFrame : 0;
         public int StartFrame => _startFrame;
 
         #region Event Functions
@@ -1428,7 +1459,7 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                _onDisableFrame = Time.frameCount;
+                _onDisableFrame = CoreClock.Instance.FrameCount;
 
                 if (LogEventFunctions)
                 {
@@ -1571,7 +1602,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 case UnityEventFlags.Awake:
 
-                    _awakeFrame = Time.frameCount;
+                    _awakeFrame = CoreClock.Instance.FrameCount;
                     _unityAwake = true;
                     try
                     {
@@ -1596,7 +1627,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.OnEnable:
 
-                    _onEnableFrame = Time.frameCount;
+                    _onEnableFrame = CoreClock.Instance.FrameCount;
                     _unityOnEnable = true;
                     try
                     {
@@ -1621,7 +1652,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.Start:
 
-                    _startFrame = Time.frameCount;
+                    _startFrame = CoreClock.Instance.FrameCount;
                     _unityStart = true;
                     try
                     {
@@ -1646,7 +1677,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.Reset:
 
-                    _resetFrame = Time.frameCount;
+                    _resetFrame = CoreClock.Instance.FrameCount;
                     _unityReset = true;
                     try
                     {
@@ -1671,7 +1702,7 @@ namespace Appalachia.Core.Objects.Root
                     break;
                 case UnityEventFlags.OnDisable:
 
-                    _onDisableFrame = Time.frameCount;
+                    _onDisableFrame = CoreClock.Instance.FrameCount;
                     _unityOnDisable = true;
                     try
                     {
@@ -1815,6 +1846,7 @@ namespace Appalachia.Core.Objects.Root
 
                 _hasBeenInitialized = true;
                 _eventFlags |= AppalachiaEventFlags.Initialized;
+                await AppaTask.Yield();
             }
 
             if ((this == null) || (gameObject == null))
@@ -1848,6 +1880,8 @@ namespace Appalachia.Core.Objects.Root
 
                 _hasBeenEnabled = true;
                 _hasBeenDisabled = false;
+
+                ObjectEnableEventRouter.Notify(GetType(), this, GuaranteeEnableEventRouting);
             }
         }
 

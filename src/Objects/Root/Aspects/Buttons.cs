@@ -12,7 +12,6 @@ namespace Appalachia.Core.Objects.Root
 #if UNITY_EDITOR
         [ButtonGroup(GROUP_WORKFLOW_PROD)]
         [PropertyOrder(-40000)]
-        [ShowIf(nameof(ShowWorkflow))]
         public void Duplicate()
         {
             using (_PRF_Duplicate.Auto())
@@ -50,11 +49,9 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
-        [ShowIfGroup(SHOW_WORKFLOW)]
         [FoldoutGroup(GROUP_WORKFLOW, Order = -50000)]
         [ButtonGroup(GROUP_WORKFLOW_PROD)]
         [PropertyOrder(-40000)]
-        [ShowIf(nameof(ShowWorkflow))]
         public void Select()
         {
             using (_PRF_Select.Auto())

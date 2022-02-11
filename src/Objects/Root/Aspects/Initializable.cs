@@ -27,28 +27,9 @@ namespace Appalachia.Core.Objects.Root
 
         #region Fields and Autoproperties
 
-        [SmartTitleGroup(
-            BASE,
-            "$" + nameof(GetTitle),
-            "$" + nameof(GetSubtitle),
-            "$" + nameof(GetFallbackTitle),
-            "$" + nameof(GetFallbackSubtitle),
-            true,
-            Brand.Title.IsBold,
-            false,
-            titleColor: "$" + nameof(GetTitleColor),
-            titleFont: Brand.Font.ObjectFont,
-            subtitleColor: "$" + nameof(GetTitleColor),
-            subtitleFont: Brand.Font.ObjectFont,
-            titleSize: Brand.Title.Size,
-            subtitleSize: Brand.Subtitle.Size,
-            titleIcon: null,
-            subtitleIcon: null,
-            backgroundColor: "$" + nameof(GetBackgroundColor),
-            titleHeight: Brand.Title.Height
-        )]
+        [ShowIfGroup(GROUP_ROOT)]
         [SmartFoldoutGroup(
-            GROUP,
+            GROUP_INTERNAL,
             false,
             Brand.Groups.BackgroundColor,
             true,
@@ -59,6 +40,7 @@ namespace Appalachia.Core.Objects.Root
         [HideLabel, InlineProperty, LabelWidth(0)]
         [FormerlySerializedAs("_initializationData")]
         [SerializeField]
+        [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
 
         [NonSerialized] private InitializationState _initializationState;
@@ -232,28 +214,9 @@ namespace Appalachia.Core.Objects.Root
 
         #region Fields and Autoproperties
 
-        [SmartTitleGroup(
-            BASE,
-            "$" + nameof(GetTitle),
-            "$" + nameof(GetSubtitle),
-            "$" + nameof(GetFallbackTitle),
-            "$" + nameof(GetFallbackSubtitle),
-            true,
-            Brand.Title.IsBold,
-            false,
-            titleColor: "$" + nameof(GetTitleColor),
-            titleFont: Brand.Font.ObjectFont,
-            subtitleColor: "$" + nameof(GetTitleColor),
-            subtitleFont: Brand.Font.ObjectFont,
-            titleSize: Brand.Title.Size,
-            subtitleSize: Brand.Subtitle.Size,
-            titleIcon: null,
-            subtitleIcon: null,
-            backgroundColor: "$" + nameof(GetBackgroundColor),
-            titleHeight: Brand.Title.Height
-        )]
+        [ShowIfGroup(GROUP_ROOT)]
         [SmartFoldoutGroup(
-            GROUP,
+            GROUP_INTERNAL,
             false,
             Brand.Groups.BackgroundColor,
             true,
@@ -261,9 +224,10 @@ namespace Appalachia.Core.Objects.Root
             true,
             Brand.Groups.ChildColor
         )]
-        [HideLabel, InlineProperty, LabelWidth(0)]
+        [HideLabel, InlineProperty]
         [FormerlySerializedAs("_initializationData")]
         [SerializeField]
+        [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
 
         [NonSerialized] private InitializationState _initializationState;
@@ -442,28 +406,9 @@ namespace Appalachia.Core.Objects.Root
 
         #region Fields and Autoproperties
 
-        [SmartTitleGroup(
-            BASE,
-            "$" + nameof(GetTitle),
-            "$" + nameof(GetSubtitle),
-            "$" + nameof(GetFallbackTitle),
-            "$" + nameof(GetFallbackSubtitle),
-            true,
-            Brand.Title.IsBold,
-            false,
-            titleColor: "$" + nameof(GetTitleColor),
-            titleFont: Brand.Font.ObjectFont,
-            subtitleColor: "$" + nameof(GetTitleColor),
-            subtitleFont: Brand.Font.ObjectFont,
-            titleSize: Brand.AppalachiaBase.TitleSize,
-            subtitleSize: Brand.AppalachiaBase.SubtitleSize,
-            titleIcon: null,
-            subtitleIcon: null,
-            backgroundColor: "$" + nameof(GetBackgroundColor),
-            titleHeight: Brand.AppalachiaBase.TitleHeight
-        )]
+        [ShowIfGroup(GROUP_ROOT)]
         [SmartFoldoutGroup(
-            GROUP,
+            GROUP_INTERNAL,
             false,
             Brand.Groups.BackgroundColor,
             true,
@@ -474,12 +419,8 @@ namespace Appalachia.Core.Objects.Root
         [HideLabel, InlineProperty, LabelWidth(0)]
         [FormerlySerializedAs("_initializationData")]
         [SerializeField]
+        [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
-
-        protected Initializer GetInitializer()
-        {
-            return _initializer ??= new Initializer();
-        }
 
         [NonSerialized] private InitializationState _initializationState;
 
@@ -547,6 +488,11 @@ namespace Appalachia.Core.Objects.Root
         protected virtual async AppaTask Initialize(Initializer initializer)
         {
             await AppaTask.CompletedTask;
+        }
+
+        protected Initializer GetInitializer()
+        {
+            return _initializer ??= new Initializer();
         }
 
         /// <summary>
@@ -652,28 +598,9 @@ namespace Appalachia.Core.Objects.Root
 
         #region Fields and Autoproperties
 
-        [SmartTitleGroup(
-            BASE,
-            "$" + nameof(GetTitle),
-            "$" + nameof(GetSubtitle),
-            "$" + nameof(GetFallbackTitle),
-            "$" + nameof(GetFallbackSubtitle),
-            true,
-            Brand.Title.IsBold,
-            false,
-            titleColor: "$" + nameof(GetTitleColor),
-            titleFont: Brand.Font.ObjectFont,
-            subtitleColor: "$" + nameof(GetTitleColor),
-            subtitleFont: Brand.Font.ObjectFont,
-            titleSize: Brand.Title.Size,
-            subtitleSize: Brand.Subtitle.Size,
-            titleIcon: null,
-            subtitleIcon: null,
-            backgroundColor: "$" + nameof(GetBackgroundColor),
-            titleHeight: Brand.Title.Height
-        )]
+        [ShowIfGroup(GROUP_ROOT)]
         [SmartFoldoutGroup(
-            GROUP,
+            GROUP_INTERNAL,
             false,
             Brand.Groups.BackgroundColor,
             true,
@@ -684,6 +611,7 @@ namespace Appalachia.Core.Objects.Root
         [HideLabel, InlineProperty, LabelWidth(0)]
         [FormerlySerializedAs("_initializationData")]
         [SerializeField]
+        [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
 
         [NonSerialized] private InitializationState _initializationState;
@@ -855,28 +783,9 @@ namespace Appalachia.Core.Objects.Root
 
         #region Fields and Autoproperties
 
-        [SmartTitleGroup(
-            BASE,
-            "$" + nameof(GetTitle),
-            "$" + nameof(GetSubtitle),
-            "$" + nameof(GetFallbackTitle),
-            "$" + nameof(GetFallbackSubtitle),
-            true,
-            Brand.Title.IsBold,
-            false,
-            titleColor: "$" + nameof(GetTitleColor),
-            titleFont: Brand.Font.ObjectFont,
-            subtitleColor: "$" + nameof(GetTitleColor),
-            subtitleFont: Brand.Font.ObjectFont,
-            titleSize: Brand.Title.Size,
-            subtitleSize: Brand.Subtitle.Size,
-            titleIcon: null,
-            subtitleIcon: null,
-            backgroundColor: "$" + nameof(GetBackgroundColor),
-            titleHeight: Brand.Title.Height
-        )]
+        [ShowIfGroup(GROUP_ROOT)]
         [SmartFoldoutGroup(
-            GROUP,
+            GROUP_INTERNAL,
             false,
             Brand.Groups.BackgroundColor,
             true,
@@ -887,6 +796,7 @@ namespace Appalachia.Core.Objects.Root
         [HideLabel, InlineProperty, LabelWidth(0)]
         [FormerlySerializedAs("_initializationData")]
         [SerializeField]
+        [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
 
         [NonSerialized] private InitializationState _initializationState;
@@ -1038,11 +948,11 @@ namespace Appalachia.Core.Objects.Root
         private static readonly ProfilerMarker _PRF_ExecuteInitialization =
             new ProfilerMarker(_PRF_PFX2 + nameof(ExecuteInitialization));
 
-        private static readonly ProfilerMarker _PRF_initializationState =
-            new ProfilerMarker(_PRF_PFX2 + nameof(initializationState));
-
         private static readonly ProfilerMarker _PRF_InitializationExceptionHandler =
             new ProfilerMarker(_PRF_PFX2 + nameof(InitializationExceptionHandler));
+
+        private static readonly ProfilerMarker _PRF_initializationState =
+            new ProfilerMarker(_PRF_PFX2 + nameof(initializationState));
 
         private static readonly ProfilerMarker _PRF_InitializeSynchronous =
             new ProfilerMarker(_PRF_PFX2 + nameof(InitializeSynchronous));

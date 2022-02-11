@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using Unity.Mathematics;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableQuaternion_m(bool overrideEnabled, quaternion value) : base(overrideEnabled, value)
+        public OverridableQuaternion_m(bool overriding, quaternion value) : base(overriding, value)
         {
         }
 

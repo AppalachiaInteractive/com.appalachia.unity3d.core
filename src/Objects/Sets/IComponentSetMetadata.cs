@@ -4,6 +4,6 @@ namespace Appalachia.Core.Objects.Sets
         where TSet : IComponentSet<TSet, TSetMetadata>, new()
         where TSetMetadata : IComponentSetMetadata<TSet, TSetMetadata>
     {
-        void ConfigureComponents(TSet componentSet);
+        void ApplyMetadataToComponentSet(TSet componentSet);
     }
 }

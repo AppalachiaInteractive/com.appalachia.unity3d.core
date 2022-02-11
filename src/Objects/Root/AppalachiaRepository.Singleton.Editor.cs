@@ -76,10 +76,6 @@ namespace Appalachia.Core.Objects.Root
                     }
                 }
 
-                _singletonLookup.Clear();
-                PopulateSingletonLookup(_singletonLookup, _singletons);
-                PopulateSingletonLookup(_singletonLookup, _editorSingletons);
-
                 if (AppalachiaApplication.IsPlaying)
                 {
                     return;
@@ -147,7 +143,7 @@ namespace Appalachia.Core.Objects.Root
                     {
                         objectAtPath.name = typeAtPath.Name;
 
-                        AssetDatabaseManager.RenameAsset(path.relativePath, typeAtPath.Name);
+                        AssetDatabaseManager.UpdateAssetName(path.relativePath, typeAtPath.Name);
                         /*
                          var directory = AppaPath.GetDirectoryName(path.relativePath);
                         var extension = path.extension;

@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableVector3(bool overrideEnabled, Vector3 value) : base(overrideEnabled, value)
+        public OverridableVector3(bool overriding, Vector3 value) : base(overriding, value)
         {
         }
 

@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 namespace Appalachia.Core.Overrides.Implementations
@@ -10,7 +11,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableMaterial(bool overrideEnabled, Material value) : base(overrideEnabled, value)
+        public OverridableMaterial(bool overriding, Material value) : base(overriding, value)
         {
         }
 

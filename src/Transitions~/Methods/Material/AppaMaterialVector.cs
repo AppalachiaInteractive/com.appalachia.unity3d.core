@@ -63,13 +63,13 @@ namespace Appalachia.Core.Transitions.Methods.Material
 
             #region Fields and Autoproperties
 
-            [Tooltip("The ease method that will be used for the transition.")]
+            [PropertyTooltip("The ease method that will be used for the transition.")]
             public AppaEase Ease = AppaEase.Smooth;
 
-            [Tooltip("The name of the vector property in the shader.")]
+            [PropertyTooltip("The name of the vector property in the shader.")]
             public string Property;
 
-            [Tooltip("The value we will transition to.")]
+            [PropertyTooltip("The value we will transition to.")]
             public Vector4 Value;
 
             [System.NonSerialized] private Vector4 oldValue;

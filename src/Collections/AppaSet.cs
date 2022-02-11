@@ -8,6 +8,7 @@ using Appalachia.Core.Collections.Interfaces;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
+using Appalachia.Utility.Timing;
 using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -122,7 +123,7 @@ namespace Appalachia.Core.Collections
             {
                 if (getFrameCount)
                 {
-                    var frameCount = Time.frameCount;
+                    var frameCount = CoreClock.Instance.FrameCount;
 
                     if (LastFrameCheck == frameCount)
                     {

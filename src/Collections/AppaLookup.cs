@@ -13,6 +13,7 @@ using Appalachia.Utility.Constants;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Extensions.Debugging;
 using Appalachia.Utility.Strings;
+using Appalachia.Utility.Timing;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -139,7 +140,7 @@ namespace Appalachia.Core.Collections
                     return null;
                 }
 
-                if (APPASERIALIZE.InSerializationWindow)
+                if (APPASERIALIZE.InSerializationWindowGuaranteed)
                 {
                     return null;
                 }
@@ -705,7 +706,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindow)
+                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
                         {
                             if (_markAsModifiedAction != null)
                             {
@@ -731,7 +732,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindow)
+                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
                         {
                             if (_markAsModifiedAction != null)
                             {
@@ -757,7 +758,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindow)
+                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
                         {
                             if (_markAsModifiedAction != null)
                             {
@@ -783,7 +784,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindow)
+                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
                         {
                             if (_markAsModifiedAction != null)
                             {
@@ -824,7 +825,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindow)
+                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
                         {
                             if (_markAsModifiedAction != null)
                             {
@@ -915,7 +916,7 @@ namespace Appalachia.Core.Collections
 
                 if (!inConstructor)
                 {
-                    if (APPASERIALIZE.InSerializationWindow)
+                    if (APPASERIALIZE.InSerializationWindowGuaranteed)
                     {
                         if (_markAsModifiedAction != null)
                         {
@@ -993,7 +994,7 @@ namespace Appalachia.Core.Collections
 
                 if (!inConstructor)
                 {
-                    if (APPASERIALIZE.InSerializationWindow)
+                    if (APPASERIALIZE.InSerializationWindowGuaranteed)
                     {
                         if (_markAsModifiedAction != null)
                         {
@@ -1093,7 +1094,7 @@ namespace Appalachia.Core.Collections
 
                     if (modified && !inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindow)
+                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
                         {
                             if (_markAsModifiedAction != null)
                             {
@@ -1222,9 +1223,9 @@ namespace Appalachia.Core.Collections
         {
             frameCount = -1;
 
-            if (!APPASERIALIZE.InSerializationWindow)
+            if (!APPASERIALIZE.InSerializationWindowGuaranteed)
             {
-                frameCount = Time.frameCount;
+                frameCount = CoreClock.Instance.FrameCount;
             }
 
             if (LastFrameCheck == frameCount)
@@ -1795,8 +1796,6 @@ namespace Appalachia.Core.Collections
             [HideLabel]
             [LabelWidth(0)]
             [SmartTitle(
-                _titlePointer,
-                _subtitlePointer,
                 _titlePointer,
                 _subtitlePointer,
                 hideIfMemberName: _disableTitlePointer,

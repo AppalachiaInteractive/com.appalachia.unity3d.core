@@ -120,12 +120,19 @@ namespace Appalachia.Core.Objects.Dependencies
             }
         }
 
+        [NonSerialized] private bool _dependenciesAreReady;
+        
         internal bool DependenciesAreReady
         {
             get
             {
                 using (_PRF_DependenciesAreReady.Auto())
                 {
+                    if (_dependenciesAreReady)
+                    {
+                        return true;
+                    }
+                    
                     for (var index = 0; index < subsets.Length; index++)
                     {
                         var d = subsets[index];
@@ -136,6 +143,7 @@ namespace Appalachia.Core.Objects.Dependencies
                         }
                     }
 
+                    _dependenciesAreReady = true;
                     return true;
                 }
             }

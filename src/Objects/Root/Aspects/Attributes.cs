@@ -1,6 +1,7 @@
 using System;
 using Appalachia.CI.Integration.Attributes;
 using Appalachia.Core.Attributes.Editing;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Appalachia.Core.Objects.Root
@@ -8,6 +9,7 @@ namespace Appalachia.Core.Objects.Root
     [DoNotReorderFields]
     [Serializable]
     [SmartLabelChildren]
+    [InlineEditor(InlineEditorObjectFieldModes.Foldout)]
     public partial class AppalachiaObject
     {
     }
@@ -58,7 +60,9 @@ namespace Appalachia.Core.Objects.Root
     }
 
     [DoNotReorderFields]
+    [Serializable]
     [SmartLabelChildren]
+    [InlineProperty]
     public partial class AppalachiaSimpleBase
     {
     }

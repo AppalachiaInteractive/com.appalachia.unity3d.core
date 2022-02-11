@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using Unity.Mathematics;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableFloat2x3(bool overrideEnabled, float2x3 value) : base(overrideEnabled, value)
+        public OverridableFloat2x3(bool overriding, float2x3 value) : base(overriding, value)
         {
         }
 

@@ -63,13 +63,13 @@ namespace Appalachia.Core.Transitions.Methods.Transform
 
             #region Fields and Autoproperties
 
-            [Tooltip("The ease method that will be used for the transition.")]
+            [PropertyTooltip("The ease method that will be used for the transition.")]
             public AppaEase Ease = AppaEase.Smooth;
 
-            [Tooltip("The space we will transition in.")]
+            [PropertyTooltip("The space we will transition in.")]
             public Space Space = Space.Self;
 
-            [Tooltip("The amount we will rotate.")]
+            [PropertyTooltip("The amount we will rotate.")]
             public Vector3 EulerAngles;
 
             [System.NonSerialized] private Vector3 previousEulerAngles;

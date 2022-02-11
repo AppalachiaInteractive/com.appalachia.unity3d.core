@@ -14,48 +14,91 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        [NonSerialized] private Bounds ___renderingBounds;
-        [NonSerialized] private Transform ___transform;
-        [NonSerialized] private RectTransform ___rectTransform;
+        [NonSerialized] protected Bounds _renderingBounds;
+        [NonSerialized] protected Transform _cachedTransform;
+        [NonSerialized] protected RectTransform _cachedRectTransform;
+
+        [NonSerialized] private bool _hasCachedTransform;
+        [NonSerialized] private bool _hasCachedRectTransform;
 
         #endregion
 
-        public Bounds renderingBounds
+        public bool HasRectTransform
         {
             get
             {
-                if (___renderingBounds == default)
+                using (_PRF_HasRectTransform.Auto())
                 {
-                    ___renderingBounds = gameObject.GetRenderingBounds(out _);
+                    return Transform is RectTransform;
                 }
-
-                return ___renderingBounds;
             }
         }
 
-        protected Transform _transform
+        public Bounds RenderingBounds
         {
             get
             {
-                if (___transform == null)
+                using (_PRF_RenderingBounds.Auto())
                 {
-                    ___transform = transform;
-                }
+                    if (_renderingBounds == default)
+                    {
+                        _renderingBounds = gameObject.GetRenderingBounds(out _);
+                    }
 
-                return ___transform;
+                    return _renderingBounds;
+                }
             }
         }
 
-        protected RectTransform _rectTransform
+        public RectTransform RectTransform
         {
             get
             {
-                if (___rectTransform == null)
+                using (_PRF_RectTransform.Auto())
                 {
-                    gameObject.GetOrAddComponent(ref ___rectTransform);
-                }
+                    if (_hasCachedRectTransform)
+                    {
+                        return _cachedRectTransform;
+                    }
 
-                return ___rectTransform;
+                    if (_cachedRectTransform == null)
+                    {
+                        if (Transform is RectTransform transformCast)
+                        {
+                            _cachedRectTransform = transformCast;
+                            _hasCachedRectTransform = true;
+                        }
+                        else
+                        {
+                            gameObject.GetOrAddComponent(ref _cachedRectTransform);
+                            _hasCachedRectTransform = true;
+                        }
+                    }
+
+                    return _cachedRectTransform;
+                }
+            }
+        }
+
+        public Transform Transform
+        {
+            get
+            {
+                using (_PRF_Transform.Auto())
+                {
+                    if (_hasCachedTransform)
+                    {
+                        return _cachedTransform;
+                    }
+
+                    if (_cachedTransform == null)
+                    {
+                        _cachedTransform = transform;
+                        _hasCachedTransform = true;
+                    }
+
+                    return _cachedTransform;
+                }
             }
         }
 
@@ -74,7 +117,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_LocalToWorldDirection.Auto())
             {
-                return _transform.TransformDirection(direction);
+                return Transform.TransformDirection(direction);
             }
         }
 
@@ -82,7 +125,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_LocalToWorldPoint.Auto())
             {
-                return _transform.TransformPoint(point);
+                return Transform.TransformPoint(point);
             }
         }
 
@@ -90,7 +133,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_LocalToWorldVector.Auto())
             {
-                return _transform.TransformVector(vector);
+                return Transform.TransformVector(vector);
             }
         }
 
@@ -98,7 +141,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_RecalculateBounds.Auto())
             {
-                ___renderingBounds = default;
+                _renderingBounds = default;
             }
         }
 
@@ -106,7 +149,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_WorldToLocalDirection.Auto())
             {
-                return _transform.InverseTransformDirection(direction);
+                return Transform.InverseTransformDirection(direction);
             }
         }
 
@@ -114,7 +157,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_WorldToLocalPoint.Auto())
             {
-                return _transform.InverseTransformPoint(point);
+                return Transform.InverseTransformPoint(point);
             }
         }
 
@@ -122,13 +165,25 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_WorldToLocalVector.Auto())
             {
-                return _transform.InverseTransformVector(vector);
+                return Transform.InverseTransformVector(vector);
             }
         }
 
         #region Profiling
 
         private const string _PRF_PFX = nameof(AppalachiaBehaviour) + ".";
+
+        private static readonly ProfilerMarker _PRF_RenderingBounds =
+            new ProfilerMarker(_PRF_PFX + nameof(RenderingBounds));
+
+        private static readonly ProfilerMarker _PRF_HasRectTransform =
+            new ProfilerMarker(_PRF_PFX + nameof(HasRectTransform));
+
+        private static readonly ProfilerMarker _PRF_Transform =
+            new ProfilerMarker(_PRF_PFX + nameof(Transform));
+
+        private static readonly ProfilerMarker _PRF_RectTransform =
+            new ProfilerMarker(_PRF_PFX + nameof(RectTransform));
 
         private static readonly ProfilerMarker _PRF_RecalculateBounds =
             new ProfilerMarker(_PRF_PFX + nameof(RecalculateBounds));
@@ -160,7 +215,7 @@ namespace Appalachia.Core.Objects.Root
     public abstract partial class AppalachiaBehaviour<T> : AppalachiaBehaviour
         where T : AppalachiaBehaviour<T>
     {
-        #region Constants and Static Readonly
+        #region Profiling
 
         protected static readonly string _PRF_PFX = typeof(T).Name + ".";
 
@@ -181,6 +236,12 @@ namespace Appalachia.Core.Objects.Root
 
         protected static readonly ProfilerMarker _PRF_OnDisableActual =
             new ProfilerMarker(_PRF_PFX + nameof(OnDisableActual));
+
+        protected static readonly ProfilerMarker _PRF_OnDrawGizmos =
+            new ProfilerMarker(_PRF_PFX + "OnDrawGizmos");
+
+        protected static readonly ProfilerMarker _PRF_OnDrawGizmosSelected =
+            new ProfilerMarker(_PRF_PFX + "OnDrawGizmosSelected");
 
         protected static readonly ProfilerMarker _PRF_OnEnableActual =
             new ProfilerMarker(_PRF_PFX + nameof(OnEnableActual));

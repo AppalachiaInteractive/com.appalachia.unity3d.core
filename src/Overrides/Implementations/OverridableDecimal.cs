@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 
 #endregion
 
@@ -13,7 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableDecimal(bool overrideEnabled, decimal value) : base(overrideEnabled, value)
+        public OverridableDecimal(bool overriding, decimal value) : base(overriding, value)
         {
         }
 

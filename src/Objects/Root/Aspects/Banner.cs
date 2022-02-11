@@ -1,12 +1,73 @@
+using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.Attributes;
+using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
+using UnityEngine;
 
 namespace Appalachia.Core.Objects.Root
 {
+    public sealed class BannerArgs
+    {
+        public BannerArgs(
+            string title,
+            string subtitle = null,
+            string fallbackTitle = null,
+            string fallbackSubtitle = null,
+            bool bold = true,
+            string titleColor = null,
+            string titleFont = null,
+            string subtitleColor = null,
+            string subtitleFont = null,
+            string backgroundColor = null,
+            int titleSize = 0,
+            int subtitleSize = 0,
+            int titleHeight = 18)
+        {
+            Title = title;
+            Subtitle = subtitle;
+            FallbackTitle = fallbackTitle;
+            FallbackSubtitle = fallbackSubtitle;
+            Bold = bold;
+            TitleColor = titleColor;
+            TitleFont = titleFont;
+            BackgroundColor = backgroundColor;
+            SubtitleColor = subtitleColor;
+            SubtitleFont = subtitleFont;
+            TitleSize = titleSize;
+            SubtitleSize = subtitleSize;
+            TitleHeight = titleHeight;
+        }
+
+        #region Fields and Autoproperties
+
+        public bool Bold;
+        public int SubtitleSize;
+        public int TitleHeight;
+        public int TitleSize;
+        public string BackgroundColor;
+        public string FallbackSubtitle;
+        public string FallbackTitle;
+        public string Subtitle;
+        public string SubtitleColor;
+        public string SubtitleFont;
+        public string Title;
+        public string TitleColor;
+        public string TitleFont;
+
+        #endregion
+
+        public bool HasBackgroundColor => BackgroundColor.IsNotNullOrWhiteSpace();
+        public bool HasSubtitleColor => SubtitleColor.IsNotNullOrWhiteSpace();
+        public bool HasSubtitleFont => TitleFont.IsNotNullOrWhiteSpace();
+        public bool HasTitleColor => TitleColor.IsNotNullOrWhiteSpace();
+        public bool HasTitleFont => SubtitleFont.IsNotNullOrWhiteSpace();
+    }
+
     [InspectorIcon(Brand.AppalachiaObject.Icon)]
     [AssetLabel(Brand.AppalachiaObject.Label)]
-    public partial class AppalachiaObject
+    public partial class AppalachiaObject : IBranded
     {
         protected virtual string GetBackgroundColor()
         {
@@ -37,6 +98,59 @@ namespace Appalachia.Core.Objects.Root
         {
             return Brand.AppalachiaObject.Color;
         }
+
+        private void DrawBanner()
+        {
+            /*_bannerArgs ??= new BannerArgs(
+                "$" + nameof(GetTitle),
+                "$" + nameof(GetSubtitle),
+                "$" + nameof(GetFallbackTitle),
+                "$" + nameof(GetFallbackSubtitle),
+                Brand.Title.IsBold,
+                "$" + nameof(GetTitleColor),
+                Brand.Font.ObjectFont,
+                "$" + nameof(GetTitleColor),
+                Brand.Font.ObjectFont,
+                titleSize: Brand.Title.Size,
+                subtitleSize: Brand.Subtitle.Size,
+                backgroundColor: "$" + nameof(GetBackgroundColor),
+                titleHeight: Brand.Title.Height
+            );*/
+        }
+
+        #region IBranded Members
+
+        string IBranded.GetBackgroundColor()
+        {
+            return GetBackgroundColor();
+        }
+
+        string IBranded.GetFallbackSubtitle()
+        {
+            return GetFallbackSubtitle();
+        }
+
+        string IBranded.GetFallbackTitle()
+        {
+            return GetFallbackTitle();
+        }
+
+        string IBranded.GetSubtitle()
+        {
+            return GetSubtitle();
+        }
+
+        string IBranded.GetTitle()
+        {
+            return GetTitle();
+        }
+
+        string IBranded.GetTitleColor()
+        {
+            return GetTitleColor();
+        }
+
+        #endregion
     }
 
     [InspectorIcon(Brand.AppalachiaRepository.Icon)]
@@ -94,11 +208,17 @@ namespace Appalachia.Core.Objects.Root
     }
 
     [InspectorIcon(Brand.AppalachiaBehaviour.Icon)]
-    public partial class AppalachiaBehaviour
+    public partial class AppalachiaBehaviour : IBranded
     {
         #region Constants and Static Readonly
 
-        public const string GAMEOBJECTICON = Brand.Squirrel.Outline;
+        public const string GAME_OBJECT_ICON = Brand.Squirrel.Outline;
+
+        #endregion
+
+        #region Static Fields and Autoproperties
+
+        private static Texture2D _icon;
 
         #endregion
 
@@ -117,9 +237,16 @@ namespace Appalachia.Core.Objects.Root
             return Brand.AppalachiaBehaviour.Fallback;
         }
 
-        protected virtual string GetGameObjectIcon()
+        protected virtual Texture2D GetGameObjectIcon()
         {
-            return GAMEOBJECTICON;
+#if UNITY_EDITOR
+            if (_icon == null)
+            {
+                _icon = AssetDatabaseManager.FindFirstAssetMatch<Texture2D>(GAME_OBJECT_ICON);
+            }
+#endif
+
+            return _icon;
         }
 
         protected virtual string GetSubtitle()
@@ -136,6 +263,40 @@ namespace Appalachia.Core.Objects.Root
         {
             return Brand.AppalachiaBehaviour.Color;
         }
+
+        #region IBranded Members
+
+        string IBranded.GetBackgroundColor()
+        {
+            return GetBackgroundColor();
+        }
+
+        string IBranded.GetFallbackSubtitle()
+        {
+            return GetFallbackSubtitle();
+        }
+
+        string IBranded.GetFallbackTitle()
+        {
+            return GetFallbackTitle();
+        }
+
+        string IBranded.GetSubtitle()
+        {
+            return GetSubtitle();
+        }
+
+        string IBranded.GetTitle()
+        {
+            return GetTitle();
+        }
+
+        string IBranded.GetTitleColor()
+        {
+            return GetTitleColor();
+        }
+
+        #endregion
     }
 
     public partial class AppalachiaBehaviour<T>
@@ -167,7 +328,7 @@ namespace Appalachia.Core.Objects.Root
     }
 
     [InspectorIcon(Brand.AppalachiaBase.Icon)]
-    public partial class AppalachiaBase
+    public partial class AppalachiaSimpleBase : IBranded
     {
         #region Fields and Autoproperties
 
@@ -215,6 +376,40 @@ namespace Appalachia.Core.Objects.Root
             return Brand.AppalachiaBase.Color;
         }
 
+        #region IBranded Members
+
+        string IBranded.GetBackgroundColor()
+        {
+            return GetBackgroundColor();
+        }
+
+        string IBranded.GetFallbackSubtitle()
+        {
+            return GetFallbackSubtitle();
+        }
+
+        string IBranded.GetFallbackTitle()
+        {
+            return GetFallbackTitle();
+        }
+
+        string IBranded.GetSubtitle()
+        {
+            return GetSubtitle();
+        }
+
+        string IBranded.GetTitle()
+        {
+            return GetTitle();
+        }
+
+        string IBranded.GetTitleColor()
+        {
+            return GetTitleColor();
+        }
+
+        #endregion
+
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_GetFallbackTitle =
@@ -226,12 +421,16 @@ namespace Appalachia.Core.Objects.Root
         #endregion
     }
 
+    public partial class AppalachiaBase
+    {
+    }
+
     public partial class AppalachiaBase<T>
     {
     }
 
     [InspectorIcon(Brand.AppalachiaPlayable.Icon)]
-    public partial class AppalachiaSimplePlayable
+    public partial class AppalachiaSimplePlayable : IBranded
     {
         protected virtual string GetBackgroundColor()
         {
@@ -262,6 +461,40 @@ namespace Appalachia.Core.Objects.Root
         {
             return Brand.AppalachiaPlayable.Color;
         }
+
+        #region IBranded Members
+
+        string IBranded.GetBackgroundColor()
+        {
+            return GetBackgroundColor();
+        }
+
+        string IBranded.GetFallbackSubtitle()
+        {
+            return GetFallbackSubtitle();
+        }
+
+        string IBranded.GetFallbackTitle()
+        {
+            return GetFallbackTitle();
+        }
+
+        string IBranded.GetSubtitle()
+        {
+            return GetSubtitle();
+        }
+
+        string IBranded.GetTitle()
+        {
+            return GetTitle();
+        }
+
+        string IBranded.GetTitleColor()
+        {
+            return GetTitleColor();
+        }
+
+        #endregion
     }
 
     public partial class AppalachiaPlayable
@@ -273,11 +506,11 @@ namespace Appalachia.Core.Objects.Root
     }
 
     [InspectorIcon(Brand.AppalachiaSelectable.Icon)]
-    public partial class AppalachiaSelectable<T>
+    public partial class AppalachiaSelectable<T> : IBranded
     {
         #region Constants and Static Readonly
 
-        public const string GAMEOBJECTICON = Brand.Squirrel.Outline;
+        public const string GAME_OBJECT_ICON = Brand.Squirrel.Outline;
 
         #endregion
 
@@ -298,7 +531,7 @@ namespace Appalachia.Core.Objects.Root
 
         protected virtual string GetGameObjectIcon()
         {
-            return GAMEOBJECTICON;
+            return GAME_OBJECT_ICON;
         }
 
         protected virtual string GetSubtitle()
@@ -315,5 +548,39 @@ namespace Appalachia.Core.Objects.Root
         {
             return Brand.AppalachiaSelectable.Color;
         }
+
+        #region IBranded Members
+
+        string IBranded.GetBackgroundColor()
+        {
+            return GetBackgroundColor();
+        }
+
+        string IBranded.GetFallbackSubtitle()
+        {
+            return GetFallbackSubtitle();
+        }
+
+        string IBranded.GetFallbackTitle()
+        {
+            return GetFallbackTitle();
+        }
+
+        string IBranded.GetSubtitle()
+        {
+            return GetSubtitle();
+        }
+
+        string IBranded.GetTitle()
+        {
+            return GetTitle();
+        }
+
+        string IBranded.GetTitleColor()
+        {
+            return GetTitleColor();
+        }
+
+        #endregion
     }
 }

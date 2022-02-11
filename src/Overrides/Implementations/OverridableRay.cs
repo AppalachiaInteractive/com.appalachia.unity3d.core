@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableRay(bool overrideEnabled, Ray value) : base(overrideEnabled, value)
+        public OverridableRay(bool overriding, Ray value) : base(overriding, value)
         {
         }
 

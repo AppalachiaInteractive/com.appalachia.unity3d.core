@@ -24,7 +24,7 @@ namespace Appalachia.Core.Collections
         public delegate void CollectionEventHandler(T element, int index);
 
         public event CollectionEventHandler Added;
-        
+
         #region Constants and Static Readonly
 
         protected const int _DEFAULT_CAPACITY = 4;
@@ -524,6 +524,7 @@ namespace Appalachia.Core.Collections
         {
             if (_values != null)
             {
+                Count = 0;
                 _itemPool.Return(_values);
                 _values = null;
             }
@@ -984,8 +985,42 @@ namespace Appalachia.Core.Collections
 
         public T this[int index]
         {
-            get => _values[index];
-            set => _values[index] = value;
+            get
+            {
+                if (index < 0)
+                {
+                    throw new IndexOutOfRangeException(
+                        ZString.Format("Index [{0}] was out of range! Count: {1}", index, _count)
+                    );
+                }
+
+                if (index >= _count)
+                {
+                    throw new IndexOutOfRangeException(
+                        ZString.Format("Index [{0}] was out of range! Count: {1}", index, _count)
+                    );
+                }
+
+                return _values[index];
+            }
+            set
+            {
+                if (index < 0)
+                {
+                    throw new IndexOutOfRangeException(
+                        ZString.Format("Index [{0}] was out of range! Count: {1}", index, _count)
+                    );
+                }
+
+                if (index >= _count)
+                {
+                    throw new IndexOutOfRangeException(
+                        ZString.Format("Index [{0}] was out of range! Count: {1}", index, _count)
+                    );
+                }
+
+                _values[index] = value;
+            }
         }
 
         public IEnumerator<T> GetEnumerator()

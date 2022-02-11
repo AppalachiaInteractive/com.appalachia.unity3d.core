@@ -2,8 +2,6 @@
 
 using System;
 using System.Diagnostics;
-using Appalachia.Utility.Logging;
-using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 #endregion
@@ -76,9 +74,9 @@ namespace Appalachia.Core.Aspects.Tracing
                 {
                     var formatPrefix = _indents[frameCount];
 
-                    AppaLog.Context.Utility.Trace(
+                    /*AppaLog.Context.Utility.Trace(
                         ZString.Format("{0}{1}: {2}", formatPrefix, _traceMessage, type)
-                    );
+                    );*/
                 }
             }
         }

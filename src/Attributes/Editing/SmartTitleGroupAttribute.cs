@@ -26,7 +26,7 @@ namespace Appalachia.Core.Attributes.Editing
             bool horizontalLine = true,
             bool bold = true,
             bool reversed = false,
-            bool indent = false,
+            bool indent = true,
             int order = 0,
             string titleColor = null,
             string titleFont = null,
@@ -35,8 +35,6 @@ namespace Appalachia.Core.Attributes.Editing
             string backgroundColor = null,
             int titleSize = 0,
             int subtitleSize = 0,
-            string titleIcon = null,
-            string subtitleIcon = null,
             int titleHeight = 18) : base(groupName, order)
         {
             Title = title;
@@ -46,7 +44,6 @@ namespace Appalachia.Core.Attributes.Editing
             HorizontalLine = horizontalLine;
             Bold = bold;
             Reversed = reversed;
-            Indent = indent;
             TitleColor = titleColor;
             TitleFont = titleFont;
             BackgroundColor = backgroundColor;
@@ -54,8 +51,6 @@ namespace Appalachia.Core.Attributes.Editing
             SubtitleFont = subtitleFont;
             TitleSize = titleSize;
             SubtitleSize = subtitleSize;
-            TitleIcon = titleIcon;
-            SubtitleIcon = subtitleIcon;
             TitleHeight = titleHeight;
         }
 
@@ -63,7 +58,6 @@ namespace Appalachia.Core.Attributes.Editing
 
         public bool Bold;
         public bool HorizontalLine;
-        public bool Indent;
         public bool Reversed;
         public int SubtitleSize;
         public int TitleHeight;
@@ -74,11 +68,9 @@ namespace Appalachia.Core.Attributes.Editing
         public string Subtitle;
         public string SubtitleColor;
         public string SubtitleFont;
-        public string SubtitleIcon;
         public string Title;
         public string TitleColor;
         public string TitleFont;
-        public string TitleIcon;
 
         #endregion
 
@@ -138,15 +130,6 @@ namespace Appalachia.Core.Attributes.Editing
                     Reversed = otherGroup.Reversed;
                 }
 
-                if (Indent)
-                {
-                    otherGroup.Indent = Indent;
-                }
-                else
-                {
-                    Indent = otherGroup.Indent;
-                }
-
                 if (TitleColor != null)
                 {
                     otherGroup.TitleColor = TitleColor;
@@ -192,15 +175,6 @@ namespace Appalachia.Core.Attributes.Editing
                     TitleSize = otherGroup.TitleSize;
                 }
 
-                if (TitleIcon != null)
-                {
-                    otherGroup.TitleIcon = TitleIcon;
-                }
-                else
-                {
-                    TitleIcon = otherGroup.TitleIcon;
-                }
-
                 if (SubtitleSize != 0)
                 {
                     otherGroup.SubtitleSize = SubtitleSize;
@@ -208,15 +182,6 @@ namespace Appalachia.Core.Attributes.Editing
                 else
                 {
                     SubtitleSize = otherGroup.SubtitleSize;
-                }
-
-                if (SubtitleIcon != null)
-                {
-                    otherGroup.SubtitleIcon = SubtitleIcon;
-                }
-                else
-                {
-                    SubtitleIcon = otherGroup.SubtitleIcon;
                 }
             }
         }

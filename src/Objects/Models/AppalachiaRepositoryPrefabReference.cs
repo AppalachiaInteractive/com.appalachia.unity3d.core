@@ -1,12 +1,11 @@
 using System;
 using Sirenix.OdinInspector;
-using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Core.Objects.Models
 {
     [Serializable]
-    public sealed class AppalachiaRepositoryPrefabReference : AppalachiaRepositoryReference
+    public sealed partial class AppalachiaRepositoryPrefabReference : AppalachiaRepositoryReference
     {
         public AppalachiaRepositoryPrefabReference(string addressableGuid, string prefabAddress) : base(
             addressableGuid,
@@ -32,25 +31,5 @@ namespace Appalachia.Core.Objects.Models
         private const string _PRF_PFX = nameof(AppalachiaRepositoryPrefabReference) + ".";
 
         #endregion
-
-#if UNITY_EDITOR
-        private static readonly ProfilerMarker _PRF_GetReferenceName =
-            new ProfilerMarker(_PRF_PFX + nameof(GetReferenceName));
-
-        protected override string GetReferenceName()
-        {
-            using (_PRF_GetReferenceName.Auto())
-            {
-                if (prefab == null)
-                {
-                    return _prefabAddress;
-                }
-
-                return prefab.name;
-            }
-        }
-
-        protected override bool _showAssetRefDisplayValue => prefab == null;
-#endif
     }
 }

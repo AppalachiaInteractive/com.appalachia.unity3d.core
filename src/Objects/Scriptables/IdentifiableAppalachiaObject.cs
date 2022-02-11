@@ -28,7 +28,7 @@ namespace Appalachia.Core.Objects.Scriptables
 #if UNITY_EDITOR
         [ReadOnly]
         [PropertyOrder(-100)]
-        [HorizontalGroup(GROUP + "/" + "ID")]
+        [HorizontalGroup(GROUP_INTERNAL + "/" + "ID")]
         [SmartLabel]
         [ShowIf(nameof(ShowIDProperties))]
 #endif
@@ -131,7 +131,7 @@ namespace Appalachia.Core.Objects.Scriptables
         [Button]
         [PropertyOrder(-100)]
         [EnableIf(nameof(badID))]
-        [HorizontalGroup(GROUP + "/" + "ID")]
+        [HorizontalGroup(GROUP_INTERNAL + "/" + "ID")]
         [ShowIf(nameof(ShowIDProperties))]
         [LabelText("Update")]
         public void UpdateAllIDs()
@@ -242,7 +242,7 @@ namespace Appalachia.Core.Objects.Scriptables
         [ShowInInspector]
         [Button]
         [PropertyOrder(-99)]
-        [HorizontalGroup(GROUP + "/" + APPASTR.ID)]
+        [HorizontalGroup(GROUP_INTERNAL + "/" + APPASTR.ID)]
         [ShowIf(nameof(ShowIDProperties))]
         [LabelText("Check")]
         public void CheckForBadIDs()
@@ -290,7 +290,7 @@ namespace Appalachia.Core.Objects.Scriptables
         [ShowInInspector]
         [Button]
         [PropertyOrder(-99)]
-        [HorizontalGroup(GROUP + "/" + APPASTR.ID)]
+        [HorizontalGroup(GROUP_INTERNAL + "/" + APPASTR.ID)]
         [ShowIf(nameof(ShowIDProperties))]
         public void NewID()
         {

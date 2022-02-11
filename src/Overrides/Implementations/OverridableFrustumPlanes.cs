@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 #endregion
@@ -14,10 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableFrustumPlanes(bool overrideEnabled, FrustumPlanes value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableFrustumPlanes(bool overriding, FrustumPlanes value) : base(overriding, value)
         {
         }
 

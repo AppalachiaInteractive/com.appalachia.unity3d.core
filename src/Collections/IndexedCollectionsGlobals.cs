@@ -10,6 +10,7 @@ using Appalachia.Utility.Constants;
 namespace Appalachia.Core.Collections
 {
 #if UNITY_EDITOR
+    [CallStaticConstructorInEditor]
     public static class IndexedCollectionsGlobals
     {
         #region Constants and Static Readonly
@@ -19,6 +20,11 @@ namespace Appalachia.Core.Collections
         private const string MENU_SHOW = GROUP + "Show All Fields";
 
         #endregion
+
+        static IndexedCollectionsGlobals()
+        {
+            PREFS.RegisterPreSettingsProviderAction(Initialize);
+        }
 
         #region Preferences
 
@@ -58,7 +64,7 @@ namespace Appalachia.Core.Collections
         {
             get
             {
-                var pref = APPASERIALIZE.InSerializationWindow ? _RECREATE : RECREATE;
+                var pref = APPASERIALIZE.CouldBeInSerializationWindow ? _RECREATE : RECREATE;
 
                 if (pref != null)
                 {
@@ -67,7 +73,7 @@ namespace Appalachia.Core.Collections
                         return pref.Value;
                     }
 
-                    if (!APPASERIALIZE.InSerializationWindow)
+                    if (!APPASERIALIZE.CouldBeInSerializationWindow)
                     {
                         pref.WakeUp();
                         return pref.Value;
@@ -82,7 +88,7 @@ namespace Appalachia.Core.Collections
         {
             get
             {
-                var pref = APPASERIALIZE.InSerializationWindow ? _SHOW : SHOW;
+                var pref = APPASERIALIZE.CouldBeInSerializationWindow ? _SHOW : SHOW;
 
                 if (pref != null)
                 {
@@ -91,7 +97,7 @@ namespace Appalachia.Core.Collections
                         return pref.Value;
                     }
 
-                    if (!APPASERIALIZE.InSerializationWindow)
+                    if (!APPASERIALIZE.CouldBeInSerializationWindow)
                     {
                         pref.WakeUp();
                         return pref.Value;

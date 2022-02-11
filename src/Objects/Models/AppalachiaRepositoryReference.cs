@@ -1,7 +1,5 @@
 using System;
-using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
-using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -9,7 +7,7 @@ using UnityEngine.AddressableAssets;
 namespace Appalachia.Core.Objects.Models
 {
     [Serializable]
-    public abstract class AppalachiaRepositoryReference
+    public abstract partial class AppalachiaRepositoryReference
     {
         protected AppalachiaRepositoryReference(string addressableGuid, Type type)
         {
@@ -33,6 +31,8 @@ namespace Appalachia.Core.Objects.Models
         [SerializeField, HideInInspector]
         private string _typeName;
 
+        private Type _referenceType;
+
         #endregion
 
         public AssetReference assetReference => _assetReference;
@@ -44,7 +44,12 @@ namespace Appalachia.Core.Objects.Models
         {
             using (_PRF_GetReferenceType.Auto())
             {
-                return ReflectionExtensions.GetByName(TypeFullName);
+                if (_referenceType == null)
+                {
+                    _referenceType = ReflectionExtensions.GetByName(TypeFullName);
+                }
+
+                return _referenceType;
             }
         }
 
@@ -56,49 +61,5 @@ namespace Appalachia.Core.Objects.Models
             new ProfilerMarker(_PRF_PFX + nameof(GetReferenceType));
 
         #endregion
-
-#if UNITY_EDITOR
-        protected virtual string GetReferenceName()
-        {
-            return null;
-        }
-
-        protected abstract bool _showAssetRefDisplayValue { get; }
-
-        [ShowInInspector, ReadOnly, ShowIf(nameof(_showAssetRefDisplayValue))]
-        private string assetReferenceDisplayValue
-        {
-            get
-            {
-                var referenceName = GetReferenceName();
-                if (referenceName != null)
-                {
-                    return referenceName;
-                }
-
-                if (_assetReference == null)
-                {
-                    return "NULL";
-                }
-
-                if (_assetReference.editorAsset != null)
-                {
-                    return _assetReference.editorAsset.name;
-                }
-
-                if (_assetReference.SubObjectName.IsNotNullOrWhiteSpace())
-                {
-                    return _assetReference.SubObjectName;
-                }
-
-                if (_assetReference.AssetGUID.IsNotNullOrWhiteSpace())
-                {
-                    return _assetReference.AssetGUID;
-                }
-
-                return $"[MISSING] {_typeName}";
-            }
-        }
-#endif
     }
 }

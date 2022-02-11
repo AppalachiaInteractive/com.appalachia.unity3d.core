@@ -4,9 +4,12 @@ namespace Appalachia.Core.Objects.Sets
 {
     public interface IComponentSet
     {
-        string ComponentSetName { get; }
-        
         public GameObject GameObject { get; }
+        string ComponentSetName { get; }
+
+        void DestroySet();
+        void DisableSet();
+        void EnableSet();
     }
 
     public interface IComponentSet<TSet, TSetMetadata> : IComponentSet
@@ -16,6 +19,6 @@ namespace Appalachia.Core.Objects.Sets
         void GetOrAddComponents(
             GameObject parent,
             string name,
-            TSetMetadata data /*, string prefixOverride = null*/);
+            TSetMetadata data);
     }
 }

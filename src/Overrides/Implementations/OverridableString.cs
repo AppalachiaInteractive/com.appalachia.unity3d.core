@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 
 #endregion
 
@@ -13,7 +14,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableString(bool overrideEnabled, string value) : base(overrideEnabled, value)
+        public OverridableString(bool overriding, string value) : base(overriding, value)
         {
         }
 

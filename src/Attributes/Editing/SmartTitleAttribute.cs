@@ -17,8 +17,6 @@ namespace Appalachia.Core.Attributes.Editing
         public SmartTitleAttribute(
             string title,
             string subtitle = null,
-            string fallbackTitle = null,
-            string fallbackSubtitle = null,
             bool horizontalLine = true,
             bool bold = true,
             bool reversed = false,
@@ -47,10 +45,7 @@ namespace Appalachia.Core.Attributes.Editing
         public bool Below;
         public bool Bold;
         public bool HorizontalLine;
-        public bool Indent;
         public bool Reversed;
-        public string FallbackSubtitle;
-        public string FallbackTitle;
         public string HideIfMemberName;
         public string Subtitle;
         public string SubtitleColor;
@@ -62,9 +57,6 @@ namespace Appalachia.Core.Attributes.Editing
         #endregion
 
         public bool HasSubtitleColor => SubtitleColor.IsNotNullOrWhiteSpace();
-        public bool HasSubtitleFont => TitleFont.IsNotNullOrWhiteSpace();
         public bool HasTitleColor => TitleColor.IsNotNullOrWhiteSpace();
-
-        public bool HasTitleFont => SubtitleFont.IsNotNullOrWhiteSpace();
     }
 }

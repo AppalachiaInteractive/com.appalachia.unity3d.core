@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine.UI;
 
 namespace Appalachia.Core.Overrides.Implementations
@@ -10,10 +11,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableImageFillMethod(bool overrideEnabled, Image.FillMethod value) : base(
-            overrideEnabled,
-            value
-        )
+        public OverridableImageFillMethod(bool overriding, Image.FillMethod value) : base(overriding, value)
         {
         }
 

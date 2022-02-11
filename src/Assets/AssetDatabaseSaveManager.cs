@@ -7,6 +7,7 @@ using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Preferences;
 using Appalachia.Utility.Execution;
 using Appalachia.Utility.Strings;
+using Appalachia.Utility.Timing;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -85,7 +86,7 @@ namespace Appalachia.Core.Assets
 
                 var waitThreshold = QueuedNextFrame ? 1 : _SAVE_FRAME_DELAY.v;
 
-                var frameTime = Time.frameCount;
+                var frameTime = CoreClock.Instance.FrameCount;
                 var timeSinceLastSave = frameTime - LastSaveAt;
 
                 if (timeSinceLastSave < waitThreshold)
@@ -180,7 +181,7 @@ namespace Appalachia.Core.Assets
                     return;
                 }
 
-                LastSaveAt = Time.frameCount;
+                LastSaveAt = CoreClock.Instance.FrameCount;
 
                 if (_postActions != null)
                 {

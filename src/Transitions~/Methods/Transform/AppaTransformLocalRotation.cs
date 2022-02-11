@@ -55,10 +55,10 @@ namespace Appalachia.Core.Transitions.Methods.Transform
 
             #region Fields and Autoproperties
 
-            [Tooltip("The ease method that will be used for the transition.")]
+            [PropertyTooltip("The ease method that will be used for the transition.")]
             public AppaEase Ease = AppaEase.Smooth;
 
-            [Tooltip("The rotation we will transition to.")]
+            [PropertyTooltip("The rotation we will transition to.")]
             public Quaternion Rotation = Quaternion.identity;
 
             [System.NonSerialized] private Quaternion oldRotation;

@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableGradient(bool overrideEnabled, Gradient value) : base(overrideEnabled, value)
+        public OverridableGradient(bool overriding, Gradient value) : base(overriding, value)
         {
         }
 

@@ -1,7 +1,8 @@
+/*
 #region
 
 using System;
-using Appalachia.Core.Timing;
+using Appalachia.Utility.Timing;
 
 #endregion
 
@@ -428,7 +429,7 @@ namespace Appalachia.Core.Math
             double smoothTime,
             double maxSpeed)
         {
-            var deltaTime = CoreClock.VisualDelta;
+            var deltaTime = CoreClock..VisualDelta;
             return SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
 
@@ -438,7 +439,7 @@ namespace Appalachia.Core.Math
             ref double currentVelocity,
             double smoothTime)
         {
-            var deltaTime = CoreClock.VisualDelta;
+            var deltaTime = CoreClock..VisualDelta;
             var maxSpeed = Infinity;
             return SmoothDamp(current, target, ref currentVelocity, smoothTime, maxSpeed, deltaTime);
         }
@@ -543,3 +544,4 @@ namespace Appalachia.Core.Math
         }
     }
 }
+*/

@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableLayerMask(bool overrideEnabled, LayerMask value) : base(overrideEnabled, value)
+        public OverridableLayerMask(bool overriding, LayerMask value) : base(overriding, value)
         {
         }
 

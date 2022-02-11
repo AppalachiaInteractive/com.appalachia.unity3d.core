@@ -297,7 +297,7 @@ namespace Appalachia.Core.Caching
                     case CacheInvalidationStrategy.Frames:
                         using (_PRF_ShouldInvalidate_Frames.Auto())
                         {
-                            return (Time.frameCount - _lastCacheInvalidationFrames) > _thresholdFrames;
+                            return (CoreClock.Instance.FrameCount - _lastCacheInvalidationFrames) > _thresholdFrames;
                         }
                     case CacheInvalidationStrategy.Conditional:
                         using (_PRF_ShouldInvalidate_Conditional.Auto())
@@ -317,12 +317,12 @@ namespace Appalachia.Core.Caching
                     case CacheInvalidationStrategy.FramesAndConditional:
                         using (_PRF_ShouldInvalidate_FramesAndConditional.Auto())
                         {
-                            return ((Time.frameCount - _lastCacheInvalidationFrames) > _thresholdFrames) && _invalidateCache(_cached);
+                            return ((CoreClock.Instance.FrameCount - _lastCacheInvalidationFrames) > _thresholdFrames) && _invalidateCache(_cached);
                         }
                     case CacheInvalidationStrategy.FramesAndExternalValueComparison:
                         using (_PRF_ShouldInvalidate_FramesAndExternalValueComparison.Auto())
                         {
-                            return ((Time.frameCount - _lastCacheInvalidationFrames) > _thresholdFrames) &&
+                            return ((CoreClock.Instance.FrameCount - _lastCacheInvalidationFrames) > _thresholdFrames) &&
                                    !_doesValueMatchExternal(_lastExternalValue, _externalValueRetriever());
                         }
                     default:
@@ -386,7 +386,7 @@ namespace Appalachia.Core.Caching
                     case CacheInvalidationStrategy.Frames:
                         using (_PRF_RecordCacheInvalidationData_Frames.Auto())
                         {
-                            _lastCacheInvalidationFrames = Time.frameCount;
+                            _lastCacheInvalidationFrames = CoreClock.Instance.FrameCount;
                         }
                         break;
                     case CacheInvalidationStrategy.Conditional:
@@ -403,13 +403,13 @@ namespace Appalachia.Core.Caching
                     case CacheInvalidationStrategy.FramesAndConditional:
                         using (_PRF_RecordCacheInvalidationData_FramesAndConditional.Auto())
                         {
-                            _lastCacheInvalidationFrames = Time.frameCount;
+                            _lastCacheInvalidationFrames = CoreClock.Instance.FrameCount;
                         }
                         break;
                     case CacheInvalidationStrategy.FramesAndExternalValueComparison:
                         using (_PRF_RecordCacheInvalidationData_FramesAndExternalValueComparison.Auto())
                         {
-                            _lastCacheInvalidationFrames = Time.frameCount;
+                            _lastCacheInvalidationFrames = CoreClock.Instance.FrameCount;
                             _lastExternalValue = _externalValueRetriever();
                         }
                         break;

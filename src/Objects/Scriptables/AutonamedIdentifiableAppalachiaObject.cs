@@ -26,7 +26,7 @@ namespace Appalachia.Core.Objects.Scriptables
         #region Fields and Autoproperties
 
 #if UNITY_EDITOR
-        [SmartFoldoutGroup(GROUP)]
+        [SmartFoldoutGroup(GROUP_INTERNAL)]
         [OnValueChanged(nameof(UpdateName))]
         [DelayedProperty]
         [PropertyOrder(-1000)]

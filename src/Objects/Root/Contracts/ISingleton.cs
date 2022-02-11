@@ -15,7 +15,7 @@ namespace Appalachia.Core.Objects.Root.Contracts
 
     public interface ISingleton : INamed
     {
-        bool IsReady { get; }
+        bool HasInstance { get; }
 
         ISingleton instance { get; }
 

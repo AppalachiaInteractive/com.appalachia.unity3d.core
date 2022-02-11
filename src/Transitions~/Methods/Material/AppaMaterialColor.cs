@@ -63,13 +63,13 @@ namespace Appalachia.Core.Transitions.Methods.Material
 
             #region Fields and Autoproperties
 
-            [Tooltip("The ease method that will be used for the transition.")]
+            [PropertyTooltip("The ease method that will be used for the transition.")]
             public AppaEase Ease = AppaEase.Smooth;
 
-            [Tooltip("The color we will transition to.")]
+            [PropertyTooltip("The color we will transition to.")]
             public Color Color = Color.white;
 
-            [Tooltip("The name of the color property in the shader.")]
+            [PropertyTooltip("The name of the color property in the shader.")]
             public string Property = "_Color";
 
             [System.NonSerialized] private Color oldColor;

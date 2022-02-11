@@ -19,7 +19,7 @@ MonoBehaviour:
     _resetToken: 
   _defaultValue: {fileID: 0}
   _items:
-    initializerCount: 68
+    initializerCount: 69
     _object: {fileID: 11400000}
     keys:
       _capacityIncreaseMultiplier: 2
@@ -51,9 +51,9 @@ MonoBehaviour:
       - Roboto-Regular
       - Roboto-Thin
       - LiberationSans
-      - Sansation-Bold
-      - Sansation-Light
-      - Sansation-Regular
+      - sui generis bold
+      - sui generis rg
+      - sui-generis-rg_dynamic
       - PerfectDOSVGA437
       - Roboto-Black
       - Roboto-BlackItalic
@@ -62,7 +62,7 @@ MonoBehaviour:
       - Roboto-LightItalic
       - Roboto-MediumItalic
       - Roboto-ThinItalic
-      - sui-generis-rg_dynamic
+      - aline_font
       - Consola
       - DroidSansMono
       - orange kid
@@ -89,10 +89,8 @@ MonoBehaviour:
       - RobotoMono-Light
       - RobotoMono-Medium
       - RobotoMono-Regular
-      - sui generis bold
-      - sui generis rg
       noTracking: 0
-      _count: 67
+      _count: 65
     values:
       _capacityIncreaseMultiplier: 2
       _values:
@@ -123,9 +121,9 @@ MonoBehaviour:
       - {fileID: 12800000, guid: 76ed11d84beb10846a746b4259e26d39, type: 3}
       - {fileID: 12800000, guid: aa1cf310642b4ea4bb09de5fe35b9576, type: 3}
       - {fileID: 12800000, guid: e3265ab4bf004d28a9537516768c1c75, type: 3}
-      - {fileID: 12800000, guid: 43b701384840bcf44bfe745decdccd58, type: 3}
-      - {fileID: 12800000, guid: a471ae701418ee5499106c60f74c1c66, type: 3}
-      - {fileID: 12800000, guid: 236f54b53f8bd3545984d90a2ee14c00, type: 3}
+      - {fileID: 12800000, guid: 5deae01ae4a646cc950bd1ab93f29743, type: 3}
+      - {fileID: 12800000, guid: 9c528db6e5eb41aabb5aef10a0ee6ade, type: 3}
+      - {fileID: 12800000, guid: 6b1ef8877fb64278a9320d2f722fc183, type: 3}
       - {fileID: 12800000, guid: 74a5091d8707f334b9a5c31ef71a64ba, type: 3}
       - {fileID: 12800000, guid: 1062c701058745940ae5dca6219c64c8, type: 3}
       - {fileID: 12800000, guid: f95147a9bab9fe649b8070170fa7ebd2, type: 3}
@@ -134,7 +132,7 @@ MonoBehaviour:
       - {fileID: 12800000, guid: 5e63515167650a541b309ba3bfd4db3d, type: 3}
       - {fileID: 12800000, guid: d93c1bc57fdf1ac4dad1bf04fac05464, type: 3}
       - {fileID: 12800000, guid: b2ea3b3f1765e544b9eb5bd1a93a91ce, type: 3}
-      - {fileID: 12800000, guid: e2fe2ab669d30c04cb7450c2e29a1ec6, type: 3}
+      - {fileID: 12800000, guid: de5743d7052e68e1b968ac7e8398c2f9, type: 3}
       - {fileID: 12800000, guid: 78753e46f39c8a24e87a1fca523f3f72, type: 3}
       - {fileID: 12800000, guid: 928f503de488e44408a8625d75d54c61, type: 3}
       - {fileID: 12800000, guid: 0f03458534bea45e4bba9ab3411321b2, type: 3}
@@ -161,7 +159,5 @@ MonoBehaviour:
       - {fileID: 12800000, guid: a1bc3be25cbcd914ab881b9f55281c1f, type: 3}
       - {fileID: 12800000, guid: 6c4b3165b37dc7046901fc3d4a0fcce5, type: 3}
       - {fileID: 12800000, guid: aa35aec7f2cbcf44a8eb564cd037f319, type: 3}
-      - {fileID: 12800000, guid: 87416143913912b45858aa5c537ff097, type: 3}
-      - {fileID: 12800000, guid: 9e5f8fcfcbfe4494d9c37a8825204428, type: 3}
       noTracking: 0
-      _count: 67
+      _count: 65

@@ -17,7 +17,7 @@ namespace Appalachia.Core.Objects.Scriptables
         [FormerlySerializedAs("category")]
         [SerializeField]
 #if UNITY_EDITOR
-        [FoldoutGroup(GROUP)]
+        [FoldoutGroup(GROUP_INTERNAL)]
         [SmartLabel]
         [SmartInlineButton(nameof(Prefix),              "Prefix", false, false, null, nameof(_disablePrefix))]
         [SmartInlineButton(nameof(SelectUncategorized), "Select Uncat.", false)]

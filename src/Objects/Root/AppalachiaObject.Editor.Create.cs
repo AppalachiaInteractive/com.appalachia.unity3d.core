@@ -56,6 +56,11 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        public static string CreateTargetName<T1, T2>()
+        {
+            return $"{typeof(T1).Name}{typeof(T2).Name}";
+        }
+
         public static ScriptableObject LoadOrCreateNew(
             Type t,
             string name,
@@ -131,12 +136,6 @@ namespace Appalachia.Core.Objects.Root
 
     public abstract partial class AppalachiaObject<T>
     {
-        #region Constants and Static Readonly
-
-        private static readonly string _PRF_PFX3 = typeof(T).Name + ".";
-
-        #endregion
-
         public static T CreateNew(Type ownerType = null)
         {
             using (_PRF_CreateNew.Auto())
@@ -178,6 +177,8 @@ namespace Appalachia.Core.Objects.Root
         }
 
         #region Profiling
+
+        private static readonly string _PRF_PFX3 = typeof(T).Name + ".";
 
         private static readonly ProfilerMarker _PRF_CreateNew =
             new ProfilerMarker(_PRF_PFX3 + nameof(CreateNew));

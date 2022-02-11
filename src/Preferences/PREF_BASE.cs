@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Extensions;
 
 namespace Appalachia.Core.Preferences
 {
@@ -33,10 +34,10 @@ namespace Appalachia.Core.Preferences
         {
             get
             {
-                if (_niceLabel == null)
+                if (_niceLabel.IsNullOrWhiteSpace())
                 {
 #if UNITY_EDITOR
-                    if (!APPASERIALIZE.InSerializationWindow)
+                    if (!APPASERIALIZE.CouldBeInSerializationWindow)
                     {
                         _niceLabel = UnityEditor.ObjectNames.NicifyVariableName(_label);
                     }

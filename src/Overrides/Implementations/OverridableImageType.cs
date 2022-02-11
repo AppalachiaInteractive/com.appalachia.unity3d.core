@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine.UI;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableImageType(bool overrideEnabled, Image.Type value) : base(overrideEnabled, value)
+        public OverridableImageType(bool overriding, Image.Type value) : base(overriding, value)
         {
         }
 

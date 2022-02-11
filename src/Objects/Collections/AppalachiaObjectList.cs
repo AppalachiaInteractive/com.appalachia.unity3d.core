@@ -2,7 +2,7 @@ using System;
 using Appalachia.Core.Collections;
 using Appalachia.Core.Objects.Root;
 
-namespace Appalachia.Prototype.KOC.Components.Styling
+namespace Appalachia.Core.Objects.Collections
 {
     [Serializable]
     public sealed class AppalachiaObjectList : AppaList<AppalachiaObject>

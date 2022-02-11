@@ -1,4 +1,5 @@
 using Appalachia.Core.Attributes;
+using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Objects.Dependencies;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Constants;
@@ -14,6 +15,7 @@ namespace Appalachia.Core.Objects.Root
     {
         static AppalachiaRepository()
         {
+            APPASERIALIZE.ResetFrameCount();
             _dependencyTracker = new AppalachiaRepositoryDependencyTracker(typeof(AppalachiaRepository));
 
 #if UNITY_EDITOR
@@ -25,11 +27,22 @@ namespace Appalachia.Core.Objects.Root
 
         private static AppalachiaRepositoryDependencyTracker _dependencyTracker;
 
+        private static IAvailabilitySet _when;
+
         #endregion
 
         public static AppalachiaRepositoryDependencyTracker DependencyTracker => _dependencyTracker;
 
         public static bool DependenciesAreReady => _dependencyTracker.DependenciesAreReady;
+
+        private static IAvailabilitySet When
+        {
+            get
+            {
+                _when ??= RegisterInstanceCallbacks.For(typeof(AppalachiaRepository)).When;
+                return _when;
+            }
+        }
 
         #region IRepositoryDependencyTracker<AppalachiaRepository> Members
 
@@ -44,6 +57,15 @@ namespace Appalachia.Core.Objects.Root
 
     public abstract partial class AppalachiaObject
     {
+        /*protected static IAvailabilitySet When(Type t)
+        {
+            return new AvailabilitySet(t);
+        }
+
+        protected static IAvailabilitySet When(int sortOrder = int.MaxValue)
+        {
+            return new AvailabilitySet(null, sortOrder);
+        }*/
     }
 
     [CallStaticConstructorInEditor]
@@ -63,6 +85,7 @@ namespace Appalachia.Core.Objects.Root
         protected internal static AppalachiaRepositoryDependencyTracker _dependencyTracker;
 
         private static AppalachiaRepository _appalachiaRepository;
+        private static IAvailabilitySet _when;
 
         #endregion
 
@@ -71,6 +94,15 @@ namespace Appalachia.Core.Objects.Root
         public static bool DependenciesAreReady => _dependencyTracker.DependenciesAreReady;
 
         protected static AppalachiaRepository AppalachiaRepository => _appalachiaRepository;
+
+        protected static IAvailabilitySet When
+        {
+            get
+            {
+                _when ??= RegisterInstanceCallbacks.For(typeof(T)).When;
+                return _when;
+            }
+        }
 
         protected static void RegisterDependency<TDependency>(
             SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
@@ -142,6 +174,17 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBehaviour
     {
+        #region Static Fields and Autoproperties
+
+        private static IAvailabilitySet _when;
+
+        #endregion
+
+        protected static IAvailabilitySet When<T>()
+        {
+            _when ??= RegisterInstanceCallbacks.For(typeof(T)).When;
+            return _when;
+        }
     }
 
     [CallStaticConstructorInEditor]
@@ -169,6 +212,7 @@ namespace Appalachia.Core.Objects.Root
         public static bool DependenciesAreReady => _dependencyTracker.DependenciesAreReady;
 
         protected static AppalachiaRepository AppalachiaRepository => _appalachiaRepository;
+        protected static IAvailabilitySet When => RegisterInstanceCallbacks.For(typeof(T)).When;
 
         protected static void RegisterDependency<TDependency>(
             SingletonAppalachiaBehaviour<TDependency>.InstanceAvailableHandler handler)
@@ -205,7 +249,7 @@ namespace Appalachia.Core.Objects.Root
 
         private static readonly string _PRF_PFX3 = typeof(T).Name + ".";
 
-        private static readonly ProfilerMarker _PRF_RegisterDependency =
+        protected static readonly ProfilerMarker _PRF_RegisterDependency =
             new(_PRF_PFX3 + nameof(RegisterDependency));
 
         #endregion
@@ -221,6 +265,10 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaSimpleBase
     {
+        /*protected static IAvailabilitySet When<T>()
+        {
+            return InstanceAvailability.When(typeof(T));
+        }*/
     }
 
     public partial class AppalachiaBase
@@ -244,6 +292,7 @@ namespace Appalachia.Core.Objects.Root
         protected internal static AppalachiaRepositoryDependencyTracker _dependencyTracker;
 
         private static AppalachiaRepository _appalachiaRepository;
+        private static IAvailabilitySet _when;
 
         #endregion
 
@@ -252,6 +301,15 @@ namespace Appalachia.Core.Objects.Root
         public static bool DependenciesAreReady => _dependencyTracker.DependenciesAreReady;
 
         protected static AppalachiaRepository AppalachiaRepository => _appalachiaRepository;
+
+        protected static IAvailabilitySet When
+        {
+            get
+            {
+                _when ??= RegisterInstanceCallbacks.For(typeof(T)).When;
+                return _when;
+            }
+        }
 
         protected static void RegisterDependency<TDependency>(
             SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
@@ -305,6 +363,7 @@ namespace Appalachia.Core.Objects.Root
         protected internal static AppalachiaRepositoryDependencyTracker _dependencyTracker;
 
         private static AppalachiaRepository _appalachiaRepository;
+        private static IAvailabilitySet _when;
 
         #endregion
 
@@ -313,6 +372,15 @@ namespace Appalachia.Core.Objects.Root
         public static bool DependenciesAreReady => _dependencyTracker.DependenciesAreReady;
 
         protected static AppalachiaRepository AppalachiaRepository => _appalachiaRepository;
+
+        protected static IAvailabilitySet When
+        {
+            get
+            {
+                _when ??= RegisterInstanceCallbacks.For(typeof(T)).When;
+                return _when;
+            }
+        }
 
         protected static void RegisterDependency<TDependency>(
             SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
@@ -366,6 +434,7 @@ namespace Appalachia.Core.Objects.Root
         protected internal static AppalachiaRepositoryDependencyTracker _dependencyTracker;
 
         private static AppalachiaRepository _appalachiaRepository;
+        private static IAvailabilitySet _when;
 
         #endregion
 
@@ -374,6 +443,15 @@ namespace Appalachia.Core.Objects.Root
         public static bool DependenciesAreReady => _dependencyTracker.DependenciesAreReady;
 
         protected static AppalachiaRepository AppalachiaRepository => _appalachiaRepository;
+
+        protected static IAvailabilitySet When
+        {
+            get
+            {
+                _when ??= RegisterInstanceCallbacks.For(typeof(T)).When;
+                return _when;
+            }
+        }
 
         protected static void RegisterDependency<TDependency>(
             SingletonAppalachiaBehaviour<TDependency>.InstanceAvailableHandler handler)

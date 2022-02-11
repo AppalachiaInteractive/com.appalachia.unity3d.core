@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Profiling;
 
@@ -22,6 +23,8 @@ namespace Appalachia.Core.Objects.Dependencies
         private readonly AppalachiaRepositoryDependencyTracker _tracking;
         private readonly List<AppalachiaRepositoryDependencyTracker> _dependencies;
 
+        [NonSerialized] private bool _dependenciesAreReady;
+
         #endregion
 
         public bool IsReady => DependenciesAreReady;
@@ -34,6 +37,11 @@ namespace Appalachia.Core.Objects.Dependencies
             {
                 using (_PRF_DependenciesAreReady.Auto())
                 {
+                    if (_dependenciesAreReady)
+                    {
+                        return true;
+                    }
+
                     foreach (var dependency in _dependencies)
                     {
                         if (!dependency.IsReady)
@@ -42,6 +50,7 @@ namespace Appalachia.Core.Objects.Dependencies
                         }
                     }
 
+                    _dependenciesAreReady = true;
                     return true;
                 }
             }

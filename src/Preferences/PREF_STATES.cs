@@ -22,7 +22,7 @@ namespace Appalachia.Core.Preferences
         public static readonly Dictionary<Type, object> _enums = new();
         public static readonly Dictionary<Type, object> _flags = new();
         public static readonly HashSet<string> _groupingsParts = new();
-        public static readonly HashSet<string> _keys = new();
+        public static readonly HashSet<string> Keys = new();
         public static readonly PREF_STATE<bool> _bools = new();
         public static readonly PREF_STATE<Bounds> _bounds = new();
         public static readonly PREF_STATE<Color> _colors = new();
@@ -51,7 +51,9 @@ namespace Appalachia.Core.Preferences
         public static bool _safeToAwaken;
         public static float characterSize = 7f;
         public static float indentSize = 25f;
-        public static List<string> _groupings = new(128);
+        public static HashSet<string> Groupings = new(128);
+        private static bool _hasProvidedSettings;
+        public static bool HasProvidedSettings => _hasProvidedSettings;
 
         private static bool _updateRegistered;
         private static Dictionary<Type, MethodInfo> _DoDrawLookup;
@@ -258,6 +260,17 @@ namespace Appalachia.Core.Preferences
             }
         }
 
+        private static List<Action> _preSettingsProviderActions;
+
+        public static List<Action> PreSettingsProviderActions
+        {
+            get
+            {
+                _preSettingsProviderActions ??= new();
+                return _preSettingsProviderActions;
+            }
+        }
+
 #if UNITY_EDITOR
         [UnityEditor.SettingsProviderGroup]
         public static UnityEditor.SettingsProvider[] GetSettingsProviders()
@@ -268,21 +281,26 @@ namespace Appalachia.Core.Preferences
 #if UNITY_EDITOR
             using (_PRF_GetSettingsProviders.Auto())
             {
+                foreach (var action in _preSettingsProviderActions)
+                {
+                    action?.Invoke();
+                }
+                
                 Awake();
 
                 var providers = new List<UnityEditor.SettingsProvider>();
-                _groupings = new List<string>();
+                Groupings = new HashSet<string>();
 
                 foreach (var pref in PREF_STATE_BASE.allPreferences)
                 {
                     var fullGrouping = ZString.Format("Preferences/{0}", pref.Grouping);
 
-                    if (_groupings.Contains(pref.Grouping))
+                    if (Groupings.Contains(pref.Grouping))
                     {
                         continue;
                     }
 
-                    _groupings.Add(pref.Grouping);
+                    Groupings.Add(pref.Grouping);
 
                     var provider =
                         new UnityEditor.SettingsProvider(fullGrouping, UnityEditor.SettingsScope.User)
@@ -293,6 +311,7 @@ namespace Appalachia.Core.Preferences
                     providers.Add(provider);
                 }
 
+                _hasProvidedSettings = true;
                 return providers.ToArray();
             }
 #endif

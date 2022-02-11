@@ -2,8 +2,6 @@ using System.Collections.Generic;
 
 namespace Appalachia.Core.Objects.Root
 {
-    /*[CallStaticConstructorInEditor]*/
-
     public partial class AppalachiaObject
     {
     }
@@ -51,7 +49,7 @@ namespace Appalachia.Core.Objects.Root
     {
         public delegate void InstanceAvailableHandler(T instance);
 
-        public static event InstanceAvailableHandler InstanceAvailable
+        internal static event InstanceAvailableHandler InstanceAvailable
         {
             add
             {
@@ -92,7 +90,7 @@ namespace Appalachia.Core.Objects.Root
     {
         public delegate void InstanceAvailableHandler(T instance);
 
-        public static event InstanceAvailableHandler InstanceAvailable
+        internal static event InstanceAvailableHandler InstanceAvailable
         {
             add
             {

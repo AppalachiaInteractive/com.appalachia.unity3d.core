@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Objects.Models;
 using UnityEngine;
 
 #endregion
@@ -14,7 +15,7 @@ namespace Appalachia.Core.Overrides.Implementations
         {
         }
 
-        public OverridableColor(bool overrideEnabled, Color value) : base(overrideEnabled, value)
+        public OverridableColor(bool overriding, Color value) : base(overriding, value)
         {
         }
 
