@@ -2,6 +2,7 @@ using Appalachia.Core.Events;
 using Appalachia.Core.Events.Contracts;
 using Appalachia.Core.Events.Extensions;
 using Unity.Profiling;
+using UnityEngine;
 
 namespace Appalachia.Core.Objects.Root
 {
@@ -9,7 +10,7 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        public AppaEvent.Data Changed;
+        [HideInInspector] public AppaEvent.Data Changed;
 
         #endregion
 
@@ -72,7 +73,7 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        public AppaEvent.Data Changed;
+        [HideInInspector] public AppaEvent.Data Changed;
 
         #endregion
 
@@ -130,7 +131,7 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        public AppaEvent.Data Changed;
+        [HideInInspector] public AppaEvent.Data Changed;
 
         #endregion
 
@@ -188,7 +189,7 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        public AppaEvent.Data Changed;
+        [HideInInspector] public AppaEvent.Data Changed;
 
         #endregion
 
@@ -246,7 +247,7 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        public AppaEvent.Data Changed;
+        [HideInInspector] public AppaEvent.Data Changed;
 
         #endregion
 

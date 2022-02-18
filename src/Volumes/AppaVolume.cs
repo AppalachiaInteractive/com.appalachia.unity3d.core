@@ -160,21 +160,23 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
         {
+            await base.WhenDisabled();
             using (_PRF_WhenDisabled.Auto())
             {
-                await base.WhenDisabled();
                 AppaVolumeManager.instance.Unregister(this, gameObject.layer);
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
+            await base.WhenEnabled();
+
             using (_PRF_WhenEnabled.Auto())
             {
-                await base.WhenEnabled();
-
                 m_PreviousLayer = gameObject.layer;
                 AppaVolumeManager.instance.Register(this, m_PreviousLayer);
 

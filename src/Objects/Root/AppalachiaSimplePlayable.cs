@@ -6,6 +6,7 @@ namespace Appalachia.Core.Objects.Root
 {
     public abstract partial class AppalachiaSimplePlayable : PlayableBehaviour
     {
+        /// <inheritdoc />
         public override void OnBehaviourPause(Playable playable, FrameData info)
         {
             using (_PRF_OnBehaviourPause.Auto())
@@ -21,6 +22,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         public override void OnBehaviourPlay(Playable playable, FrameData info)
         {
             using (_PRF_OnBehaviourPlay.Auto())
@@ -36,6 +38,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         public override void OnPlayableCreate(Playable playable)
         {
             using (_PRF_OnPlayableCreate.Auto())
@@ -45,6 +48,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         public override void OnPlayableDestroy(Playable playable)
         {
             using (_PRF_OnPlayableDestroy.Auto())

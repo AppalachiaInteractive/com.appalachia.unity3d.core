@@ -1119,6 +1119,7 @@ namespace Appalachia.Core.Collections
 
             #endregion
 
+            /// <inheritdoc />
             public override int Compare(T x, T y)
             {
                 return comparison(x, y);

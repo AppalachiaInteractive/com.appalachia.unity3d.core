@@ -11,8 +11,10 @@ namespace Appalachia.Core.Objects.Models
 
         #endregion
 
+        /// <inheritdoc />
         protected override bool _showAssetRefDisplayValue => instance == null;
 
+        /// <inheritdoc />
         protected override string GetReferenceName()
         {
             if (instance != null)

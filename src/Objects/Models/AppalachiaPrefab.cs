@@ -32,6 +32,7 @@ namespace Appalachia.Core.Objects.Models
 
         public GameObject prefab => _prefab;
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -39,13 +40,16 @@ namespace Appalachia.Core.Objects.Models
             await ExecutePrefabLookup();
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
-
-            if (AppalachiaApplication.IsPlaying)
+            using (_PRF_WhenEnabled.Auto())
             {
-                InstantiatePrefab();
+                if (AppalachiaApplication.IsPlaying)
+                {
+                    InstantiatePrefab();
+                }
             }
         }
 

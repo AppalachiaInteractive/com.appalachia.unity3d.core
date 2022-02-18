@@ -11,6 +11,7 @@ namespace Appalachia.Core.Volumes.Parameters
         {
         }
 
+        /// <inheritdoc />
         public sealed override void Interp(int from, int to, float t)
         {
             // Int snapping interpolation. Don't use this for enums as they don't necessarily have

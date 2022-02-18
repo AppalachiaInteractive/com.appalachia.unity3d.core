@@ -79,6 +79,7 @@ namespace Appalachia.Core.ArrayPooling
         /// <summary>Gets an ID for the pool to use with events.</summary>
         private int Id => GetHashCode();
 
+        /// <inheritdoc />
         public override T[] Rent(int minimumLength)
         {
             using (_PRF_DefaultArrayPool_Rent.Auto())
@@ -140,6 +141,7 @@ namespace Appalachia.Core.ArrayPooling
             }
         }
 
+        /// <inheritdoc />
         public override void Return(T[] array, bool clearArray = false)
         {
             using (_PRF_DefaultArrayPool_Return.Auto())

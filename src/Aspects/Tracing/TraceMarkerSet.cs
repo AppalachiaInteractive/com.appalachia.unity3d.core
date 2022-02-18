@@ -53,11 +53,13 @@ namespace Appalachia.Core.Aspects.Tracing
             }
         }
 
+        /// <inheritdoc />
         public override IDisposable Initiate(TraceMarker instance)
         {
             return instance.Auto();
         }
 
+        /// <inheritdoc />
         protected override TraceMarker Create(
             string typePrefix,
             string memberName,

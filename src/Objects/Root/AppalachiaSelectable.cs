@@ -47,6 +47,7 @@ namespace Appalachia.Core.Objects.Root
 
         #region Event Functions
 
+        /// <inheritdoc />
         protected override void OnCanvasGroupChanged()
         {
             using (_PRF_OnCanvasGroupChanged.Auto())
@@ -117,6 +118,7 @@ namespace Appalachia.Core.Objects.Root
             get => base.interactable;
         }
 
+        /// <inheritdoc />
         public override void OnDeselect(BaseEventData eventData)
         {
             using (_PRF_OnDeselect.Auto())
@@ -129,6 +131,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         public override void OnPointerDown(PointerEventData eventData)
         {
             using (_PRF_OnPointerDown.Auto())
@@ -141,6 +144,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         public override void OnPointerEnter(PointerEventData eventData)
         {
             using (_PRF_OnPointerEnter.Auto())
@@ -153,6 +157,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         public override void OnPointerExit(PointerEventData eventData)
         {
             using (_PRF_OnPointerExit.Auto())
@@ -165,6 +170,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         public override void OnPointerUp(PointerEventData eventData)
         {
             using (_PRF_OnPointerUp.Auto())
@@ -177,6 +183,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         public override void OnSelect(BaseEventData eventData)
         {
             using (_PRF_OnSelect.Auto())

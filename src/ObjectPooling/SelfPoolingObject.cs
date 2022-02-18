@@ -54,6 +54,7 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
+        /// <inheritdoc />
         public override void Return()
         {
             using (_PRF_Return.Auto())

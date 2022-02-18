@@ -327,6 +327,7 @@ namespace Appalachia.Core.Volumes
             m_Value = x;
         }
 
+        /// <inheritdoc />
         internal override void Interp(AppaVolumeParameter from, AppaVolumeParameter to, float t)
         {
             // Note: this is relatively unsafe (assumes that from and to are both holding type T)
@@ -1806,6 +1807,7 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+        /// <inheritdoc />
         internal override void Interp(AppaVolumeParameter from, AppaVolumeParameter to, float t)
         {
             if (m_Value == null)

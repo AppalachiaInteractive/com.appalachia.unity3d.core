@@ -5,41 +5,11 @@ using System.Linq;
 using System.Reflection;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Async;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Core.Volumes
 {
-    /// <summary>
-    ///     This attribute allows you to add commands to the <strong>Add Override</strong> popup menu
-    ///     on AppaVolumes.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
-    public class AppaVolumeComponentMenu : Attribute
-    {
-        // TODO: Add support for component icons
-
-        /// <summary>
-        ///     Creates a new <seealso cref="AppaVolumeComponentMenu" /> instance.
-        /// </summary>
-        /// <param name="menu">
-        ///     The name of the entry in the override list. You can use slashes to
-        ///     create sub-menus.
-        /// </param>
-        public AppaVolumeComponentMenu(string menu)
-        {
-            this.menu = menu;
-        }
-
-        #region Fields and Autoproperties
-
-        /// <summary>
-        ///     The name of the entry in the override list. You can use slashes to create sub-menus.
-        /// </summary>
-        public readonly string menu;
-
-        #endregion
-    }
-
     /// <summary>
     ///     The base class for all the components that can be part of a <see cref="AppaVolumeProfile" />.
     ///     The AppaVolume framework automatically handles and interpolates any <see cref="AppaVolumeParameter" /> members found in this class.
@@ -259,20 +229,21 @@ namespace Appalachia.Core.Volumes
         {
             await base.WhenDisabled();
 
-            if (parameters == null)
+            using (_PRF_WhenDisabled.Auto())
             {
-                return;
-            }
-
-            foreach (var parameter in parameters)
-            {
-                if (parameter != null)
+                if (parameters == null)
                 {
-                    parameter.OnDisable();
+                    return;
+                }
+
+                foreach (var parameter in parameters)
+                {
+                    if (parameter != null)
+                    {
+                        parameter.OnDisable();
+                    }
                 }
             }
-
-            await AppaTask.CompletedTask;
         }
 
         /// <summary>
@@ -285,28 +256,29 @@ namespace Appalachia.Core.Volumes
         {
             await base.WhenEnabled();
 
-            // Automatically grab all fields of type AppaVolumeParameter for this instance
-            var fields = new List<AppaVolumeParameter>();
-            FindParameters(this, fields);
-            parameters = fields.AsReadOnly();
-
-            foreach (var parameter in parameters)
+            using (_PRF_WhenEnabled.Auto())
             {
-                if (parameter != null)
+                // Automatically grab all fields of type AppaVolumeParameter for this instance
+                var fields = new List<AppaVolumeParameter>();
+                FindParameters(this, fields);
+                parameters = fields.AsReadOnly();
+
+                foreach (var parameter in parameters)
                 {
-                    parameter.OnEnable();
-                }
-                else
-                {
-                    Debug.LogWarning(
-                        "AppaVolume Component " +
-                        GetType().Name +
-                        " contains a null parameter; please make sure all parameters are initialized to a default value. Until this is fixed the null parameters will not be considered by the system."
-                    );
+                    if (parameter != null)
+                    {
+                        parameter.OnEnable();
+                    }
+                    else
+                    {
+                        Debug.LogWarning(
+                            "AppaVolume Component " +
+                            GetType().Name +
+                            " contains a null parameter; please make sure all parameters are initialized to a default value. Until this is fixed the null parameters will not be considered by the system."
+                        );
+                    }
                 }
             }
-
-            await AppaTask.CompletedTask;
         }
 
         #region Nested type: Indent
@@ -331,6 +303,18 @@ namespace Appalachia.Core.Volumes
 
             #endregion
         }
+
+        #endregion
+
+        #region Profiling
+
+        private const string _PRF_PFX = nameof(AppaVolumeComponent) + ".";
+
+        private static readonly ProfilerMarker _PRF_WhenDisabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenDisabled));
+
+        private static readonly ProfilerMarker _PRF_WhenEnabled =
+            new ProfilerMarker(_PRF_PFX + nameof(WhenEnabled));
 
         #endregion
     }

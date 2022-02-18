@@ -1870,6 +1870,8 @@ namespace Appalachia.Core.Collections
             }
 
             [DebuggerStepThrough]
+
+            /// <inheritdoc />
             public override bool Equals(object obj)
             {
                 if (ReferenceEquals(null, obj))
@@ -1891,6 +1893,8 @@ namespace Appalachia.Core.Collections
             }
 
             [DebuggerStepThrough]
+
+            /// <inheritdoc />
             public override int GetHashCode()
             {
                 unchecked

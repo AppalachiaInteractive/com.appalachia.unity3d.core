@@ -39,12 +39,14 @@ namespace Appalachia.Core.Objects.Layers
             return Id == other.Id;
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object obj)
         {
             return obj is LayerInfo other && Equals(other);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

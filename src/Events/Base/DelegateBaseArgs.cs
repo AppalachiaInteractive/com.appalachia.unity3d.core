@@ -13,6 +13,7 @@ namespace Appalachia.Core.Events.Base
         {
         }
 
+        /// <inheritdoc />
         public override void Initialize()
         {
             using (_PRF_Initialize.Auto())
@@ -21,6 +22,7 @@ namespace Appalachia.Core.Events.Base
             }
         }
 
+        /// <inheritdoc />
         public override void Reset()
         {
             using (_PRF_Reset.Auto())

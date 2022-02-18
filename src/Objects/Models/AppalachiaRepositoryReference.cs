@@ -13,6 +13,7 @@ namespace Appalachia.Core.Objects.Models
         {
             _assetReference = new AssetReference(addressableGuid);
             _typeName = type.Name;
+            _typeNamespace = type.Namespace;
             _typeFullName = type.FullName;
             _assemblyName = type.Assembly.FullName;
         }
@@ -31,14 +32,18 @@ namespace Appalachia.Core.Objects.Models
         [SerializeField, HideInInspector]
         private string _typeName;
 
-        private Type _referenceType;
+        [SerializeField, HideInInspector]
+        private string _typeNamespace;
+
+        [NonSerialized] private Type _referenceType;
 
         #endregion
 
-        public AssetReference assetReference => _assetReference;
-        public string assemblyName => _assemblyName;
+        public AssetReference AssetReference => _assetReference;
+        public string AssemblyName => _assemblyName;
         public string TypeFullName => _typeFullName;
         public string TypeName => _typeName;
+        public string TypeNamespace => _typeNamespace;
 
         public Type GetReferenceType()
         {
@@ -46,7 +51,14 @@ namespace Appalachia.Core.Objects.Models
             {
                 if (_referenceType == null)
                 {
-                    _referenceType = ReflectionExtensions.GetByName(TypeFullName);
+                    if (_typeNamespace == null)
+                    {
+                        var splitAt = TypeFullName.LastIndexOf('.');
+
+                        _typeNamespace = TypeFullName.Substring(0, splitAt);
+                    }
+
+                    _referenceType = ReflectionExtensions.GetByName(TypeNamespace, TypeName);
                 }
 
                 return _referenceType;

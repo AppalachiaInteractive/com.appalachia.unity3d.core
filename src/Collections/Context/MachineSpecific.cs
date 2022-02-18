@@ -8,6 +8,7 @@ namespace Appalachia.Core.Collections.Context
         where TList : AppaList<T>, new()
         where T : ScriptableObject
     {
+        /// <inheritdoc />
         public override string GetContextKey()
         {
             var machineName = Environment.MachineName;

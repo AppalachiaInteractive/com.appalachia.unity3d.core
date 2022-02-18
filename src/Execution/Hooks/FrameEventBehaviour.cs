@@ -117,6 +117,7 @@ namespace Appalachia.Core.Execution.Hooks
 
         protected abstract string GetReadableName();
 
+        /// <inheritdoc />
         protected override void AwakeActual()
         {
             using (_PRF_Awake.Auto())
@@ -134,6 +135,7 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
+        /// <inheritdoc />
         protected override void OnEnableActual()
         {
             using (_PRF_OnEnable.Auto())
@@ -151,6 +153,7 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
+        /// <inheritdoc />
         protected override void StartActual()
         {
             using (_PRF_Start.Auto())
@@ -168,6 +171,7 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDestroyed()
         {
             await base.WhenDestroyed();
@@ -185,18 +189,22 @@ namespace Appalachia.Core.Execution.Hooks
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
         {
             await base.WhenDisabled();
 
-#if UNITY_EDITOR
-            if (FrameEventSettings._ENABLE_DISABLE.v)
+            using (_PRF_WhenDisabled.Auto())
             {
-                Context.Log.Info(ZString.Format("[{0}]: [OnDisable]", GetReadableName()));
-            }
+#if UNITY_EDITOR
+                if (FrameEventSettings._ENABLE_DISABLE.v)
+                {
+                    Context.Log.Info(ZString.Format("[{0}]: [OnDisable]", GetReadableName()));
+                }
 #endif
 
-            EventDelegates.InvokeOnDisable();
+                EventDelegates.InvokeOnDisable();
+            }
         }
 
         #region Profiling

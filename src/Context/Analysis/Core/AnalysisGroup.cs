@@ -8,7 +8,6 @@ using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Context.Analysis.Core
 {
-    [Serializable]
     public abstract class AnalysisGroup<TA, TT, TE>
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum

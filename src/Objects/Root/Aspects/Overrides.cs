@@ -41,26 +41,10 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBase<T>
     {
-        #region Nested type: Override
+        #region Nested type: Optional
 
         [Serializable]
-        public sealed class Override : Overridable<T, Override>
-        {
-            public Override() : base(false, default)
-            {
-            }
-
-            public Override(bool overriding, T value) : base(overriding, value)
-            {
-            }
-
-            public Override(Overridable<T, Override> value) : base(value)
-            {
-            }
-        }
-
-        [Serializable]
-        public sealed class Optional : Overridable<T, Optional>
+        public sealed class Optional : Overridable<Optional>
         {
             public Optional() : base(false, default)
             {
@@ -70,15 +54,61 @@ namespace Appalachia.Core.Objects.Root
             {
             }
 
-            public Optional(Overridable<T, Optional> value) : base(value)
+            public Optional(Optional value) : base(value)
             {
             }
 
             public bool IsElected => Overriding;
 
+            /// <inheritdoc />
             protected override string DisabledColorPrefName => "Optional Disabled Color";
+
+            /// <inheritdoc />
             protected override string EnabledColorPrefName => "Optional Enabled Color";
+
+            /// <inheritdoc />
             protected override string ToggleLabel => "Optional";
+        }
+
+        #endregion
+
+        #region Nested type: Overridable
+
+        [Serializable]
+        public abstract class Overridable<TO> : Overridable<T, TO>
+            where TO : Overridable<TO>, new()
+        {
+            protected Overridable() : base(false, default)
+            {
+            }
+
+            protected Overridable(bool overriding, T value) : base(overriding, value)
+            {
+            }
+
+            protected Overridable(TO value) : base(value)
+            {
+            }
+        }
+
+        #endregion
+
+        #region Nested type: Override
+
+        [Serializable]
+        public sealed class Override : Overridable<Override>
+        {
+            public Override() : base(false, default)
+            {
+            }
+
+            public Override(bool overriding, T value) : base(overriding, value)
+            {
+            }
+
+            public Override(Override value) : base(value)
+            {
+            }
         }
 
         #endregion

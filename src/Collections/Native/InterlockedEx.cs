@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using Unity.Mathematics;
+using UnityEngine;
 
 #endregion
 
@@ -63,7 +64,7 @@ namespace Appalachia.Core.Collections.Native
                         currentValue
                     );
 
-                    if (Math.Abs(newCurrentValue - currentValue) < float.Epsilon)
+                    if (Mathf.Abs(newCurrentValue - currentValue) < float.Epsilon)
                     {
                         location1[i] = newValue;
                         break;

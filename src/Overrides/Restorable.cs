@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Strings;
 using Unity.Profiling;
@@ -10,6 +11,7 @@ using Object = UnityEngine.Object;
 
 namespace Appalachia.Core.Overrides
 {
+    [NonSerializable]
     public abstract class Restorable : AppalachiaBase, IDisposable
     {
         protected Restorable(Object owner) : base(owner)
@@ -77,10 +79,12 @@ namespace Appalachia.Core.Overrides
         private Action<T> _assignment;
         private T _initial;
 
+        /// <inheritdoc />
         public override string Name { get; }
 
         #endregion
 
+        /// <inheritdoc />
         public override void Dispose()
         {
             using (_PRF_Dispose.Auto())

@@ -31,6 +31,7 @@ namespace Appalachia.Core.Overrides
 
         #endregion
 
+        /// <inheritdoc />
         public override void ProcessChildMemberAttributes(
             InspectorProperty parentProperty,
             MemberInfo member,
@@ -76,6 +77,7 @@ namespace Appalachia.Core.Overrides
             }
         }
 
+        /// <inheritdoc />
         public override void ProcessSelfAttributes(InspectorProperty property, List<Attribute> attributes)
         {
             using (_PRF_ProcessSelfAttributes.Auto())

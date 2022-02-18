@@ -2,8 +2,8 @@ namespace Appalachia.Core.Objects.Root.Contracts
 {
     public interface IOwned
     {
-        UnityEngine.Object Owner { get; }
+        public UnityEngine.Object Owner { get; }
 
-        void SetOwner(UnityEngine.Object owner);
+        public void SetOwner(UnityEngine.Object owner);
     }
 }

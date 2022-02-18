@@ -12,13 +12,10 @@ namespace Appalachia.Core.Objects.Sets
         void EnableSet();
     }
 
-    public interface IComponentSet<TSet, TSetMetadata> : IComponentSet
-        where TSet : IComponentSet<TSet, TSetMetadata>, new()
-        where TSetMetadata : IComponentSetMetadata<TSet, TSetMetadata>
+    public interface IComponentSet<TSet, TSetData> : IComponentSet
+        where TSet : IComponentSet<TSet, TSetData>, new()
+        where TSetData : IComponentSetData<TSet, TSetData>
     {
-        void GetOrAddComponents(
-            GameObject parent,
-            string name,
-            TSetMetadata data);
+        void GetOrAddComponents(TSetData data, GameObject parent, string name);
     }
 }

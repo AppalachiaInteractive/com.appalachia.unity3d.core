@@ -33,6 +33,7 @@ namespace Appalachia.Core.Volumes.Parameters
 
         #endregion
 
+        /// <inheritdoc />
         public override void Interp(Color from, Color to, float t)
         {
             // Lerping color values is a sensitive subject... We looked into lerping colors using

@@ -5,8 +5,10 @@ namespace Appalachia.Core.Objects.Models
 {
     public sealed partial class AppalachiaRepositoryPrefabReference
     {
+        /// <inheritdoc />
         protected override bool _showAssetRefDisplayValue => prefab == null;
 
+        /// <inheritdoc />
         protected override string GetReferenceName()
         {
             using (_PRF_GetReferenceName.Auto())

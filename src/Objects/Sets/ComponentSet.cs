@@ -13,10 +13,10 @@ namespace Appalachia.Core.Objects.Sets
 {
     [Serializable]
     [FoldoutGroup("Components", false)]
-    public abstract partial class ComponentSet<TSet, TSetMetadata> : AppalachiaSimpleBase,
-                                                                     IComponentSet<TSet, TSetMetadata>
-        where TSet : ComponentSet<TSet, TSetMetadata>, new()
-        where TSetMetadata : ComponentSetData<TSet, TSetMetadata>
+    public abstract partial class ComponentSet<TSet, TSetData> : AppalachiaSimpleBase,
+                                                                 IComponentSet<TSet, TSetData>
+        where TSet : ComponentSet<TSet, TSetData>, new()
+        where TSetData : ComponentSetData<TSet, TSetData>
     {
         #region Constants and Static Readonly
 
@@ -38,6 +38,8 @@ namespace Appalachia.Core.Objects.Sets
 
         public abstract ComponentSetSorting DesiredComponentOrder { get; }
 
+        protected abstract bool IsUI { get; }
+
         protected Initializer initializer
         {
             get
@@ -51,63 +53,18 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        public static void UpdateComponentSet(
-            ref TSet target,
-            ref ComponentSetData<TSet, TSetMetadata>.Override data,
-            GameObject parent,
+        internal static void GetOrAddComponents(
+            ref TSet set,
+            TSetData data,
+            GameObject setParent,
             string setName)
         {
-            ComponentSetAPI<TSet, TSetMetadata>.UpdateComponentSet(ref target, ref data, parent, setName);
-        }
+            using (_PRF_GetOrAddComponents.Auto())
+            {
+                set ??= new TSet();
 
-        public static void UpdateComponentSet(
-            ref TSet target,
-            ref ComponentSetData<TSet, TSetMetadata>.Optional data,
-            GameObject parent,
-            string setName)
-        {
-            ComponentSetAPI<TSet, TSetMetadata>.UpdateComponentSet(ref target, ref data, parent, setName);
-        }
-
-        public static void UpdateComponentSet(
-            ref TSet target,
-            ref TSetMetadata data,
-            GameObject parent,
-            string setName)
-        {
-            ComponentSetAPI<TSet, TSetMetadata>.UpdateComponentSet(ref target, ref data, parent, setName);
-        }
-
-        public static void UpdateComponentSet(
-            ref ComponentSetData<TSet, TSetMetadata>.Override data,
-            ref TSet target,
-            GameObject parent,
-            string setName)
-        {
-            ComponentSetAPI<TSet, TSetMetadata>.UpdateComponentSet(ref target, ref data, parent, setName);
-        }
-
-        public static void UpdateComponentSet(
-            ref ComponentSetData<TSet, TSetMetadata>.Optional data,
-            ref TSet target,
-            GameObject parent,
-            string setName)
-        {
-            ComponentSetAPI<TSet, TSetMetadata>.UpdateComponentSet(ref target, ref data, parent, setName);
-        }
-
-        public static void UpdateComponentSet(
-            ref TSetMetadata data,
-            ref TSet target,
-            GameObject parent,
-            string setName)
-        {
-            ComponentSetAPI<TSet, TSetMetadata>.UpdateComponentSet(ref target, ref data, parent, setName);
-        }
-
-        internal static void GetOrAddComponents(TSetMetadata data, TSet set, GameObject parent, string name)
-        {
-            set.GetOrAddComponents(ref data, parent, name);
+                set.GetOrAddComponents(data, setParent, setName);
+            }
         }
 
         protected virtual string GetGameObjectNameFormat()
@@ -122,24 +79,28 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        protected virtual void GetOrAddComponents(ref TSetMetadata data, GameObject parent, string name)
+        /// <summary>
+        ///     Creates the set underneath the <paramref name="setParent" />, using the provided <paramref name="setName" />, and adds the required components.
+        /// </summary>
+        /// <param name="data">The component set data.</param>
+        /// <param name="setParent">The parent of the set.</param>
+        /// <param name="setName">The name of the set.</param>
+        protected virtual void GetOrAddComponents(TSetData data, GameObject setParent, string setName)
         {
             using (_PRF_GetOrAddComponents.Auto())
             {
-                var nameFormatString = /*prefixOverride.IsNullOrWhiteSpace()
-                    ? */GetGameObjectNameFormat()
-                    /*: prefixOverride*/;
+                var nameFormatString = GetGameObjectNameFormat();
 
-                var targetName = ZString.Format(nameFormatString, name);
+                var setObjectName = ZString.Format(nameFormatString, setName);
 
                 if (gameObject == null)
                 {
-                    parent.GetOrAddChild(ref gameObject, targetName, true);
+                    setParent.GetOrAddChild(ref gameObject, setObjectName, IsUI);
                 }
 
-                gameObject.name = targetName;
+                gameObject.name = setObjectName;
 
-                var siblingCount = parent.transform.childCount - 1;
+                var siblingCount = setParent.transform.childCount - 1;
 
                 if (siblingCount == 0)
                 {
@@ -166,7 +127,18 @@ namespace Appalachia.Core.Objects.Sets
             );
         }
 
-        #region IComponentSet<TSet,TSetMetadata> Members
+        #region IComponentSet<TSet,TSetData> Members
+
+        void IComponentSet<TSet, TSetData>.GetOrAddComponents(
+            TSetData data,
+            GameObject setParent,
+            string setName)
+        {
+            using (_PRF_GetOrAddComponents.Auto())
+            {
+                GetOrAddComponents(data, setParent, setName);
+            }
+        }
 
         public virtual void DestroySet()
         {
@@ -205,36 +177,9 @@ namespace Appalachia.Core.Objects.Sets
 
         public GameObject GameObject => gameObject;
 
-        void IComponentSet<TSet, TSetMetadata>.GetOrAddComponents(
-            GameObject parent,
-            string name,
-            TSetMetadata data)
-        {
-            GetOrAddComponents(ref data, parent, name);
-        }
-
         #endregion
 
-        #region Profiling
-
-        protected static readonly string _PRF_PFX = typeof(TSet).Name + ".";
-
-        protected static readonly ProfilerMarker _PRF_Destroy =
-            new ProfilerMarker(_PRF_PFX + nameof(DestroySet));
-
-        protected static readonly ProfilerMarker _PRF_Disable =
-            new ProfilerMarker(_PRF_PFX + nameof(DisableSet));
-
-        protected static readonly ProfilerMarker _PRF_Enable =
-            new ProfilerMarker(_PRF_PFX + nameof(EnableSet));
-
-        private static readonly ProfilerMarker _PRF_GetGameObjectNameFormat =
-            new ProfilerMarker(_PRF_PFX + nameof(GetGameObjectNameFormat));
-
-        protected static readonly ProfilerMarker _PRF_GetOrAddComponents =
-            new ProfilerMarker(_PRF_PFX + nameof(GetOrAddComponents));
-
-        #endregion
+        #region Nested type: List
 
         [Serializable]
         public sealed class List : AppaList<TSet>
@@ -259,5 +204,28 @@ namespace Appalachia.Core.Objects.Sets
             {
             }
         }
+
+        #endregion
+
+        #region Profiling
+
+        protected static readonly string _PRF_PFX = typeof(TSet).Name + ".";
+
+        protected static readonly ProfilerMarker _PRF_Destroy =
+            new ProfilerMarker(_PRF_PFX + nameof(DestroySet));
+
+        protected static readonly ProfilerMarker _PRF_Disable =
+            new ProfilerMarker(_PRF_PFX + nameof(DisableSet));
+
+        protected static readonly ProfilerMarker _PRF_Enable =
+            new ProfilerMarker(_PRF_PFX + nameof(EnableSet));
+
+        private static readonly ProfilerMarker _PRF_GetGameObjectNameFormat =
+            new ProfilerMarker(_PRF_PFX + nameof(GetGameObjectNameFormat));
+
+        protected static readonly ProfilerMarker _PRF_GetOrAddComponents =
+            new ProfilerMarker(_PRF_PFX + nameof(GetOrAddComponents));
+
+        #endregion
     }
 }

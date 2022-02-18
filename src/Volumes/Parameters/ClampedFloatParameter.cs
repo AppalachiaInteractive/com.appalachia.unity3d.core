@@ -24,6 +24,7 @@ namespace Appalachia.Core.Volumes.Parameters
 
         #endregion
 
+        /// <inheritdoc />
         public override float value
         {
             get => m_Value;

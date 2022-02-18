@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Objects.Dependencies;
+using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Core.Objects.Routing;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Constants;
@@ -39,7 +40,7 @@ namespace Appalachia.Core.Objects.Root
         Enabled = 1 << 1,
     }
 
-    public partial class AppalachiaObject
+    public partial class AppalachiaObject : IEventDriven
     {
         #region Static Fields and Autoproperties
 
@@ -83,17 +84,6 @@ namespace Appalachia.Core.Objects.Root
         }
 
         protected virtual bool LogEventFunctions => false;
-        public bool HasBeenDisabled => _hasBeenDisabled;
-        public bool HasBeenEnabled => _hasBeenEnabled;
-
-        public bool HasBeenInitialized => _hasBeenInitialized;
-
-        public int AwakeDuration => CoreClock.Instance.FrameCount - _awakeFrame;
-        public int AwakeFrame => _awakeFrame;
-        public int DisabledDuration => CoreClock.Instance.FrameCount - _onDisableFrame;
-        public int EnabledDuration => CoreClock.Instance.FrameCount - _onEnableFrame;
-        public int OnDisableFrame => _onDisableFrame;
-        public int OnEnableFrame => _onEnableFrame;
 
         #region Event Functions
 
@@ -498,6 +488,22 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        #region IEventDriven Members
+
+        public bool HasBeenDisabled => _hasBeenDisabled;
+        public bool HasBeenEnabled => _hasBeenEnabled;
+
+        public bool HasBeenInitialized => _hasBeenInitialized;
+
+        public int AwakeDuration => CoreClock.Instance.FrameCount - _awakeFrame;
+        public int AwakeFrame => _awakeFrame;
+        public int DisabledDuration => CoreClock.Instance.FrameCount - _onDisableFrame;
+        public int EnabledDuration => CoreClock.Instance.FrameCount - _onEnableFrame;
+        public int OnDisableFrame => _onDisableFrame;
+        public int OnEnableFrame => _onEnableFrame;
+
+        #endregion
+
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_LogRemapException =
@@ -530,7 +536,33 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class AppalachiaBehaviour
+    /// <summary>
+    ///     The base class from which every Appalachia <see cref="Behaviour" /> derives.
+    /// </summary>
+    /// <remarks>
+    ///     The <see cref="AppalachiaBehaviour{T}" /> provides a feature-rich
+    ///     base class to jump-start a "do-er" class.
+    ///     <list type="bullet">
+    ///         <item>It supports asynchronous initialization via the <see cref="Initialize" /> method.</item>
+    ///         <item>It offers instance-based availability subscription via its <see cref="When" /> property.</item>
+    ///         <item>Logging is available via its <see cref="Context" />.</item>
+    ///         <item>
+    ///             It offers the following events:
+    ///             <list type="bullet">
+    ///                 <item>
+    ///                     <see cref="WhenEnabled" />
+    ///                 </item>
+    ///                 <item>
+    ///                     <see cref="WhenDisabled" />
+    ///                 </item>
+    ///                 <item>
+    ///                     <see cref="WhenDestroyed" />
+    ///                 </item>
+    ///             </list>
+    ///         </item>
+    ///     </list>
+    /// </remarks>
+    public partial class AppalachiaBehaviour : IEventDriven
     {
         #region Static Fields and Autoproperties
 
@@ -562,6 +594,9 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
+        /// <summary>
+        ///     A cached formatted string for logging the word "[DELETED]" to the console.
+        /// </summary>
         protected static string DELETED
         {
             get
@@ -575,29 +610,43 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
-        protected virtual bool ReInitializeOnEnable => false;
+        /// <summary>
+        ///     Does this <see cref="Behaviour" /> require a subscriber to its <see cref="NotifyWhenEnabled" /> publishing?
+        ///     If so, the notifications will be stored until a subscriber becomes available.
+        /// </summary>
         protected virtual bool GuaranteedEventRouting => false;
 
+        /// <summary>
+        ///     Should this <see cref="Behaviour" /> log whenever event functions are called?
+        /// </summary>
         protected virtual bool LogEventFunctions => false;
 
+        /// <summary>
+        ///     Should this <see cref="Behaviour" /> call <see cref="Initialize" /> every time it is enabled?
+        /// </summary>
+        protected virtual bool ReInitializeOnEnable => false;
+
+        /// <summary>
+        ///     Should this <see cref="Behaviour" /> skip this frame's Update call?
+        /// </summary>
         protected virtual bool ShouldSkipUpdate =>
             !FullyInitialized || !HasBeenEnabled || AppalachiaApplication.IsCompiling;
-        public bool HasBeenDisabled => _hasBeenDisabled;
-        public bool HasBeenEnabled => _hasBeenEnabled;
 
-        public bool HasBeenInitialized => _hasBeenInitialized;
-
-        public int AwakeDuration => enabled ? CoreClock.Instance.FrameCount - _awakeFrame : 0;
-        public int AwakeFrame => _awakeFrame;
-        public int DisabledDuration => enabled ? 0 : CoreClock.Instance.FrameCount - _onDisableFrame;
-        public int EnabledDuration => enabled ? CoreClock.Instance.FrameCount - _onEnableFrame : 0;
-        public int OnDisableFrame => _onDisableFrame;
-        public int OnEnableFrame => _onEnableFrame;
+        /// <summary>
+        ///     The number of frames since this <see cref="Behaviour" /> received its call to <see cref="Start" />.
+        /// </summary>
         public int StartedDuration => enabled ? CoreClock.Instance.FrameCount - _startFrame : 0;
+
+        /// <summary>
+        ///     The frame on which this <see cref="Behaviour" /> received its call to <see cref="Start" />.
+        /// </summary>
         public int StartFrame => _startFrame;
 
         #region Event Functions
 
+        /// <summary>
+        ///     Maps the Unity <see cref="Awake" /> method to the Appalachia <see cref="Initialize" /> method.
+        /// </summary>
         protected void Awake()
         {
             using (_PRF_Awake.Auto())
@@ -620,6 +669,9 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <summary>
+        ///     Handles the Unity <see cref="OnDestroy" /> method but does not forward it.
+        /// </summary>
         protected void Reset()
         {
             using (_PRF_Reset.Auto())
@@ -648,6 +700,9 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <summary>
+        ///     Maps the Unity <see cref="Start" /> method to the Appalachia <see cref="WhenEnabled" /> method.
+        /// </summary>
         protected void Start()
         {
             using (_PRF_Start.Auto())
@@ -670,6 +725,9 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <summary>
+        ///     Maps the Unity <see cref="OnEnable" /> method to the Appalachia <see cref="WhenEnabled" /> method.
+        /// </summary>
         protected void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
@@ -705,6 +763,9 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <summary>
+        ///     Maps the Unity <see cref="OnDisable" /> method to the Appalachia <see cref="WhenDisabled" /> method.
+        /// </summary>
         protected void OnDisable()
         {
             using (_PRF_OnDisable.Auto())
@@ -729,6 +790,9 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <summary>
+        ///     Maps the Unity <see cref="OnDestroy" /> method to the Appalachia <see cref="WhenDestroyed" /> method.
+        /// </summary>
         protected void OnDestroy()
         {
             using (_PRF_OnDestroy.Auto())
@@ -753,40 +817,101 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
+        /// <summary>
+        ///     Notify the <see cref="ObjectEnableEventRouter" /> that this <see cref="Behaviour" />
+        ///     has been enabled, so that any subscriber can be notified in turn.
+        /// </summary>
+        protected abstract void NotifyWhenEnabled();
+
+        /// <summary>
+        ///     The <see cref="MonoBehaviour" /> Start method is invoked via Unity.
+        /// </summary>
+        /// <remarks>Should not be used unless absolutely necessary.</remarks>
         protected virtual void AwakeActual()
         {
         }
 
+        /// <summary>
+        ///     The <see cref="MonoBehaviour" /> OnDestroy method is invoked via Unity.
+        /// </summary>
+        /// <remarks>Should not be used unless absolutely necessary.</remarks>
         protected virtual void OnDestroyActual()
         {
         }
 
+        /// <summary>
+        ///     The <see cref="MonoBehaviour" /> OnDisable method is invoked via Unity.
+        /// </summary>
+        /// <remarks>Should not be used unless absolutely necessary.</remarks>
         protected virtual void OnDisableActual()
         {
         }
 
+        /// <summary>
+        ///     The <see cref="MonoBehaviour" /> OnEnable method is invoked via Unity.
+        /// </summary>
+        /// <remarks>Should not be used unless absolutely necessary.</remarks>
         protected virtual void OnEnableActual()
         {
         }
 
+        /// <summary>
+        ///     The <see cref="MonoBehaviour" /> Reset method is invoked via Unity.
+        /// </summary>
+        /// <remarks>Should not be used unless absolutely necessary.</remarks>
         protected virtual void ResetActual()
         {
         }
 
+        /// <summary>
+        ///     The <see cref="MonoBehaviour" /> Start method is invoked via Unity.
+        /// </summary>
+        /// <remarks>Should not be used unless absolutely necessary.</remarks>
         protected virtual void StartActual()
         {
         }
 
+        /// <summary>
+        ///     Runs:
+        ///     <list type="bullet">
+        ///         <item>When the <see cref="Behaviour" /> is destroyed.</item>
+        ///         <item>When the <see cref="GameObject" />  the <see cref="Behaviour" />  belongs to is destroyed.</item>
+        ///         /// <item>When the application is quitting.</item>
+        ///     </list>
+        /// </summary>
         protected virtual async AppaTask WhenDestroyed()
         {
             await AppaTask.CompletedTask;
         }
 
+        /// <summary>
+        ///     Runs:
+        ///     <list type="bullet">
+        ///         <item>Every time the <see cref="Behaviour" /> moves from enabled to disabled.</item>
+        ///         <item>In the editor, just before the application is reloaded after a build..</item>
+        ///     </list>
+        ///     In the editor, "disabled" means that the checkbox
+        ///     in the inspector window being false.  At runtime, it means that the
+        ///     <see cref="Behaviour.enabled" /> value is false.
+        /// </summary>
         protected virtual async AppaTask WhenDisabled()
         {
             await AppaTask.CompletedTask;
         }
 
+        /// <summary>
+        ///     Runs:
+        ///     <list type="bullet">
+        ///         <item>
+        ///             Once after the <see cref="Behaviour" /> is initialized on application load.  This call is guaranteed to be after completion of the
+        ///             <see cref="Initialize" /> call.
+        ///         </item>
+        ///         <item>Every time the <see cref="Behaviour" /> moves from disabled to enabled.</item>
+        ///     </list>
+        ///     In the editor, "enabled" means that the checkbox
+        ///     in the inspector window being true.  At runtime, it means that the
+        ///     <see cref="Behaviour.enabled" /> value is true.
+        /// </summary>
         protected virtual async AppaTask WhenEnabled()
         {
             await AppaTask.CompletedTask;
@@ -1139,9 +1264,48 @@ namespace Appalachia.Core.Objects.Root
                 _hasBeenEnabled = true;
                 _hasBeenDisabled = false;
 
-                ObjectEnableEventRouter.Notify(GetType(), this, GuaranteedEventRouting);
+                NotifyWhenEnabled();
             }
         }
+
+        #region IEventDriven Members
+
+        /// <summary>
+        ///     Is this <see cref="Behaviour" /> disabled?
+        /// </summary>
+        public bool HasBeenDisabled => _hasBeenDisabled;
+
+        /// <summary>
+        ///     Is this <see cref="Behaviour" /> enabled?
+        /// </summary>
+        public bool HasBeenEnabled => _hasBeenEnabled;
+
+        /// <summary>
+        ///     Is this <see cref="Behaviour" /> initialized?
+        /// </summary>
+        public bool HasBeenInitialized => _hasBeenInitialized;
+
+        public int AwakeDuration => enabled ? CoreClock.Instance.FrameCount - _awakeFrame : 0;
+
+        /// <summary>
+        ///     The frame on which this <see cref="Behaviour" /> received its call to <see cref="Start" />.
+        /// </summary>
+        public int AwakeFrame => _awakeFrame;
+
+        public int DisabledDuration => enabled ? 0 : CoreClock.Instance.FrameCount - _onDisableFrame;
+        public int EnabledDuration => enabled ? CoreClock.Instance.FrameCount - _onEnableFrame : 0;
+
+        /// <summary>
+        ///     The frame on which this <see cref="Behaviour" /> received its call to <see cref="Start" />.
+        /// </summary>
+        public int OnDisableFrame => _onDisableFrame;
+
+        /// <summary>
+        ///     The frame on which this <see cref="Behaviour" /> received its call to <see cref="Start" />.
+        /// </summary>
+        public int OnEnableFrame => _onEnableFrame;
+
+        #endregion
 
         #region Profiling
 
@@ -1167,7 +1331,26 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaBehaviour<T>
     {
+        /// <inheritdoc />
         protected override bool ShouldSkipUpdate => base.ShouldSkipUpdate || !DependenciesAreReady;
+
+        /// <inheritdoc />
+        protected override void NotifyWhenEnabled()
+        {
+            using (_PRF_NotifyWhenEnabled.Auto())
+            {
+                ObjectEnableEventRouter.Notify(GetType(), this as T, GuaranteedEventRouting);
+            }
+        }
+
+        #region Profiling
+
+        protected static readonly string _PRF_PFX8 = typeof(T).Name + ".";
+
+        protected static readonly ProfilerMarker _PRF_NotifyWhenEnabled =
+            new ProfilerMarker(_PRF_PFX8 + nameof(NotifyWhenEnabled));
+
+        #endregion
     }
 
     public partial class SingletonAppalachiaBehaviour<T>
@@ -1178,7 +1361,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class AppalachiaBase : ISerializationCallbackReceiver
+    public partial class AppalachiaBase
     {
         #region Static Fields and Autoproperties
 
@@ -1201,6 +1384,13 @@ namespace Appalachia.Core.Objects.Root
         public bool HasBeenEnabled => _hasBeenEnabled;
         public bool HasBeenInitialized => _hasBeenInitialized;
 
+        /// <summary>
+        ///     Runs after the <see cref="Initialize" /> call:
+        ///     <list type="bullet">
+        ///         <item>When the object is created for the first time (similar to a constructor).</item>
+        ///         <item>Every time the object is deserialized.</item>
+        ///     </list>
+        /// </summary>
         protected virtual async AppaTask WhenEnabled()
         {
             await AppaTask.CompletedTask;
@@ -1211,43 +1401,15 @@ namespace Appalachia.Core.Objects.Root
             await AppaTask.NextFrame();
             await AppalachiaRepositoryDependencyManager.ValidateDependencies(GetType());
 
-            BeforeInitialization();
-
-            await Initialize(_initializer);
+            await ExecuteInitialization();
 
             _hasBeenInitialized = true;
-
-            AfterInitialization();
-
-            initializationState.hasInitializationFinished = true;
 
             await WhenEnabled();
 
             _hasBeenEnabled = true;
             _hasBeenDisabled = false;
         }
-
-        #region ISerializationCallbackReceiver Members
-
-        public void OnBeforeSerialize()
-        {
-            using var scope = APPASERIALIZE.OnBeforeSerialize();
-        }
-
-        public void OnAfterDeserialize()
-        {
-            using var scope = APPASERIALIZE.OnAfterDeserialize();
-
-            if (_hasBeenInitialized)
-            {
-                return;
-            }
-
-            _initializationFunctions ??= new Queue<Func<AppaTask>>();
-            _initializationFunctions.Enqueue(HandleInitialization);
-        }
-
-        #endregion
     }
 
     public partial class AppalachiaBase<T>
@@ -1266,7 +1428,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class AppalachiaSelectable<T>
+    public partial class AppalachiaSelectable<T> : IEventDriven
     {
         #region Static Fields and Autoproperties
 
@@ -1321,22 +1483,12 @@ namespace Appalachia.Core.Objects.Root
             !HasBeenEnabled ||
             AppalachiaApplication.IsCompiling;
 
-        public bool HasBeenDisabled => _hasBeenDisabled;
-        public bool HasBeenEnabled => _hasBeenEnabled;
-
-        public bool HasBeenInitialized => _hasBeenInitialized;
-
-        public int AwakeDuration => enabled ? CoreClock.Instance.FrameCount - _awakeFrame : 0;
-        public int AwakeFrame => _awakeFrame;
-        public int DisabledDuration => enabled ? 0 : CoreClock.Instance.FrameCount - _onDisableFrame;
-        public int EnabledDuration => enabled ? CoreClock.Instance.FrameCount - _onEnableFrame : 0;
-        public int OnDisableFrame => _onDisableFrame;
-        public int OnEnableFrame => _onEnableFrame;
         public int StartedDuration => enabled ? CoreClock.Instance.FrameCount - _startFrame : 0;
         public int StartFrame => _startFrame;
 
         #region Event Functions
 
+        /// <inheritdoc />
         protected override void Awake()
         {
             using (_PRF_Awake.Auto())
@@ -1361,6 +1513,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         protected override void Reset()
         {
             using (_PRF_Reset.Auto())
@@ -1391,6 +1544,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         protected override void Start()
         {
             using (_PRF_Start.Auto())
@@ -1415,6 +1569,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         protected override void OnEnable()
         {
             using (_PRF_OnEnable.Auto())
@@ -1448,6 +1603,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         protected override void OnDisable()
         {
             using (_PRF_OnDisable.Auto())
@@ -1474,6 +1630,7 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
+        /// <inheritdoc />
         protected override void OnDestroy()
         {
             using (_PRF_OnDestroy.Auto())
@@ -1884,6 +2041,22 @@ namespace Appalachia.Core.Objects.Root
                 ObjectEnableEventRouter.Notify(GetType(), this, GuaranteeEnableEventRouting);
             }
         }
+
+        #region IEventDriven Members
+
+        public bool HasBeenDisabled => _hasBeenDisabled;
+        public bool HasBeenEnabled => _hasBeenEnabled;
+
+        public bool HasBeenInitialized => _hasBeenInitialized;
+
+        public int AwakeDuration => enabled ? CoreClock.Instance.FrameCount - _awakeFrame : 0;
+        public int AwakeFrame => _awakeFrame;
+        public int DisabledDuration => enabled ? 0 : CoreClock.Instance.FrameCount - _onDisableFrame;
+        public int EnabledDuration => enabled ? CoreClock.Instance.FrameCount - _onEnableFrame : 0;
+        public int OnDisableFrame => _onDisableFrame;
+        public int OnEnableFrame => _onEnableFrame;
+
+        #endregion
 
         #region Profiling
 

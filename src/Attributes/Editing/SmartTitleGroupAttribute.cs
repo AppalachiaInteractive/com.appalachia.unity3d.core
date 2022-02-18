@@ -81,6 +81,7 @@ namespace Appalachia.Core.Attributes.Editing
 
         public bool HasTitleFont => SubtitleFont.IsNotNullOrWhiteSpace();
 
+        /// <inheritdoc />
         protected override void CombineValuesWith(PropertyGroupAttribute other)
         {
             if (other is SmartTitleGroupAttribute otherGroup)

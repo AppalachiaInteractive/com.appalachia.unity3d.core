@@ -60,7 +60,7 @@ namespace Appalachia.Core.Objects.Root
                 for (var index = _singletons.Count - 1; index >= 0; index--)
                 {
                     var singleton = _singletons[index];
-                    if (singleton.assetReference.AssetGUID.IsNullOrWhiteSpace())
+                    if (singleton.AssetReference.AssetGUID.IsNullOrWhiteSpace())
                     {
                         _singletons.RemoveAt(index);
                     }
@@ -122,19 +122,19 @@ namespace Appalachia.Core.Objects.Root
                     {
                         var existingInstance = _singletonLookup[typeAtPath];
 
-                        if ((existingInstance.assetReference.editorAsset == null) &&
+                        if ((existingInstance.AssetReference.editorAsset == null) &&
                             (existingInstance.TypeName == objectAtPath.name))
                         {
                             continue; // editor only reference
                         }
 
-                        if (existingInstance.assetReference.editorAsset == objectAtPath)
+                        if (existingInstance.AssetReference.editorAsset == objectAtPath)
                         {
                             continue;
                         }
 
                         Context.Log.Error("Duplicate types! (Instance 1)", objectAtPath);
-                        Context.Log.Error("Duplicate types! (Instance 2)", existingInstance.assetReference);
+                        Context.Log.Error("Duplicate types! (Instance 2)", existingInstance.AssetReference);
 
                         continue;
                     }

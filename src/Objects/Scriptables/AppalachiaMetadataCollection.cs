@@ -73,6 +73,7 @@ namespace Appalachia.Core.Objects.Scriptables
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -108,21 +109,25 @@ namespace Appalachia.Core.Objects.Scriptables
 
 #if UNITY_EDITOR
 
+        /// <inheritdoc />
         protected override string GetTitle()
         {
             return Brand.AppalachiaMetadataCollection.Text;
         }
 
+        /// <inheritdoc />
         protected override string GetFallbackTitle()
         {
             return Brand.AppalachiaMetadataCollection.Fallback;
         }
 
+        /// <inheritdoc />
         protected override string GetTitleColor()
         {
             return Brand.AppalachiaMetadataCollection.Color;
         }
 
+        /// <inheritdoc />
         protected override string GetBackgroundColor()
         {
             return Brand.AppalachiaMetadataCollection.Banner;

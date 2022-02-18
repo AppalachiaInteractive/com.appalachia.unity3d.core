@@ -9,6 +9,7 @@ namespace Appalachia.Core.Objects.Filtering
 
         public class BestMeshMeshFilterComparer : SimpleComparer<BestMeshMeshFilterComparer, MeshFilter>
         {
+            /// <inheritdoc />
             public override int Compare(MeshFilter x, MeshFilter y)
             {
                 if ((x == null) && (y == null))
@@ -54,6 +55,7 @@ namespace Appalachia.Core.Objects.Filtering
 
         public class BestMeshRendererComparer : SimpleComparer<BestMeshRendererComparer, Renderer>
         {
+            /// <inheritdoc />
             public override int Compare(Renderer x, Renderer y)
             {
                 if ((x == null) && (y == null))
@@ -137,6 +139,7 @@ namespace Appalachia.Core.Objects.Filtering
 
         public class WorstMeshMeshFilterComparer : SimpleComparer<WorstMeshMeshFilterComparer, MeshFilter>
         {
+            /// <inheritdoc />
             public override int Compare(MeshFilter x, MeshFilter y)
             {
                 if ((x == null) && (y == null))
@@ -182,6 +185,7 @@ namespace Appalachia.Core.Objects.Filtering
 
         public class WorstMeshRendererComparer : SimpleComparer<WorstMeshRendererComparer, Renderer>
         {
+            /// <inheritdoc />
             public override int Compare(Renderer x, Renderer y)
             {
                 if ((x == null) && (y == null))

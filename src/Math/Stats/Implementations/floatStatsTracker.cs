@@ -26,9 +26,12 @@ namespace Appalachia.Core.Math.Stats.Implementations
         {
         }
 
+        /// <inheritdoc />
         protected override Comparison<float> Comparer => _comparer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         public override string Format(float value, FormatType format)
         {
             using (_PRF_Format.Auto())
@@ -50,18 +53,24 @@ namespace Appalachia.Core.Math.Stats.Implementations
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         protected override float Add(float a, float b)
         {
             return a + b;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         protected override float Divide(float dividend, int divisor)
         {
             return dividend / divisor;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         protected override string Suffix(float value, SuffixType type)
         {
             using (_PRF_Suffix.Auto())
@@ -79,6 +88,8 @@ namespace Appalachia.Core.Math.Stats.Implementations
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         protected override float Transform(float value, TransformationType type)
         {
             using (_PRF_Transform.Auto())

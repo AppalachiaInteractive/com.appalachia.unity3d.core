@@ -47,6 +47,7 @@ namespace Appalachia.Core.Execution
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDestroyed()
         {
             await base.WhenDestroyed();
@@ -57,6 +58,7 @@ namespace Appalachia.Core.Execution
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
         {
             await base.WhenDisabled();

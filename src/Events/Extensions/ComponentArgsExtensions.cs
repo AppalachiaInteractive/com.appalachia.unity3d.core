@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -10,8 +11,16 @@ namespace Appalachia.Core.Events.Extensions
         /// </summary>
         /// <param name="eventHandler">The event to invoke.</param>
         /// <param name="component">The component invoking the event.</param>
+        /// <param name="callerFilePath">Do not provide a value for this argument.  It will be populated by the compiler.</param>
+        /// <param name="callerMemberName">Do not provide a value for this argument.  It will be populated by the compiler.</param>
+        /// <param name="callerLineNumber">Do not provide a value for this argument.  It will be populated by the compiler.</param>
         /// <typeparam name="T">The type of component.</typeparam>
-        public static void RaiseEvent<T>(this ComponentEvent<T>.Data eventHandler, T component)
+        public static void RaiseEvent<T>(
+            this ComponentEvent<T>.Data eventHandler,
+            T component,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerLineNumber] int callerLineNumber = 0)
             where T : Component
         {
             using (_PRF_RaiseEvent.Auto())
@@ -22,7 +31,13 @@ namespace Appalachia.Core.Events.Extensions
                 }
 
                 var args = ToArgs(component);
-                eventHandler.Subscribers.InvokeSafe(subscriber => subscriber.Invoke(args), args);
+                eventHandler.Subscribers.InvokeSafe(
+                    subscriber => subscriber.Invoke(args),
+                    callerFilePath,
+                    callerMemberName,
+                    callerLineNumber,
+                    args
+                );
             }
         }
 

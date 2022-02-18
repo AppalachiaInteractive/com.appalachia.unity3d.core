@@ -66,7 +66,7 @@ namespace Appalachia.Core.Objects.Root
             }
 
             var reference = _singletonLookup[t];
-            var assetReference = reference.assetReference;
+            var assetReference = reference.AssetReference;
             ISingleton result;
 
             var isLoading = assetReference.IsValid() && (assetReference.OperationHandle.PercentComplete > 0f);

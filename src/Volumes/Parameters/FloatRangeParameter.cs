@@ -24,6 +24,7 @@ namespace Appalachia.Core.Volumes.Parameters
 
         #endregion
 
+        /// <inheritdoc />
         public override Vector2 value
         {
             get => m_Value;
@@ -34,6 +35,7 @@ namespace Appalachia.Core.Volumes.Parameters
             }
         }
 
+        /// <inheritdoc />
         public override void Interp(Vector2 from, Vector2 to, float t)
         {
             m_Value.x = from.x + ((to.x - from.x) * t);

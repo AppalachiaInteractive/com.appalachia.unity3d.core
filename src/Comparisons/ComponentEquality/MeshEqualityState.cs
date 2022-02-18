@@ -16,6 +16,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
         #endregion
 
+        /// <inheritdoc />
         public override void Record(Mesh m)
         {
             mesh = m;
@@ -26,6 +27,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
         #region IEquatable
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(Mesh other)
         {
@@ -40,6 +42,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                    bounds.Equals(other.bounds);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(MeshEqualityState other)
         {
@@ -59,6 +62,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                    bounds.Equals(other.bounds);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object obj)
         {
@@ -80,6 +84,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             return Equals((MeshEqualityState)obj);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

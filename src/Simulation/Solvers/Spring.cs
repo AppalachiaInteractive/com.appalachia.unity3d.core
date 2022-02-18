@@ -19,6 +19,7 @@ namespace Appalachia.Core.Simulation.Solvers
             return s.position;
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override string ToString()
         {

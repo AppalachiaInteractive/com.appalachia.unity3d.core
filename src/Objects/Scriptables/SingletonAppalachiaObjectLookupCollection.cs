@@ -44,26 +44,31 @@ namespace Appalachia.Core.Objects.Scriptables
 
         public TOLookup Lookup => _lookup;
 
+        /// <inheritdoc />
         protected override string GetBackgroundColor()
         {
             return Brand.SingletonAppalachiaObjectLookupCollection.Banner;
         }
 
+        /// <inheritdoc />
         protected override string GetFallbackTitle()
         {
             return Brand.SingletonAppalachiaObjectLookupCollection.Fallback;
         }
 
+        /// <inheritdoc />
         protected override string GetTitle()
         {
             return Brand.SingletonAppalachiaObjectLookupCollection.Text;
         }
 
+        /// <inheritdoc />
         protected override string GetTitleColor()
         {
             return Brand.SingletonAppalachiaObjectLookupCollection.Color;
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
 #if UNITY_EDITOR

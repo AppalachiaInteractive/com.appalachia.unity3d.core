@@ -72,6 +72,7 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -90,12 +91,13 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenDisabled()
         {
+            await base.WhenDisabled();
+
             using (_PRF_WhenDisabled.Auto())
             {
-                await base.WhenDisabled();
-
                 try
                 {
                     if (Camera.onPreCull == null)
@@ -164,12 +166,15 @@ namespace Appalachia.Core.Volumes
 
         #region ISerializationCallbackReceiver Members
 
-        public void OnAfterDeserialize()
+        /// <inheritdoc />
+        public override void OnAfterDeserialize()
         {
             using var scope = APPASERIALIZE.OnAfterDeserialize();
 
             using (_PRF_OnAfterDeserialize.Auto())
             {
+                base.OnAfterDeserialize();
+
                 _exposedReferenceTable = new Dictionary<PropertyName, Object>();
 
                 foreach (var i in _exposedReferenceList)
@@ -179,12 +184,15 @@ namespace Appalachia.Core.Volumes
             }
         }
 
-        public void OnBeforeSerialize()
+        /// <inheritdoc />
+        public override void OnBeforeSerialize()
         {
             using var scope = APPASERIALIZE.OnBeforeSerialize();
 
             using (_PRF_OnBeforeSerialize.Auto())
             {
+                base.OnBeforeSerialize();
+
                 _exposedReferenceList = new List<ExposedReferenceData>();
 
                 foreach (var i in _exposedReferenceTable)

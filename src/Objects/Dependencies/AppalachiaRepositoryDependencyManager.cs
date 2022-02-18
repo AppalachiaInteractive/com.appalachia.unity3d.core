@@ -257,24 +257,37 @@ namespace Appalachia.Core.Objects.Dependencies
         {
             using (_PRF_CalculateGraph.Auto())
             {
-                _trackerGraph.Clear();
-                _trackerGraph.AddVertex(AppalachiaRepository.DependencyTracker);
+                //_trackerGraph.Clear();
+
+                if (!_trackerGraph.HasVertex(AppalachiaRepository.DependencyTracker))
+                {
+                    _trackerGraph.AddVertex(AppalachiaRepository.DependencyTracker);
+                }
 
                 foreach (var tracker in _trackers)
                 {
                     foreach (var dependency in tracker.repositoryDependencies.Dependencies)
                     {
-                        AddEdge(tracker, dependency);
+                        if (!_trackerGraph.HasEdge(tracker, dependency))
+                        {
+                            AddEdge(tracker, dependency);
+                        }
                     }
 
                     foreach (var dependency in tracker.objectDependencies.Dependencies)
                     {
-                        AddEdge(tracker, dependency);
+                        if (!_trackerGraph.HasEdge(tracker, dependency))
+                        {
+                            AddEdge(tracker, dependency);
+                        }
                     }
 
                     foreach (var dependency in tracker.behaviourDependencies.Dependencies)
                     {
-                        AddEdge(tracker, dependency);
+                        if (!_trackerGraph.HasEdge(tracker, dependency))
+                        {
+                            AddEdge(tracker, dependency);
+                        }
                     }
                 }
 

@@ -20,6 +20,7 @@ namespace Appalachia.Core.Objects.Availability
 
         #endregion
 
+        /// <inheritdoc />
         public override bool IsFullyAvailable => Data1.IsAvailable && Data2.IsAvailable && Data3.IsAvailable;
 
         public void CopyTo(AvailabilitySet<T1, T2, T3> other)
@@ -69,6 +70,7 @@ namespace Appalachia.Core.Objects.Availability
             }
         }
 
+        /// <inheritdoc />
         protected override void OnFullyAvailable(Action<T1, T2, T3> action)
         {
             using (_PRF_OnFullyAvailable.Auto())

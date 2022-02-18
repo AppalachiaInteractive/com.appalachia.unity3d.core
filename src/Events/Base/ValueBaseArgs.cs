@@ -12,6 +12,7 @@ namespace Appalachia.Core.Events.Base
 
         #endregion
 
+        /// <inheritdoc />
         protected override void OnInitialize()
         {
             using (_PRF_OnInitialize.Auto())
@@ -20,6 +21,7 @@ namespace Appalachia.Core.Events.Base
             }
         }
 
+        /// <inheritdoc />
         protected override void OnReset()
         {
             using (_PRF_OnReset.Auto())
@@ -47,6 +49,7 @@ namespace Appalachia.Core.Events.Base
 
         #endregion
 
+        /// <inheritdoc />
         protected override void OnInitialize()
         {
             using (_PRF_OnInitialize.Auto())
@@ -55,6 +58,7 @@ namespace Appalachia.Core.Events.Base
             }
         }
 
+        /// <inheritdoc />
         protected override void OnReset()
         {
             using (_PRF_OnReset.Auto())

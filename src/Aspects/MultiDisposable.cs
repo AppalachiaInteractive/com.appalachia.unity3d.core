@@ -304,7 +304,8 @@ namespace Appalachia.Core.Base.Aspects
 
 
         private static readonly ProfilerMarker _PRF_MultiDisposable_Reset = new ProfilerMarker("MultiDisposable.Reset");
-        public override void Reset()
+        /// <inheritdoc />
+public override void Reset()
         {
             _0 = null;
             _1 = null;
@@ -320,7 +321,8 @@ namespace Appalachia.Core.Base.Aspects
             _reverseOrder = false;
         }
 
-        public override void Initialize()
+        /// <inheritdoc />
+public override void Initialize()
         {
         }
 

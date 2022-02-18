@@ -11,6 +11,7 @@ namespace Appalachia.Core.Volumes.Parameters
         {
         }
 
+        /// <inheritdoc />
         public sealed override void Interp(float from, float to, float t)
         {
             m_Value = from + ((to - from) * t);

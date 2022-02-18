@@ -22,6 +22,7 @@ namespace Appalachia.Core.Objects.Availability
 
         #endregion
 
+        /// <inheritdoc />
         public override bool IsFullyAvailable =>
             Data1.IsAvailable &&
             Data2.IsAvailable &&
@@ -90,6 +91,7 @@ namespace Appalachia.Core.Objects.Availability
             }
         }
 
+        /// <inheritdoc />
         protected override void OnFullyAvailable(Action<T1, T2, T3, T4, T5> action)
         {
             using (_PRF_OnFullyAvailable.Auto())

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Objects.Sets
 {
-    public abstract partial class ComponentSet<TSet, TSetMetadata>
+    public abstract partial class ComponentSet<TSet, TSetData>
     {
         #region Nested type: SiblingIndexCalculator
 
@@ -111,14 +111,6 @@ namespace Appalachia.Core.Objects.Sets
                 }
             }
 
-            private static int GetIndexForSecond(int currentIndex, int siblingCount)
-            {
-                using (_PRF_GetIndexForFirst.Auto())
-                {
-                    return 1;
-                }
-            }
-
             private static int GetIndexForLast(int currentIndex, int siblingCount)
             {
                 using (_PRF_GetIndexForLast.Auto())
@@ -165,6 +157,14 @@ namespace Appalachia.Core.Objects.Sets
                     var firstIndex = GetIndexForFirst(currentIndex, siblingCount);
 
                     return Mathf.Clamp(currentIndex, firstIndex, notLastIndex);
+                }
+            }
+
+            private static int GetIndexForSecond(int currentIndex, int siblingCount)
+            {
+                using (_PRF_GetIndexForFirst.Auto())
+                {
+                    return 1;
                 }
             }
 

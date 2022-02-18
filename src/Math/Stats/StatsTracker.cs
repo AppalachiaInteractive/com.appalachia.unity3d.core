@@ -201,6 +201,7 @@ namespace Appalachia.Core.Math.Stats
 
         public abstract string Format(T value, FormatType format);
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override string ToString()
         {

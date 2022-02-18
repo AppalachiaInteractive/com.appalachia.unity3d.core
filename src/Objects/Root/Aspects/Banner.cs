@@ -157,21 +157,25 @@ namespace Appalachia.Core.Objects.Root
     [AssetLabel(Brand.AppalachiaRepository.Label)]
     public partial class AppalachiaRepository
     {
+        /// <inheritdoc />
         protected override string GetBackgroundColor()
         {
             return Brand.AppalachiaRepository.Banner;
         }
 
+        /// <inheritdoc />
         protected override string GetFallbackTitle()
         {
             return Brand.AppalachiaRepository.Fallback;
         }
 
+        /// <inheritdoc />
         protected override string GetTitle()
         {
             return Brand.AppalachiaRepository.Text;
         }
 
+        /// <inheritdoc />
         protected override string GetTitleColor()
         {
             return Brand.AppalachiaRepository.Color;
@@ -186,21 +190,25 @@ namespace Appalachia.Core.Objects.Root
     [AssetLabel(Brand.SingletonAppalachiaObject.Label)]
     public partial class SingletonAppalachiaObject<T>
     {
+        /// <inheritdoc />
         protected override string GetBackgroundColor()
         {
             return Brand.SingletonAppalachiaObject.Banner;
         }
 
+        /// <inheritdoc />
         protected override string GetFallbackTitle()
         {
             return Brand.SingletonAppalachiaObject.Fallback;
         }
 
+        /// <inheritdoc />
         protected override string GetTitle()
         {
             return Brand.SingletonAppalachiaObject.Text;
         }
 
+        /// <inheritdoc />
         protected override string GetTitleColor()
         {
             return Brand.SingletonAppalachiaObject.Color;
@@ -306,21 +314,25 @@ namespace Appalachia.Core.Objects.Root
     [InspectorIcon(Brand.SingletonAppalachiaBehaviour.Icon)]
     public partial class SingletonAppalachiaBehaviour<T>
     {
+        /// <inheritdoc />
         protected override string GetBackgroundColor()
         {
             return Brand.SingletonAppalachiaBehaviour.Banner;
         }
 
+        /// <inheritdoc />
         protected override string GetFallbackTitle()
         {
             return Brand.SingletonAppalachiaBehaviour.Fallback;
         }
 
+        /// <inheritdoc />
         protected override string GetTitle()
         {
             return Brand.SingletonAppalachiaBehaviour.Text;
         }
 
+        /// <inheritdoc />
         protected override string GetTitleColor()
         {
             return Brand.SingletonAppalachiaBehaviour.Color;

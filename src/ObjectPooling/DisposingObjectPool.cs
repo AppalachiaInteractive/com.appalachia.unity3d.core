@@ -53,6 +53,7 @@ namespace Appalachia.Core.ObjectPooling
 
         #endregion
 
+        /// <inheritdoc />
         protected override void OnDispose()
         {
             using (_PRF_DisposingObjectPool_OnDispose.Auto())
@@ -70,6 +71,7 @@ namespace Appalachia.Core.ObjectPooling
             }
         }
 
+        /// <inheritdoc />
         protected override void OnReset(T obj)
         {
             using (_PRF_DisposingObjectPool_OnReset.Auto())

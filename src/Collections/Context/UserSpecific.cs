@@ -15,6 +15,7 @@ namespace Appalachia.Core.Collections.Context
 
         #endregion
 
+        /// <inheritdoc />
         public override string GetContextKey()
         {
             var username = Environment.UserName.ToLower();

@@ -127,6 +127,7 @@ namespace Appalachia.Core.Types
         }
 
         // overload the .Equals method
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object obj)
         {
@@ -149,6 +150,7 @@ namespace Appalachia.Core.Types
 
         // we don't need to overload operators between SerializableType and System.Type because we already enabled them to implicitly convert
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

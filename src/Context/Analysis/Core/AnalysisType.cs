@@ -10,7 +10,6 @@ using UnityEngine;
 
 namespace Appalachia.Core.Context.Analysis.Core
 {
-    [Serializable]
     public abstract class AnalysisType<TA, TT, TE>
         where TA : AnalysisGroup<TA, TT, TE>, new()
         where TE : Enum
@@ -23,7 +22,7 @@ namespace Appalachia.Core.Context.Analysis.Core
         #region Fields and Autoproperties
 
         protected Color _color;
-        [NonSerialized] private AppaContext _context;
+        private AppaContext _context;
 
         private Color _issueColor;
 

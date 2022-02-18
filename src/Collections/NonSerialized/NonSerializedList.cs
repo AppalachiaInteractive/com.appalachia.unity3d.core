@@ -1,5 +1,8 @@
+using Appalachia.Core.Attributes;
+
 namespace Appalachia.Core.Collections.NonSerialized
 {
+    [NonSerializable]
     public sealed class NonSerializedList<T> : AppaList<T>
     {
         public NonSerializedList()

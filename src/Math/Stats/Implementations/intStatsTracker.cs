@@ -9,6 +9,7 @@ using Unity.Profiling;
 
 namespace Appalachia.Core.Math.Stats.Implementations
 {
+    [Serializable]
     public class intStatsTracker : StatsTracker<int>
     {
         #region Constants and Static Readonly
@@ -21,9 +22,12 @@ namespace Appalachia.Core.Math.Stats.Implementations
         {
         }
 
+        /// <inheritdoc />
         protected override Comparison<int> Comparer => _comparison;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         public override string Format(int value, FormatType format)
         {
             using (_PRF_Format.Auto())
@@ -45,18 +49,24 @@ namespace Appalachia.Core.Math.Stats.Implementations
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         protected override int Add(int a, int b)
         {
             return a + b;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         protected override int Divide(int dividend, int divisor)
         {
             return dividend / divisor;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         protected override string Suffix(int value, SuffixType type)
         {
             using (_PRF_Suffix.Auto())
@@ -74,6 +84,8 @@ namespace Appalachia.Core.Math.Stats.Implementations
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        /// <inheritdoc />
         protected override int Transform(int value, TransformationType type)
         {
             using (_PRF_Transform.Auto())

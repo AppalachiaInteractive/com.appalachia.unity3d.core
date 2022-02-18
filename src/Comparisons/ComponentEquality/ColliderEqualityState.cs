@@ -32,6 +32,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
         #endregion
 
+        /// <inheritdoc />
         public override void Record(Collider c)
         {
             if (c is MeshCollider mc)
@@ -60,6 +61,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
 
         #region IEquatable
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(Collider other)
         {
@@ -80,6 +82,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                     (direction == cc.direction));
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(ColliderEqualityState other)
         {
@@ -103,6 +106,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
                    (direction == other.direction);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object obj)
         {
@@ -124,6 +128,7 @@ namespace Appalachia.Core.Comparisons.ComponentEquality
             return Equals((ColliderEqualityState)obj);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

@@ -352,18 +352,20 @@ namespace Appalachia.Core.Volumes
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask WhenEnabled()
         {
             await base.WhenEnabled();
 
-            // Make sure every setting is valid. If a profile holds a script that doesn't exist
-            // anymore, nuke it to keep the volume clean. Note that if you delete a script that is
-            // currently in use in a volume you'll still get a one-time error in the console, it's
-            // harmless and happens because Unity does a redraw of the editor (and thus the current
-            // frame) before the recompilation step.
-            components.RemoveAll(x => x == null);
-
-            await AppaTask.CompletedTask;
+            using (_PRF_WhenEnabled.Auto())
+            {
+                // Make sure every setting is valid. If a profile holds a script that doesn't exist
+                // anymore, nuke it to keep the volume clean. Note that if you delete a script that is
+                // currently in use in a volume you'll still get a one-time error in the console, it's
+                // harmless and happens because Unity does a redraw of the editor (and thus the current
+                // frame) before the recompilation step.
+                components.RemoveAll(x => x == null);
+            }
         }
     }
 }

@@ -436,11 +436,13 @@ namespace Appalachia.Core.Objects.Utilities
                 return !left.Equals(right);
             }
 
+            /// <inheritdoc />
             public override bool Equals(object obj)
             {
                 return obj is BannerData other && Equals(other);
             }
 
+            /// <inheritdoc />
             public override int GetHashCode()
             {
                 var hashCode = new HashCode();

@@ -163,6 +163,8 @@ namespace Appalachia.Core.Objects.Scriptables
         {
             using (_PRF_RemoveInvalid.Auto())
             {
+                var removed = 0;
+
                 for (var i = _items.Count - 1; i >= 0; i--)
                 {
                     var item = _items.at[i];
@@ -170,10 +172,14 @@ namespace Appalachia.Core.Objects.Scriptables
                     if (!IsValid(item))
                     {
                         _items.RemoveAt(i);
+                        removed += 1;
                     }
                 }
 
-                MarkAsModified();
+                if (removed > 0)
+                {
+                    MarkAsModified();
+                }
             }
         }
 
@@ -185,26 +191,31 @@ namespace Appalachia.Core.Objects.Scriptables
             return true;
         }
 
+        /// <inheritdoc />
         protected override string GetBackgroundColor()
         {
             return Brand.AppalachiaObjectLookupCollection.Banner;
         }
 
+        /// <inheritdoc />
         protected override string GetFallbackTitle()
         {
             return Brand.AppalachiaObjectLookupCollection.Fallback;
         }
 
+        /// <inheritdoc />
         protected override string GetTitle()
         {
             return Brand.AppalachiaObjectLookupCollection.Text;
         }
 
+        /// <inheritdoc />
         protected override string GetTitleColor()
         {
             return Brand.AppalachiaObjectLookupCollection.Color;
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

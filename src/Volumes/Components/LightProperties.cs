@@ -25,6 +25,7 @@ namespace Appalachia.Core.Volumes.Components
 
         #endregion
 
+        /// <inheritdoc />
         public override void OverrideProperties(PropertyMaster master)
         {
             var light = target.value.Resolve(master);

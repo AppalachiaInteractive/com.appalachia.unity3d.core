@@ -77,12 +77,12 @@ namespace Appalachia.Core.Objects.Root
                     {
                         var existingInstance = _prefabLookup[objectAtPath.name];
 
-                        if (existingInstance.assetReference.editorAsset != objectAtPath)
+                        if (existingInstance.AssetReference.editorAsset != objectAtPath)
                         {
                             Context.Log.Error("Duplicate prefab names! (Instance 1)", objectAtPath);
                             Context.Log.Error(
                                 "Duplicate types! (Instance 2)",
-                                existingInstance.assetReference.editorAsset
+                                existingInstance.AssetReference.editorAsset
                             );
                         }
 

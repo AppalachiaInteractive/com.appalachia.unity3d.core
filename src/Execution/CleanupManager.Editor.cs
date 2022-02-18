@@ -9,6 +9,7 @@ namespace Appalachia.Core.Execution
     [ExecuteAlways]
     public sealed partial class CleanupManager
     {
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

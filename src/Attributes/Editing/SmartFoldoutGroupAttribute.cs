@@ -40,6 +40,7 @@ namespace Appalachia.Core.Attributes.Editing
         public bool HasChildColor => ChildColor.IsNotNullOrWhiteSpace();
         public bool HasLabelColor => LabelColor.IsNotNullOrWhiteSpace();
 
+        /// <inheritdoc />
         protected override void CombineValuesWith(PropertyGroupAttribute other)
         {
             if (other is SmartFoldoutGroupAttribute cfga)

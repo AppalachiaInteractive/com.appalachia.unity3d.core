@@ -56,76 +56,76 @@ namespace Appalachia.Core.Collections.Native
                 m_List = list;
             }
 
-	        #region Fields and Autoproperties
+            #region Fields and Autoproperties
 
-	        /// <summary>
-	        ///     Version of the list that this enumerator is valid for
-	        /// </summary>
-	        internal readonly int m_Version;
+            /// <summary>
+            ///     Version of the list that this enumerator is valid for
+            /// </summary>
+            internal readonly int m_Version;
 
-	        /// <summary>
-	        ///     Index of the node
-	        /// </summary>
-	        internal int m_Index;
+            /// <summary>
+            ///     Index of the node
+            /// </summary>
+            internal int m_Index;
 
-	        /// <summary>
-	        ///     List to iterate
-	        /// </summary>
-	        internal NativeLinkedList<T> m_List;
+            /// <summary>
+            ///     List to iterate
+            /// </summary>
+            internal NativeLinkedList<T> m_List;
 
-	        #endregion
+            #endregion
 
-	        /// <summary>
-	        ///     Check if an enumerator is valid
-	        ///     This operation requires read access unless the enumerator was
-	        ///     initialized with the default constructor.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <returns>
-	        ///     If the given enumerator is valid
-	        /// </returns>
-	        public bool IsValid
-	        {
-		        get
-		        {
-			        if (m_List.m_State == null)
-			        {
-				        return false;
-			        }
+            /// <summary>
+            ///     Check if an enumerator is valid
+            ///     This operation requires read access unless the enumerator was
+            ///     initialized with the default constructor.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <returns>
+            ///     If the given enumerator is valid
+            /// </returns>
+            public bool IsValid
+            {
+                get
+                {
+                    if (m_List.m_State == null)
+                    {
+                        return false;
+                    }
 
-			        m_List.CheckReadAccess();
+                    m_List.CheckReadAccess();
 
-			        return (m_Index >= 0) &&
-			               (m_Index < m_List.m_State->m_Length) &&
-			               (m_Version == m_List.m_State->m_Version);
-		        }
-	        }
+                    return (m_Index >= 0) &&
+                           (m_Index < m_List.m_State->m_Length) &&
+                           (m_Version == m_List.m_State->m_Version);
+                }
+            }
 
-	        /// <summary>
-	        ///     Get the list this enumerator is for.
-	        /// </summary>
-	        /// <value>
-	        ///     The list this enumerator is for. It is not necessarily usable.
-	        ///     For example, if this enumerator was initialized with the default
-	        ///     constructor then the list returned will not be usable.
-	        /// </value>
-	        public NativeLinkedList<T> List => m_List;
+            /// <summary>
+            ///     Get the list this enumerator is for.
+            /// </summary>
+            /// <value>
+            ///     The list this enumerator is for. It is not necessarily usable.
+            ///     For example, if this enumerator was initialized with the default
+            ///     constructor then the list returned will not be usable.
+            /// </value>
+            public NativeLinkedList<T> List => m_List;
 
-	        /// <summary>
-	        ///     Get an enumerator to the next node.
-	        ///     This operation requires read access in general and access to the
-	        ///     node if the enumerator is valid.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <returns>
-	        ///     If this enumerator is valid, an enumerator to the next node or
-	        ///     an invalid enumerator if at the tail node. If this enumerator is
-	        ///     invalid but was constructed via the non-default constructor and
-	        ///     the list it enumerates has not been disposed and has not
-	        ///     invalidated this enumerator, an enumerator to the head node.
-	        ///     Otherwise, an invalid enumerator.
-	        /// </returns>
-	        public Enumerator Next
+            /// <summary>
+            ///     Get an enumerator to the next node.
+            ///     This operation requires read access in general and access to the
+            ///     node if the enumerator is valid.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <returns>
+            ///     If this enumerator is valid, an enumerator to the next node or
+            ///     an invalid enumerator if at the tail node. If this enumerator is
+            ///     invalid but was constructed via the non-default constructor and
+            ///     the list it enumerates has not been disposed and has not
+            ///     invalidated this enumerator, an enumerator to the head node.
+            ///     Otherwise, an invalid enumerator.
+            /// </returns>
+            public Enumerator Next
             {
                 get
                 {
@@ -151,21 +151,21 @@ namespace Appalachia.Core.Collections.Native
                 }
             }
 
-	        /// <summary>
-	        ///     Get an enumerator to the previous node
-	        ///     This operation requires read access in general and access to the
-	        ///     node if the enumerator is valid.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <returns>
-	        ///     If this enumerator is valid, an enumerator to the previous node
-	        ///     or an invalid enumerator if at the head node. If this enumerator
-	        ///     is invalid but was constructed via the non-default constructor
-	        ///     and the list it enumerates has not been disposed and has not
-	        ///     invalidated this enumerator, an enumerator to the tail node.
-	        ///     Otherwise, an invalid enumerator.
-	        /// </returns>
-	        public Enumerator Prev
+            /// <summary>
+            ///     Get an enumerator to the previous node
+            ///     This operation requires read access in general and access to the
+            ///     node if the enumerator is valid.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <returns>
+            ///     If this enumerator is valid, an enumerator to the previous node
+            ///     or an invalid enumerator if at the head node. If this enumerator
+            ///     is invalid but was constructed via the non-default constructor
+            ///     and the list it enumerates has not been disposed and has not
+            ///     invalidated this enumerator, an enumerator to the tail node.
+            ///     Otherwise, an invalid enumerator.
+            /// </returns>
+            public Enumerator Prev
             {
                 get
                 {
@@ -191,168 +191,168 @@ namespace Appalachia.Core.Collections.Native
                 }
             }
 
-	        /// <summary>
-	        ///     Get or set a node's value.
-	        ///     This operation requires read access to the node for 'get' and
-	        ///     write access to the node for 'set'.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <value>
-	        ///     The node's value
-	        /// </value>
-	        public T Value
-	        {
-		        get
-		        {
-			        m_List.CheckReadAccess();
-			        m_List.RequireParallelForAccess(m_Index);
-
-			        return UnsafeUtility.ReadArrayElement<T>(m_List.m_State->m_Values, m_Index);
-		        }
-
-		        [WriteAccessRequired]
-		        set
-		        {
-			        m_List.CheckWriteAccess();
-			        m_List.RequireParallelForAccess(m_Index);
-
-			        UnsafeUtility.WriteArrayElement(m_List.m_State->m_Values, m_Index, value);
-		        }
-	        }
-
-	        /// <summary>
-	        ///     Check if two enumerators refer to the same node lists.
-	        ///     This operation requires read access to both enumerators' lists
-	        ///     unless either list was initialized with the default constructor.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <param name="a">
-	        ///     First enumerator to compare
-	        /// </param>
-	        /// <param name="b">
-	        ///     Second enumerator to compare
-	        /// </param>
-	        /// <returns>
-	        ///     If the given enumerators refer to the same node and neither
-	        ///     enumerator is invalid.
-	        /// </returns>
-	        [DebuggerStepThrough]
-	        public static bool operator ==(Enumerator a, Enumerator b)
-	        {
-		        // Enumerators without a valid list can't be equal
-		        if ((a.m_List.m_State == null) || (b.m_List.m_State == null))
-		        {
-			        return false;
-		        }
-
-		        a.m_List.CheckReadAccess();
-		        b.m_List.CheckReadAccess();
-
-		        return a.IsValid &&
-		               b.IsValid &&
-		               (a.m_Index == b.m_Index) &&
-		               (a.m_List.m_State == b.m_List.m_State);
-	        }
-
-	        /// <summary>
-	        ///     Check if two enumerators refer to different nodes.
-	        ///     This operation requires read access to both enumerators' lists
-	        ///     unless either list was initialized with the default constructor.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <param name="a">
-	        ///     First enumerator to compare
-	        /// </param>
-	        /// <param name="b">
-	        ///     Second enumerator to compare
-	        /// </param>
-	        /// <returns>
-	        ///     If the given enumerators refer to different nodes or either
-	        ///     enumerator is invalid.
-	        /// </returns>
-	        [DebuggerStepThrough]
-	        public static bool operator !=(Enumerator a, Enumerator b)
+            /// <summary>
+            ///     Get or set a node's value.
+            ///     This operation requires read access to the node for 'get' and
+            ///     write access to the node for 'set'.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <value>
+            ///     The node's value
+            /// </value>
+            public T Value
             {
-	            // Enumerators without a valid list can't be equal
-	            if ((a.m_List.m_State == null) || (b.m_List.m_State == null))
+                get
+                {
+                    m_List.CheckReadAccess();
+                    m_List.RequireParallelForAccess(m_Index);
+
+                    return UnsafeUtility.ReadArrayElement<T>(m_List.m_State->m_Values, m_Index);
+                }
+
+                [WriteAccessRequired]
+                set
+                {
+                    m_List.CheckWriteAccess();
+                    m_List.RequireParallelForAccess(m_Index);
+
+                    UnsafeUtility.WriteArrayElement(m_List.m_State->m_Values, m_Index, value);
+                }
+            }
+
+            /// <summary>
+            ///     Check if two enumerators refer to the same node lists.
+            ///     This operation requires read access to both enumerators' lists
+            ///     unless either list was initialized with the default constructor.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <param name="a">
+            ///     First enumerator to compare
+            /// </param>
+            /// <param name="b">
+            ///     Second enumerator to compare
+            /// </param>
+            /// <returns>
+            ///     If the given enumerators refer to the same node and neither
+            ///     enumerator is invalid.
+            /// </returns>
+            [DebuggerStepThrough]
+            public static bool operator ==(Enumerator a, Enumerator b)
+            {
+                // Enumerators without a valid list can't be equal
+                if ((a.m_List.m_State == null) || (b.m_List.m_State == null))
+                {
+                    return false;
+                }
+
+                a.m_List.CheckReadAccess();
+                b.m_List.CheckReadAccess();
+
+                return a.IsValid &&
+                       b.IsValid &&
+                       (a.m_Index == b.m_Index) &&
+                       (a.m_List.m_State == b.m_List.m_State);
+            }
+
+            /// <summary>
+            ///     Check if two enumerators refer to different nodes.
+            ///     This operation requires read access to both enumerators' lists
+            ///     unless either list was initialized with the default constructor.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <param name="a">
+            ///     First enumerator to compare
+            /// </param>
+            /// <param name="b">
+            ///     Second enumerator to compare
+            /// </param>
+            /// <returns>
+            ///     If the given enumerators refer to different nodes or either
+            ///     enumerator is invalid.
+            /// </returns>
+            [DebuggerStepThrough]
+            public static bool operator !=(Enumerator a, Enumerator b)
+            {
+                // Enumerators without a valid list can't be equal
+                if ((a.m_List.m_State == null) || (b.m_List.m_State == null))
                 {
                     return true;
                 }
 
-	            a.m_List.CheckReadAccess();
-	            b.m_List.CheckReadAccess();
+                a.m_List.CheckReadAccess();
+                b.m_List.CheckReadAccess();
 
-	            return !a.IsValid ||
-	                   !b.IsValid ||
-	                   (a.m_Index != b.m_Index) ||
-	                   (a.m_List.m_State != b.m_List.m_State);
+                return !a.IsValid ||
+                       !b.IsValid ||
+                       (a.m_Index != b.m_Index) ||
+                       (a.m_List.m_State != b.m_List.m_State);
             }
 
-	        /// <summary>
-	        ///     Check if this enumerator refer to the same node as another
-	        ///     enumerator.
-	        ///     This operation requires read access to both enumerators' lists
-	        ///     unless either list was initialized with the default constructor.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <param name="obj">
-	        ///     Enumerator to compare with
-	        /// </param>
-	        /// <returns>
-	        ///     If the given enumerator refers to the same node as this
-	        ///     enumerator and is of the same type and neither enumerator is
-	        ///     invalid.
-	        /// </returns>
-	        [DebuggerStepThrough]
-	        public override bool Equals(object obj)
-	        {
-		        return obj is Enumerator && (this == (Enumerator)obj);
+            /// <summary>
+            ///     Check if this enumerator refer to the same node as another
+            ///     enumerator.
+            ///     This operation requires read access to both enumerators' lists
+            ///     unless either list was initialized with the default constructor.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <param name="obj">
+            ///     Enumerator to compare with
+            /// </param>
+            /// <returns>
+            ///     If the given enumerator refers to the same node as this
+            ///     enumerator and is of the same type and neither enumerator is
+            ///     invalid.
+            /// </returns>
+            [DebuggerStepThrough]
+            public override bool Equals(object obj)
+            {
+                return obj is Enumerator && (this == (Enumerator)obj);
             }
 
-	        /// <summary>
-	        ///     Get a hash code for this enumerator. If the enumerator is
-	        ///     mutated such as by calling <see cref="MoveNext()" />, the
-	        ///     returned hash code will no longer match values returned by
-	        ///     subsequent calls to this function.
-	        ///     This operation has no access requirements on the enumerator's
-	        ///     associated list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <returns>
-	        ///     A hash code for this enumerator
-	        /// </returns>
-	        [DebuggerStepThrough]
-	        public override int GetHashCode()
-	        {
-		        // Suppress "non-readonly field" warning because we don't have a
-		        // readonly-only way to generate a hash code since Index is
-		        // mutable to comply with the IEnumerator interface.
+            /// <summary>
+            ///     Get a hash code for this enumerator. If the enumerator is
+            ///     mutated such as by calling <see cref="MoveNext()" />, the
+            ///     returned hash code will no longer match values returned by
+            ///     subsequent calls to this function.
+            ///     This operation has no access requirements on the enumerator's
+            ///     associated list.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <returns>
+            ///     A hash code for this enumerator
+            /// </returns>
+            [DebuggerStepThrough]
+            public override int GetHashCode()
+            {
+                // Suppress "non-readonly field" warning because we don't have a
+                // readonly-only way to generate a hash code since Index is
+                // mutable to comply with the IEnumerator interface.
 #pragma warning disable RECS0025
-		        return m_Index;
+                return m_Index;
 #pragma warning restore RECS0025
             }
 
-	        /// <summary>
-	        ///     Get the distance between this iterator and a given iterator that
-	        ///     is further towards the tail.
-	        ///     This operation requires read access in general and access to all
-	        ///     nodes between the node this enumerator refers to and the given
-	        ///     enumerator, inclusive, if this enumerator is valid and the given
-	        ///     enumerator is valid for the same list as this enumerator.
-	        ///     This operation is O(N) where N is the length of the list.
-	        /// </summary>
-	        /// <param name="other">
-	        ///     Enumerator to get the distance to. Must be valid for the same
-	        ///     list this enumerator is for.
-	        /// </param>
-	        /// <returns>
-	        ///     The number of nodes between this enumerator and the given
-	        ///     enumerator if both are valid for the same list and the given
-	        ///     enumerator is either the same enumerator as this enumerator or
-	        ///     is toward the tail compared to this enumerator. Otherwise, a
-	        ///     negative value.
-	        /// </returns>
-	        public int GetDistance(Enumerator other)
+            /// <summary>
+            ///     Get the distance between this iterator and a given iterator that
+            ///     is further towards the tail.
+            ///     This operation requires read access in general and access to all
+            ///     nodes between the node this enumerator refers to and the given
+            ///     enumerator, inclusive, if this enumerator is valid and the given
+            ///     enumerator is valid for the same list as this enumerator.
+            ///     This operation is O(N) where N is the length of the list.
+            /// </summary>
+            /// <param name="other">
+            ///     Enumerator to get the distance to. Must be valid for the same
+            ///     list this enumerator is for.
+            /// </param>
+            /// <returns>
+            ///     The number of nodes between this enumerator and the given
+            ///     enumerator if both are valid for the same list and the given
+            ///     enumerator is either the same enumerator as this enumerator or
+            ///     is toward the tail compared to this enumerator. Otherwise, a
+            ///     negative value.
+            /// </returns>
+            public int GetDistance(Enumerator other)
             {
                 m_List.CheckReadAccess();
 
@@ -387,19 +387,19 @@ namespace Appalachia.Core.Collections.Native
                 } while (true);
             }
 
-	        /// <summary>
-	        ///     Check if an enumerator is valid for a given list
-	        ///     This operation requires read access unless the enumerator was
-	        ///     initialized with the default constructor.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <param name="list">
-	        ///     List to check if the enumerator is valid for
-	        /// </param>
-	        /// <returns>
-	        ///     If the enumerator is valid for the given list
-	        /// </returns>
-	        public bool IsValidFor(NativeLinkedList<T> list)
+            /// <summary>
+            ///     Check if an enumerator is valid for a given list
+            ///     This operation requires read access unless the enumerator was
+            ///     initialized with the default constructor.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <param name="list">
+            ///     List to check if the enumerator is valid for
+            /// </param>
+            /// <returns>
+            ///     If the enumerator is valid for the given list
+            /// </returns>
+            public bool IsValidFor(NativeLinkedList<T> list)
             {
                 if (m_List.m_State == null)
                 {
@@ -414,168 +414,168 @@ namespace Appalachia.Core.Collections.Native
                        (m_Version == m_List.m_State->m_Version);
             }
 
-	        /// <summary>
-	        ///     If this enumerator is valid, move to the next node a given
-	        ///     number of times or invalidate this enumerator if either at the
-	        ///     tail node or the tail node is moved beyond while moving next. If
-	        ///     this enumerator is invalid but was constructed via the
-	        ///     non-default constructor and the list it enumerates has not been
-	        ///     disposed and has not invalidated this enumerator, move to the
-	        ///     head node. Otherwise, this function has no effect.
-	        ///     This operation requires read access in general and access to the
-	        ///     node if the enumerator is valid.
-	        ///     This operation is O(N) where N is the given number of moves.
-	        /// </summary>
-	        /// <returns>
-	        ///     If this enumerator is valid
-	        /// </returns>
-	        public bool MoveNext(int numSteps)
-	        {
-		        m_List.CheckReadAccess();
-
-		        // The version matches
-		        if (m_Version == m_List.m_State->m_Version)
-		        {
-			        for (; numSteps > 0; numSteps--)
-			        {
-				        // Still within the list. The enumerator is valid.
-				        if ((m_Index >= 0) && (m_Index < m_List.m_State->m_Length))
-				        {
-					        // Go to the next node
-					        m_List.RequireParallelForAccess(m_Index);
-					        m_Index = m_List.m_State->m_NextIndexes[m_Index];
-				        }
-				        else
-				        {
-					        // Not within the list. Go to the tail.
-					        m_Index = m_List.m_State->m_HeadIndex;
-				        }
-			        }
-
-			        return m_Index >= 0;
-		        }
-
-		        // Already invalid
-		        return false;
-	        }
-
-	        /// <summary>
-	        ///     If this enumerator is valid, move to the previous node or
-	        ///     invalidate this enumerator if at the head node. If this
-	        ///     enumerator is invalid but was constructed via the non-default
-	        ///     constructor and the list it enumerates has not been disposed and
-	        ///     has not invalidated this enumerator, move to the tail node.
-	        ///     Otherwise, this function has no effect.
-	        ///     This operation requires read access in general and access to the
-	        ///     node if the enumerator is valid.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <returns>
-	        ///     If this enumerator is valid
-	        /// </returns>
-	        public bool MovePrev()
+            /// <summary>
+            ///     If this enumerator is valid, move to the next node a given
+            ///     number of times or invalidate this enumerator if either at the
+            ///     tail node or the tail node is moved beyond while moving next. If
+            ///     this enumerator is invalid but was constructed via the
+            ///     non-default constructor and the list it enumerates has not been
+            ///     disposed and has not invalidated this enumerator, move to the
+            ///     head node. Otherwise, this function has no effect.
+            ///     This operation requires read access in general and access to the
+            ///     node if the enumerator is valid.
+            ///     This operation is O(N) where N is the given number of moves.
+            /// </summary>
+            /// <returns>
+            ///     If this enumerator is valid
+            /// </returns>
+            public bool MoveNext(int numSteps)
             {
-	            m_List.CheckReadAccess();
+                m_List.CheckReadAccess();
 
-	            // The version matches
-	            if (m_Version == m_List.m_State->m_Version)
+                // The version matches
+                if (m_Version == m_List.m_State->m_Version)
                 {
-	                // Still within the list. The enumerator is valid.
-	                if ((m_Index >= 0) && (m_Index < m_List.m_State->m_Length))
-	                {
-		                // Go to the previous node
-		                m_List.RequireParallelForAccess(m_Index);
-		                m_Index = m_List.m_State->m_PrevIndexes[m_Index];
-		                return m_Index >= 0;
-	                }
+                    for (; numSteps > 0; numSteps--)
+                    {
+                        // Still within the list. The enumerator is valid.
+                        if ((m_Index >= 0) && (m_Index < m_List.m_State->m_Length))
+                        {
+                            // Go to the next node
+                            m_List.RequireParallelForAccess(m_Index);
+                            m_Index = m_List.m_State->m_NextIndexes[m_Index];
+                        }
+                        else
+                        {
+                            // Not within the list. Go to the tail.
+                            m_Index = m_List.m_State->m_HeadIndex;
+                        }
+                    }
 
-	                // Not within the list. Go to the tail.
-	                m_Index = m_List.m_State->m_TailIndex;
+                    return m_Index >= 0;
+                }
+
+                // Already invalid
+                return false;
+            }
+
+            /// <summary>
+            ///     If this enumerator is valid, move to the previous node or
+            ///     invalidate this enumerator if at the head node. If this
+            ///     enumerator is invalid but was constructed via the non-default
+            ///     constructor and the list it enumerates has not been disposed and
+            ///     has not invalidated this enumerator, move to the tail node.
+            ///     Otherwise, this function has no effect.
+            ///     This operation requires read access in general and access to the
+            ///     node if the enumerator is valid.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <returns>
+            ///     If this enumerator is valid
+            /// </returns>
+            public bool MovePrev()
+            {
+                m_List.CheckReadAccess();
+
+                // The version matches
+                if (m_Version == m_List.m_State->m_Version)
+                {
+                    // Still within the list. The enumerator is valid.
+                    if ((m_Index >= 0) && (m_Index < m_List.m_State->m_Length))
+                    {
+                        // Go to the previous node
+                        m_List.RequireParallelForAccess(m_Index);
+                        m_Index = m_List.m_State->m_PrevIndexes[m_Index];
+                        return m_Index >= 0;
+                    }
+
+                    // Not within the list. Go to the tail.
+                    m_Index = m_List.m_State->m_TailIndex;
                     return true;
                 }
 
-	            // Already invalid
-	            return false;
+                // Already invalid
+                return false;
             }
 
-	        /// <summary>
-	        ///     If this enumerator is valid, move to the previous node a given
-	        ///     number of times or invalidate this enumerator if either at the
-	        ///     head node or the head node moved beyond while moving previous.
-	        ///     If this enumerator is invalid but was constructed via the
-	        ///     non-default constructor and the list it enumerates has not been
-	        ///     disposed and has not invalidated this enumerator, move to the
-	        ///     tail node. Otherwise, this function has no effect.
-	        ///     This operation requires read access in general and access to the
-	        ///     node if the enumerator is valid.
-	        ///     This operation is O(N) where N is the given number of moves.
-	        /// </summary>
-	        /// <returns>
-	        ///     If this enumerator is valid
-	        /// </returns>
-	        public bool MovePrev(int numSteps)
-	        {
-		        m_List.CheckReadAccess();
+            /// <summary>
+            ///     If this enumerator is valid, move to the previous node a given
+            ///     number of times or invalidate this enumerator if either at the
+            ///     head node or the head node moved beyond while moving previous.
+            ///     If this enumerator is invalid but was constructed via the
+            ///     non-default constructor and the list it enumerates has not been
+            ///     disposed and has not invalidated this enumerator, move to the
+            ///     tail node. Otherwise, this function has no effect.
+            ///     This operation requires read access in general and access to the
+            ///     node if the enumerator is valid.
+            ///     This operation is O(N) where N is the given number of moves.
+            /// </summary>
+            /// <returns>
+            ///     If this enumerator is valid
+            /// </returns>
+            public bool MovePrev(int numSteps)
+            {
+                m_List.CheckReadAccess();
 
-		        // The version matches
-		        if (m_Version == m_List.m_State->m_Version)
-		        {
-			        for (; numSteps > 0; numSteps--)
-			        {
-				        // Still within the list. The enumerator is valid.
-				        if ((m_Index >= 0) && (m_Index < m_List.m_State->m_Length))
-				        {
-					        // Go to the previous node
-					        m_List.RequireParallelForAccess(m_Index);
-					        m_Index = m_List.m_State->m_PrevIndexes[m_Index];
-				        }
-				        else
-				        {
-					        // Not within the list. Go to the tail.
-					        m_Index = m_List.m_State->m_TailIndex;
-				        }
-			        }
+                // The version matches
+                if (m_Version == m_List.m_State->m_Version)
+                {
+                    for (; numSteps > 0; numSteps--)
+                    {
+                        // Still within the list. The enumerator is valid.
+                        if ((m_Index >= 0) && (m_Index < m_List.m_State->m_Length))
+                        {
+                            // Go to the previous node
+                            m_List.RequireParallelForAccess(m_Index);
+                            m_Index = m_List.m_State->m_PrevIndexes[m_Index];
+                        }
+                        else
+                        {
+                            // Not within the list. Go to the tail.
+                            m_Index = m_List.m_State->m_TailIndex;
+                        }
+                    }
 
-			        return m_Index >= 0;
-		        }
+                    return m_Index >= 0;
+                }
 
-		        // Already invalid
-		        return false;
+                // Already invalid
+                return false;
             }
 
-	        /// <summary>
-	        ///     Set whether both read and write access should be allowed for the
-	        ///     enumerator's list. This is used for automated testing purposes
-	        ///     only.
-	        /// </summary>
-	        /// <param name="allowReadOrWriteAccess">
-	        ///     If both read and write access should be allowed for the
-	        ///     enumerator's list
-	        /// </param>
-	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
-	        public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
+            /// <summary>
+            ///     Set whether both read and write access should be allowed for the
+            ///     enumerator's list. This is used for automated testing purposes
+            ///     only.
+            /// </summary>
+            /// <param name="allowReadOrWriteAccess">
+            ///     If both read and write access should be allowed for the
+            ///     enumerator's list
+            /// </param>
+            [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+            public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
-	            AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
+                AtomicSafetyHandle.SetAllowReadOrWriteAccess(m_List.m_Safety, allowReadOrWriteAccess);
 #endif
             }
 
-	        /// <summary>
-	        ///     Set the ParallelFor safety check ranges of the list this
-	        ///     enumerator is for. This is used for automated testing purposes
-	        ///     only.
-	        /// </summary>
-	        /// <param name="minIndex">
-	        ///     The minimum index that can safely be accessed. This is zero
-	        ///     outside of a job and in a regular, non-ParallelFor job but set
-	        ///     higher by ParallelFor jobs.
-	        /// </param>
-	        /// <param name="maxIndex">
-	        ///     The maximum index that can safely be accessed. This is equal to
-	        ///     (m_Length-1) outside of a job and in a regular, non-ParallelFor
-	        ///     job but set lower by ParallelFor jobs.
-	        /// </param>
-	        [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
+            /// <summary>
+            ///     Set the ParallelFor safety check ranges of the list this
+            ///     enumerator is for. This is used for automated testing purposes
+            ///     only.
+            /// </summary>
+            /// <param name="minIndex">
+            ///     The minimum index that can safely be accessed. This is zero
+            ///     outside of a job and in a regular, non-ParallelFor job but set
+            ///     higher by ParallelFor jobs.
+            /// </param>
+            /// <param name="maxIndex">
+            ///     The maximum index that can safely be accessed. This is equal to
+            ///     (m_Length-1) outside of a job and in a regular, non-ParallelFor
+            ///     job but set lower by ParallelFor jobs.
+            /// </param>
+            [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
             public void TestUseOnlySetParallelForSafetyCheckRange(int minIndex = -1, int maxIndex = -1)
             {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
@@ -584,82 +584,82 @@ namespace Appalachia.Core.Collections.Native
 #endif
             }
 
-	        #region IEnumerator<T> Members
+            #region IEnumerator<T> Members
 
-	        /// <summary>
-	        ///     If this enumerator is valid, move to the next node or
-	        ///     invalidate this enumerator if at the tail node. If this
-	        ///     enumerator is invalid but was constructed via the non-default
-	        ///     constructor and the list it enumerates has not been disposed and
-	        ///     has not invalidated this enumerator, move to the head node.
-	        ///     Otherwise, this function has no effect.
-	        ///     This operation requires read access in general and access to the
-	        ///     node if the enumerator is valid.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <returns>
-	        ///     If this enumerator is valid
-	        /// </returns>
-	        public bool MoveNext()
-	        {
-		        m_List.CheckReadAccess();
+            /// <summary>
+            ///     If this enumerator is valid, move to the next node or
+            ///     invalidate this enumerator if at the tail node. If this
+            ///     enumerator is invalid but was constructed via the non-default
+            ///     constructor and the list it enumerates has not been disposed and
+            ///     has not invalidated this enumerator, move to the head node.
+            ///     Otherwise, this function has no effect.
+            ///     This operation requires read access in general and access to the
+            ///     node if the enumerator is valid.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <returns>
+            ///     If this enumerator is valid
+            /// </returns>
+            public bool MoveNext()
+            {
+                m_List.CheckReadAccess();
 
-		        // The version matches
-		        if (m_Version == m_List.m_State->m_Version)
-		        {
-			        // Still within the list. The enumerator is valid.
-			        if ((m_Index >= 0) && (m_Index < m_List.m_State->m_Length))
-			        {
-				        // Go to the next node
-				        m_List.RequireParallelForAccess(m_Index);
-				        m_Index = m_List.m_State->m_NextIndexes[m_Index];
-				        return m_Index >= 0;
-			        }
+                // The version matches
+                if (m_Version == m_List.m_State->m_Version)
+                {
+                    // Still within the list. The enumerator is valid.
+                    if ((m_Index >= 0) && (m_Index < m_List.m_State->m_Length))
+                    {
+                        // Go to the next node
+                        m_List.RequireParallelForAccess(m_Index);
+                        m_Index = m_List.m_State->m_NextIndexes[m_Index];
+                        return m_Index >= 0;
+                    }
 
-			        // Not within the list. Go to the head.
-			        m_Index = m_List.m_State->m_HeadIndex;
-			        return true;
-		        }
+                    // Not within the list. Go to the head.
+                    m_Index = m_List.m_State->m_HeadIndex;
+                    return true;
+                }
 
-		        // Already invalid
-		        return false;
+                // Already invalid
+                return false;
             }
 
-	        /// <summary>
-	        ///     Dispose the enumerator. This operation has no effect and exists
-	        ///     only to satisfy the requirements of <see cref="IDisposable" />.
-	        ///     This operation has no access requirements on the enumerator's
-	        ///     associated list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        public void Dispose()
+            /// <summary>
+            ///     Dispose the enumerator. This operation has no effect and exists
+            ///     only to satisfy the requirements of <see cref="IDisposable" />.
+            ///     This operation has no access requirements on the enumerator's
+            ///     associated list.
+            ///     This operation is O(1).
+            /// </summary>
+            public void Dispose()
             {
             }
 
-	        /// <summary>
-	        ///     Reset the enumerator to the head of the list if it wasn't
-	        ///     created using the default constructor.
-	        ///     This operation requires read access to the list.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        public void Reset()
+            /// <summary>
+            ///     Reset the enumerator to the head of the list if it wasn't
+            ///     created using the default constructor.
+            ///     This operation requires read access to the list.
+            ///     This operation is O(1).
+            /// </summary>
+            public void Reset()
             {
                 m_List.CheckReadAccess();
 
                 m_Index = m_List.m_State->m_HeadIndex;
             }
 
-	        /// <summary>
-	        ///     Get or set a node's value. This is provided only for
-	        ///     compatibility with <see cref="IEnumerator{T}" />. As such, there is
-	        ///     no 'set' for this property.
-	        ///     This operation requires read access to the node.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <value>
-	        ///     The node's value
-	        /// </value>
-	        public T Current
+            /// <summary>
+            ///     Get or set a node's value. This is provided only for
+            ///     compatibility with <see cref="IEnumerator{T}" />. As such, there is
+            ///     no 'set' for this property.
+            ///     This operation requires read access to the node.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <value>
+            ///     The node's value
+            /// </value>
+            public T Current
             {
                 get
                 {
@@ -670,19 +670,19 @@ namespace Appalachia.Core.Collections.Native
                 }
             }
 
-	        /// <summary>
-	        ///     Get a node's value. Prefer using the generic version of
-	        ///     <see cref="Current" /> as this will cause boxing when enumerating
-	        ///     value type node value. This is provided only for compatibility
-	        ///     with <see cref="IEnumerator" />. As such, there is no 'set' for
-	        ///     this non-generic property.
-	        ///     This operation requires read access to the node.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <value>
-	        ///     The node's value or null if this enumerator is invalid.
-	        /// </value>
-	        object IEnumerator.Current
+            /// <summary>
+            ///     Get a node's value. Prefer using the generic version of
+            ///     <see cref="Current" /> as this will cause boxing when enumerating
+            ///     value type node value. This is provided only for compatibility
+            ///     with <see cref="IEnumerator" />. As such, there is no 'set' for
+            ///     this non-generic property.
+            ///     This operation requires read access to the node.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <value>
+            ///     The node's value or null if this enumerator is invalid.
+            /// </value>
+            object IEnumerator.Current
             {
                 get
                 {
@@ -693,31 +693,31 @@ namespace Appalachia.Core.Collections.Native
                 }
             }
 
-	        #endregion
+            #endregion
 
-	        #region IEquatable<NativeLinkedList<T>.Enumerator> Members
+            #region IEquatable<NativeLinkedList<T>.Enumerator> Members
 
-	        /// <summary>
-	        ///     Check if this enumerator refer to the same node as another
-	        ///     enumerator.
-	        ///     This operation requires read access to both enumerators' lists
-	        ///     unless either list was initialized with the default constructor.
-	        ///     This operation is O(1).
-	        /// </summary>
-	        /// <param name="e">
-	        ///     Enumerator to compare with
-	        /// </param>
-	        /// <returns>
-	        ///     If the given enumerator refers to the same node as this
-	        ///     enumerator and is of the same type and neither enumerator is
-	        ///     invalid.
-	        /// </returns>
-	        public bool Equals(Enumerator e)
-	        {
-		        return this == e;
-	        }
+            /// <summary>
+            ///     Check if this enumerator refer to the same node as another
+            ///     enumerator.
+            ///     This operation requires read access to both enumerators' lists
+            ///     unless either list was initialized with the default constructor.
+            ///     This operation is O(1).
+            /// </summary>
+            /// <param name="e">
+            ///     Enumerator to compare with
+            /// </param>
+            /// <returns>
+            ///     If the given enumerator refers to the same node as this
+            ///     enumerator and is of the same type and neither enumerator is
+            ///     invalid.
+            /// </returns>
+            public bool Equals(Enumerator e)
+            {
+                return this == e;
+            }
 
-	        #endregion
+            #endregion
         }
 
 	    /// <summary>
@@ -3517,7 +3517,7 @@ namespace Appalachia.Core.Collections.Native
             var endIndex = m_State->m_Length;
             var sizeofT = UnsafeUtility.SizeOf<T>();
             UnsafeUtility.MemCpyStride(
-	            (byte*)m_State->m_Values + (sizeofT * endIndex),
+                (byte*)m_State->m_Values + (sizeofT * endIndex),
                 sizeofT,
                 list.m_State->m_Values,
                 sizeofT,
@@ -3645,7 +3645,7 @@ namespace Appalachia.Core.Collections.Native
             // the same way NativeSlice<T> copies.
             var sizeofT = UnsafeUtility.SizeOf<T>();
             UnsafeUtility.MemCpyStride(
-	            (byte*)m_State->m_Values + (sizeofT * endIndex),
+                (byte*)m_State->m_Values + (sizeofT * endIndex),
                 sizeofT,
                 array.GetUnsafeReadOnlyPtr(),
                 sizeofT,
@@ -3713,9 +3713,9 @@ namespace Appalachia.Core.Collections.Native
             // the same way NativeSlice<T> copies.
             var sizeofT = UnsafeUtility.SizeOf<T>();
             UnsafeUtility.MemCpyStride(
-	            (byte*)m_State->m_Values + (sizeofT * endIndex),
+                (byte*)m_State->m_Values + (sizeofT * endIndex),
                 sizeofT,
-	            (byte*)array.GetUnsafeReadOnlyPtr() + (sizeofT * startIndex),
+                (byte*)array.GetUnsafeReadOnlyPtr() + (sizeofT * startIndex),
                 sizeofT,
                 sizeofT,
                 length

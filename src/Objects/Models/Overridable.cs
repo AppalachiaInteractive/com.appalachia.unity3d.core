@@ -9,6 +9,8 @@ using Appalachia.Core.Events.Extensions;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Core.Preferences;
 using Appalachia.Utility.Colors;
+using Appalachia.Utility.Constants;
+using Appalachia.Utility.Standards;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -22,7 +24,8 @@ namespace Appalachia.Core.Objects.Models
     public abstract class Overridable<T, TO> : IEquatable<Overridable<T, TO>>,
                                                IOverridable,
                                                ISerializationCallbackReceiver,
-                                               IChangePublisher
+                                               IChangePublisher,
+                                               IUnique
         where TO : Overridable<T, TO>, new()
     {
         protected Overridable(bool overriding, T value)
@@ -104,6 +107,10 @@ namespace Appalachia.Core.Objects.Models
         [GUIColor(nameof(_overridingColor))]
         private bool _overriding;
 
+        [HideInInspector]
+        [SerializeField]
+        private ObjectId _objectId;
+
         [SerializeField, HideInInspector]
         private T _initial;
 
@@ -183,6 +190,7 @@ namespace Appalachia.Core.Objects.Models
             }
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object obj)
         {
@@ -207,6 +215,7 @@ namespace Appalachia.Core.Objects.Models
             }
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {
@@ -347,12 +356,37 @@ namespace Appalachia.Core.Objects.Models
 
         public void OnAfterDeserialize()
         {
-            var enabledColor = overrideEnabledColor;
-            var disabledColor = overrideDisabledColor;
+            using var scope = APPASERIALIZE.OnAfterDeserialize();
+
+            PREFS.RegisterPreSettingsProviderAction(
+                () =>
+                {
+                    var color1 = overrideDisabledColor;
+                    var color2 = overrideEnabledColor;
+                }
+            );
 
             if ((_value != null) && _value is IChangePublisher irc)
             {
                 irc.SubscribeToChanges(OnChanged);
+            }
+        }
+
+        #endregion
+
+        #region IUnique Members
+
+        public ObjectId ObjectId
+        {
+            get
+            {
+                if ((_objectId == null) || (_objectId == ObjectId.Empty))
+                {
+                    _objectId = ObjectId.NewObjectId();
+                    OnChanged();
+                }
+
+                return _objectId;
             }
         }
 

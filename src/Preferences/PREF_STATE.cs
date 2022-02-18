@@ -199,6 +199,7 @@ namespace Appalachia.Core.Preferences
 
         #endregion
 
+        /// <inheritdoc />
         public override void Awake()
         {
             using (_PRF_Awake.Auto())
@@ -265,6 +266,7 @@ namespace Appalachia.Core.Preferences
 
         public class PrefComparer : Comparer<PREF<T>>
         {
+            /// <inheritdoc />
             public override int Compare(PREF<T> x, PREF<T> y)
             {
                 using (_PRF_Compare.Auto())

@@ -19,6 +19,7 @@ namespace Appalachia.Core.Objects.Availability
 
         #endregion
 
+        /// <inheritdoc />
         public override bool IsFullyAvailable => Data1.IsAvailable;
 
         public void CopyTo(AvailabilitySet<T1> other)
@@ -54,6 +55,7 @@ namespace Appalachia.Core.Objects.Availability
             }
         }
 
+        /// <inheritdoc />
         protected override void OnFullyAvailable(Action<T1> action)
         {
             using (_PRF_OnFullyAvailable.Auto())
@@ -122,9 +124,7 @@ namespace Appalachia.Core.Objects.Availability
         #region Profiling
 
         private const string _PRF_PFX = nameof(AvailabilitySet<T1>) + ".";
-
         private static readonly ProfilerMarker _PRF_CopyTo = new ProfilerMarker(_PRF_PFX + nameof(CopyTo));
-
         private static readonly ProfilerMarker _PRF_And = new ProfilerMarker(_PRF_PFX + nameof(And));
 
         private static readonly ProfilerMarker _PRF_AndBehaviour =

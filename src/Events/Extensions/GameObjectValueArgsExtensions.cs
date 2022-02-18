@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -12,10 +13,16 @@ namespace Appalachia.Core.Events.Extensions
         /// <param name="gameObject">The <see cref="GameObject" /> invoking the event.</param>
         /// <param name="value">The current value.</param>
         /// <typeparam name="TV">The value type.</typeparam>
+        /// <param name="callerFilePath">Do not provide a value for this argument.  It will be populated by the compiler.</param>
+        /// <param name="callerMemberName">Do not provide a value for this argument.  It will be populated by the compiler.</param>
+        /// <param name="callerLineNumber">Do not provide a value for this argument.  It will be populated by the compiler.</param>
         public static void RaiseEvent<TV>(
             this GameObjectValueEvent<TV>.Data eventHandler,
             GameObject gameObject,
-            TV value)
+            TV value,
+            [CallerFilePath] string callerFilePath = null,
+            [CallerMemberName] string callerMemberName = null,
+            [CallerLineNumber] int callerLineNumber = 0)
         {
             using (_PRF_RaiseEvent.Auto())
             {
@@ -25,7 +32,13 @@ namespace Appalachia.Core.Events.Extensions
                 }
 
                 var args = ToArgs(gameObject, value);
-                eventHandler.Subscribers.InvokeSafe(subscriber => subscriber.Invoke(args), args);
+                eventHandler.Subscribers.InvokeSafe(
+                    subscriber => subscriber.Invoke(args),
+                    callerFilePath,
+                    callerMemberName,
+                    callerLineNumber,
+                    args
+                );
             }
         }
 

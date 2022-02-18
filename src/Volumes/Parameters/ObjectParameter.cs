@@ -25,6 +25,7 @@ namespace Appalachia.Core.Volumes.Parameters
         #endregion
 
         // Force override state to true for container objects
+        /// <inheritdoc />
         public override bool overrideState
         {
             get => true;
@@ -33,6 +34,7 @@ namespace Appalachia.Core.Volumes.Parameters
             set => m_OverrideState = true;
         }
 
+        /// <inheritdoc />
         public override T value
         {
             get => m_Value;
@@ -57,6 +59,7 @@ namespace Appalachia.Core.Volumes.Parameters
             }
         }
 
+        /// <inheritdoc />
         internal override void Interp(AppaVolumeParameter from, AppaVolumeParameter to, float t)
         {
             if (m_Value == null)

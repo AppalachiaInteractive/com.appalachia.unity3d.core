@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using Appalachia.Core.Events;
 using Appalachia.Core.Events.Extensions;
+using Appalachia.Utility.Constants;
+using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -41,7 +44,22 @@ namespace Appalachia.Core.Objects.Routing
                     return;
                 }
 
-                var eventData = (ComponentEvent<T>.Data)_eventLookup[type];
+                var storedEventData = _eventLookup[type];
+                var targetEventType = typeof(ComponentEvent<T>.Data);
+
+                if (storedEventData.GetType() != targetEventType)
+                {
+                    AppaLog.Context.Dependencies.Error(
+                        ZString.Format(
+                            "Could not publish a notification for {0} component enable event data type {1} because the subscriber was stored as a {2}.",
+                            type.FormatForLogging(),
+                            targetEventType.FormatForLogging(),
+                            storedEventData.GetType()
+                        )
+                    );
+                }
+
+                var eventData = (ComponentEvent<T>.Data)storedEventData;
 
                 eventData.RaiseEvent(instance);
             }

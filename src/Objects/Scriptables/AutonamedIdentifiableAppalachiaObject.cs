@@ -68,6 +68,7 @@ namespace Appalachia.Core.Objects.Scriptables
             return Comparer<AutonamedIdentifiableAppalachiaObject<T>>.Default.Compare(left, right) <= 0;
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);
@@ -171,6 +172,7 @@ namespace Appalachia.Core.Objects.Scriptables
             }
         }
 
+        /// <inheritdoc />
         protected override void OnUpdateAllIDs()
         {
             using (_PRF_OnUpateAllIDs.Auto())

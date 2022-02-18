@@ -60,6 +60,8 @@ namespace Appalachia.Core.Objects.Dependencies
 
         private readonly DependencyTrackingSubset[] _subsets;
 
+        [NonSerialized] private bool _dependenciesAreReady;
+
         private bool _isReady;
         private DependencyTrackingSubset _behaviourDependencies;
         private DependencyTrackingSubset _objectDependencies;
@@ -120,8 +122,6 @@ namespace Appalachia.Core.Objects.Dependencies
             }
         }
 
-        [NonSerialized] private bool _dependenciesAreReady;
-        
         internal bool DependenciesAreReady
         {
             get
@@ -132,7 +132,7 @@ namespace Appalachia.Core.Objects.Dependencies
                     {
                         return true;
                     }
-                    
+
                     for (var index = 0; index < subsets.Length; index++)
                     {
                         var d = subsets[index];
@@ -181,6 +181,7 @@ namespace Appalachia.Core.Objects.Dependencies
             return Comparer<AppalachiaRepositoryDependencyTracker>.Default.Compare(left, right) <= 0;
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{ownerType}: {Owner.Name}";

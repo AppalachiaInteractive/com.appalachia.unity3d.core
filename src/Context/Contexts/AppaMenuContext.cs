@@ -113,6 +113,7 @@ namespace Appalachia.Core.Context.Contexts
         {
         }
 
+        /// <inheritdoc />
         protected override IEnumerable<AppaProgress> OnPostInitialize(AppaProgressCounter pc)
         {
             InitializeMenuSelections();

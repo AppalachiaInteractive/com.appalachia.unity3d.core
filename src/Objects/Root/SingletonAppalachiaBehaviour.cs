@@ -23,6 +23,7 @@ namespace Appalachia.Core.Objects.Root
     {
         protected virtual bool DestroyObjectOfSubsequentInstances => false;
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

@@ -21,6 +21,7 @@ namespace Appalachia.Core.Volumes.Parameters
 
         // XXX: this is hardly efficient
 
+        /// <inheritdoc />
         public override void Interp(Gradient from, Gradient to, float t)
         {
             var atTime = 0f;

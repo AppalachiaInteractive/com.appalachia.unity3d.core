@@ -100,7 +100,10 @@ namespace Appalachia.Core.Objects.Root
         /// <summary>
         ///     Offers an opportunity to initialize any required components.
         /// </summary>
-        /// <param name="initializer">An initializer that helps maintain initialization state.</param>
+        /// <param name="initializer">
+        ///     Will help maintain initialization state by keeping track of which <see cref="Initializer" />.
+        ///     <see cref="Initializer.Do(IUnitySerializable, string, Action)" /> calls have already been executed.
+        /// </param>
         /// <returns>An awaitable task.</returns>
         protected virtual async AppaTask Initialize(Initializer initializer)
         {

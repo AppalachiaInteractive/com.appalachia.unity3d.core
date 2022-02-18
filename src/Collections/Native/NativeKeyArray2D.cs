@@ -197,6 +197,7 @@ namespace Appalachia.Core.Collections.Native
             return !a.Equals(b);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override bool Equals(object other)
         {
@@ -208,6 +209,7 @@ namespace Appalachia.Core.Collections.Native
             return other is NativeKeyArray2D<TK, TV> && Equals((NativeKeyArray2D<TK, TV>)other);
         }
 
+        /// <inheritdoc />
         [DebuggerStepThrough]
         public override int GetHashCode()
         {

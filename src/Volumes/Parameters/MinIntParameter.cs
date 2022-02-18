@@ -19,6 +19,7 @@ namespace Appalachia.Core.Volumes.Parameters
 
         #endregion
 
+        /// <inheritdoc />
         public override int value
         {
             get => m_Value;

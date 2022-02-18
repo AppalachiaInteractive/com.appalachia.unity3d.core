@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using Appalachia.Core.Events.Contracts;
+using Appalachia.Utility.Constants;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Appalachia.Utility.Strings;
 using Unity.Profiling;
@@ -11,19 +14,25 @@ namespace Appalachia.Core.Events.Collections
     public abstract class EventSubscribersCollection<T> : ISerializationCallbackReceiver
         where T : MulticastDelegate
     {
+        #region Constants and Static Readonly
+
+        private const int SUBSCRIBER_FLUSH_LIMIT = 1000;
+
+        private const int SUBSCRIBER_LIMIT = 100;
+
+        #endregion
+
         #region Fields and Autoproperties
 
-        private bool _currentlyInvoking;
-        private bool _lockedToModifications;
-        private bool _pendingClear;
+        [NonSerialized] private bool _currentlyInvoking;
+        [NonSerialized] private bool _lockedToModifications;
+        [NonSerialized] private bool _pendingClear;
 
-        private Dictionary<int, T> _pendingAdds;
-        private Dictionary<int, T> _pendingRemoves;
-        private Dictionary<int, T> _subscribers;
+        [NonSerialized] private Dictionary<int, T> _pendingAdds;
+        [NonSerialized] private Dictionary<int, T> _pendingRemoves;
+        [NonSerialized] private Dictionary<int, T> _subscribers;
 
-        private object _lock;
-
-        private T[] _subscriberArray;
+        [NonSerialized] private object _lock;
 
         #endregion
 
@@ -41,15 +50,6 @@ namespace Appalachia.Core.Events.Collections
         }
 
         private AppaLogContext Log => AppaLog.Context.Events;
-
-        private IReadOnlyCollection<T> Subscribers
-        {
-            get
-            {
-                Initialize();
-                return _subscribers.Values;
-            }
-        }
 
         public void Add(T subscriber)
         {
@@ -73,12 +73,40 @@ namespace Appalachia.Core.Events.Collections
                     }
                     else if (!pendingAdd)
                     {
-                        _pendingAdds.Add(hashCode, subscriber);
+                        if (!_pendingAdds.ContainsKey(hashCode))
+                        {
+                            _pendingAdds.Add(hashCode, subscriber);
+                        }
                     }
                 }
                 else if (!alreadySubscribed)
                 {
-                    _subscribers.Add(hashCode, subscriber);
+                    if (SubscriberCount > SUBSCRIBER_LIMIT)
+                    {
+                        Log.Warn(
+                            ZString.Format(
+                                "The event has {0} subscribers, and more are subscribing.",
+                                SubscriberCount
+                            )
+                        );
+                    }
+
+                    if (SubscriberCount > SUBSCRIBER_FLUSH_LIMIT)
+                    {
+                        Log.Warn(
+                            ZString.Format(
+                                "The event has {0} subscribers, which will now be removed.",
+                                SubscriberCount
+                            )
+                        );
+
+                        _subscribers.Clear();
+                    }
+
+                    if (!_subscribers.ContainsKey(hashCode))
+                    {
+                        _subscribers.Add(hashCode, subscriber);
+                    }
                 }
             }
         }
@@ -132,11 +160,16 @@ namespace Appalachia.Core.Events.Collections
             }
         }
 
-        internal void InvokeSafe(Action<T> invocation, params IDisposable[] disposeAfter)
+        internal void InvokeSafe(
+            Action<T> invocation,
+            string callerFilePath,
+            string callerMemberName,
+            int callerLineNumber,
+            params IDisposable[] disposeAfter)
         {
             using (_PRF_InvokeSafe.Auto())
             {
-                InvokeSafe(invocation);
+                InvokeSafe(invocation, callerFilePath, callerMemberName, callerLineNumber);
 
                 for (var index = 0; index < disposeAfter.Length; index++)
                 {
@@ -146,7 +179,11 @@ namespace Appalachia.Core.Events.Collections
             }
         }
 
-        internal void InvokeSafe(Action<T> invocation)
+        internal void InvokeSafe(
+            Action<T> invocation,
+            string callerFilePath,
+            string callerMemberName,
+            int callerLineNumber)
         {
             using (_PRF_InvokeSafe.Auto())
             {
@@ -164,7 +201,10 @@ namespace Appalachia.Core.Events.Collections
 
                         foreach (var pendingAdd in _pendingAdds)
                         {
-                            _subscribers.Add(pendingAdd.Key, pendingAdd.Value);
+                            if (!_subscribers.ContainsKey(pendingAdd.Key))
+                            {
+                                _subscribers.Add(pendingAdd.Key, pendingAdd.Value);
+                            }
                         }
 
                         _pendingAdds.Clear();
@@ -180,7 +220,12 @@ namespace Appalachia.Core.Events.Collections
 
                 if (_currentlyInvoking)
                 {
-                    Log.Warn("Recursive invocation of events!");
+                    Log.Info(
+                        ZString.Format(
+                            "Recursive invocation of events! Initiated here: {0}",
+                            callerFilePath.FormatCallerMembersForLogging(callerMemberName, callerLineNumber)
+                        )
+                    );
                     return;
                 }
 
@@ -195,6 +240,21 @@ namespace Appalachia.Core.Events.Collections
                         _currentlyInvoking = true;
                         _lockedToModifications = true;
 
+                        if (SubscriberCount > SUBSCRIBER_LIMIT)
+                        {
+                            var message = ZString.Format(
+                                "The event invoked at the following location has {0} subscribers: {1}",
+                                SubscriberCount,
+                                callerFilePath.FormatCallerMembersForLogging(
+                                    callerMemberName,
+                                    callerLineNumber
+                                )
+                            );
+                            Log.Warn(message);
+
+                            throw new NotSupportedException(message);
+                        }
+
                         foreach (var subscriber in _subscribers)
                         {
                             invocation(subscriber.Value);
@@ -206,10 +266,18 @@ namespace Appalachia.Core.Events.Collections
 
                         var endTime = DateTime.UtcNow;
                         var duration = endTime - startTime;
-                        if (duration.TotalMilliseconds > 20f)
+
+                        if ((duration.TotalMilliseconds > 20f) && !Debugger.IsAttached)
                         {
                             Log.Warn(
-                                ZString.Format("Invoking this event took {0}ms.", duration.TotalMilliseconds)
+                                ZString.Format(
+                                    "Invoking the following event took {0}ms: {1}",
+                                    duration.TotalMilliseconds.FormatNumberForLogging(),
+                                    callerFilePath.FormatCallerMembersForLogging(
+                                        callerMemberName,
+                                        callerLineNumber
+                                    )
+                                )
                             );
                         }
 
@@ -225,9 +293,31 @@ namespace Appalachia.Core.Events.Collections
             using (_PRF_GetSubscriberHashCode.Auto())
             {
                 var hashCode = new HashCode();
+
                 var target = subscriber.Target;
+
+                if (target is IUniqueSubscriber i)
+                {
+                    hashCode.Add(i.ObjectId);
+                }
+                else if (target is Component c)
+                {
+                    var path = c.transform.GetFullPath();
+
+                    hashCode.Add(path);
+                }
+                else if (target is UnityEngine.Object o)
+                {
+                    var instanceId = o.GetInstanceID();
+
+                    hashCode.Add(instanceId);
+                }
+                else
+                {
+                    hashCode.Add(target);
+                }
+
                 var method = subscriber.Method;
-                hashCode.Add(target);
                 hashCode.Add(method);
 
                 return hashCode.ToHashCode();
@@ -267,8 +357,6 @@ namespace Appalachia.Core.Events.Collections
         {
             using (_PRF_OnBeforeSerialize.Auto())
             {
-                Initialize();
-                _subscriberArray = _subscribers.Values.ToArray();
             }
         }
 
@@ -278,18 +366,11 @@ namespace Appalachia.Core.Events.Collections
             {
                 Initialize();
 
-                if (_subscriberArray != null)
-                {
-                    for (var subscriberIndex = 0;
-                         subscriberIndex < _subscriberArray.Length;
-                         subscriberIndex++)
-                    {
-                        var subscriber = _subscriberArray[subscriberIndex];
-                        var hashCode = GetSubscriberHashCode(subscriber);
-
-                        _subscribers.Add(hashCode, subscriber);
-                    }
-                }
+                _subscribers.Clear();
+                _pendingAdds.Clear();
+                _pendingRemoves.Clear();
+                _currentlyInvoking = false;
+                _pendingClear = false;
             }
         }
 

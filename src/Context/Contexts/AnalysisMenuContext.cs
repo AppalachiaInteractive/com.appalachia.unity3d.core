@@ -63,7 +63,10 @@ namespace Appalachia.Core.Context.Contexts
 
         protected abstract string IssueTypeName { get; }
 
+        /// <inheritdoc />
         public override float MenuWidth => _menuWidth.v;
+
+        /// <inheritdoc />
         public override IReadOnlyList<TA> MenuOneItems => items;
 
         public AnalysisAggregate<TA, TT, TE> AggregateAnalysis
@@ -117,6 +120,7 @@ namespace Appalachia.Core.Context.Contexts
             }
         }
 
+        /// <inheritdoc />
         public override void ValidateMenuSelection(int menuIndex)
         {
             using (_PRF_ValidateMenuSelection.Auto())
@@ -153,6 +157,7 @@ namespace Appalachia.Core.Context.Contexts
             }
         }
 
+        /// <inheritdoc />
         protected override IEnumerable<AppaProgress> OnPreInitialize(AppaProgressCounter pc)
         {
             yield return pc.Get(ZString.Format("{0}: {1}", AppaProgress.REGISTERING, APPASTR.Only_Issues), 1);
@@ -179,6 +184,7 @@ namespace Appalachia.Core.Context.Contexts
             _menuWidth = PREFS.REG(GetPreferencePrefix, APPASTR.Menu_Width, 300f, 150f, 500f);
         }
 
+        /// <inheritdoc />
         protected override void OnReset()
         {
             using (_PRF_OnReset.Auto())

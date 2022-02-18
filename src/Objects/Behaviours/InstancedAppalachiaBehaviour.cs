@@ -106,21 +106,25 @@ namespace Appalachia.Core.Objects.Behaviours
 
         protected abstract void UpdateInstancedProperties(MaterialPropertyBlock block, Material m);
 
+        /// <inheritdoc />
         protected override string GetBackgroundColor()
         {
             return Brand.InstancedAppalachiaBehaviour.Banner;
         }
 
+        /// <inheritdoc />
         protected override string GetFallbackTitle()
         {
             return Brand.InstancedAppalachiaBehaviour.Fallback;
         }
 
+        /// <inheritdoc />
         protected override string GetTitle()
         {
             return Brand.InstancedAppalachiaBehaviour.Text;
         }
 
+        /// <inheritdoc />
         protected override string GetTitleColor()
         {
             return Brand.InstancedAppalachiaBehaviour.Color;

@@ -57,7 +57,7 @@ namespace Appalachia.Core.Objects.Root
             }
 
             var reference = _prefabLookup[prefabAddress];
-            var assetReference = reference.assetReference;
+            var assetReference = reference.AssetReference;
 
             var isLoaded = assetReference.IsValid();
 

@@ -22,6 +22,7 @@ namespace Appalachia.Core.Volumes.Parameters
 
         #endregion
 
+        /// <inheritdoc />
         public override Vector2 value
         {
             get => m_Value;
