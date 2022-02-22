@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Events;
-using Appalachia.Core.Events.Extensions;
+using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Events;
+using Appalachia.Utility.Events.Extensions;
 using Appalachia.Utility.Logging;
 using Appalachia.Utility.Strings;
 using Unity.Profiling;
@@ -20,8 +21,8 @@ namespace Appalachia.Core.Objects.Routing
 
         #endregion
 
-        public static void Notify<T>(Type type, T instance, bool guaranteed)
-            where T : Component
+        public static void Notify<T>(Type type, T instance)
+            where T : Component, IEnableNotifier
         {
             using (_PRF_Notify.Auto())
             {
@@ -29,7 +30,7 @@ namespace Appalachia.Core.Objects.Routing
 
                 if (!_eventLookup.ContainsKey(type))
                 {
-                    if (guaranteed)
+                    if (instance.GuaranteedEventRouting)
                     {
                         if (_pendingInstances.ContainsKey(type))
                         {
@@ -65,17 +66,17 @@ namespace Appalachia.Core.Objects.Routing
             }
         }
 
-        public static void Notify<T>(T instance, bool guaranteed)
-            where T : Component
+        public static void Notify<T>(T instance)
+            where T : Component, IEnableNotifier
         {
             using (_PRF_Notify.Auto())
             {
-                Notify(instance.GetType(), instance, guaranteed);
+                Notify(instance.GetType(), instance);
             }
         }
 
         public static void SubscribeTo<T>(ComponentEvent<T>.Handler handler)
-            where T : Component
+            where T : Component, IEnableNotifier
         {
             using (_PRF_SubscribeTo.Auto())
             {

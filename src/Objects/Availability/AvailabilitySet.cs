@@ -47,8 +47,8 @@ namespace Appalachia.Core.Objects.Availability
             }
         }
 
-        public IEnabledAvailabilitySet<T1> AnyComponent<T1>(T1 unused)
-            where T1 : Component
+        public IEnabledAvailabilitySet<T1> AnyInstance<T1>(T1 unused)
+            where T1 : Component, IEnableNotifier
         {
             using (_PRF_AnyComponent.Auto())
             {
@@ -72,8 +72,8 @@ namespace Appalachia.Core.Objects.Availability
             }
         }
 
-        public IEnabledAvailabilitySet<T1> AnyComponent<T1>()
-            where T1 : Component
+        public IEnabledAvailabilitySet<T1> AnyInstance<T1>()
+            where T1 : Component, IEnableNotifier
         {
             using (_PRF_AnyComponent.Auto())
             {
@@ -147,7 +147,7 @@ namespace Appalachia.Core.Objects.Availability
         private static readonly ProfilerMarker _PRF_Any = new ProfilerMarker(_PRF_PFX + nameof(Any));
 
         private static readonly ProfilerMarker _PRF_AnyComponent =
-            new ProfilerMarker(_PRF_PFX + nameof(AnyComponent));
+            new ProfilerMarker(_PRF_PFX + nameof(AnyInstance));
 
         private static readonly ProfilerMarker _PRF_Object = new ProfilerMarker(_PRF_PFX + nameof(Object));
 

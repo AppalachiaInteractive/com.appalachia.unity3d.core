@@ -28,7 +28,7 @@ namespace Appalachia.Core.Objects.Root.Contracts
         public bool IsPressed { get; }
         public bool IsSelected { get; }
 
-        public RectTransform rect { get; }
+        public RectTransform rectTransform { get; }
 
         public AnimationTriggers animationTriggers { get; set; }
 

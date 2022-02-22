@@ -14,6 +14,7 @@ using Appalachia.Utility.Reflection.Extensions;
 using Appalachia.Utility.Strings;
 using Unity.Profiling;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -84,6 +85,27 @@ namespace Appalachia.Core.Objects.Dependencies
                         null,
                         ex
                     );
+                }
+            }
+        }
+
+        public static void ResetResolutionStatus()
+        {
+            using (_PRF_ResetResolutionStatus.Auto())
+            {
+                LogContext.Warn(
+                    ZString.Format(
+                        "Executing {0}.{1}.",
+                        typeof(AppalachiaRepositoryDependencyManager).FormatForLogging(),
+                        nameof(ResetResolutionStatus).FormatMethodForLogging()
+                    )
+                );
+
+                _resolutionStatus.UpdateAll((_, _) => Status.Unresolved);
+                for (var trackerIndex = 0; trackerIndex < _trackers.Count; trackerIndex++)
+                {
+                    var tracker = _trackers[trackerIndex];
+                    tracker.ResetFully();
                 }
             }
         }
@@ -417,6 +439,9 @@ namespace Appalachia.Core.Objects.Dependencies
         #region Profiling
 
         private const string _PRF_PFX = nameof(AppalachiaRepositoryDependencyManager) + ".";
+
+        private static readonly ProfilerMarker _PRF_ResetResolutionStatus =
+            new ProfilerMarker(_PRF_PFX + nameof(ResetResolutionStatus));
 
         private static readonly ProfilerMarker _PRF_FindExistingBehaviourInstance =
             new ProfilerMarker(_PRF_PFX + nameof(FindExistingBehaviourInstance));

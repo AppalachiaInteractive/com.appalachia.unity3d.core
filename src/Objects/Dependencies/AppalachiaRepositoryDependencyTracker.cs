@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Constants;
 using Appalachia.Utility.Reflection.Extensions;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Objects.Dependencies
@@ -232,6 +234,16 @@ namespace Appalachia.Core.Objects.Dependencies
             }
         }
 
+        public void RegisterDependency(AppalachiaRepositoryDependencyTracker dependentOn)
+        {
+            using (_PRF_RegisterDependency.Auto())
+            {
+                _isReady = false;
+
+                behaviourDependencies.RegisterDependency(dependentOn);
+            }
+        }
+
         public void RegisterDependency<TDependency>(
             SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
             where TDependency : SingletonAppalachiaObject<TDependency>,
@@ -274,6 +286,49 @@ namespace Appalachia.Core.Objects.Dependencies
             }
         }
 
+        public void RegisterDependency(Type type)
+        {
+            using (_PRF_RegisterDependency.Auto())
+            {
+                _isReady = false;
+
+                var behaviourUnrealized = typeof(AppalachiaBehaviour<>);
+                var objectUnrealized = typeof(AppalachiaObject<>);
+
+                Type realizedGeneric;
+
+                var errorMessage = ZString.Format(
+                    "You may not depend on the type {0}",
+                    type.FormatForLogging()
+                );
+                
+                if (type.InheritsFrom(behaviourUnrealized))
+                {
+                    realizedGeneric = behaviourUnrealized.MakeGenericType(type);
+                }
+                else if (type.InheritsFrom(objectUnrealized))
+                {
+                    realizedGeneric = objectUnrealized.MakeGenericType(type);
+                }
+                else
+                {
+                    throw new NotSupportedException(errorMessage);
+                }
+
+                var property = realizedGeneric.GetField_CACHE(DEPENDENCY_TRACKER_NAME, DEPENDENCY_TRACKER_FLAGS);
+
+                if (property == null)
+                {
+                    throw new NotSupportedException(errorMessage);
+                }
+
+                var value = property.GetValue(null);
+                var cast = value as AppalachiaRepositoryDependencyTracker;
+
+                RegisterDependency(cast);
+            }
+        }
+
         public void RegisterDependency<TDependency>(
             AppalachiaRepositoryDependencyTracker dependentOn,
             SingletonAppalachiaObject<TDependency>.InstanceAvailableHandler handler)
@@ -284,6 +339,22 @@ namespace Appalachia.Core.Objects.Dependencies
                 SingletonAppalachiaObject<TDependency>.InstanceAvailable += handler;
 
                 objectDependencies.RegisterDependency(dependentOn);
+            }
+        }
+
+        internal void ResetFully()
+        {
+            using (_PRF_ResetFully.Auto())
+            {
+                _dependenciesAreReady = false;
+                _isReady = false;
+
+                for (var index = 0; index < subsets.Length; index++)
+                {
+                    var d = subsets[index];
+
+                    d.ResetFully();
+                }
             }
         }
 
@@ -332,6 +403,9 @@ namespace Appalachia.Core.Objects.Dependencies
         #region Profiling
 
         private const string _PRF_PFX = nameof(AppalachiaRepositoryDependencyManager) + ".";
+
+        private static readonly ProfilerMarker _PRF_ResetFully =
+            new ProfilerMarker(_PRF_PFX + nameof(ResetFully));
 
         private static readonly ProfilerMarker _PRF_MarkReady =
             new ProfilerMarker(_PRF_PFX + nameof(MarkReady));

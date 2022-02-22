@@ -3,6 +3,7 @@
 #region
 
 using Appalachia.CI.Integration.Assets;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 using UnityEditor;
@@ -112,7 +113,7 @@ namespace Appalachia.Core.Extensions
         {
             using (_PRF_SetReadable.Auto())
             {
-                if (EditorApplication.isPlayingOrWillChangePlaymode)
+                if (AppalachiaApplication.IsPlayingOrWillPlay)
                 {
                     return;
                 }

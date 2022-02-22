@@ -1,4 +1,4 @@
-﻿using Appalachia.Core.Events;
+﻿using Appalachia.Utility.Events;
 using UnityEngine.EventSystems;
 
 namespace Appalachia.Core.Objects.Root

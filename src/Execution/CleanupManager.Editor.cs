@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Utility.Async;
+using Appalachia.Utility.Execution;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -18,6 +19,9 @@ namespace Appalachia.Core.Execution
             {
                 UnityEditor.Compilation.CompilationPipeline.compilationStarted +=
                     OnCompilationPipelineStarted;
+
+                AppalachiaApplication.Editor.ExitingEditMode.Event += Dispose;
+                AppalachiaApplication.Editor.ExitingPlayMode.Event += Dispose;
             }
         }
 

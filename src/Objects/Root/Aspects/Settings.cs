@@ -1,6 +1,6 @@
-using Appalachia.Core.Events;
-using Appalachia.Core.Events.Contracts;
-using Appalachia.Core.Events.Extensions;
+using Appalachia.Utility.Events;
+using Appalachia.Utility.Events.Contracts;
+using Appalachia.Utility.Events.Extensions;
 using Unity.Profiling;
 using UnityEngine;
 

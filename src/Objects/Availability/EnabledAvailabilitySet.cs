@@ -1,4 +1,5 @@
-using Appalachia.Core.Events;
+using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Events;
 using Appalachia.Core.Objects.Routing;
 using Unity.Profiling;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 namespace Appalachia.Core.Objects.Availability
 {
     public class EnabledAvailabilitySet<T1> : IEnabledAvailabilitySet<T1>
-        where T1 : Component
+        where T1 : Component, IEnableNotifier
     {
         #region IEnabledAvailabilitySet<T1> Members
 

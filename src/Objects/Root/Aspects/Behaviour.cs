@@ -30,6 +30,28 @@ namespace Appalachia.Core.Objects.Root
 
         #region IBehaviour Members
 
+        public Transform Transform
+        {
+            get
+            {
+                using (_PRF_Transform.Auto())
+                {
+                    if (_hasCachedTransform)
+                    {
+                        return _cachedTransform;
+                    }
+
+                    if (_cachedTransform == null)
+                    {
+                        _cachedTransform = transform;
+                        _hasCachedTransform = true;
+                    }
+
+                    return _cachedTransform;
+                }
+            }
+        }
+
         public int InstanceID
         {
             get
@@ -82,5 +104,25 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaSelectable<T>
     {
+        #region IBehaviour Members
+
+        public GameObject GameObject => gameObject;
+
+        public int InstanceID
+        {
+            get
+            {
+                if (_instanceId == default)
+                {
+                    _instanceId = GetInstanceID();
+                }
+
+                return _instanceId;
+            }
+        }
+
+        public Transform Transform => rectTransform;
+
+        #endregion
     }
 }

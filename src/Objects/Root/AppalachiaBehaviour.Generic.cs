@@ -52,6 +52,9 @@ namespace Appalachia.Core.Objects.Root
 
         protected static readonly ProfilerMarker _PRF_WhenEnabled =
             new ProfilerMarker(_PRF_PFX + nameof(WhenEnabled));
+        
+        protected static readonly ProfilerMarker _PRF_AfterEnabled =
+            new ProfilerMarker(_PRF_PFX + nameof(AfterEnabled));
 
         #endregion
     }

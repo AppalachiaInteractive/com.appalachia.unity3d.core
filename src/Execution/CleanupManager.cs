@@ -13,7 +13,7 @@ namespace Appalachia.Core.Execution
 
         private static List<Action> _actions;
 
-        private static List<IDisposable> _disposables;
+        private static List<object> _disposables;
 
         #endregion
 
@@ -32,16 +32,17 @@ namespace Appalachia.Core.Execution
             }
         }
 
-        public static void Store(IDisposable disposable)
+        public static void Store<T>(ref T disposable)
+        where T : IDisposable
         {
             using (_PRF_Store.Auto())
             {
-                if (disposable == default)
+                if (Equals(disposable, default(T)))
                 {
                     return;
                 }
 
-                _disposables ??= new List<IDisposable>();
+                _disposables ??= new List<object>();
 
                 _disposables.Add(disposable);
             }
@@ -81,9 +82,9 @@ namespace Appalachia.Core.Execution
                     {
                         var disposable = _disposables[i];
 
-                        if (disposable != null)
+                        if ((disposable != null) && disposable is IDisposable d)
                         {
-                            disposable.SafeDispose();
+                            d.SafeDispose();
                         }
 
                         _disposables.RemoveAt(i);

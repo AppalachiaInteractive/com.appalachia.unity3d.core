@@ -1,16 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Appalachia.Core.Events;
-using Appalachia.Core.Events.Extensions;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Constants;
+using Appalachia.Utility.Events;
+using Appalachia.Utility.Events.Extensions;
+using Appalachia.Utility.Execution;
+using Appalachia.Utility.Logging;
 using Appalachia.Utility.Reflection.Extensions;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Objects.Availability
 {
-    public abstract class AvailabilityData : IComparable<AvailabilityData>, IComparable
+    public abstract class AvailabilityData : /*don't bother AppalachiaSimpleNonSerializableBase,*/
+        IComparable<AvailabilityData>,
+        IComparable
     {
         #region Constants and Static Readonly
 
@@ -149,6 +155,12 @@ namespace Appalachia.Core.Objects.Availability
 
     internal class AvailabilityData<T> : AvailabilityData
     {
+        #region Constants and Static Readonly
+
+        private const string EVENT_NAME = "InstanceAvailable";
+
+        #endregion
+
         private AvailabilityData(int sortOrder) : base(sortOrder)
         {
         }
@@ -185,7 +197,15 @@ namespace Appalachia.Core.Objects.Availability
 
                 var implementors = ReflectionExtensions.GetAllConcreteImplementors<T1>();
 
-                const string eventName = "InstanceAvailable";
+                if (implementors.Count == 0)
+                {
+                    AppaLog.Warn(
+                        ZString.Format(
+                            "There are no concrete implementors of {0}.",
+                            typeof(T1).FormatForLogging()
+                        )
+                    );
+                }
 
                 var eventFlags = BindingFlags.DeclaredOnly |
                                  BindingFlags.Public |
@@ -194,21 +214,23 @@ namespace Appalachia.Core.Objects.Availability
 
                 foreach (var implementor in implementors)
                 {
-                    var implementorType = implementor;
-                    var checkingType = implementorType;
+                    var originalImplementorType = implementor;
+                    var currentCheckingType = originalImplementorType;
 
                     var matched = false;
 
-                    while (checkingType != null)
+                    while (currentCheckingType != null)
                     {
-                        var events = checkingType.GetEvents(eventFlags);
+                        AppalachiaApplication.EnsureStaticConstructorHasBeenCalled(currentCheckingType);
+                        
+                        var events = currentCheckingType.GetEvents(eventFlags);
 
                         foreach (var availableEvent in events)
                         {
-                            if (availableEvent.Name == eventName)
+                            if (availableEvent.Name == EVENT_NAME)
                             {
                                 var delegateInstance =
-                                    CreateHandleAvailabilityDelegate(implementorType, result);
+                                    CreateHandleAvailabilityDelegate(originalImplementorType, result);
 
                                 var addMethod = availableEvent.GetAddMethod(true);
                                 addMethod.Invoke(null, new object[] { delegateInstance });
@@ -224,7 +246,7 @@ namespace Appalachia.Core.Objects.Availability
                             break;
                         }
 
-                        checkingType = checkingType.BaseType;
+                        currentCheckingType = currentCheckingType.BaseType;
                     }
                 }
 

@@ -1,11 +1,12 @@
 using System;
 using Appalachia.CI.Integration.Assets;
-using Appalachia.Core.Events.Collections;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Models;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Objects.Sets.Extensions;
 using Appalachia.Utility.Async;
+using Appalachia.Utility.Events.Collections;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -217,6 +218,8 @@ namespace Appalachia.Core.Objects.Sets
                 {
                     void SubscribableDelegate()
                     {
+                        if (set == null) return;
+                        
                         UpdateComponentSetInternal(set, before, after);
                     }
 
@@ -247,6 +250,8 @@ namespace Appalachia.Core.Objects.Sets
                 {
                     void SubscribableDelegate()
                     {
+                        if (set == null) return;
+                        
                         UpdateComponentSetInternal(set);
                     }
 
@@ -281,17 +286,21 @@ namespace Appalachia.Core.Objects.Sets
             using (_PRF_CreateOrRefreshSetData.Auto())
             {
 #if UNITY_EDITOR
-                var targetDataName = GetDataName(setName);
+                if (!AppalachiaApplication.IsPlaying)
+                {
+                    var targetDataName = GetDataName(setName);
 
-                if (data == null)
-                {
-                    data = LoadOrCreate(targetDataName);
-                }
-                else
-                {
-                    AssetDatabaseManager.UpdateAssetName(data, targetDataName);
+                    if (data == null)
+                    {
+                        data = LoadOrCreate(targetDataName);
+                    }
+                    else
+                    {
+                        AssetDatabaseManager.UpdateAssetName(data, targetDataName);
+                    }
                 }
 #endif
+
                 data.CreateOrRefresh();
             }
         }

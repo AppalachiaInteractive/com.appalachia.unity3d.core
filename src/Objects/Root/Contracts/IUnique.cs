@@ -1,4 +1,4 @@
-using Appalachia.Core.Events.Contracts;
+using Appalachia.Utility.Events.Contracts;
 
 namespace Appalachia.Core.Objects.Root.Contracts
 {

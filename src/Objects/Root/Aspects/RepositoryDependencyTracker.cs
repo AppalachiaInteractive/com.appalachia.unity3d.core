@@ -1,3 +1,4 @@
+using System;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Objects.Dependencies;
@@ -214,6 +215,14 @@ namespace Appalachia.Core.Objects.Root
         protected static AppalachiaRepository AppalachiaRepository => _appalachiaRepository;
         protected static IAvailabilitySet When => RegisterInstanceCallbacks.For(typeof(T)).When;
 
+        protected static void RegisterDependency(Type type)
+        {
+            using (_PRF_RegisterDependency.Auto())
+            {
+                _dependencyTracker.RegisterDependency(type);
+            }
+        }
+        
         protected static void RegisterDependency<TDependency>(
             SingletonAppalachiaBehaviour<TDependency>.InstanceAvailableHandler handler)
             where TDependency : SingletonAppalachiaBehaviour<TDependency>,

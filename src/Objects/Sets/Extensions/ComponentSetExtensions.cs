@@ -1,6 +1,6 @@
 using System;
-using Appalachia.Core.Events.Collections;
 using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Events.Collections;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Objects.Sets.Extensions
@@ -41,6 +41,9 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 {
                     void SubscribableDelegate()
                     {
+                        if (data == null) return;
+                        if (set == null) return;
+                        
                         UpdateComponentSetInternal(data, set);
                     }
 
@@ -89,6 +92,9 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 {
                     void SubscribableDelegate()
                     {
+                        if (data == null) return;
+                        if (set == null) return;
+                        
                         before?.Invoke(data, set);
                         UpdateComponentSetInternal(data, set);
                         after?.Invoke(data, set);
@@ -129,6 +135,9 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 {
                     void SubscribableDelegate()
                     {
+                        if (data == null) return;
+                        if (set == null) return;
+                        
                         UpdateComponentSetInternal(data, set);
                     }
 
@@ -177,6 +186,9 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 {
                     void SubscribableDelegate()
                     {
+                        if (data == null) return;
+                        if (set == null) return;
+                        
                         before?.Invoke(data, set);
                         UpdateComponentSetInternal(data, set);
                         after?.Invoke(data, set);

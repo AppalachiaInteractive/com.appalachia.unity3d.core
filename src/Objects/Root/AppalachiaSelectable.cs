@@ -1,5 +1,5 @@
-﻿using Appalachia.Core.Events.Extensions;
-using Appalachia.Core.Objects.Root.Contracts;
+﻿using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Events.Extensions;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -93,7 +93,7 @@ namespace Appalachia.Core.Objects.Root
         public new bool IsPressed => _isPressed;
         public bool IsSelected => _isSelected;
 
-        public RectTransform rect
+        public RectTransform rectTransform
         {
             get
             {

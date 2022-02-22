@@ -34,6 +34,10 @@ namespace Appalachia.Core.Objects.Sets
         [SerializeField, HideInInspector]
         private Initializer _initializer;
 
+        [PropertyOrder(-300)]
+        [SerializeField]
+        public bool isSortingDisabled;
+
         #endregion
 
         public abstract ComponentSetSorting DesiredComponentOrder { get; }
@@ -120,6 +124,11 @@ namespace Appalachia.Core.Objects.Sets
 
         private int GetDesiredSiblingIndex(int currentIndex, int siblingCount)
         {
+            if (isSortingDisabled)
+            {
+                return currentIndex;
+            }
+
             return SiblingIndexCalculator.GetDesiredSiblingIndex(
                 DesiredComponentOrder,
                 currentIndex,

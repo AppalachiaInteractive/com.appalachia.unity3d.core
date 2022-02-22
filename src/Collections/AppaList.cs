@@ -3,7 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Appalachia.Core.ArrayPooling;
+using Appalachia.Utility.Pooling.Arrays;
 using Appalachia.Core.Comparisons;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Extensions.Debugging;
