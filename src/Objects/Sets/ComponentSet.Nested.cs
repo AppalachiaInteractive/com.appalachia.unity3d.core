@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Appalachia.Core.Objects.Sets
 {
-    public abstract partial class ComponentSet<TSet, TSetData>
+    public abstract partial class ComponentSet<TComponentSet, TComponentSetData>
     {
         #region Nested type: SiblingIndexCalculator
 

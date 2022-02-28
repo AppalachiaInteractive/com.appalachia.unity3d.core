@@ -11,6 +11,7 @@ using Appalachia.Utility.Async.External.Addressables;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -55,6 +56,11 @@ namespace Appalachia.Core.Objects.Root
 
             if (!_singletonLookup.ContainsKey(t))
             {
+                if (t.InheritsFrom(typeof(AppalachiaObject)))
+                {
+                    
+                }
+                
                 Context.Log.Error(
                     ZString.Format(
                         "Could not find type {0} in the {1}!",

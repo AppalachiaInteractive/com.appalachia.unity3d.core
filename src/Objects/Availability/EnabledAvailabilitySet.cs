@@ -7,11 +7,11 @@ using UnityEngine;
 namespace Appalachia.Core.Objects.Availability
 {
     public class EnabledAvailabilitySet<T1> : IEnabledAvailabilitySet<T1>
-        where T1 : Component, IEnableNotifier
+        where T1 : class, IEnableNotifier
     {
         #region IEnabledAvailabilitySet<T1> Members
 
-        public void IsEnabledThen(ComponentEvent<T1>.Handler handler)
+        public void IsEnabledThen(AppaEvent<T1>.Handler handler)
         {
             using (_PRF_IsEnabledThen.Auto())
             {

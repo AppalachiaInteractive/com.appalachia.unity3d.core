@@ -6,9 +6,10 @@ namespace Appalachia.Core.Objects.Availability
     public abstract class BaseAvailabilitySetOf<T>
         where T : MulticastDelegate
     {
-        protected BaseAvailabilitySetOf(int sortOrder)
+        protected BaseAvailabilitySetOf(int sortOrder, bool allowMultipleCalls = false)
         {
             _sortOrder = sortOrder;
+            _allowMultipleCalls = allowMultipleCalls;
         }
 
         #region Fields and Autoproperties
@@ -16,6 +17,7 @@ namespace Appalachia.Core.Objects.Availability
         [NonSerialized] private bool _actionCalled;
 
         private int _sortOrder;
+        private readonly bool _allowMultipleCalls;
         private T _action;
 
         #endregion
@@ -76,7 +78,7 @@ namespace Appalachia.Core.Objects.Availability
             {
                 if (IsFullyAvailable)
                 {
-                    if (_actionCalled)
+                    if (!_allowMultipleCalls && _actionCalled)
                     {
                         return;
                     }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Appalachia.Core.Collections;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
@@ -13,14 +14,14 @@ namespace Appalachia.Core.Objects.Sets
 {
     [Serializable]
     [FoldoutGroup("Components", false)]
-    public abstract partial class ComponentSet<TSet, TSetData> : AppalachiaSimpleBase,
-                                                                 IComponentSet<TSet, TSetData>
-        where TSet : ComponentSet<TSet, TSetData>, new()
-        where TSetData : ComponentSetData<TSet, TSetData>
+    public abstract partial class ComponentSet<TComponentSet, TComponentSetData> : AppalachiaSimpleBase,
+                                                                 IComponentSet<TComponentSet, TComponentSetData>
+        where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+        where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
     {
         #region Constants and Static Readonly
 
-        protected const string GAME_OBJECT_NAME_FORMAT = "{0} - {{0}}";
+        protected const string SET_GAME_OBJECT_NAME_FORMAT = "{0} - {{0}}";
 
         #endregion
 
@@ -28,6 +29,7 @@ namespace Appalachia.Core.Objects.Sets
 
         [PropertyOrder(-250)]
         [SerializeField]
+        [ReadOnly]
         private GameObject gameObject;
 
         [FormerlySerializedAs("_initialer")]
@@ -57,95 +59,13 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        internal static void GetOrAddComponents(
-            ref TSet set,
-            TSetData data,
-            GameObject setParent,
-            string setName)
+        protected string GameObjectNamePostfix
         {
-            using (_PRF_GetOrAddComponents.Auto())
+            get
             {
-                set ??= new TSet();
-
-                set.GetOrAddComponents(data, setParent, setName);
-            }
-        }
-
-        protected virtual string GetGameObjectNameFormat()
-        {
-            using (_PRF_GetGameObjectNameFormat.Auto())
-            {
-                // GAME_OBJECT_NAME_FORMAT = "{0} - {{0}}";
-                // ComponentSetName = "ABCDEFG";
-                return ZString.Format(GAME_OBJECT_NAME_FORMAT, ComponentSetName);
-
-                // ABCDERG - {0}
-            }
-        }
-
-        /// <summary>
-        ///     Creates the set underneath the <paramref name="setParent" />, using the provided <paramref name="setName" />, and adds the required components.
-        /// </summary>
-        /// <param name="data">The component set data.</param>
-        /// <param name="setParent">The parent of the set.</param>
-        /// <param name="setName">The name of the set.</param>
-        protected virtual void GetOrAddComponents(TSetData data, GameObject setParent, string setName)
-        {
-            using (_PRF_GetOrAddComponents.Auto())
-            {
-                var nameFormatString = GetGameObjectNameFormat();
-
-                var setObjectName = ZString.Format(nameFormatString, setName);
-
-                if (gameObject == null)
-                {
-                    setParent.GetOrAddChild(ref gameObject, setObjectName, IsUI);
-                }
-
-                gameObject.name = setObjectName;
-
-                var siblingCount = setParent.transform.childCount - 1;
-
-                if (siblingCount == 0)
-                {
-                    return;
-                }
-
-                var currentIndex = gameObject.transform.GetSiblingIndex();
-
-                var targetIndex = GetDesiredSiblingIndex(currentIndex, siblingCount);
-
-                if (currentIndex != targetIndex)
-                {
-                    gameObject.transform.SetSiblingIndex(targetIndex);
-                }
-            }
-        }
-
-        private int GetDesiredSiblingIndex(int currentIndex, int siblingCount)
-        {
-            if (isSortingDisabled)
-            {
-                return currentIndex;
-            }
-
-            return SiblingIndexCalculator.GetDesiredSiblingIndex(
-                DesiredComponentOrder,
-                currentIndex,
-                siblingCount
-            );
-        }
-
-        #region IComponentSet<TSet,TSetData> Members
-
-        void IComponentSet<TSet, TSetData>.GetOrAddComponents(
-            TSetData data,
-            GameObject setParent,
-            string setName)
-        {
-            using (_PRF_GetOrAddComponents.Auto())
-            {
-                GetOrAddComponents(data, setParent, setName);
+                var splits = gameObject.name.Split('-');
+                var lastNamePart = splits.LastOrDefault();
+                return lastNamePart?.Trim();
             }
         }
 
@@ -171,7 +91,7 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        public virtual void EnableSet()
+        public virtual void EnableSet(TComponentSetData data)
         {
             using (_PRF_Enable.Auto())
             {
@@ -182,7 +102,144 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        public abstract string ComponentSetName { get; }
+        internal static void GetOrAddComponents(ref TComponentSet set, TComponentSetData data, GameObject setRoot)
+        {
+            using (_PRF_GetOrAddComponents.Auto())
+            {
+                set ??= new TComponentSet();
+
+                set.GetOrAddComponents(data, setRoot);
+            }
+        }
+
+        internal static void GetOrAddComponents(
+            ref TComponentSet set,
+            TComponentSetData data,
+            GameObject setParent,
+            string gameObjectNamePostfix)
+        {
+            using (_PRF_GetOrAddComponents.Auto())
+            {
+                set ??= new TComponentSet();
+
+                set.GetOrAddComponents(data, setParent, gameObjectNamePostfix);
+            }
+        }
+
+        /// <summary>
+        ///     Adds the required components to the set.  The <see cref="GameObject" /> will have been created at this point.
+        /// </summary>
+        /// <param name="data">The component set data.</param>
+        protected abstract void OnGetOrAddComponents(TComponentSetData data);
+
+        protected virtual string GetComponentSetNamePrefixFormat()
+        {
+            using (_PRF_GetGameObjectNameFormat.Auto())
+            {
+                // GAME_OBJECT_NAME_FORMAT = "{0} - {{0}}";
+                // ComponentSetName = "ABCDEFG";
+                return ZString.Format(SET_GAME_OBJECT_NAME_FORMAT, ComponentSetNamePrefix);
+
+                // ABCDERG - {0}
+            }
+        }
+
+        /// <summary>
+        ///     Creates the set on the <paramref name="setRoot" /> by adding the required components.
+        /// </summary>
+        /// <param name="data">The component set data.</param>
+        /// <param name="setRoot">The root of the set.</param>
+        protected virtual void GetOrAddComponents(TComponentSetData data, GameObject setRoot)
+        {
+            using (_PRF_GetOrAddComponents.Auto())
+            {
+                gameObject = setRoot;
+
+                OnGetOrAddComponents(data);
+                ValidateSiblingSort();
+            }
+        }
+
+        /// <summary>
+        ///     Creates the set underneath the <paramref name="setParent" />, using the provided <paramref name="gameObjectNamePostfix" />, and adds the required
+        ///     components.
+        /// </summary>
+        /// <param name="data">The component set data.</param>
+        /// <param name="setParent">The parent of the set.</param>
+        /// <param name="gameObjectNamePostfix">The name of the set.</param>
+        protected virtual void GetOrAddComponents(
+            TComponentSetData data,
+            GameObject setParent,
+            string gameObjectNamePostfix)
+        {
+            using (_PRF_GetOrAddComponents.Auto())
+            {
+                var prefixNameFormatString = GetComponentSetNamePrefixFormat();
+
+                var setObjectName = ZString.Format(prefixNameFormatString, gameObjectNamePostfix);
+
+                if (gameObject == null)
+                {
+                    setParent.GetOrAddChild(ref gameObject, setObjectName, IsUI);
+                }
+
+                gameObject.name = setObjectName;
+
+                OnGetOrAddComponents(data);
+                ValidateSiblingSort();
+            }
+        }
+
+        private int GetDesiredSiblingIndex(int currentIndex, int siblingCount)
+        {
+            if (isSortingDisabled)
+            {
+                return currentIndex;
+            }
+
+            return SiblingIndexCalculator.GetDesiredSiblingIndex(
+                DesiredComponentOrder,
+                currentIndex,
+                siblingCount
+            );
+        }
+
+        private void ValidateSiblingSort()
+        {
+            using (_PRF_ValidateSiblingSort.Auto())
+            {
+                var siblingCount = gameObject.transform.parent.childCount - 1;
+
+                if (siblingCount == 0)
+                {
+                    return;
+                }
+
+                var currentIndex = gameObject.transform.GetSiblingIndex();
+
+                var targetIndex = GetDesiredSiblingIndex(currentIndex, siblingCount);
+
+                if (currentIndex != targetIndex)
+                {
+                    gameObject.transform.SetSiblingIndex(targetIndex);
+                }
+            }
+        }
+
+        #region IComponentSet<TComponentSet,TComponentSetData> Members
+
+        void IComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(
+            TComponentSetData data,
+            GameObject setParent,
+            string gameObjectNamePostfix)
+        {
+            using (_PRF_GetOrAddComponents.Auto())
+            {
+                GetOrAddComponents(data, setParent, gameObjectNamePostfix);
+            }
+        }
+
+        public abstract string ComponentSetNamePrefix { get; }
 
         public GameObject GameObject => gameObject;
 
@@ -191,7 +248,7 @@ namespace Appalachia.Core.Objects.Sets
         #region Nested type: List
 
         [Serializable]
-        public sealed class List : AppaList<TSet>
+        public sealed class List : AppaList<TComponentSet>
         {
             public List()
             {
@@ -205,11 +262,11 @@ namespace Appalachia.Core.Objects.Sets
             {
             }
 
-            public List(AppaList<TSet> list) : base(list)
+            public List(AppaList<TComponentSet> list) : base(list)
             {
             }
 
-            public List(TSet[] values) : base(values)
+            public List(TComponentSet[] values) : base(values)
             {
             }
         }
@@ -218,7 +275,7 @@ namespace Appalachia.Core.Objects.Sets
 
         #region Profiling
 
-        protected static readonly string _PRF_PFX = typeof(TSet).Name + ".";
+        protected static readonly string _PRF_PFX = typeof(TComponentSet).Name + ".";
 
         protected static readonly ProfilerMarker _PRF_Destroy =
             new ProfilerMarker(_PRF_PFX + nameof(DestroySet));
@@ -230,10 +287,16 @@ namespace Appalachia.Core.Objects.Sets
             new ProfilerMarker(_PRF_PFX + nameof(EnableSet));
 
         private static readonly ProfilerMarker _PRF_GetGameObjectNameFormat =
-            new ProfilerMarker(_PRF_PFX + nameof(GetGameObjectNameFormat));
+            new ProfilerMarker(_PRF_PFX + nameof(GetComponentSetNamePrefixFormat));
 
         protected static readonly ProfilerMarker _PRF_GetOrAddComponents =
             new ProfilerMarker(_PRF_PFX + nameof(GetOrAddComponents));
+
+        protected static readonly ProfilerMarker _PRF_OnGetOrAddComponents =
+            new ProfilerMarker(_PRF_PFX + nameof(OnGetOrAddComponents));
+
+        private static readonly ProfilerMarker _PRF_ValidateSiblingSort =
+            new ProfilerMarker(_PRF_PFX + nameof(ValidateSiblingSort));
 
         #endregion
     }

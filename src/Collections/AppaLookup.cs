@@ -10,6 +10,8 @@ using Appalachia.Core.Collections.Exceptions;
 using Appalachia.Core.Collections.Interfaces;
 using Appalachia.Core.Collections.NonSerialized;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Events;
+using Appalachia.Utility.Events.Extensions;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Extensions.Debugging;
 using Appalachia.Utility.Strings;
@@ -40,7 +42,7 @@ namespace Appalachia.Core.Collections
         private const int _REMOVE_INDICES_CAPACITY = 32;
 
         private const string MARK_AS_MODIFIED_NOT_SET_MESSAGE =
-            "Must set modification action for this collection!";
+            "There are no subscribers listening for modifications to this collection!";
 
         #endregion
 
@@ -59,6 +61,8 @@ namespace Appalachia.Core.Collections
 
         #region Fields and Autoproperties
 
+        public AppaEvent.Data Changed;
+
         [SerializeField] protected int initializerCount = 64;
 
         protected virtual bool AlwaysRefreshDisplayData { get; } = false;
@@ -67,8 +71,6 @@ namespace Appalachia.Core.Collections
         protected virtual bool ReplacesKeysAtStart { get; } = false;
 
         protected virtual bool ShouldDisplayTitle { get; } = false;
-
-        [NonSerialized] private Action _markAsModifiedAction;
 
         [NonSerialized] private AppaList<int> _tempRemovedIndices;
 
@@ -85,9 +87,6 @@ namespace Appalachia.Core.Collections
         [NonSerialized] private Dictionary<TKey, TValue> _lookup;
 
         private NonSerializedList<KVPDisplayWrapper> _displayWrappers;
-
-        [SerializeField, HideInInspector]
-        private Object _object;
 
         [SerializeField] private TKeyList keys;
 
@@ -129,39 +128,6 @@ namespace Appalachia.Core.Collections
         {
             get => keys;
             set => keys = value;
-        }
-
-        protected Action markAsModifiedAction
-        {
-            get
-            {
-                if (!IsSerialized)
-                {
-                    return null;
-                }
-
-                if (APPASERIALIZE.InSerializationWindowGuaranteed)
-                {
-                    return null;
-                }
-
-                if ((_markAsModifiedAction == null) && (_object != null))
-                {
-                    _markAsModifiedAction = _object.MarkAsModified;
-                }
-
-                if (_markAsModifiedAction == null)
-                {
-                    Context.Log.Error(MARK_AS_MODIFIED_NOT_SET_MESSAGE, _object);
-                    APPADEBUG.BREAKPOINT(
-                        () => MARK_AS_MODIFIED_NOT_SET_MESSAGE,
-                        _object,
-                        () => _markAsModifiedAction == null
-                    );
-                }
-
-                return _markAsModifiedAction;
-            }
         }
 
         public bool All(Predicate<TValue> check)
@@ -303,10 +269,7 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_GetKeyValuePair.Auto())
             {
-                if (_displayWrappers == null)
-                {
-                    _displayWrappers = new NonSerializedList<KVPDisplayWrapper>(Count);
-                }
+                _displayWrappers ??= new NonSerializedList<KVPDisplayWrapper>(Count);
 
                 _displayWrappers.Count = Count;
 
@@ -382,7 +345,7 @@ namespace Appalachia.Core.Collections
                 keys.Insert(index, key);
                 values.Insert(index, value);
 
-                INTERNAL_REBUILD(false);
+                INTERNAL_REBUILD();
             }
         }
 
@@ -392,13 +355,10 @@ namespace Appalachia.Core.Collections
             {
                 var rebuild = false;
 
-                if (_tempRemovedIndices == null)
-                {
-                    _tempRemovedIndices = new NonSerializedList<int>(
-                        _REMOVE_INDICES_CAPACITY,
-                        noTracking: true
-                    );
-                }
+                _tempRemovedIndices ??= new NonSerializedList<int>(
+                    _REMOVE_INDICES_CAPACITY,
+                    noTracking: true
+                );
 
                 _tempRemovedIndices.ClearFast();
 
@@ -414,7 +374,7 @@ namespace Appalachia.Core.Collections
 
                 if (rebuild)
                 {
-                    INTERNAL_REBUILD(false);
+                    INTERNAL_REBUILD();
                 }
 
                 _tempRemovedIndices.ClearFast();
@@ -437,7 +397,7 @@ namespace Appalachia.Core.Collections
                 keys.Reverse(index, length);
                 values.Reverse(index, length);
 
-                INTERNAL_REBUILD(false);
+                INTERNAL_REBUILD();
             }
         }
 
@@ -455,7 +415,7 @@ namespace Appalachia.Core.Collections
             {
                 keys.Sort(values, index, length, comparer);
 
-                INTERNAL_REBUILD(false);
+                INTERNAL_REBUILD();
             }
         }
 
@@ -465,7 +425,7 @@ namespace Appalachia.Core.Collections
             {
                 keys.Sort(values, comparison);
 
-                INTERNAL_REBUILD(false);
+                INTERNAL_REBUILD();
             }
         }
 
@@ -483,7 +443,7 @@ namespace Appalachia.Core.Collections
             {
                 values.Sort(keys, index, length, comparer);
 
-                INTERNAL_REBUILD(false);
+                INTERNAL_REBUILD();
             }
         }
 
@@ -493,7 +453,7 @@ namespace Appalachia.Core.Collections
             {
                 values.Sort(keys, comparison);
 
-                INTERNAL_REBUILD(false);
+                INTERNAL_REBUILD();
             }
         }
 
@@ -558,10 +518,8 @@ namespace Appalachia.Core.Collections
                 _indices.Add(key, _indices.Count);
                 values.Add(value);
                 keys.Add(key);
-                if (IsSerialized)
-                {
-                    markAsModifiedAction.Invoke();
-                }
+
+                Changed.RaiseEvent();
             }
         }
 
@@ -587,15 +545,22 @@ namespace Appalachia.Core.Collections
         {
             using (_PRF_INTERNAL_CLEAR.Auto())
             {
+                var clearanceNecessary = (keys.Count > 0) ||
+                                         (values.Count > 0) ||
+                                         (_indices.Count > 0) ||
+                                         (_lookup.Count > 0);
+
+                if (!clearanceNecessary)
+                {
+                    return;
+                }
+
                 keys.Clear();
                 values.Clear();
                 _indices.Clear();
                 _lookup.Clear();
 
-                if (IsSerialized)
-                {
-                    markAsModifiedAction.Invoke();
-                }
+                Changed.RaiseEvent();
             }
         }
 
@@ -665,7 +630,7 @@ namespace Appalachia.Core.Collections
 
                 if (hasLookupCountIssue)
                 {
-                    APPADEBUG.BREAKPOINT(() => "Lookup key count is invalid!", _object);
+                    APPADEBUG.BREAKPOINT(() => "Lookup key count is invalid!", null);
 
                     if (_allowRecreation)
                     {
@@ -679,7 +644,7 @@ namespace Appalachia.Core.Collections
                 if (hasInitializationIssue)
                 {
                     var message = "Did not initialize lookup successfully!";
-                    APPADEBUG.BREAKPOINT(() => message, _object);
+                    APPADEBUG.BREAKPOINT(() => message, null);
 
                     //throw new NotSupportedException(message);
                 }
@@ -687,7 +652,7 @@ namespace Appalachia.Core.Collections
                 if (!_initializedSuccessfully)
                 {
                     var message = "Did not initialize lookup successfully!";
-                    APPADEBUG.BREAKPOINT(() => message, _object);
+                    APPADEBUG.BREAKPOINT(() => message, null);
                     throw new NotSupportedException(message);
                 }
 
@@ -708,20 +673,11 @@ namespace Appalachia.Core.Collections
                     {
                         if (APPASERIALIZE.InSerializationWindowGuaranteed)
                         {
-                            if (_markAsModifiedAction != null)
-                            {
-                                if (IsSerialized)
-                                {
-                                    _markAsModifiedAction.Invoke();
-                                }
-                            }
+                            Changed.RaiseEvent();
                         }
                         else
                         {
-                            if (IsSerialized)
-                            {
-                                markAsModifiedAction.Invoke();
-                            }
+                            Changed.RaiseEvent();
                         }
                     }
                 }
@@ -732,23 +688,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
-                        {
-                            if (_markAsModifiedAction != null)
-                            {
-                                if (IsSerialized)
-                                {
-                                    _markAsModifiedAction.Invoke();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (IsSerialized)
-                            {
-                                markAsModifiedAction.Invoke();
-                            }
-                        }
+                        Changed.RaiseEvent();
                     }
                 }
 
@@ -758,23 +698,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
-                        {
-                            if (_markAsModifiedAction != null)
-                            {
-                                if (IsSerialized)
-                                {
-                                    _markAsModifiedAction.Invoke();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (IsSerialized)
-                            {
-                                markAsModifiedAction.Invoke();
-                            }
-                        }
+                        Changed.RaiseEvent();
                     }
                 }
 
@@ -784,23 +708,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
-                        {
-                            if (_markAsModifiedAction != null)
-                            {
-                                if (IsSerialized)
-                                {
-                                    _markAsModifiedAction.Invoke();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (IsSerialized)
-                            {
-                                markAsModifiedAction.Invoke();
-                            }
-                        }
+                        Changed.RaiseEvent();
                     }
                 }
 
@@ -814,7 +722,7 @@ namespace Appalachia.Core.Collections
 
                 if (INTERNAL_REQUIRES_REBUILD(inConstructor))
                 {
-                    INTERNAL_REBUILD(inConstructor);
+                    INTERNAL_REBUILD();
                 }
 
                 INTERNAL_CHECK_FATAL();
@@ -825,23 +733,7 @@ namespace Appalachia.Core.Collections
 
                     if (!inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
-                        {
-                            if (_markAsModifiedAction != null)
-                            {
-                                if (IsSerialized)
-                                {
-                                    _markAsModifiedAction.Invoke();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (IsSerialized)
-                            {
-                                markAsModifiedAction.Invoke();
-                            }
-                        }
+                        Changed.RaiseEvent();
                     }
                 }
 
@@ -850,7 +742,7 @@ namespace Appalachia.Core.Collections
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void INTERNAL_REBUILD(bool inConstructor)
+        private void INTERNAL_REBUILD()
         {
             using (_PRF_INTERNAL_REBUILD.Auto())
             {
@@ -872,7 +764,7 @@ namespace Appalachia.Core.Collections
                             newValue
                         );
 
-                        APPADEBUG.BREAKPOINT(() => message, _object);
+                        APPADEBUG.BREAKPOINT(() => message, null);
 
                         throw new ArgumentException(message);
                     }
@@ -888,7 +780,7 @@ namespace Appalachia.Core.Collections
                             key
                         );
 
-                        APPADEBUG.BREAKPOINT(() => message, _object);
+                        APPADEBUG.BREAKPOINT(() => message, null);
 
                         //throw new ArgumentException(message);
 
@@ -911,27 +803,6 @@ namespace Appalachia.Core.Collections
                         _lookup.Add(key, newValue);
 
                         newIndex += 1;
-                    }
-                }
-
-                if (!inConstructor)
-                {
-                    if (APPASERIALIZE.InSerializationWindowGuaranteed)
-                    {
-                        if (_markAsModifiedAction != null)
-                        {
-                            if (IsSerialized)
-                            {
-                                _markAsModifiedAction.Invoke();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (IsSerialized)
-                        {
-                            markAsModifiedAction.Invoke();
-                        }
                     }
                 }
             }
@@ -994,23 +865,7 @@ namespace Appalachia.Core.Collections
 
                 if (!inConstructor)
                 {
-                    if (APPASERIALIZE.InSerializationWindowGuaranteed)
-                    {
-                        if (_markAsModifiedAction != null)
-                        {
-                            if (IsSerialized)
-                            {
-                                _markAsModifiedAction.Invoke();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (IsSerialized)
-                        {
-                            markAsModifiedAction.Invoke();
-                        }
-                    }
+                    Changed.RaiseEvent();
                 }
             }
         }
@@ -1054,10 +909,7 @@ namespace Appalachia.Core.Collections
                 keys.RemoveAt(lastIndex);
                 values.RemoveAt(lastIndex);
 
-                if (IsSerialized)
-                {
-                    markAsModifiedAction.Invoke();
-                }
+                Changed.RaiseEvent();
 
                 return deletingValue;
             }
@@ -1094,35 +946,11 @@ namespace Appalachia.Core.Collections
 
                     if (modified && !inConstructor)
                     {
-                        if (APPASERIALIZE.InSerializationWindowGuaranteed)
-                        {
-                            if (_markAsModifiedAction != null)
-                            {
-                                if (IsSerialized)
-                                {
-                                    _markAsModifiedAction.Invoke();
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (IsSerialized)
-                            {
-                                markAsModifiedAction.Invoke();
-                            }
-                        }
+                        Changed.RaiseEvent();
                     }
 
                     return false;
                 }
-
-                /*if (!APPASERIALIZE.InSerializationWindow)
-                {
-                    if (!AppalachiaApplication.IsPlaying)
-                    {
-                        return false;
-                    }
-                }*/
 
                 if (_tempRemovedIndices == null)
                 {
@@ -1169,7 +997,12 @@ namespace Appalachia.Core.Collections
                 var lookupCount = _lookup.Count;
                 var indexCount = _indices.Count;
 
-                if ((lookupCount != valueCount) || (indexCount != valueCount))
+                if (lookupCount != valueCount)
+                {
+                    return true;
+                }
+
+                if (indexCount != valueCount)
                 {
                     return true;
                 }
@@ -1197,10 +1030,7 @@ namespace Appalachia.Core.Collections
 
                 _lookup[key] = value;
 
-                if (IsSerialized)
-                {
-                    markAsModifiedAction.Invoke();
-                }
+                Changed.RaiseEvent();
             }
         }
 
@@ -1212,10 +1042,7 @@ namespace Appalachia.Core.Collections
                 var key = keys[index];
                 _lookup[key] = value;
                 values[index] = value;
-                if (IsSerialized)
-                {
-                    markAsModifiedAction.Invoke();
-                }
+                Changed.RaiseEvent();
             }
         }
 
@@ -1564,24 +1391,12 @@ namespace Appalachia.Core.Collections
 
         #region IAppaLookupState<TKey,TValue> Members
 
-        public void SetSerializationOwner(Object owner)
-        {
-            _object = owner;
-            _markAsModifiedAction = owner.MarkAsModified;
-        }
-
         [field: NonSerialized] public int LastFrameCheck { get; private set; }
 
         public int InitializerCount
         {
             get => initializerCount;
             set => initializerCount = value;
-        }
-
-        public void SetSerializationOwner(Object owner, Action markAsModifiedAction)
-        {
-            _markAsModifiedAction = markAsModifiedAction;
-            _object = owner;
         }
 
         public IReadOnlyList<TKey> Keys => keys;
@@ -2047,7 +1862,7 @@ namespace Appalachia.Core.Collections
             {
                 values.Clear();
                 keys.Clear();
-                markAsModifiedAction.Invoke();
+                Changed.RaiseEvent();
             }
         }
 #endif

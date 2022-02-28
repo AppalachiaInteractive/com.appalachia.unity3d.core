@@ -14,7 +14,7 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
-        protected virtual void OnChanged()
+        public virtual void OnChanged()
         {
             using (_PRF_OnChanged.Auto())
             {
@@ -24,6 +24,11 @@ namespace Appalachia.Core.Objects.Root
         }
 
         #region IChangePublisher Members
+
+        void IChangePublisher.OnChanged()
+        {
+            OnChanged();
+        }
 
         public void SubscribeToChanges(AppaEvent.Handler handler)
         {
@@ -87,6 +92,11 @@ namespace Appalachia.Core.Objects.Root
 
         #region IChangePublisher Members
 
+        void IChangePublisher.OnChanged()
+        {
+            OnChanged();
+        }
+
         public void SubscribeToChanges(AppaEvent.Handler handler)
         {
             using (_PRF_SubscribeToChanges.Auto())
@@ -144,6 +154,11 @@ namespace Appalachia.Core.Objects.Root
         }
 
         #region IChangePublisher Members
+
+        void IChangePublisher.OnChanged()
+        {
+            OnChanged();
+        }
 
         public void SubscribeToChanges(AppaEvent.Handler handler)
         {
@@ -203,6 +218,11 @@ namespace Appalachia.Core.Objects.Root
 
         #region IChangePublisher Members
 
+        void IChangePublisher.OnChanged()
+        {
+            OnChanged();
+        }
+
         public void SubscribeToChanges(AppaEvent.Handler handler)
         {
             using (_PRF_SubscribeToChanges.Auto())
@@ -260,6 +280,11 @@ namespace Appalachia.Core.Objects.Root
         }
 
         #region IChangePublisher Members
+
+        void IChangePublisher.OnChanged()
+        {
+            OnChanged();
+        }
 
         public void SubscribeToChanges(AppaEvent.Handler handler)
         {

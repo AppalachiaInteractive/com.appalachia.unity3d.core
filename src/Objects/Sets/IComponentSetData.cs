@@ -1,9 +1,9 @@
 namespace Appalachia.Core.Objects.Sets
 {
-    public interface IComponentSetData<in TSet, TSetData>
-        where TSet : IComponentSet<TSet, TSetData>, new()
-        where TSetData : IComponentSetData<TSet, TSetData>
+    public interface IComponentSetData<in TComponentSet, TComponentSetData>
+        where TComponentSet : IComponentSet<TComponentSet, TComponentSetData>, new()
+        where TComponentSetData : IComponentSetData<TComponentSet, TComponentSetData>
     {
-        void ApplyToComponentSet(TSet componentSet);
+        void ApplyToComponentSet(TComponentSet componentSet);
     }
 }

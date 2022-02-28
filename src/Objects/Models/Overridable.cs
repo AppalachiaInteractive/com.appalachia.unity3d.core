@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Appalachia.Utility.Events;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Core.Preferences;
 using Appalachia.Utility.Colors;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Events;
 using Appalachia.Utility.Events.Contracts;
 using Appalachia.Utility.Events.Extensions;
 using Appalachia.Utility.Standards;
@@ -246,6 +246,15 @@ namespace Appalachia.Core.Objects.Models
             }
         }
 
+        public void OverrideValue(T value)
+        {
+            using (_PRF_OverrideValue.Auto())
+            {
+                Overriding = true;
+                Value = value;
+            }
+        }
+
         private void OnChanged()
         {
             using (_PRF_OnChanged.Auto())
@@ -255,6 +264,11 @@ namespace Appalachia.Core.Objects.Models
         }
 
         #region IChangePublisher Members
+
+        void IChangePublisher.OnChanged()
+        {
+            OnChanged();
+        }
 
         public void SubscribeToChanges(AppaEvent.Handler handler)
         {
@@ -395,6 +409,9 @@ namespace Appalachia.Core.Objects.Models
         #region Profiling
 
         private const string _PRF_PFX = nameof(Overridable<T, TO>) + ".";
+
+        private static readonly ProfilerMarker _PRF_OverrideValue =
+            new ProfilerMarker(_PRF_PFX + nameof(OverrideValue));
 
         private static readonly ProfilerMarker _PRF_UnsubscribeFromChanges =
             new ProfilerMarker(_PRF_PFX + nameof(UnsubscribeFromChanges));

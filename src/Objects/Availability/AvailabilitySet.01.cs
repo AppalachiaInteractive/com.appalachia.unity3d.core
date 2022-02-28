@@ -9,7 +9,7 @@ namespace Appalachia.Core.Objects.Availability
                                        IAvailabilitySet<T1>,
                                        IClosedAvailabilitySet<T1>
     {
-        public AvailabilitySet(int sortOrder) : base(sortOrder)
+        public AvailabilitySet(int sortOrder, bool allowMultipleCalls = false) : base(sortOrder, allowMultipleCalls)
         {
         }
 

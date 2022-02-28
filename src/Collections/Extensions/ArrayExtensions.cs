@@ -8,12 +8,12 @@ namespace Appalachia.Core.Collections.Extensions
 {
     public static class ArrayExtensions
     {
-        public static TSet ToAppaSet<T, TSet, TList>(this T[] array)
+        public static TComponentSet ToAppaSet<T, TComponentSet, TList>(this T[] array)
             where T : IEquatable<T>
-            where TSet : AppaSet<T, TList>, new()
+            where TComponentSet : AppaSet<T, TList>, new()
             where TList : AppaList<T>, new()
         {
-            var hash = new TSet();
+            var hash = new TComponentSet();
 
             if ((array == null) || (array.Length == 0))
             {

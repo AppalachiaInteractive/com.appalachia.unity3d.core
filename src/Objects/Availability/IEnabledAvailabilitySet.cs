@@ -5,8 +5,8 @@ using UnityEngine;
 namespace Appalachia.Core.Objects.Availability
 {
     public interface IEnabledAvailabilitySet<T1>
-        where T1 : Component, IEnableNotifier
+        where T1 : class, IEnableNotifier
     {
-        void IsEnabledThen(ComponentEvent<T1>.Handler handler);
+        void IsEnabledThen(AppaEvent<T1>.Handler handler);
     }
 }

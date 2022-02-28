@@ -58,7 +58,11 @@ namespace Appalachia.Core.Objects.Root
             {
             }
 
-            public bool IsElected => Overriding;
+            public bool IsElected
+            {
+                get => Overriding;
+                set => Overriding = value;
+            }
 
             /// <inheritdoc />
             protected override string DisabledColorPrefName => "Optional Disabled Color";

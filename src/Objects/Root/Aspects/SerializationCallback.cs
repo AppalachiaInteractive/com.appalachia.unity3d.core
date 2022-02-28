@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Standards;
 using Unity.Profiling;
 using UnityEngine;
@@ -141,6 +142,16 @@ namespace Appalachia.Core.Objects.Root
             {
                 using var scope = APPASERIALIZE.OnAfterDeserialize();
 
+                if (!AppalachiaApplication.OnMainThread)
+                {
+                    return;
+                }
+                
+                if (_owner == null)
+                {
+                    //Context.Log.Warn($"The {GetType().FormatForLogging()} has no owner!", this);
+                }
+                
                 if (_objectId == null)
                 {
                     _objectId = ObjectId.NewObjectId();

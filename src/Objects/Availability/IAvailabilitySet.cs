@@ -13,10 +13,10 @@ namespace Appalachia.Core.Objects.Availability
             where T1 : class, IAvailabilityMarker;
 
         public IEnabledAvailabilitySet<T1> AnyInstance<T1>()
-            where T1 : Component, IEnableNotifier;
+            where T1 : class, IEnableNotifier;
 
         public IEnabledAvailabilitySet<T1> AnyInstance<T1>(T1 unused)
-            where T1 : Component, IEnableNotifier;
+            where T1 : class, IEnableNotifier;
 
         IAvailabilitySet<T1> Behaviour<T1>()
             where T1 : SingletonAppalachiaBehaviour<T1>, ISingleton<T1>;

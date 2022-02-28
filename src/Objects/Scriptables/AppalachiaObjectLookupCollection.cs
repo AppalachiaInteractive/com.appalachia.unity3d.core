@@ -1,5 +1,4 @@
 using System;
-using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.Attributes;
 using Appalachia.CI.Integration.Core;
 using Appalachia.Core.Collections;
@@ -7,7 +6,6 @@ using Appalachia.Core.Collections.Interfaces;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Async;
-using Appalachia.Utility.Execution;
 using Appalachia.Utility.Reflection.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -27,8 +25,8 @@ namespace Appalachia.Core.Objects.Scriptables
     [Serializable]
     [InspectorIcon(Brand.AppalachiaObjectLookupCollection.Icon)]
     [AssetLabel(Brand.AppalachiaObjectLookupCollection.Label)]
-    public abstract class
-        AppalachiaObjectLookupCollection<TKey, TValue, TKeyList, TValueList, TLookup, T> : AppalachiaObject<T>
+    public abstract partial class AppalachiaObjectLookupCollection<
+        TKey, TValue, TKeyList, TValueList, TLookup, T> : AppalachiaObject<T>
         where TValue : UnityEngine.Object
         where TKeyList : AppaList<TKey>, new()
         where TValueList : AppaList<TValue>, new()
@@ -183,6 +181,14 @@ namespace Appalachia.Core.Objects.Scriptables
             }
         }
 
+        public void RemoveNulls()
+        {
+            using (_PRF_RemoveNulls.Auto())
+            {
+                _items.RemoveNulls();
+            }
+        }
+
         protected abstract TKey GetUniqueKeyFromValue(TValue value);
 
         // ReSharper disable once UnusedParameter.Global
@@ -227,10 +233,10 @@ namespace Appalachia.Core.Objects.Scriptables
                     _items = new TLookup();
                 }
 
-                _items.SetSerializationOwner(this);
+                _items.Changed.Event += OnChanged;
 
 #if UNITY_EDITOR
-                AppaTask.FireAndForget(PopulateItems);
+                InitializeInEditor();
 #endif
             }
         }
@@ -244,81 +250,14 @@ namespace Appalachia.Core.Objects.Scriptables
 
         private static readonly ProfilerMarker _PRF_Items = new(_PRF_PFX + nameof(Items));
 
-#if UNITY_EDITOR
-        private static readonly ProfilerMarker _PRF_PopulateItems = new(_PRF_PFX + nameof(PopulateItems));
-#endif
-
         private static readonly ProfilerMarker _PRF_RemoveByKey =
             new ProfilerMarker(_PRF_PFX + nameof(RemoveByKey));
 
         private static readonly ProfilerMarker _PRF_RemoveInvalid = new(_PRF_PFX + nameof(RemoveInvalid));
 
+        private static readonly ProfilerMarker _PRF_RemoveNulls =
+            new ProfilerMarker(_PRF_PFX + nameof(RemoveNulls));
+
         #endregion
-
-#if UNITY_EDITOR
-        [ButtonGroup]
-        private void PopulateItems()
-        {
-            using (_PRF_PopulateItems.Auto())
-            {
-                if (_items == null)
-                {
-                    _items = new TLookup();
-                    MarkAsModified();
-                }
-
-                _items.SetSerializationOwner(this);
-
-                for (var i = _items.Count - 1; i >= 0; i--)
-                {
-                    if (_items.at[i] == null)
-                    {
-                        _items.RemoveAt(i);
-                        MarkAsModified();
-                    }
-                }
-
-                if (!AppalachiaApplication.IsPlayingOrWillPlay)
-                {
-                    var assets = AssetDatabaseManager.FindAssets<TValue>();
-
-                    for (var index = 0; index < assets.Count; index++)
-                    {
-                        var asset = assets[index];
-
-                        if (asset == null)
-                        {
-                            continue;
-                        }
-
-                        var assetKey = GetUniqueKeyFromValue(asset);
-
-                        if (_items.ContainsKey(assetKey))
-                        {
-                            if (_items[assetKey] == null)
-                            {
-                                _items[assetKey] = asset;
-                                MarkAsModified();
-                            }
-                        }
-                        else
-                        {
-                            _items.Add(assetKey, asset);
-                            MarkAsModified();
-                        }
-                    }
-                }
-            }
-        }
-
-        [ButtonGroup]
-        private void RepopulateItems()
-        {
-            _items.Clear();
-#pragma warning disable CS4014
-            PopulateItems();
-#pragma warning restore CS4014
-        }
-#endif
     }
 }

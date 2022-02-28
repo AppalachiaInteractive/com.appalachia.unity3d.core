@@ -1,4 +1,5 @@
 using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Events.Contracts;
 using UnityEngine;
 
 namespace Appalachia.Core.Objects.Root
@@ -51,6 +52,11 @@ namespace Appalachia.Core.Objects.Root
         public void SetOwner(Object owner)
         {
             _owner = owner;
+
+            if (owner is IChangePublisher publisher)
+            {
+                Changed.Event += publisher.OnChanged;
+            }
         }
 
         #endregion

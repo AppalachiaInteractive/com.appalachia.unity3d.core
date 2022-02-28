@@ -57,9 +57,9 @@ namespace Appalachia.Core.Objects.Root
                     {
                         _initializer ??= new Initializer();
 
-                        _initializationState =
-                            new InitializationState(async () => await Initialize(_initializer));
-                        MarkAsModified();
+                        _initializationState = new InitializationState(
+                            async () => { await Initialize(_initializer); }
+                        );
                     }
 
                     return _initializationState;
@@ -108,6 +108,14 @@ namespace Appalachia.Core.Objects.Root
         protected virtual async AppaTask Initialize(Initializer initializer)
         {
             await AppaTask.CompletedTask;
+        }
+
+        protected Initializer GetInitializer()
+        {
+            using (_PRF_GetInitializer.Auto())
+            {
+                return _initializer ??= new Initializer();
+            }
         }
 
         /// <summary>
@@ -185,6 +193,9 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        private static readonly ProfilerMarker _PRF_GetInitializer =
+            new ProfilerMarker(_PRF_PFX + nameof(GetInitializer));
+
         private static readonly ProfilerMarker _PRF_ExecuteInitialization =
             new ProfilerMarker(_PRF_PFX + nameof(ExecuteInitialization));
 
@@ -254,6 +265,14 @@ namespace Appalachia.Core.Objects.Root
 
                     return _initializationState;
                 }
+            }
+        }
+
+        public Initializer GetInitializer()
+        {
+            using (_PRF_GetInitializer.Auto())
+            {
+                return _initializer ??= new Initializer();
             }
         }
 
@@ -376,6 +395,9 @@ namespace Appalachia.Core.Objects.Root
         #endregion
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_GetInitializer =
+            new ProfilerMarker(_PRF_PFX + nameof(GetInitializer));
 
         private static readonly ProfilerMarker _PRF_ExecuteInitialization =
             new ProfilerMarker(_PRF_PFX + nameof(ExecuteInitialization));
@@ -495,7 +517,10 @@ namespace Appalachia.Core.Objects.Root
 
         protected Initializer GetInitializer()
         {
-            return _initializer ??= new Initializer();
+            using (_PRF_GetInitializer.Auto())
+            {
+                return _initializer ??= new Initializer();
+            }
         }
 
         /// <summary>
@@ -572,6 +597,9 @@ namespace Appalachia.Core.Objects.Root
         #endregion
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_GetInitializer =
+            new ProfilerMarker(_PRF_PFX + nameof(GetInitializer));
 
         private static readonly ProfilerMarker _PRF_ExecuteInitialization =
             new ProfilerMarker(_PRF_PFX + nameof(ExecuteInitialization));
@@ -682,6 +710,14 @@ namespace Appalachia.Core.Objects.Root
         {
         }
 
+        protected Initializer GetInitializer()
+        {
+            using (_PRF_GetInitializer.Auto())
+            {
+                return _initializer ??= new Initializer();
+            }
+        }
+
         /// <summary>
         ///     Immediately and synchronously initializes the class.
         /// </summary>
@@ -756,6 +792,9 @@ namespace Appalachia.Core.Objects.Root
         #endregion
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_GetInitializer =
+            new ProfilerMarker(_PRF_PFX + nameof(GetInitializer));
 
         private static readonly ProfilerMarker _PRF_initializationState =
             new ProfilerMarker(_PRF_PFX + nameof(initializationState));
@@ -871,6 +910,14 @@ namespace Appalachia.Core.Objects.Root
             await AppaTask.CompletedTask;
         }
 
+        protected Initializer GetInitializer()
+        {
+            using (_PRF_GetInitializer.Auto())
+            {
+                return _initializer ??= new Initializer();
+            }
+        }
+
         /// <summary>
         ///     Immediately and synchronously initializes the class.
         /// </summary>
@@ -950,6 +997,9 @@ namespace Appalachia.Core.Objects.Root
 
         private static readonly ProfilerMarker _PRF_ExecuteInitialization =
             new ProfilerMarker(_PRF_PFX2 + nameof(ExecuteInitialization));
+
+        private static readonly ProfilerMarker _PRF_GetInitializer =
+            new ProfilerMarker(_PRF_PFX2 + nameof(GetInitializer));
 
         private static readonly ProfilerMarker _PRF_InitializationExceptionHandler =
             new ProfilerMarker(_PRF_PFX2 + nameof(InitializationExceptionHandler));

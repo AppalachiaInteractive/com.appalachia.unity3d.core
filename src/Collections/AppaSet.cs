@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Appalachia.Core.Collections.Interfaces;
 using Appalachia.Utility.Constants;
+using Appalachia.Utility.Events;
+using Appalachia.Utility.Events.Extensions;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
 using Appalachia.Utility.Timing;
@@ -36,7 +38,7 @@ namespace Appalachia.Core.Collections
 
         public bool NoTracking { get; set; } = false;
 
-        [NonSerialized] private Action _markAsModifiedAction;
+        public AppaEvent.Data Changed;
 
         [NonSerialized] private bool _isValueUnityObjectChecked;
 
@@ -76,7 +78,7 @@ namespace Appalachia.Core.Collections
 
                 _indices.Add(value, _indices.Count);
                 values.Add(value);
-                _markAsModifiedAction?.Invoke();
+                Changed.RaiseEvent();
             }
         }
 
@@ -95,7 +97,7 @@ namespace Appalachia.Core.Collections
             {
                 values.Clear();
                 _indices.Clear();
-                _markAsModifiedAction?.Invoke();
+                Changed.RaiseEvent();
             }
         }
 
@@ -137,13 +139,13 @@ namespace Appalachia.Core.Collections
                 {
                     values = new TValueList { Capacity = initializerCount };
 
-                    _markAsModifiedAction?.Invoke();
+                    Changed.RaiseEvent();
                 }
 
                 if (_indices == null)
                 {
                     _indices = new Dictionary<TValue, int>(initializerCount);
-                    _markAsModifiedAction?.Invoke();
+                    Changed.RaiseEvent();
                 }
 
                 if (!_isValueUnityObjectChecked)
@@ -164,7 +166,7 @@ namespace Appalachia.Core.Collections
                 if (values.Count > initializerCount)
                 {
                     initializerCount = values.Count;
-                    _markAsModifiedAction?.Invoke();
+                    Changed.RaiseEvent();
                 }
             }
         }
@@ -187,7 +189,7 @@ namespace Appalachia.Core.Collections
                     newIndex += 1;
                 }
 
-                _markAsModifiedAction?.Invoke();
+                Changed.RaiseEvent();
             }
         }
 
@@ -224,7 +226,7 @@ namespace Appalachia.Core.Collections
 
                 values.RemoveAt(lastIndex);
 
-                _markAsModifiedAction?.Invoke();
+                Changed.RaiseEvent();
                 return deletingValue;
             }
         }
@@ -239,7 +241,7 @@ namespace Appalachia.Core.Collections
                 if (valueCount == 0)
                 {
                     _indices.Clear();
-                    _markAsModifiedAction?.Invoke();
+                    Changed.RaiseEvent();
                     return false;
                 }
 
@@ -417,18 +419,6 @@ namespace Appalachia.Core.Collections
         {
             get => initializerCount;
             set => initializerCount = value;
-        }
-
-        public void SetSerializationOwner(Object owner)
-        {
-            _object = owner;
-            _markAsModifiedAction = owner.MarkAsModified;
-        }
-
-        public void SetSerializationOwner(Object owner, Action markAsModifiedAction)
-        {
-            _markAsModifiedAction = markAsModifiedAction;
-            _object = owner;
         }
 
         #endregion

@@ -3,7 +3,6 @@ using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
-using UnityEngine;
 
 // ReSharper disable MemberHidesStaticFromOuterClass
 // ReSharper disable StaticMemberInGenericType
@@ -36,7 +35,16 @@ namespace Appalachia.Core.Objects.Availability
         {
             using (_PRF_Any.Auto())
             {
-                var result = new AvailabilitySet<T1>(_sortOrder)
+                return Any<T1>();
+            }
+        }
+
+        public IClosedAvailabilitySet<T1> Any<T1>()
+            where T1 : class, IAvailabilityMarker
+        {
+            using (_PRF_Any.Auto())
+            {
+                var result = new AvailabilitySet<T1>(_sortOrder, true)
                 {
                     Data1 = AvailabilityData<T1>.ForAny<T1>(_sortOrder)
                 };
@@ -48,32 +56,16 @@ namespace Appalachia.Core.Objects.Availability
         }
 
         public IEnabledAvailabilitySet<T1> AnyInstance<T1>(T1 unused)
-            where T1 : Component, IEnableNotifier
+            where T1 : class, IEnableNotifier
         {
             using (_PRF_AnyComponent.Auto())
             {
-                return new EnabledAvailabilitySet<T1>();
-            }
-        }
-
-        public IClosedAvailabilitySet<T1> Any<T1>()
-            where T1 : class, IAvailabilityMarker
-        {
-            using (_PRF_Any.Auto())
-            {
-                var result = new AvailabilitySet<T1>(_sortOrder)
-                {
-                    Data1 = AvailabilityData<T1>.ForAny<T1>(_sortOrder)
-                };
-
-                result.Data1.AvailabilityChanged.Event += result.OnAvailabilityChanged;
-
-                return result;
+                return AnyInstance<T1>();
             }
         }
 
         public IEnabledAvailabilitySet<T1> AnyInstance<T1>()
-            where T1 : Component, IEnableNotifier
+            where T1 : class, IEnableNotifier
         {
             using (_PRF_AnyComponent.Auto())
             {

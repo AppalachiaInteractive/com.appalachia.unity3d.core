@@ -27,6 +27,8 @@ namespace Appalachia.Core.Objects.Initialization
 
         [NonSerialized] private HashSet<string> _tagsHash;
 
+        [SerializeField] private int _initializationCount;
+
         [NonSerialized] private List<string> _nonSerializedTags;
 
         [HideInInspector, SerializeField]
@@ -38,6 +40,8 @@ namespace Appalachia.Core.Objects.Initialization
         private string _resetToken;
 
         #endregion
+
+        public int InitializationCount => _initializationCount;
 
         internal string ResetToken => _resetToken;
 
@@ -302,7 +306,8 @@ namespace Appalachia.Core.Objects.Initialization
             string tag,
             bool force,
             TagState tagState,
-            GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
+            GetComponentStrategy getComponentStrategy =
+                GetComponentStrategy.CurrentObject)
             where TC : Component
         {
             return GetInternal(obj, target, tag, force, tagState, true, getComponentStrategy);
@@ -360,7 +365,8 @@ namespace Appalachia.Core.Objects.Initialization
             string tag,
             bool force,
             TagState tagState,
-            GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
+            GetComponentStrategy getComponentStrategy =
+                GetComponentStrategy.CurrentObject)
             where TC : Component
         {
             return GetInternal(obj, target, tag, force, tagState, true, getComponentStrategy);
@@ -544,6 +550,7 @@ namespace Appalachia.Core.Objects.Initialization
 
                 try
                 {
+                    _initializationCount += 1;
                     action();
                     MarkInitialized(tag, tagState);
                 }

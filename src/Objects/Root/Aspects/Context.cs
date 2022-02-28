@@ -15,7 +15,7 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
-        protected AppaContext Context
+        protected internal AppaContext Context
         {
             get
             {

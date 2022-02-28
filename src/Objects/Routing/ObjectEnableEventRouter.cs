@@ -22,7 +22,7 @@ namespace Appalachia.Core.Objects.Routing
         #endregion
 
         public static void Notify<T>(Type type, T instance)
-            where T : Component, IEnableNotifier
+            where T : class, IEnableNotifier
         {
             using (_PRF_Notify.Auto())
             {
@@ -46,7 +46,7 @@ namespace Appalachia.Core.Objects.Routing
                 }
 
                 var storedEventData = _eventLookup[type];
-                var targetEventType = typeof(ComponentEvent<T>.Data);
+                var targetEventType = typeof(AppaEvent<T>.Data);
 
                 if (storedEventData.GetType() != targetEventType)
                 {
@@ -60,14 +60,14 @@ namespace Appalachia.Core.Objects.Routing
                     );
                 }
 
-                var eventData = (ComponentEvent<T>.Data)storedEventData;
+                var eventData = (AppaEvent<T>.Data)storedEventData;
 
                 eventData.RaiseEvent(instance);
             }
         }
 
         public static void Notify<T>(T instance)
-            where T : Component, IEnableNotifier
+            where T : class, IEnableNotifier
         {
             using (_PRF_Notify.Auto())
             {
@@ -75,8 +75,8 @@ namespace Appalachia.Core.Objects.Routing
             }
         }
 
-        public static void SubscribeTo<T>(ComponentEvent<T>.Handler handler)
-            where T : Component, IEnableNotifier
+        public static void SubscribeTo<T>(AppaEvent<T>.Handler handler)
+            where T : class, IEnableNotifier
         {
             using (_PRF_SubscribeTo.Auto())
             {
@@ -84,12 +84,12 @@ namespace Appalachia.Core.Objects.Routing
 
                 var type = typeof(T);
 
-                ComponentEvent<T>.Data eventData;
+                AppaEvent<T>.Data eventData;
                 var add = false;
 
                 if (_eventLookup.ContainsKey(type))
                 {
-                    eventData = (ComponentEvent<T>.Data)_eventLookup[type];
+                    eventData = (AppaEvent<T>.Data)_eventLookup[type];
                 }
                 else
                 {

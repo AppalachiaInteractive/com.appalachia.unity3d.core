@@ -5,17 +5,13 @@ namespace Appalachia.Core.Objects.Sets
     public interface IComponentSet
     {
         public GameObject GameObject { get; }
-        string ComponentSetName { get; }
-
-        void DestroySet();
-        void DisableSet();
-        void EnableSet();
+        string ComponentSetNamePrefix { get; }
     }
 
-    public interface IComponentSet<TSet, TSetData> : IComponentSet
-        where TSet : IComponentSet<TSet, TSetData>, new()
-        where TSetData : IComponentSetData<TSet, TSetData>
+    public interface IComponentSet<TComponentSet, TComponentSetData> : IComponentSet
+        where TComponentSet : IComponentSet<TComponentSet, TComponentSetData>, new()
+        where TComponentSetData : IComponentSetData<TComponentSet, TComponentSetData>
     {
-        void GetOrAddComponents(TSetData data, GameObject parent, string name);
+        void GetOrAddComponents(TComponentSetData data, GameObject parent, string name);
     }
 }

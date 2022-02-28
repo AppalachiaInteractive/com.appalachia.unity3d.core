@@ -7,35 +7,35 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        protected ValueEvent<PointerEventData>.Data _Clicked;
+        protected AppaEvent<PointerEventData>.Data _Clicked;
 
-        protected ValueEvent<BaseEventData>.Data _Deselected;
+        protected AppaEvent<BaseEventData>.Data _Deselected;
 
-        protected ValueEvent<PointerEventData>.Data _DoubleClicked;
+        protected AppaEvent<PointerEventData>.Data _DoubleClicked;
 
-        protected ValueEvent<PointerEventData>.Data _Drag;
+        protected AppaEvent<PointerEventData>.Data _Drag;
 
-        protected ValueEvent<PointerEventData>.Data _DragBegin;
+        protected AppaEvent<PointerEventData>.Data _DragBegin;
 
-        protected ValueEvent<PointerEventData>.Data _DragEnd;
+        protected AppaEvent<PointerEventData>.Data _DragEnd;
 
-        protected ValueEvent<PointerEventData>.Data _HoverBegin;
+        protected AppaEvent<PointerEventData>.Data _HoverBegin;
 
-        protected ValueEvent<PointerEventData>.Data _HoverEnd;
+        protected AppaEvent<PointerEventData>.Data _HoverEnd;
 
-        protected ValueEvent<PointerEventData>.Data _InitializePotentialDrag;
+        protected AppaEvent<PointerEventData>.Data _InitializePotentialDrag;
 
         protected AppaEvent.Data _Interactable;
 
         protected AppaEvent.Data _NonInteractable;
 
-        protected ValueEvent<PointerEventData>.Data _Pressed;
+        protected AppaEvent<PointerEventData>.Data _Pressed;
 
-        protected ValueEvent<PointerEventData>.Data _Released;
+        protected AppaEvent<PointerEventData>.Data _Released;
 
-        protected ValueEvent<BaseEventData>.Data _Selected;
+        protected AppaEvent<BaseEventData>.Data _Selected;
 
-        protected ValueEvent<BaseEventData>.Data _Submit;
+        protected AppaEvent<BaseEventData>.Data _Submit;
 
         #endregion
     }

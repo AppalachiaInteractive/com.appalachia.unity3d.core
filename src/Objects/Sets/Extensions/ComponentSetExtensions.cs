@@ -1,6 +1,10 @@
 using System;
 using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Core.Objects.Sets.Exceptions;
+using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events.Collections;
+using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Logging;
 using Unity.Profiling;
 
 namespace Appalachia.Core.Objects.Sets.Extensions
@@ -29,11 +33,11 @@ namespace Appalachia.Core.Objects.Sets.Extensions
         /// </summary>
         /// <param name="data">The configuration data to apply to the <see cref="set" />.</param>
         /// <param name="set">The set.</param>
-        public static void UpdateComponentSet<TSet, TSetData>(
-            this ComponentSetData<TSet, TSetData>.Override data,
-            TSet set)
-            where TSet : ComponentSet<TSet, TSetData>, new()
-            where TSetData : ComponentSetData<TSet, TSetData>
+        public static void UpdateComponentSet<TComponentSet, TComponentSetData>(
+            this ComponentSetData<TComponentSet, TComponentSetData>.Override data,
+            TComponentSet set)
+            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -41,9 +45,16 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 {
                     void SubscribableDelegate()
                     {
-                        if (data == null) return;
-                        if (set == null) return;
-                        
+                        if (data == null)
+                        {
+                            return;
+                        }
+
+                        if (set == null)
+                        {
+                            return;
+                        }
+
                         UpdateComponentSetInternal(data, set);
                     }
 
@@ -78,13 +89,13 @@ namespace Appalachia.Core.Objects.Sets.Extensions
         /// <param name="set">The set.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        public static void UpdateComponentSet<TSet, TSetData>(
-            this ComponentSetData<TSet, TSetData>.Optional data,
-            TSet set,
-            Action<ComponentSetData<TSet, TSetData>.Optional, TSet> before,
-            Action<ComponentSetData<TSet, TSetData>.Optional, TSet> after)
-            where TSet : ComponentSet<TSet, TSetData>, new()
-            where TSetData : ComponentSetData<TSet, TSetData>
+        public static void UpdateComponentSet<TComponentSet, TComponentSetData>(
+            this ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
+            TComponentSet set,
+            Action<ComponentSetData<TComponentSet, TComponentSetData>.Optional, TComponentSet> before,
+            Action<ComponentSetData<TComponentSet, TComponentSetData>.Optional, TComponentSet> after)
+            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -92,9 +103,16 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 {
                     void SubscribableDelegate()
                     {
-                        if (data == null) return;
-                        if (set == null) return;
-                        
+                        if (data == null)
+                        {
+                            return;
+                        }
+
+                        if (set == null)
+                        {
+                            return;
+                        }
+
                         before?.Invoke(data, set);
                         UpdateComponentSetInternal(data, set);
                         after?.Invoke(data, set);
@@ -123,11 +141,11 @@ namespace Appalachia.Core.Objects.Sets.Extensions
         /// </summary>
         /// <param name="data">The configuration data to apply to the <see cref="set" />.</param>
         /// <param name="set">The set.</param>
-        public static void UpdateComponentSet<TSet, TSetData>(
-            this ComponentSetData<TSet, TSetData>.Optional data,
-            TSet set)
-            where TSet : ComponentSet<TSet, TSetData>, new()
-            where TSetData : ComponentSetData<TSet, TSetData>
+        public static void UpdateComponentSet<TComponentSet, TComponentSetData>(
+            this ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
+            TComponentSet set)
+            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -135,9 +153,16 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 {
                     void SubscribableDelegate()
                     {
-                        if (data == null) return;
-                        if (set == null) return;
-                        
+                        if (data == null)
+                        {
+                            return;
+                        }
+
+                        if (set == null)
+                        {
+                            return;
+                        }
+
                         UpdateComponentSetInternal(data, set);
                     }
 
@@ -172,13 +197,13 @@ namespace Appalachia.Core.Objects.Sets.Extensions
         /// <param name="set">The set.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        public static void UpdateComponentSet<TSet, TSetData>(
-            this ComponentSetData<TSet, TSetData>.Override data,
-            TSet set,
-            Action<ComponentSetData<TSet, TSetData>.Override, TSet> before,
-            Action<ComponentSetData<TSet, TSetData>.Override, TSet> after)
-            where TSet : ComponentSet<TSet, TSetData>, new()
-            where TSetData : ComponentSetData<TSet, TSetData>
+        public static void UpdateComponentSet<TComponentSet, TComponentSetData>(
+            this ComponentSetData<TComponentSet, TComponentSetData>.Override data,
+            TComponentSet set,
+            Action<ComponentSetData<TComponentSet, TComponentSetData>.Override, TComponentSet> before,
+            Action<ComponentSetData<TComponentSet, TComponentSetData>.Override, TComponentSet> after)
+            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -186,9 +211,16 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 {
                     void SubscribableDelegate()
                     {
-                        if (data == null) return;
-                        if (set == null) return;
-                        
+                        if (data == null)
+                        {
+                            return;
+                        }
+
+                        if (set == null)
+                        {
+                            return;
+                        }
+
                         before?.Invoke(data, set);
                         UpdateComponentSetInternal(data, set);
                         after?.Invoke(data, set);
@@ -198,6 +230,27 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 }
 
                 UpdateComponentSetAndSubscribe(data, set, CreateSubscribableDelegate);
+            }
+        }
+
+        public static void ValidateSetEnabledState<TComponentSet, TComponentSetData>(
+            this ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
+            TComponentSet set)
+            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+        {
+            using (_PRF_ValidateSetEnabledState.Auto())
+            {
+                if (data.IsElected)
+                {
+                    set.EnableSet(data);
+                    set.GameObject.MarkAsShowInHierarchyAndInspector();
+                }
+                else
+                {
+                    set.DisableSet();
+                    set.GameObject.MarkAsHideInHierarchyAndInspector();
+                }
             }
         }
 
@@ -208,21 +261,21 @@ namespace Appalachia.Core.Objects.Sets.Extensions
         /// <param name="set">The set to update.</param>
         /// <param name="delegateCreator">A delegate to create the update/subscribe delegate.</param>
         /// <exception cref="NotSupportedException">Thrown whenever <paramref name="set" /> is null.</exception>
-        private static void UpdateComponentSetAndSubscribe<TSet, TSetData, TO>(
-            ComponentSetData<TSet, TSetData>.Overridable<TO> data,
-            TSet set,
+        private static void UpdateComponentSetAndSubscribe<TComponentSet, TComponentSetData, TO>(
+            ComponentSetData<TComponentSet, TComponentSetData>.Overridable<TO> data,
+            TComponentSet set,
             Func<Action> delegateCreator)
-            where TSet : ComponentSet<TSet, TSetData>, new()
-            where TSetData : ComponentSetData<TSet, TSetData>
-            where TO : ComponentSetData<TSet, TSetData>.Overridable<TO>, new()
+            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+            where TO : ComponentSetData<TComponentSet, TComponentSetData>.Overridable<TO>, new()
         {
             using (_PRF_UpdateComponentSetAndSubscribe.Auto())
             {
                 if (set == null)
                 {
-                    throw new ArgumentNullException(
-                        nameof(set),
-                        "You must initialize the set prior to configuring it!"
+                    throw new ComponentSetNotInitializedException(
+                        typeof(TComponentSet),
+                        $"You must initialize the {typeof(TComponentSet).FormatForLogging()} prior to configuring it!"
                     );
                 }
 
@@ -231,11 +284,11 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             }
         }
 
-        private static void UpdateComponentSetInternal<TSet, TSetData>(
-            ComponentSetData<TSet, TSetData>.Optional data,
-            TSet set)
-            where TSet : ComponentSet<TSet, TSetData>, new()
-            where TSetData : ComponentSetData<TSet, TSetData>
+        private static void UpdateComponentSetInternal<TComponentSet, TComponentSetData>(
+            ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
+            TComponentSet set)
+            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSetOptional.Auto())
             {
@@ -244,21 +297,17 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                     var value = data.Value;
 
                     value.UpdateComponentSet(set, false);
+                }
 
-                    set.EnableSet();
-                }
-                else
-                {
-                    set.DisableSet();
-                }
+                ValidateSetEnabledState(data, set);
             }
         }
 
-        private static void UpdateComponentSetInternal<TSet, TSetData>(
-            ComponentSetData<TSet, TSetData>.Override data,
-            TSet set)
-            where TSet : ComponentSet<TSet, TSetData>, new()
-            where TSetData : ComponentSetData<TSet, TSetData>
+        private static void UpdateComponentSetInternal<TComponentSet, TComponentSetData>(
+            ComponentSetData<TComponentSet, TComponentSetData>.Override data,
+            TComponentSet set)
+            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSetOverride.Auto())
             {
@@ -268,14 +317,20 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 }
 
                 var value = data.Value;
-
+                
                 value.UpdateComponentSet(set, false);
+               
+                set.EnableSet(data.Value);
+                set.GameObject.MarkAsShowInHierarchyAndInspector();
             }
         }
 
         #region Profiling
 
         private const string _PRF_PFX = nameof(ComponentSetDataExtensions) + ".";
+
+        private static readonly ProfilerMarker _PRF_ValidateSetEnabledState =
+            new ProfilerMarker(_PRF_PFX + nameof(ValidateSetEnabledState));
 
         private static readonly ProfilerMarker _PRF_UpdateComponentSetOptional =
             new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSetInternal));
