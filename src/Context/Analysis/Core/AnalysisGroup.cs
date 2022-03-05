@@ -176,10 +176,7 @@ namespace Appalachia.Core.Context.Analysis.Core
                     _colors = new Dictionary<object, Color>();
                 }
 
-                if (_colors.ContainsKey(colorable))
-                {
-                    return _colors[colorable];
-                }
+                if (_colors.TryGetValue(colorable, out var result)) return result;
 
                 return ResultColor;
             }

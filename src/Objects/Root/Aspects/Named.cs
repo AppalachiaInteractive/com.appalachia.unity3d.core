@@ -1,12 +1,40 @@
+using System.Diagnostics;
+using Appalachia.CI.Constants;
 using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
 using Appalachia.Utility.Strings;
+using UnityEngine;
 
 namespace Appalachia.Core.Objects.Root
 {
+    [DebuggerDisplay("{Name} (AppalachiaObject)")]
     public partial class AppalachiaObject : INamed
     {
+        #region Fields and Autoproperties
+
+        [SerializeField]
+        [HideInInspector]
+        private string _niceName;
+
+        #endregion
+
         #region INamed Members
+
+        public string NiceName
+        {
+            get
+            {
+                if (_niceName.IsNullOrWhiteSpace())
+                {
+                    _niceName = APPASTR.NicifyVariableName(Name);
+                    MarkAsModified();
+                }
+
+                return _niceName;
+            }
+            set => _niceName = value;
+        }
 
         public string Name => name;
 
@@ -21,13 +49,36 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
+    [DebuggerDisplay("{Name} (SingletonAppalachiaObject)")]
     public partial class SingletonAppalachiaObject<T>
     {
     }
 
+    [DebuggerDisplay("{Name} (AppalachiaBehaviour)")]
     public partial class AppalachiaBehaviour : INamed
     {
+        #region Fields and Autoproperties
+
+        [SerializeField]
+        [HideInInspector]
+        private string _niceName;
+
+        #endregion
+
         #region INamed Members
+
+        public string NiceName
+        {
+            get
+            {
+                if (_niceName.IsNullOrWhiteSpace())
+                {
+                    _niceName = APPASTR.NicifyVariableName(Name);
+                }
+
+                return _niceName;
+            }
+        }
 
         public string Name => name;
 
@@ -38,30 +89,47 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
+    [DebuggerDisplay("{Name} (SingletonAppalachiaBehaviour)")]
     public partial class SingletonAppalachiaBehaviour<T>
     {
     }
 
+    [DebuggerDisplay("{Name} (AppalachiaSimpleBase)")]
     public partial class AppalachiaSimpleBase : INamed
     {
         #region Fields and Autoproperties
 
-        private string _name;
+        [SerializeField] private string _name;
+
+        [SerializeField]
+        [HideInInspector]
+        private string _niceName;
 
         #endregion
 
         #region INamed Members
 
+        public string NiceName
+        {
+            get
+            {
+                if (_niceName.IsNullOrWhiteSpace())
+                {
+                    _niceName = APPASTR.NicifyVariableName(Name);
+                }
+
+                return _niceName;
+            }
+        }
+
         public virtual string Name
         {
             get
             {
-                if (_name != null)
+                if (_name.IsNullOrWhiteSpace())
                 {
-                    return _name;
+                    _name = GetType().GetReadableName();
                 }
-
-                _name = GetType().GetReadableName();
 
                 return _name;
             }
@@ -70,6 +138,7 @@ namespace Appalachia.Core.Objects.Root
         #endregion
     }
 
+    [DebuggerDisplay("{Name} (AppalachiaBase)")]
     public partial class AppalachiaBase
     {
     }
@@ -78,26 +147,42 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
+    [DebuggerDisplay("{Name} (AppalachiaSimplePlayable)")]
     public partial class AppalachiaSimplePlayable : INamed
     {
         #region Fields and Autoproperties
 
-        private string _name;
+        [SerializeField] private string _name;
+
+        [SerializeField]
+        [HideInInspector]
+        private string _niceName;
 
         #endregion
 
         #region INamed Members
 
+        public string NiceName
+        {
+            get
+            {
+                if (_niceName.IsNullOrWhiteSpace())
+                {
+                    _niceName = APPASTR.NicifyVariableName(Name);
+                }
+
+                return _niceName;
+            }
+        }
+
         public virtual string Name
         {
             get
             {
-                if (_name != null)
+                if (_name.IsNullOrWhiteSpace())
                 {
-                    return _name;
+                    _name = GetType().GetReadableName();
                 }
-
-                _name = GetType().GetReadableName();
 
                 return _name;
             }
@@ -106,6 +191,7 @@ namespace Appalachia.Core.Objects.Root
         #endregion
     }
 
+    [DebuggerDisplay("{Name} (AppalachiaPlayable)")]
     public partial class AppalachiaPlayable
     {
     }
@@ -114,6 +200,7 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
+    [DebuggerDisplay("{Name} (AppalachiaSelectable)")]
     public partial class AppalachiaSelectable<T>
     {
         #region Constants and Static Readonly
@@ -124,17 +211,35 @@ namespace Appalachia.Core.Objects.Root
 
         #region Fields and Autoproperties
 
-        private string _name;
+        [SerializeField] private string _name;
+
+        [SerializeField]
+        [HideInInspector]
+        private string _niceName;
 
         #endregion
 
-        #region IInitializable Members
+        #region IUIBehaviour Members
+
+        public string NiceName
+        {
+            get
+            {
+                if (_niceName.IsNullOrWhiteSpace())
+                {
+                    _niceName = APPASTR.NicifyVariableName(Name);
+                    MarkAsModified();
+                }
+
+                return _niceName;
+            }
+        }
 
         public string Name
         {
             get
             {
-                if (_name == null)
+                if (_name.IsNullOrWhiteSpace())
                 {
                     _name = ZString.Format(COMPONENT_FORMAT_STRING, gameObject.name, typeof(T).Name);
                 }

@@ -12,11 +12,12 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_CreateNew.Auto())
             {
-                return AppalachiaObjectFactory.CreateNewAsset(
-                    t,
-                    ownerType: ownerType,
-                    overwriteExisting: false
-                );
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
+                return AppalachiaObjectFactory.CreateNewAsset(t, ownerType: ownerType, overwriteExisting: false);
             }
         }
 
@@ -34,6 +35,11 @@ namespace Appalachia.Core.Objects.Root
                     i = CreateInstance(t);
                 }
 
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 return AppalachiaObjectFactory.SaveInstanceToAsset(t, name, i, dataFolder, ownerType);
             }
         }
@@ -43,6 +49,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_CreateNew.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 return CreateNew(typeof(T), ownerType) as T;
             }
         }
@@ -52,6 +63,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_CreateNew.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 return CreateNew(typeof(T), name, i, dataFolder, ownerType) as T;
             }
         }
@@ -69,6 +85,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 return AppalachiaObjectFactory.LoadExistingOrCreateNewAsset(t, name, dataFolder, ownerType);
             }
         }
@@ -78,6 +99,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 return LoadOrCreateNew(typeof(T), name, dataFolder, ownerType) as T;
             }
         }
@@ -91,14 +117,14 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_LoadOrCreateNewIfNull.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 if (assignment == null)
                 {
-                    assignment = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset(
-                        t,
-                        name,
-                        dataFolder,
-                        ownerType
-                    );
+                    assignment = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset(t, name, dataFolder, ownerType);
                 }
             }
         }
@@ -125,8 +151,7 @@ namespace Appalachia.Core.Objects.Root
         private static readonly ProfilerMarker _PRF_LoadOrCreateNew =
             new ProfilerMarker(_PRF_PFX + nameof(LoadOrCreateNew));
 
-        private static readonly ProfilerMarker _PRF_CreateNew =
-            new ProfilerMarker(_PRF_PFX + nameof(CreateNew));
+        private static readonly ProfilerMarker _PRF_CreateNew = new ProfilerMarker(_PRF_PFX + nameof(CreateNew));
 
         private static readonly ProfilerMarker _PRF_LoadOrCreateNewIfNull =
             new ProfilerMarker(_PRF_PFX + nameof(LoadOrCreateNewIfNull));
@@ -140,6 +165,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_CreateNew.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 return CreateNew(typeof(T), ownerType) as T;
             }
         }
@@ -148,6 +178,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_CreateNew.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 return CreateNew(typeof(T), name, i, dataFolder, ownerType) as T;
             }
         }
@@ -156,6 +191,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_LoadOrCreateNew.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 return LoadOrCreateNew(typeof(T), name, dataFolder, ownerType) as T;
             }
         }
@@ -168,6 +208,11 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_LoadOrCreateNewIfNull.Auto())
             {
+                if (ownerType == null)
+                {
+                    ownerType = AppalachiaRepository.PrimaryOwnerType;
+                }
+
                 ScriptableObject obj = assignment;
 
                 LoadOrCreateNewIfNull(typeof(T), ref obj, name, dataFolder, ownerType);
@@ -180,8 +225,7 @@ namespace Appalachia.Core.Objects.Root
 
         private static readonly string _PRF_PFX3 = typeof(T).Name + ".";
 
-        private static readonly ProfilerMarker _PRF_CreateNew =
-            new ProfilerMarker(_PRF_PFX3 + nameof(CreateNew));
+        private static readonly ProfilerMarker _PRF_CreateNew = new ProfilerMarker(_PRF_PFX3 + nameof(CreateNew));
 
         private static readonly ProfilerMarker _PRF_LoadOrCreateNew =
             new ProfilerMarker(_PRF_PFX3 + nameof(LoadOrCreateNew));

@@ -48,6 +48,7 @@ namespace Appalachia.Core.Objects.Root
         #region IOwned Members
 
         public Object Owner => _owner;
+        public bool HasOwner => _owner != null;
 
         public void SetOwner(Object owner)
         {

@@ -178,12 +178,9 @@ namespace Appalachia.Core.Objects.Utilities
         {
             _backgrounds ??= new Dictionary<Color, Texture2D>();
 
-            if (_backgrounds.ContainsKey(color))
-            {
-                return _backgrounds[color];
-            }
+            if (_backgrounds.TryGetValue(color, out var result)) return result;
 
-            var result = CreateSolidTexture(1, 1, color);
+            result = CreateSolidTexture(1, 1, color);
             _backgrounds.Add(color, result);
 
             return result;
@@ -228,10 +225,7 @@ namespace Appalachia.Core.Objects.Utilities
 
                 _existingBannerDatas ??= new Dictionary<BannerData, BannerData>();
 
-                if (_existingBannerDatas.ContainsKey(titleData))
-                {
-                    return _existingBannerDatas[titleData];
-                }
+                if (_existingBannerDatas.TryGetValue(titleData, out var result)) return result;
 
                 var referenceTitleStyle = boldLabel ? SirenixGUIStyles.BoldTitle : SirenixGUIStyles.Title;
                 var referenceSubtitleStyle =
@@ -300,10 +294,7 @@ namespace Appalachia.Core.Objects.Utilities
                     return null;
                 }
 
-                if (_mainFontCollection.Lookup.Items.ContainsKey(fontName))
-                {
-                    return _mainFontCollection.Lookup.Items[fontName];
-                }
+                if (_mainFontCollection.Lookup.Items.TryGet(fontName, out var result)) return result;
 
                 var newFont = _mainFontCollection.Lookup.GetOrLoadOrCreateNew(fontName, fontName);
 

@@ -1,6 +1,5 @@
 using System;
 using Appalachia.Utility.Execution;
-using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Framing;
 using Unity.Mathematics;
 using Unity.Profiling;
@@ -15,24 +14,8 @@ namespace Appalachia.Core.Objects.Root
         #region Fields and Autoproperties
 
         [NonSerialized] protected Bounds _renderingBounds;
-        [NonSerialized] protected Transform _cachedTransform;
-        [NonSerialized] protected RectTransform _cachedRectTransform;
-
-        [NonSerialized] private bool _hasCachedTransform;
-        [NonSerialized] private bool _hasCachedRectTransform;
 
         #endregion
-
-        public bool HasRectTransform
-        {
-            get
-            {
-                using (_PRF_HasRectTransform.Auto())
-                {
-                    return Transform is RectTransform;
-                }
-            }
-        }
 
         public Bounds RenderingBounds
         {
@@ -46,36 +29,6 @@ namespace Appalachia.Core.Objects.Root
                     }
 
                     return _renderingBounds;
-                }
-            }
-        }
-
-        public RectTransform RectTransform
-        {
-            get
-            {
-                using (_PRF_RectTransform.Auto())
-                {
-                    if (_hasCachedRectTransform)
-                    {
-                        return _cachedRectTransform;
-                    }
-
-                    if (_cachedRectTransform == null)
-                    {
-                        if (Transform is RectTransform transformCast)
-                        {
-                            _cachedRectTransform = transformCast;
-                            _hasCachedRectTransform = true;
-                        }
-                        else
-                        {
-                            gameObject.GetOrAddComponent(ref _cachedRectTransform);
-                            _hasCachedRectTransform = true;
-                        }
-                    }
-
-                    return _cachedRectTransform;
                 }
             }
         }
@@ -147,23 +100,12 @@ namespace Appalachia.Core.Objects.Root
             }
         }
 
-       
-
         #region Profiling
 
         private const string _PRF_PFX = nameof(AppalachiaBehaviour) + ".";
 
         private static readonly ProfilerMarker _PRF_RenderingBounds =
             new ProfilerMarker(_PRF_PFX + nameof(RenderingBounds));
-
-        private static readonly ProfilerMarker _PRF_HasRectTransform =
-            new ProfilerMarker(_PRF_PFX + nameof(HasRectTransform));
-
-        private static readonly ProfilerMarker _PRF_Transform =
-            new ProfilerMarker(_PRF_PFX + nameof(Transform));
-
-        private static readonly ProfilerMarker _PRF_RectTransform =
-            new ProfilerMarker(_PRF_PFX + nameof(RectTransform));
 
         private static readonly ProfilerMarker _PRF_RecalculateBounds =
             new ProfilerMarker(_PRF_PFX + nameof(RecalculateBounds));

@@ -1,5 +1,6 @@
 #region
 
+using System.Diagnostics;
 using UnityEngine;
 
 // ReSharper disable StaticMemberInGenericType

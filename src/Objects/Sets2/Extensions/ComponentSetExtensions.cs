@@ -1,5 +1,7 @@
 using System;
 using Appalachia.Core.Objects.Root.Contracts;
+using Appalachia.Core.Objects.Sets;
+using Appalachia.Core.Objects.Sets2;
 using Appalachia.Core.Objects.Sets.Exceptions;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events.Collections;
@@ -7,7 +9,7 @@ using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Unity.Profiling;
 
-namespace Appalachia.Core.Objects.Sets.Extensions
+namespace Appalachia.Core.Objects.Sets2.Extensions
 {
     public static class ComponentSetDataExtensions
     {
@@ -37,7 +39,7 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             this ComponentSetData<TComponentSet, TComponentSetData>.Override data,
             TComponentSet set)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -95,7 +97,7 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             Action<ComponentSetData<TComponentSet, TComponentSetData>.Optional, TComponentSet> before,
             Action<ComponentSetData<TComponentSet, TComponentSetData>.Optional, TComponentSet> after)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -145,7 +147,7 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             this ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
             TComponentSet set)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -203,7 +205,7 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             Action<ComponentSetData<TComponentSet, TComponentSetData>.Override, TComponentSet> before,
             Action<ComponentSetData<TComponentSet, TComponentSetData>.Override, TComponentSet> after)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -233,27 +235,6 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             }
         }
 
-        public static void ValidateSetEnabledState<TComponentSet, TComponentSetData>(
-            this ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
-            TComponentSet set)
-            where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
-        {
-            using (_PRF_ValidateSetEnabledState.Auto())
-            {
-                if (data.IsElected)
-                {
-                    set.EnableSet(data);
-                    set.GameObject.MarkAsShowInHierarchyAndInspector();
-                }
-                else
-                {
-                    set.DisableSet();
-                    set.GameObject.MarkAsHideInHierarchyAndInspector();
-                }
-            }
-        }
-
         /// <summary>
         ///     Updates the set by applying the configuration values to the set fields.
         /// </summary>
@@ -266,7 +247,7 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             TComponentSet set,
             Func<Action> delegateCreator)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
             where TO : ComponentSetData<TComponentSet, TComponentSetData>.Overridable<TO>, new()
         {
             using (_PRF_UpdateComponentSetAndSubscribe.Auto())
@@ -288,18 +269,27 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
             TComponentSet set)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
         {
             using (_PRF_UpdateComponentSetOptional.Auto())
             {
-                if (data.IsElected)
+                //if (data.IsElected)
                 {
                     var value = data.Value;
 
                     value.UpdateComponentSet(set, false);
                 }
 
-                ValidateSetEnabledState(data, set);
+                if (data.IsElected)
+                {
+                    set.Enable(data);
+                    set.GameObject.MarkAsShowInHierarchyAndInspector();
+                }
+                else
+                {
+                    set.Disable();
+                    set.GameObject.MarkAsHideInHierarchyAndInspector();
+                }
             }
         }
 
@@ -307,7 +297,7 @@ namespace Appalachia.Core.Objects.Sets.Extensions
             ComponentSetData<TComponentSet, TComponentSetData>.Override data,
             TComponentSet set)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
         {
             using (_PRF_UpdateComponentSetOverride.Auto())
             {
@@ -320,7 +310,7 @@ namespace Appalachia.Core.Objects.Sets.Extensions
                 
                 value.UpdateComponentSet(set, false);
                
-                set.EnableSet(data.Value);
+                set.Enable(data.Value);
                 set.GameObject.MarkAsShowInHierarchyAndInspector();
             }
         }
@@ -328,9 +318,6 @@ namespace Appalachia.Core.Objects.Sets.Extensions
         #region Profiling
 
         private const string _PRF_PFX = nameof(ComponentSetDataExtensions) + ".";
-
-        private static readonly ProfilerMarker _PRF_ValidateSetEnabledState =
-            new ProfilerMarker(_PRF_PFX + nameof(ValidateSetEnabledState));
 
         private static readonly ProfilerMarker _PRF_UpdateComponentSetOptional =
             new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSetInternal));

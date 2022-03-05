@@ -152,7 +152,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 if (!repositoryInstance.IsTypeInRepository<T>())
                 {
-                    SingletonContext.Error(
+                    SingletonContext.Warn(
                         ZString.Format(
                             "Singleton {0} is not present in the {1}",
                             typeof(T).FormatForLogging(),

@@ -12,11 +12,11 @@ namespace Appalachia.Core.Objects.Root
         {
             _owner = owner;
 
-            if (AppaTask.ExecutionIsAllowed && !APPASERIALIZE.CouldBeInSerializationWindow)
+            /*if (AppaTask.ExecutionIsAllowed && !APPASERIALIZE.CouldBeInSerializationWindow)
             {
                 HandleInitialization().Forget();
             }
-            else
+            else*/
             {
                 _initializationFunctions ??= new Queue<Func<AppaTask>>();
                 _initializationFunctions.Enqueue(HandleInitialization);

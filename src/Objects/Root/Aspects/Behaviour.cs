@@ -1,5 +1,6 @@
 using System;
 using Appalachia.Core.Objects.Root.Contracts;
+using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Core.Objects.Root
@@ -25,6 +26,10 @@ namespace Appalachia.Core.Objects.Root
         #region Fields and Autoproperties
 
         [NonSerialized] private int _instanceID;
+
+        [NonSerialized] protected Transform _cachedTransform;
+
+        [NonSerialized] private bool _hasCachedTransform;
 
         #endregion
 
@@ -68,6 +73,12 @@ namespace Appalachia.Core.Objects.Root
         public GameObject GameObject => gameObject;
 
         #endregion
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_Transform = new ProfilerMarker(_PRF_PFX + nameof(Transform));
+
+        #endregion
     }
 
     public partial class AppalachiaBehaviour<T>
@@ -104,7 +115,7 @@ namespace Appalachia.Core.Objects.Root
 
     public partial class AppalachiaSelectable<T>
     {
-        #region IBehaviour Members
+        #region IUIBehaviour Members
 
         public GameObject GameObject => gameObject;
 

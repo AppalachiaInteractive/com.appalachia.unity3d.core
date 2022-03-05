@@ -66,7 +66,7 @@ namespace Appalachia.Core.Objects.Root
                     }
 
                     var objectAtPath =
-                        AssetDatabaseManager.LoadMainAssetAtPath(path.relativePath) as GameObject;
+                        AssetDatabaseManager.LoadMainAssetAtPath(path.RelativePath) as GameObject;
 
                     if (objectAtPath == null)
                     {

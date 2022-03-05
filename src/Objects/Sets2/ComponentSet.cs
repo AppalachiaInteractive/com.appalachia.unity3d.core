@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Appalachia.Core.Collections;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
+using Appalachia.Core.Objects.Sets;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
@@ -10,14 +12,15 @@ using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Appalachia.Core.Objects.Sets
+namespace Appalachia.Core.Objects.Sets2
 {
     [Serializable]
     [FoldoutGroup("Components", false)]
+    [DebuggerDisplay("{Name} (ComponentSet)")]
     public abstract partial class ComponentSet<TComponentSet, TComponentSetData> : AppalachiaSimpleBase,
-                                                                 IComponentSet<TComponentSet, TComponentSetData>
+        IComponentSet<TComponentSet, TComponentSetData>
         where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-        where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
+        where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
     {
         #region Constants and Static Readonly
 
@@ -32,7 +35,6 @@ namespace Appalachia.Core.Objects.Sets
         [ReadOnly]
         private GameObject gameObject;
 
-        [FormerlySerializedAs("_initialer")]
         [SerializeField, HideInInspector]
         private Initializer _initializer;
 
@@ -40,11 +42,15 @@ namespace Appalachia.Core.Objects.Sets
         [SerializeField]
         public bool isSortingDisabled;
 
+        private string _name1;
+
         #endregion
 
         public abstract ComponentSetSorting DesiredComponentOrder { get; }
 
         protected abstract bool IsUI { get; }
+
+        public override string Name => GameObject.name;
 
         protected Initializer initializer
         {
@@ -69,9 +75,9 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        public virtual void DestroySet()
+        public virtual void DestroySafely()
         {
-            using (_PRF_Destroy.Auto())
+            using (_PRF_DestroySafely.Auto())
             {
                 if (GameObject)
                 {
@@ -80,7 +86,7 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        public virtual void DisableSet()
+        public virtual void Disable()
         {
             using (_PRF_Disable.Auto())
             {
@@ -91,7 +97,7 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        public virtual void EnableSet(TComponentSetData data)
+        public virtual void Enable(TComponentSetData data)
         {
             using (_PRF_Enable.Auto())
             {
@@ -102,27 +108,23 @@ namespace Appalachia.Core.Objects.Sets
             }
         }
 
-        internal static void GetOrAddComponents(ref TComponentSet set, TComponentSetData data, GameObject setRoot)
+        public static void GetOrAddComponents(ref TComponentSet set, GameObject setRoot)
         {
             using (_PRF_GetOrAddComponents.Auto())
             {
                 set ??= new TComponentSet();
 
-                set.GetOrAddComponents(data, setRoot);
+                set.GetOrAddComponents(setRoot);
             }
         }
 
-        internal static void GetOrAddComponents(
-            ref TComponentSet set,
-            TComponentSetData data,
-            GameObject setParent,
-            string gameObjectNamePostfix)
+        public static void GetOrAddComponents(ref TComponentSet set, GameObject setParent, string gameObjectNamePostfix)
         {
             using (_PRF_GetOrAddComponents.Auto())
             {
                 set ??= new TComponentSet();
 
-                set.GetOrAddComponents(data, setParent, gameObjectNamePostfix);
+                set.GetOrAddComponents(setParent, gameObjectNamePostfix);
             }
         }
 
@@ -130,7 +132,7 @@ namespace Appalachia.Core.Objects.Sets
         ///     Adds the required components to the set.  The <see cref="GameObject" /> will have been created at this point.
         /// </summary>
         /// <param name="data">The component set data.</param>
-        protected abstract void OnGetOrAddComponents(TComponentSetData data);
+        protected abstract void OnGetOrAddComponents();
 
         protected virtual string GetComponentSetNamePrefixFormat()
         {
@@ -147,15 +149,14 @@ namespace Appalachia.Core.Objects.Sets
         /// <summary>
         ///     Creates the set on the <paramref name="setRoot" /> by adding the required components.
         /// </summary>
-        /// <param name="data">The component set data.</param>
         /// <param name="setRoot">The root of the set.</param>
-        protected virtual void GetOrAddComponents(TComponentSetData data, GameObject setRoot)
+        protected virtual void GetOrAddComponents(GameObject setRoot)
         {
             using (_PRF_GetOrAddComponents.Auto())
             {
                 gameObject = setRoot;
 
-                OnGetOrAddComponents(data);
+                OnGetOrAddComponents();
                 ValidateSiblingSort();
             }
         }
@@ -164,13 +165,9 @@ namespace Appalachia.Core.Objects.Sets
         ///     Creates the set underneath the <paramref name="setParent" />, using the provided <paramref name="gameObjectNamePostfix" />, and adds the required
         ///     components.
         /// </summary>
-        /// <param name="data">The component set data.</param>
         /// <param name="setParent">The parent of the set.</param>
         /// <param name="gameObjectNamePostfix">The name of the set.</param>
-        protected virtual void GetOrAddComponents(
-            TComponentSetData data,
-            GameObject setParent,
-            string gameObjectNamePostfix)
+        protected virtual void GetOrAddComponents(GameObject setParent, string gameObjectNamePostfix)
         {
             using (_PRF_GetOrAddComponents.Auto())
             {
@@ -185,7 +182,7 @@ namespace Appalachia.Core.Objects.Sets
 
                 gameObject.name = setObjectName;
 
-                OnGetOrAddComponents(data);
+                OnGetOrAddComponents();
                 ValidateSiblingSort();
             }
         }
@@ -197,11 +194,7 @@ namespace Appalachia.Core.Objects.Sets
                 return currentIndex;
             }
 
-            return SiblingIndexCalculator.GetDesiredSiblingIndex(
-                DesiredComponentOrder,
-                currentIndex,
-                siblingCount
-            );
+            return SiblingIndexCalculator.GetDesiredSiblingIndex(DesiredComponentOrder, currentIndex, siblingCount);
         }
 
         private void ValidateSiblingSort()
@@ -229,13 +222,12 @@ namespace Appalachia.Core.Objects.Sets
         #region IComponentSet<TComponentSet,TComponentSetData> Members
 
         void IComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(
-            TComponentSetData data,
             GameObject setParent,
             string gameObjectNamePostfix)
         {
             using (_PRF_GetOrAddComponents.Auto())
             {
-                GetOrAddComponents(data, setParent, gameObjectNamePostfix);
+                GetOrAddComponents(setParent, gameObjectNamePostfix);
             }
         }
 
@@ -277,14 +269,12 @@ namespace Appalachia.Core.Objects.Sets
 
         protected static readonly string _PRF_PFX = typeof(TComponentSet).Name + ".";
 
-        protected static readonly ProfilerMarker _PRF_Destroy =
-            new ProfilerMarker(_PRF_PFX + nameof(DestroySet));
+        protected static readonly ProfilerMarker _PRF_DestroySafely =
+            new ProfilerMarker(_PRF_PFX + nameof(DestroySafely));
 
-        protected static readonly ProfilerMarker _PRF_Disable =
-            new ProfilerMarker(_PRF_PFX + nameof(DisableSet));
+        protected static readonly ProfilerMarker _PRF_Disable = new ProfilerMarker(_PRF_PFX + nameof(Disable));
 
-        protected static readonly ProfilerMarker _PRF_Enable =
-            new ProfilerMarker(_PRF_PFX + nameof(EnableSet));
+        protected static readonly ProfilerMarker _PRF_Enable = new ProfilerMarker(_PRF_PFX + nameof(Enable));
 
         private static readonly ProfilerMarker _PRF_GetGameObjectNameFormat =
             new ProfilerMarker(_PRF_PFX + nameof(GetComponentSetNamePrefixFormat));

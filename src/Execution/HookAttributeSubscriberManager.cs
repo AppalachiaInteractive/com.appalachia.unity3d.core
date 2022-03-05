@@ -27,7 +27,7 @@ namespace Appalachia.Core.Execution
                     BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic
                 );
 
-                for (var methodIndex = 0; methodIndex < methods.Length; methodIndex++)
+                for (var methodIndex = 0; methodIndex < methods.Count; methodIndex++)
                 {
                     var method = methods[methodIndex];
                     using var scope20 = _PRF_HookAttributeSubscriberManager_ProcessType_ProcessMethod.Auto();

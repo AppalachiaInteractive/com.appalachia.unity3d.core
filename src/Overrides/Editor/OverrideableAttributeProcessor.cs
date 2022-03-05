@@ -135,6 +135,11 @@ namespace Appalachia.Core.Overrides
                     return true;
                 }
 
+                if (a is DelayedPropertyAttribute)
+                {
+                    return true;
+                }
+
                 if (a is ToggleLeftAttribute)
                 {
                     return true;

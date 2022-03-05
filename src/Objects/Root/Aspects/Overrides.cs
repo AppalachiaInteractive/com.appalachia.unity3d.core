@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Appalachia.Core.Objects.Models;
 
 namespace Appalachia.Core.Objects.Root
@@ -44,6 +45,7 @@ namespace Appalachia.Core.Objects.Root
         #region Nested type: Optional
 
         [Serializable]
+        [DebuggerDisplay("IsElected = {Overriding} | Value - {ValueDebuggerDisplay}")]
         public sealed class Optional : Overridable<Optional>
         {
             public Optional() : base(false, default)

@@ -21,6 +21,7 @@ using UnityEngine.Serialization;
 namespace Appalachia.Core.Objects.Models
 {
     [Serializable]
+    [DebuggerDisplay("Overriding = {Overriding} | Value - {ValueDebuggerDisplay}")]
     public abstract class Overridable<T, TO> : IEquatable<Overridable<T, TO>>,
                                                IOverridable,
                                                ISerializationCallbackReceiver,
@@ -132,6 +133,19 @@ namespace Appalachia.Core.Objects.Models
         protected virtual string ToggleLabel => "Override";
 
         public T initial => _initial;
+
+        private string ValueDebuggerDisplay
+        {
+            get
+            {
+                if (Value is INamed n)
+                {
+                    return n.Name;
+                }
+
+                return Value.ToString();
+            }
+        }
 
         public T Value
         {

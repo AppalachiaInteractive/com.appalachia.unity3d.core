@@ -1,29 +1,30 @@
 using System;
-using Appalachia.CI.Integration.Assets;
+using System.Diagnostics;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Initialization;
-using Appalachia.Core.Objects.Models;
 using Appalachia.Core.Objects.Root;
+using Appalachia.Core.Objects.Sets;
 using Appalachia.Core.Objects.Sets.Exceptions;
-using Appalachia.Core.Objects.Sets.Extensions;
+using Appalachia.Core.Objects.Sets2.Extensions;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events.Collections;
-using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
-using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace Appalachia.Core.Objects.Sets
+namespace Appalachia.Core.Objects.Sets2
 {
+    [CallStaticConstructorInEditor]
     [Serializable]
-    public abstract class ComponentSetData<TComponentSet, TComponentSetData> :
-        AppalachiaObject<TComponentSetData>,
-        IComponentSetData<TComponentSet, TComponentSetData>
+    [DebuggerDisplay("{Name} (ComponentSetData)")]
+    public abstract class ComponentSetData<TComponentSet, TComponentSetData> : AppalachiaBase<TComponentSetData>,
+                                                                               IComponentSetData<TComponentSet,
+                                                                                   TComponentSetData>
         where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
         where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>,
-        IComponentSetData<TComponentSet, TComponentSetData>
+        IComponentSetData<TComponentSet, TComponentSetData>, new()
     {
         #region Constants and Static Readonly
 
@@ -35,6 +36,10 @@ namespace Appalachia.Core.Objects.Sets
 
         private ReusableDelegateCollection<TComponentSet> _delegates;
 
+        [PropertyOrder(-500)]
+        [SerializeField]
+        protected bool showAll;
+
         #endregion
 
         /// <summary>
@@ -49,7 +54,7 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="gameObjectNamePostfix">The name of the set.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref Optional data,
             bool isElected,
             ref TComponentSet set,
@@ -58,12 +63,11 @@ namespace Appalachia.Core.Objects.Sets
             Action<Optional, TComponentSet> before,
             Action<Optional, TComponentSet> after)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, isElected, gameObjectNamePostfix);
                 ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(
                     ref set,
-                    data,
                     setParent,
                     gameObjectNamePostfix
                 );
@@ -83,7 +87,7 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="gameObjectNamePostfix">The name of the set.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref Override data,
             bool overriding,
             ref TComponentSet set,
@@ -92,12 +96,11 @@ namespace Appalachia.Core.Objects.Sets
             Action<Override, TComponentSet> before,
             Action<Override, TComponentSet> after)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, overriding, gameObjectNamePostfix);
                 ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(
                     ref set,
-                    data,
                     setParent,
                     gameObjectNamePostfix
                 );
@@ -116,7 +119,7 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="gameObjectNamePostfix">The name of the set.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref TComponentSetData data,
             ref TComponentSet set,
             GameObject setParent,
@@ -124,12 +127,11 @@ namespace Appalachia.Core.Objects.Sets
             Action<TComponentSetData, TComponentSet> before,
             Action<TComponentSetData, TComponentSet> after)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, gameObjectNamePostfix);
                 ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(
                     ref set,
-                    data,
                     setParent,
                     gameObjectNamePostfix
                 );
@@ -147,19 +149,18 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="set">The component set to apply the <paramref name="data" /> to.</param>
         /// <param name="setParent">The <see cref="GameObject" /> that the set should be a child of.</param>
         /// <param name="gameObjectNamePostfix">The name of the set.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref Optional data,
             bool isElected,
             ref TComponentSet set,
             GameObject setParent,
             string gameObjectNamePostfix)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, isElected, gameObjectNamePostfix);
                 ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(
                     ref set,
-                    data,
                     setParent,
                     gameObjectNamePostfix
                 );
@@ -177,19 +178,18 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="set">The component set to apply the <paramref name="data" /> to.</param>
         /// <param name="setParent">The <see cref="GameObject" /> that the set should be a child of.</param>
         /// <param name="gameObjectNamePostfix">The name of the set.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref Override data,
             bool overriding,
             ref TComponentSet set,
             GameObject setParent,
             string gameObjectNamePostfix)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, overriding, gameObjectNamePostfix);
                 ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(
                     ref set,
-                    data,
                     setParent,
                     gameObjectNamePostfix
                 );
@@ -206,18 +206,17 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="set">The component set to apply the <paramref name="data" /> to.</param>
         /// <param name="setParent">The <see cref="GameObject" /> that the set should be a child of.</param>
         /// <param name="gameObjectNamePostfix">The name of the set.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref TComponentSetData data,
             ref TComponentSet set,
             GameObject setParent,
             string gameObjectNamePostfix)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, gameObjectNamePostfix);
                 ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(
                     ref set,
-                    data,
                     setParent,
                     gameObjectNamePostfix
                 );
@@ -236,7 +235,7 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="setRoot">The <see cref="GameObject" /> that the set should be rooted on.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref Optional data,
             bool isElected,
             ref TComponentSet set,
@@ -244,10 +243,10 @@ namespace Appalachia.Core.Objects.Sets
             Action<Optional, TComponentSet> before,
             Action<Optional, TComponentSet> after)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, isElected, setRoot.name);
-                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, data, setRoot);
+                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, setRoot);
                 data.UpdateComponentSet(set, before, after);
             }
         }
@@ -263,7 +262,7 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="setRoot">The <see cref="GameObject" /> that the set should be rooted on.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref Override data,
             bool overriding,
             ref TComponentSet set,
@@ -271,10 +270,10 @@ namespace Appalachia.Core.Objects.Sets
             Action<Override, TComponentSet> before,
             Action<Override, TComponentSet> after)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, overriding, setRoot.name);
-                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, data, setRoot);
+                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, setRoot);
                 data.UpdateComponentSet(set, before, after);
             }
         }
@@ -289,17 +288,17 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="setRoot">The <see cref="GameObject" /> that the set should be rooted on.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref TComponentSetData data,
             ref TComponentSet set,
             GameObject setRoot,
             Action<TComponentSetData, TComponentSet> before,
             Action<TComponentSetData, TComponentSet> after)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, setRoot.name);
-                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, data, setRoot);
+                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, setRoot);
                 data.UpdateComponentSet(set, before, after);
             }
         }
@@ -313,16 +312,16 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="isElected">Whether the optional should default to elected.</param>
         /// <param name="set">The component set to apply the <paramref name="data" /> to.</param>
         /// <param name="setRoot">The <see cref="GameObject" /> that the set should be rooted on.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref Optional data,
             bool isElected,
             ref TComponentSet set,
             GameObject setRoot)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, isElected, setRoot.name);
-                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, data, setRoot);
+                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, setRoot);
                 data.UpdateComponentSet(set);
             }
         }
@@ -336,16 +335,16 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="overriding">Whether the optional should default to overriding.</param>
         /// <param name="set">The component set to apply the <paramref name="data" /> to.</param>
         /// <param name="setRoot">The <see cref="GameObject" /> that the set should be rooted on.</param>
-        public static void RefreshAndUpdateComponentSet(
+        public static void RefreshAndUpdate(
             ref Override data,
             bool overriding,
             ref TComponentSet set,
             GameObject setRoot)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, overriding, setRoot.name);
-                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, data, setRoot);
+                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, setRoot);
                 data.UpdateComponentSet(set);
             }
         }
@@ -358,15 +357,12 @@ namespace Appalachia.Core.Objects.Sets
         /// <param name="data">The component set data to refresh.</param>
         /// <param name="set">The component set to apply the <paramref name="data" /> to.</param>
         /// <param name="setRoot">The <see cref="GameObject" /> that the set should be rooted on.</param>
-        public static void RefreshAndUpdateComponentSet(
-            ref TComponentSetData data,
-            ref TComponentSet set,
-            GameObject setRoot)
+        public static void RefreshAndUpdate(ref TComponentSetData data, ref TComponentSet set, GameObject setRoot)
         {
-            using (_PRF_RefreshAndUpdateComponentSet.Auto())
+            using (_PRF_RefreshAndUpdate.Auto())
             {
                 CreateOrRefreshSetData(ref data, setRoot.name);
-                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, data, setRoot);
+                ComponentSet<TComponentSet, TComponentSetData>.GetOrAddComponents(ref set, setRoot);
                 data.UpdateComponentSet(set);
             }
         }
@@ -478,21 +474,7 @@ namespace Appalachia.Core.Objects.Sets
         {
             using (_PRF_CreateOrRefreshSetData.Auto())
             {
-#if UNITY_EDITOR
-                if (!AppalachiaApplication.IsPlaying)
-                {
-                    var targetDataName = GetDataName(setName);
-
-                    if (data == null)
-                    {
-                        data = LoadOrCreate(targetDataName);
-                    }
-                    else
-                    {
-                        AssetDatabaseManager.UpdateAssetName(data, targetDataName);
-                    }
-                }
-#endif
+                data ??= new();
 
                 data.CreateOrRefresh();
             }
@@ -502,33 +484,8 @@ namespace Appalachia.Core.Objects.Sets
         {
             using (_PRF_CreateOrRefreshSetData.Auto())
             {
-#if UNITY_EDITOR
-                var targetDataName = GetDataName(setName);
-#endif
-
-                if (data == null)
-                {
-#if UNITY_EDITOR
-                    data = new(isElected, LoadOrCreate(targetDataName));
-#else
-                    data = new (isElected, default);
-#endif
-                }
-                else if (data.Value == null)
-                {
-#if UNITY_EDITOR
-                    data.Value = LoadOrCreate(targetDataName);
-#endif
-                }
-                else
-                {
-#if UNITY_EDITOR
-                    if (data.Value.name != targetDataName)
-                    {
-                        AssetDatabaseManager.UpdateAssetName(data.Value, targetDataName);
-                    }
-#endif
-                }
+                data ??= new(isElected, new());
+                data.Value ??= new();
 
                 data.Value.CreateOrRefresh();
             }
@@ -538,56 +495,10 @@ namespace Appalachia.Core.Objects.Sets
         {
             using (_PRF_CreateOrRefreshSetData.Auto())
             {
-#if UNITY_EDITOR
-                var targetDataName = GetDataName(setName);
-#endif
-
-                if (data == null)
-                {
-#if UNITY_EDITOR
-                    data = new(overriding, LoadOrCreate(targetDataName));
-#else
-                    data = new (overriding, default);
-#endif
-                }
-                else if (data.Value == null)
-                {
-#if UNITY_EDITOR
-                    data.Value = LoadOrCreate(targetDataName);
-#endif
-                }
-                else
-                {
-#if UNITY_EDITOR
-                    if (data.Value.name != targetDataName)
-                    {
-                        AssetDatabaseManager.UpdateAssetName(data.Value, targetDataName);
-                    }
-#endif
-                }
+                data ??= new(overriding, new());
+                data.Value ??= new();
 
                 data.Value.CreateOrRefresh();
-            }
-        }
-
-        private static string GetDataName(string setName)
-        {
-            using (_PRF_GetDataName.Auto())
-            {
-                var setType = typeof(TComponentSetData);
-                var targetDataName = ZString.Format("{0}{1}", setName, setType.Name);
-                return targetDataName;
-            }
-        }
-
-        private static TComponentSetData LoadOrCreate(string targetDataName)
-        {
-            using (_PRF_LoadOrCreate.Auto())
-            {
-                return AppalachiaObject.LoadOrCreateNew<TComponentSetData>(
-                    targetDataName,
-                    ownerType: AppalachiaRepository.PrimaryOwnerType
-                );
             }
         }
 
@@ -676,7 +587,7 @@ namespace Appalachia.Core.Objects.Sets
                     throw;
                 }
 
-                set.EnableSet(this as TComponentSetData);
+                set.Enable(this as TComponentSetData);
                 set.GameObject.MarkAsShowInHierarchyAndInspector();
             }
         }
@@ -687,110 +598,7 @@ namespace Appalachia.Core.Objects.Sets
 
         #endregion
 
-        #region Nested type: Optional
-
-        [Serializable]
-        public sealed class Optional : Overridable<Optional>
-        {
-            public Optional() : base(false, default)
-            {
-            }
-
-            public Optional(bool isElected, TComponentSetData value) : base(isElected, value)
-            {
-            }
-
-            public Optional(Optional value) : base(value)
-            {
-            }
-
-            public bool IsElected => Overriding;
-
-            /// <inheritdoc />
-            protected override string DisabledColorPrefName => "Optional Disabled Color";
-
-            /// <inheritdoc />
-            protected override string EnabledColorPrefName => "Optional Enabled Color";
-
-            /// <inheritdoc />
-            protected override string ToggleLabel => "Optional";
-        }
-
-        #endregion
-
-        #region Nested type: Overridable
-
-        [Serializable]
-        public abstract class Overridable<TO> : Overridable<TComponentSetData, TO>
-            where TO : Overridable<TO>, new()
-        {
-            protected Overridable() : base(false, default)
-            {
-            }
-
-            protected Overridable(bool overriding, TComponentSetData value) : base(overriding, value)
-            {
-            }
-
-            protected Overridable(TO value) : base(value)
-            {
-            }
-        }
-
-        #endregion
-
-        #region Nested type: Override
-
-        [Serializable]
-        public class Override : Overridable<Override>
-        {
-            public Override(TComponentSetData value) : base(false, value)
-            {
-            }
-
-            public Override(bool overrideEnabled, TComponentSetData value) : base(overrideEnabled, value)
-            {
-            }
-
-            public Override(Override value) : base(value)
-            {
-            }
-
-            public Override() : base(false, default)
-            {
-            }
-
-            /// <inheritdoc />
-            protected override string DisabledColorPrefName => "Component Set Override Disabled Color";
-
-            /// <inheritdoc />
-            protected override string EnabledColorPrefName => "Component Set Override Enabled Color";
-
-            /// <inheritdoc />
-            protected override string ToggleLabel => "Override Set";
-        }
-
-        #endregion
-
         #region Profiling
-
-        private static readonly ProfilerMarker _PRF_RefreshAndUpdateComponentSet =
-            new ProfilerMarker(_PRF_PFX + nameof(RefreshAndUpdateComponentSet));
-
-        private static readonly ProfilerMarker _PRF_UpdateComponentSet =
-            new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSet));
-
-        private static readonly ProfilerMarker _PRF_UpdateComponentSetAndSubscribe =
-            new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSetAndSubscribe));
-
-        private static readonly ProfilerMarker _PRF_UpdateComponentSetInternal =
-            new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSetInternal));
-
-        private static readonly ProfilerMarker _PRF_LoadOrCreate =
-            new ProfilerMarker(_PRF_PFX + nameof(LoadOrCreate));
-
-        private static readonly ProfilerMarker _PRF_GetDataName =
-            new ProfilerMarker(_PRF_PFX + nameof(GetDataName));
 
         protected static readonly ProfilerMarker _PRF_ApplyToComponentSet =
             new ProfilerMarker(_PRF_PFX + nameof(ApplyToComponentSet));
@@ -800,6 +608,18 @@ namespace Appalachia.Core.Objects.Sets
 
         private static readonly ProfilerMarker _PRF_CreateOrRefreshSetData =
             new ProfilerMarker(_PRF_PFX + nameof(CreateOrRefreshSetData));
+
+        private static readonly ProfilerMarker _PRF_RefreshAndUpdate =
+            new ProfilerMarker(_PRF_PFX + nameof(RefreshAndUpdate));
+
+        private static readonly ProfilerMarker _PRF_UpdateComponentSet =
+            new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSet));
+
+        private static readonly ProfilerMarker _PRF_UpdateComponentSetAndSubscribe =
+            new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSetAndSubscribe));
+
+        private static readonly ProfilerMarker _PRF_UpdateComponentSetInternal =
+            new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSetInternal));
 
         #endregion
     }

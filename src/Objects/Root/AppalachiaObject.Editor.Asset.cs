@@ -12,14 +12,6 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        [SerializeField]
-        [HideInInspector]
-        private string _cachedName;
-
-        [SerializeField]
-        [HideInInspector]
-        private string _niceName;
-
         #endregion
 
         public string AssetPath
@@ -42,22 +34,6 @@ namespace Appalachia.Core.Objects.Root
                     return AppaPath.GetDirectoryName(AssetPath);
                 }
             }
-        }
-
-        public string NiceName
-        {
-            get
-            {
-                if ((_niceName == null) || (name != _cachedName))
-                {
-                    _cachedName = name;
-                    _niceName = UnityEditor.ObjectNames.NicifyVariableName(name);
-                    MarkAsModified();
-                }
-
-                return _niceName;
-            }
-            set => _niceName = value;
         }
 
         public bool HasAssetPath(out string path)

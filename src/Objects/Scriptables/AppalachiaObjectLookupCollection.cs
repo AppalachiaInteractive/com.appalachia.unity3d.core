@@ -116,10 +116,7 @@ namespace Appalachia.Core.Objects.Scriptables
 
         public TValue Find(TKey key)
         {
-            if (_items.ContainsKey(key))
-            {
-                return _items[key];
-            }
+            if (_items.TryGetValue(key, out var result)) return result;
 
             return null;
         }

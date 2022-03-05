@@ -104,7 +104,7 @@ namespace Appalachia.Core.Objects.Root
                     }
 
                     var objectAtPath =
-                        AssetDatabaseManager.LoadMainAssetAtPath(path.relativePath) as ScriptableObject;
+                        AssetDatabaseManager.LoadMainAssetAtPath(path.RelativePath) as ScriptableObject;
 
                     if (objectAtPath == null)
                     {
@@ -143,7 +143,7 @@ namespace Appalachia.Core.Objects.Root
                     {
                         objectAtPath.name = typeAtPath.Name;
 
-                        AssetDatabaseManager.UpdateAssetName(path.relativePath, typeAtPath.Name);
+                        AssetDatabaseManager.UpdateAssetName(path.RelativePath, typeAtPath.Name);
                         /*
                          var directory = AppaPath.GetDirectoryName(path.relativePath);
                         var extension = path.extension;
