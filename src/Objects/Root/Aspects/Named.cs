@@ -99,7 +99,8 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        [SerializeField] private string _name;
+        [SerializeField, HideInInspector]
+        private string _name;
 
         [SerializeField]
         [HideInInspector]
@@ -152,7 +153,8 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        [SerializeField] private string _name;
+        [SerializeField, HideInInspector]
+        private string _name;
 
         [SerializeField]
         [HideInInspector]
@@ -211,7 +213,8 @@ namespace Appalachia.Core.Objects.Root
 
         #region Fields and Autoproperties
 
-        [SerializeField] private string _name;
+        [SerializeField, HideInInspector]
+        private string _name;
 
         [SerializeField]
         [HideInInspector]
@@ -219,7 +222,7 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
-        #region IUIBehaviour Members
+        #region IInitializable Members
 
         public string NiceName
         {

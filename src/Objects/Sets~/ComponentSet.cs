@@ -11,7 +11,7 @@ using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Appalachia.Core.Objects.Sets2
+namespace Appalachia.Core.Objects.Sets
 {
     [Serializable]
     [FoldoutGroup("Components", false)]
@@ -19,7 +19,7 @@ namespace Appalachia.Core.Objects.Sets2
     public abstract partial class ComponentSet<TComponentSet, TComponentSetData> : AppalachiaSimpleBase,
         IComponentSet<TComponentSet, TComponentSetData>
         where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-        where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
+        where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
     {
         #region Constants and Static Readonly
 

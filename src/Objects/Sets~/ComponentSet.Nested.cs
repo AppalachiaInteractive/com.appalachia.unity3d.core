@@ -2,7 +2,7 @@ using System;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace Appalachia.Core.Objects.Sets2
+namespace Appalachia.Core.Objects.Sets
 {
     public abstract partial class ComponentSet<TComponentSet, TComponentSetData>
     {

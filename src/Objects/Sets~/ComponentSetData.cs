@@ -10,23 +10,24 @@ using Appalachia.Core.Objects.Sets2.Extensions;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events.Collections;
+using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
 
-namespace Appalachia.Core.Objects.Sets2
+namespace Appalachia.Core.Objects.Sets
 {
     [CallStaticConstructorInEditor]
     [Serializable]
     [DebuggerDisplay("{Name} (ComponentSetData)")]
-    public abstract class ComponentSetData<TComponentSet, TComponentSetData> : AppalachiaBase<TComponentSetData>,
+    public abstract class ComponentSetData<TComponentSet, TComponentSetData> : AppalachiaObject<TComponentSetData>,
                                                                                IComponentSetData<TComponentSet,
                                                                                    TComponentSetData>
         where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
         where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>,
-        IComponentSetData<TComponentSet, TComponentSetData>, new()
+        IComponentSetData<TComponentSet, TComponentSetData>
     {
         #region Constants and Static Readonly
 
@@ -37,6 +38,8 @@ namespace Appalachia.Core.Objects.Sets2
         #region Fields and Autoproperties
 
         private ReusableDelegateCollection<TComponentSet> _delegates;
+
+        [SerializeField] public bool dataTransferred;
 
         [PropertyOrder(-500)]
         [SerializeField]
@@ -476,7 +479,21 @@ namespace Appalachia.Core.Objects.Sets2
         {
             using (_PRF_CreateOrRefreshSetData.Auto())
             {
-                data ??= new();
+#if UNITY_EDITOR
+                if (!AppalachiaApplication.IsPlaying)
+                {
+                    var targetDataName = GetDataName(setName);
+
+                    if (data == null)
+                    {
+                        data = LoadOrCreate(targetDataName);
+                    }
+                    else
+                    {
+                        AssetDatabaseManager.UpdateAssetName(data, targetDataName);
+                    }
+                }
+#endif
 
                 data.CreateOrRefresh();
             }
@@ -486,9 +503,34 @@ namespace Appalachia.Core.Objects.Sets2
         {
             using (_PRF_CreateOrRefreshSetData.Auto())
             {
-                data ??= new(isElected, new());
-                data.Value ??= new();
-                
+#if UNITY_EDITOR
+                var targetDataName = GetDataName(setName);
+#endif
+
+                if (data == null)
+                {
+#if UNITY_EDITOR
+                    data = new(isElected, LoadOrCreate(targetDataName));
+#else
+                    data = new (isElected, default);
+#endif
+                }
+                else if (data.Value == null)
+                {
+#if UNITY_EDITOR
+                    data.Value = LoadOrCreate(targetDataName);
+#endif
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    if (data.Value.name != targetDataName)
+                    {
+                        AssetDatabaseManager.UpdateAssetName(data.Value, targetDataName);
+                    }
+#endif
+                }
+
                 data.Value.CreateOrRefresh();
             }
         }
@@ -497,14 +539,59 @@ namespace Appalachia.Core.Objects.Sets2
         {
             using (_PRF_CreateOrRefreshSetData.Auto())
             {
-                
-                data ??= new(overriding, new());
-                data.Value ??= new();
+#if UNITY_EDITOR
+                var targetDataName = GetDataName(setName);
+#endif
+
+                if (data == null)
+                {
+#if UNITY_EDITOR
+                    data = new(overriding, LoadOrCreate(targetDataName));
+#else
+                    data = new (overriding, default);
+#endif
+                }
+                else if (data.Value == null)
+                {
+#if UNITY_EDITOR
+                    data.Value = LoadOrCreate(targetDataName);
+#endif
+                }
+                else
+                {
+#if UNITY_EDITOR
+                    if (data.Value.name != targetDataName)
+                    {
+                        AssetDatabaseManager.UpdateAssetName(data.Value, targetDataName);
+                    }
+#endif
+                }
 
                 data.Value.CreateOrRefresh();
             }
         }
-        
+
+        private static string GetDataName(string setName)
+        {
+            using (_PRF_GetDataName.Auto())
+            {
+                var setType = typeof(TComponentSetData);
+                var targetDataName = ZString.Format("{0}{1}", setName, setType.Name);
+                return targetDataName;
+            }
+        }
+
+        private static TComponentSetData LoadOrCreate(string targetDataName)
+        {
+            using (_PRF_LoadOrCreate.Auto())
+            {
+                return AppalachiaObject.LoadOrCreateNew<TComponentSetData>(
+                    targetDataName,
+                    ownerType: AppalachiaRepository.PrimaryOwnerType
+                );
+            }
+        }
+
         /// <summary>
         ///     Updates the set by applying the configuration values to the set fields.
         /// </summary>
@@ -573,6 +660,11 @@ namespace Appalachia.Core.Objects.Sets2
         {
             using (_PRF_UpdateComponentSetInternal.Auto())
             {
+                if (!dataTransferred)
+                {
+                    Context.Log.Error($"Need to transfer this {typeof(TComponentSetData).FormatForLogging()}", this);
+                }
+
                 try
                 {
                     ApplyToComponentSet(set);
@@ -601,6 +693,92 @@ namespace Appalachia.Core.Objects.Sets2
 
         #endregion
 
+        #region Nested type: Optional
+
+        [Serializable]
+        [DebuggerDisplay("IsElected = {Overriding} | Value - {ValueDebuggerDisplay}")]
+        public sealed class Optional : Overridable<Optional>
+        {
+            public Optional() : base(false, default)
+            {
+            }
+
+            public Optional(bool isElected, TComponentSetData value) : base(isElected, value)
+            {
+            }
+
+            public Optional(Optional value) : base(value)
+            {
+            }
+
+            public bool IsElected => Overriding;
+
+            /// <inheritdoc />
+            protected override string DisabledColorPrefName => "Optional Disabled Color";
+
+            /// <inheritdoc />
+            protected override string EnabledColorPrefName => "Optional Enabled Color";
+
+            /// <inheritdoc />
+            protected override string ToggleLabel => "Optional";
+        }
+
+        #endregion
+
+        #region Nested type: Overridable
+
+        [Serializable]
+        public abstract class Overridable<TO> : Overridable<TComponentSetData, TO>
+            where TO : Overridable<TO>, new()
+        {
+            protected Overridable() : base(false, default)
+            {
+            }
+
+            protected Overridable(bool overriding, TComponentSetData value) : base(overriding, value)
+            {
+            }
+
+            protected Overridable(TO value) : base(value)
+            {
+            }
+        }
+
+        #endregion
+
+        #region Nested type: Override
+
+        [Serializable]
+        public class Override : Overridable<Override>
+        {
+            public Override(TComponentSetData value) : base(false, value)
+            {
+            }
+
+            public Override(bool overrideEnabled, TComponentSetData value) : base(overrideEnabled, value)
+            {
+            }
+
+            public Override(Override value) : base(value)
+            {
+            }
+
+            public Override() : base(false, default)
+            {
+            }
+
+            /// <inheritdoc />
+            protected override string DisabledColorPrefName => "Component Set Override Disabled Color";
+
+            /// <inheritdoc />
+            protected override string EnabledColorPrefName => "Component Set Override Enabled Color";
+
+            /// <inheritdoc />
+            protected override string ToggleLabel => "Override Set";
+        }
+
+        #endregion
+
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_RefreshAndUpdate =
@@ -614,6 +792,9 @@ namespace Appalachia.Core.Objects.Sets2
 
         private static readonly ProfilerMarker _PRF_UpdateComponentSetInternal =
             new ProfilerMarker(_PRF_PFX + nameof(UpdateComponentSetInternal));
+
+        private static readonly ProfilerMarker _PRF_LoadOrCreate = new ProfilerMarker(_PRF_PFX + nameof(LoadOrCreate));
+        private static readonly ProfilerMarker _PRF_GetDataName = new ProfilerMarker(_PRF_PFX + nameof(GetDataName));
 
         protected static readonly ProfilerMarker _PRF_ApplyToComponentSet =
             new ProfilerMarker(_PRF_PFX + nameof(ApplyToComponentSet));

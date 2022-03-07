@@ -1,6 +1,5 @@
 using System;
 using Appalachia.Core.Objects.Root.Contracts;
-using Appalachia.Core.Objects.Sets2;
 using Appalachia.Core.Objects.Sets2.Exceptions;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events.Collections;
@@ -8,7 +7,7 @@ using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Logging;
 using Unity.Profiling;
 
-namespace Appalachia.Core.Objects.Sets2.Extensions
+namespace Appalachia.Core.Objects.Sets.Extensions
 {
     public static class ComponentSetDataExtensions
     {
@@ -38,7 +37,7 @@ namespace Appalachia.Core.Objects.Sets2.Extensions
             this ComponentSetData<TComponentSet, TComponentSetData>.Override data,
             TComponentSet set)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -96,7 +95,7 @@ namespace Appalachia.Core.Objects.Sets2.Extensions
             Action<ComponentSetData<TComponentSet, TComponentSetData>.Optional, TComponentSet> before,
             Action<ComponentSetData<TComponentSet, TComponentSetData>.Optional, TComponentSet> after)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -146,7 +145,7 @@ namespace Appalachia.Core.Objects.Sets2.Extensions
             this ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
             TComponentSet set)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -204,7 +203,7 @@ namespace Appalachia.Core.Objects.Sets2.Extensions
             Action<ComponentSetData<TComponentSet, TComponentSetData>.Override, TComponentSet> before,
             Action<ComponentSetData<TComponentSet, TComponentSetData>.Override, TComponentSet> after)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSet.Auto())
             {
@@ -246,7 +245,7 @@ namespace Appalachia.Core.Objects.Sets2.Extensions
             TComponentSet set,
             Func<Action> delegateCreator)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
             where TO : ComponentSetData<TComponentSet, TComponentSetData>.Overridable<TO>, new()
         {
             using (_PRF_UpdateComponentSetAndSubscribe.Auto())
@@ -268,7 +267,7 @@ namespace Appalachia.Core.Objects.Sets2.Extensions
             ComponentSetData<TComponentSet, TComponentSetData>.Optional data,
             TComponentSet set)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSetOptional.Auto())
             {
@@ -296,7 +295,7 @@ namespace Appalachia.Core.Objects.Sets2.Extensions
             ComponentSetData<TComponentSet, TComponentSetData>.Override data,
             TComponentSet set)
             where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
-            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
+            where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>
         {
             using (_PRF_UpdateComponentSetOverride.Auto())
             {

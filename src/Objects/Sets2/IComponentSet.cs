@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Appalachia.Core.Objects.Sets
+namespace Appalachia.Core.Objects.Sets2
 {
     public interface IComponentSet
     {
