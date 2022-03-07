@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Appalachia.Core.Objects.Components.Contracts;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Core.Preferences;
 using Appalachia.Utility.Colors;
@@ -26,7 +27,8 @@ namespace Appalachia.Core.Objects.Models
                                                IOverridable,
                                                ISerializationCallbackReceiver,
                                                IChangePublisher,
-                                               IUnique
+                                               IUnique,
+                                               IRemotelyEnabledController
         where TO : Overridable<T, TO>, new()
     {
         protected Overridable(bool overriding, T value)
@@ -75,11 +77,7 @@ namespace Appalachia.Core.Objects.Models
             {
                 if (_overrideEnabledColor == null)
                 {
-                    _overrideEnabledColor = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        EnabledColorPrefName,
-                        Colors.PaleGreen4
-                    );
+                    _overrideEnabledColor = PREFS.REG(PKG.Prefs.Colors.Group, EnabledColorPrefName, Colors.PaleGreen4);
                 }
 
                 return _overrideEnabledColor;
@@ -134,19 +132,6 @@ namespace Appalachia.Core.Objects.Models
 
         public T initial => _initial;
 
-        private string ValueDebuggerDisplay
-        {
-            get
-            {
-                if (Value is INamed n)
-                {
-                    return n.Name;
-                }
-
-                return Value.ToString();
-            }
-        }
-
         public T Value
         {
             get => _value;
@@ -176,6 +161,19 @@ namespace Appalachia.Core.Objects.Models
         }
 
         private Color _overridingColor => _overriding ? overrideEnabledColor : overrideDisabledColor;
+
+        private string ValueDebuggerDisplay
+        {
+            get
+            {
+                if (Value is INamed n)
+                {
+                    return n.Name;
+                }
+
+                return Value.ToString();
+            }
+        }
 
         [DebuggerStepThrough]
         public static bool operator ==(Overridable<T, TO> left, Overridable<T, TO> right)
@@ -320,8 +318,7 @@ namespace Appalachia.Core.Objects.Models
                 }
 
                 return /* isOverridingAllowed == other.isOverridingAllowed && */
-                    (Overriding == other.Overriding) &&
-                    EqualityComparer<T>.Default.Equals(Value, other.Value);
+                    (Overriding == other.Overriding) && EqualityComparer<T>.Default.Equals(Value, other.Value);
             }
         }
 
@@ -373,6 +370,20 @@ namespace Appalachia.Core.Objects.Models
 
         object IOverridable.Value => _value;
         public Color ToggleColor => _overridingColor;
+
+        #endregion
+
+        #region IRemotelyEnabledController Members
+
+        public bool ShouldEnable => _overriding;
+
+        public void BindValueEnabledState()
+        {
+            if (Value is IRemotelyEnabled v)
+            {
+                v.BindEnabledStateTo(this);
+            }
+        }
 
         #endregion
 
@@ -433,17 +444,14 @@ namespace Appalachia.Core.Objects.Models
         private static readonly ProfilerMarker _PRF_SubscribeToChanges =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeToChanges));
 
-        private static readonly ProfilerMarker _PRF_OnChanged =
-            new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
+        private static readonly ProfilerMarker _PRF_OnChanged = new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
 
-        private static readonly ProfilerMarker _PRF_op_Implicit =
-            new ProfilerMarker(_PRF_PFX + "op_Implicit");
+        private static readonly ProfilerMarker _PRF_op_Implicit = new ProfilerMarker(_PRF_PFX + "op_Implicit");
 
         private static readonly ProfilerMarker _PRF_Get = new ProfilerMarker(_PRF_PFX + nameof(Get));
         private static readonly ProfilerMarker _PRF_Equals = new ProfilerMarker(_PRF_PFX + nameof(Equals));
 
-        private static readonly ProfilerMarker _PRF_GetHashCode =
-            new ProfilerMarker(_PRF_PFX + nameof(GetHashCode));
+        private static readonly ProfilerMarker _PRF_GetHashCode = new ProfilerMarker(_PRF_PFX + nameof(GetHashCode));
 
         private static readonly ProfilerMarker _PRF_eq = new ProfilerMarker(_PRF_PFX + "eq");
 

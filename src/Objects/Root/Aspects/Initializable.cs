@@ -76,6 +76,8 @@ namespace Appalachia.Core.Objects.Root
 
             BeforeInitialization();
 
+            InitializePreferences();
+            
             await initializationState.Initialize(InitializationComplete, this);
 
             AfterInitialization();
@@ -131,6 +133,8 @@ namespace Appalachia.Core.Objects.Root
                 }
 
                 BeforeInitialization();
+
+                InitializePreferences();
 
                 initializationState.InitializeSynchronous(InitializationComplete, this);
 
@@ -287,6 +291,8 @@ namespace Appalachia.Core.Objects.Root
 
                 BeforeInitialization();
 
+                InitializePreferences();
+
                 await initializationState.Initialize(InitializationComplete, this);
 
                 AfterInitialization();
@@ -334,6 +340,8 @@ namespace Appalachia.Core.Objects.Root
                 }
 
                 BeforeInitialization();
+
+                InitializePreferences();
 
                 initializationState.InitializeSynchronous(InitializationComplete, this);
 
@@ -483,6 +491,8 @@ namespace Appalachia.Core.Objects.Root
 
                 BeforeInitialization();
 
+                InitializePreferences();
+
                 await initializationState.Initialize(InitializationComplete, this);
 
                 AfterInitialization();
@@ -536,6 +546,8 @@ namespace Appalachia.Core.Objects.Root
                 }
 
                 BeforeInitialization();
+
+                InitializePreferences();
 
                 initializationState.InitializeSynchronous(InitializationComplete, this);
 
@@ -681,6 +693,8 @@ namespace Appalachia.Core.Objects.Root
 
                 BeforeInitialization();
 
+                InitializePreferences();
+
                 await initializationState.Initialize(InitializationComplete, this);
 
                 AfterInitialization();
@@ -731,6 +745,8 @@ namespace Appalachia.Core.Objects.Root
                 }
 
                 BeforeInitialization();
+
+                InitializePreferences();
 
                 initializationState.InitializeSynchronous(InitializationComplete, this);
 
