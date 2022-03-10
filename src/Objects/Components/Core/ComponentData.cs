@@ -5,9 +5,7 @@ using Appalachia.Core.Objects.Components.Exceptions;
 using Appalachia.Core.Objects.Components.Extensions;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
-using Appalachia.Core.Preferences;
 using Appalachia.Utility.Async;
-using Appalachia.Utility.Colors;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events.Collections;
 using Sirenix.OdinInspector;
@@ -17,16 +15,17 @@ using Object = UnityEngine.Object;
 
 // ReSharper disable StaticMemberInGenericType
 
-namespace Appalachia.Core.Objects.Components
+namespace Appalachia.Core.Objects.Components.Core
 {
     [DoNotReorderFields]
     [Serializable]
     [HideReferenceObjectPicker]
-    public abstract class ComponentData<TComponent, TComponentData> : AppalachiaBase<TComponentData>,
-                                                                      IComponentData<TComponent, TComponentData>,
-                                                                      IInspectorVisibility,
-                                                                      IFieldLockable,
-                                                                      IRemotelyEnabled
+    public abstract partial class ComponentData<TComponent, TComponentData> : AppalachiaBase<TComponentData>,
+                                                                              IComponentData<TComponent,
+                                                                                  TComponentData>,
+                                                                              IInspectorVisibility,
+                                                                              IFieldLockable,
+                                                                              IEnabler
         where TComponent : Component
         where TComponentData : ComponentData<TComponent, TComponentData>, new()
     {
@@ -44,214 +43,54 @@ namespace Appalachia.Core.Objects.Components
         {
         }
 
-        #region Preferences
-
-        [NonSerialized] private PREF<Color> _advancedToggleColorOff;
-        [NonSerialized] private PREF<Color> _advancedToggleColorOn;
-
-        [NonSerialized] private PREF<Color> _hideToggleColorOff;
-        [NonSerialized] private PREF<Color> _hideToggleColorOn;
-        [NonSerialized] private PREF<Color> _lockToggleColorOff;
-        [NonSerialized] private PREF<Color> _lockToggleColorOn;
-        [NonSerialized] private PREF<Color> _showToggleColorOff;
-        [NonSerialized] private PREF<Color> _showToggleColorOn;
-        [NonSerialized] private PREF<Color> _suspendToggleColorOff;
-
-        [NonSerialized] private PREF<Color> _suspendToggleColorOn;
-
-        private PREF<Color> AdvancedToggleColorOff
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="data" /> to ensure it can be used.
+        /// </summary>
+        /// <param name="data">The overridable component data to refresh.</param>
+        /// <param name="overriding">Whether the optional should default to overriding.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="data" /> lives within.</param>
+        public static void CreateOrRefresh(ref Override data, bool overriding, Object owner)
         {
-            get
+            using (_PRF_CreateOrRefresh.Auto())
             {
-                if (_advancedToggleColorOff == null)
+                if (data == null)
                 {
-                    _advancedToggleColorOff = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(AdvancedToggleColorOff),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
+                    TComponentData value = null;
+                    CreateOrRefresh(ref value, owner);
 
-                return _advancedToggleColorOff;
+                    data = new Override(overriding, value);
+                }
+                else if (data.Value == null)
+                {
+                    TComponentData value = null;
+                    CreateOrRefresh(ref value, owner);
+
+                    data.Value = value;
+                }
             }
         }
 
-        private PREF<Color> AdvancedToggleColorOn
+        /// <summary>
+        ///     Creates or refreshes the <see cref="data" /> to ensure it can be used.
+        /// </summary>
+        /// <param name="data">The component data to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="data" /> lives within.</param>
+        public static void CreateOrRefresh(ref TComponentData data, Object owner)
         {
-            get
+            using (_PRF_CreateOrRefresh.Auto())
             {
-                if (_advancedToggleColorOn == null)
+                if (data == default)
                 {
-                    _advancedToggleColorOn = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(AdvancedToggleColorOn),
-                        Colors.WhiteSmokeGray96
-                    );
+                    data = CreateWithOwner(owner);
+                }
+                else if (owner != null)
+                {
+                    data.SetOwner(owner);
                 }
 
-                return _advancedToggleColorOn;
+                data.InitializeFields(owner);
             }
         }
-
-        private PREF<Color> HideToggleColorOff
-        {
-            get
-            {
-                if (_hideToggleColorOff == null)
-                {
-                    _hideToggleColorOff = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(HideToggleColorOff),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
-
-                return _hideToggleColorOff;
-            }
-        }
-
-        private PREF<Color> HideToggleColorOn
-        {
-            get
-            {
-                if (_hideToggleColorOn == null)
-                {
-                    _hideToggleColorOn = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(HideToggleColorOn),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
-
-                return _hideToggleColorOn;
-            }
-        }
-
-        private PREF<Color> LockToggleColorOff
-        {
-            get
-            {
-                if (_lockToggleColorOff == null)
-                {
-                    _lockToggleColorOff = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(LockToggleColorOff),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
-
-                return _lockToggleColorOff;
-            }
-        }
-
-        private PREF<Color> LockToggleColorOn
-        {
-            get
-            {
-                if (_lockToggleColorOn == null)
-                {
-                    _lockToggleColorOn = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(LockToggleColorOn),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
-
-                return _lockToggleColorOn;
-            }
-        }
-
-        private PREF<Color> ShowToggleColorOff
-        {
-            get
-            {
-                if (_showToggleColorOff == null)
-                {
-                    _showToggleColorOff = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(ShowToggleColorOff),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
-
-                return _showToggleColorOff;
-            }
-        }
-
-        private PREF<Color> ShowToggleColorOn
-        {
-            get
-            {
-                if (_showToggleColorOn == null)
-                {
-                    _showToggleColorOn = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(ShowToggleColorOn),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
-
-                return _showToggleColorOn;
-            }
-        }
-
-        private PREF<Color> SuspendToggleColorOff
-        {
-            get
-            {
-                if (_suspendToggleColorOff == null)
-                {
-                    _suspendToggleColorOff = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(SuspendToggleColorOff),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
-
-                return _suspendToggleColorOff;
-            }
-        }
-
-        private PREF<Color> SuspendToggleColorOn
-        {
-            get
-            {
-                if (_suspendToggleColorOn == null)
-                {
-                    _suspendToggleColorOn = PREFS.REG(
-                        PKG.Prefs.Colors.Group,
-                        nameof(SuspendToggleColorOn),
-                        Colors.WhiteSmokeGray96
-                    );
-                }
-
-                return _suspendToggleColorOn;
-            }
-        }
-
-        #endregion
-
-        #region Fields and Autoproperties
-
-        private ReusableDelegateCollection<TComponent> _delegates;
-
-        [NonSerialized] private bool _showAllFields;
-
-        [SerializeField, HideInInspector]
-        private bool _hideAllFields;
-
-        [SerializeField, HideInInspector]
-        private bool _disableAllFields;
-
-        [SerializeField, HideInInspector]
-        private bool _suspendFieldApplication;
-
-        private Func<bool> _shouldEnableFunction;
-
-        [SerializeField, HideInInspector]
-        private bool _showAdvancedOptions;
-
-        #endregion
 
         /// <summary>
         ///     Creates or refreshes the <paramref name="data" /> to ensure it can be used, and
@@ -385,138 +224,6 @@ namespace Appalachia.Core.Objects.Components
                 CreateOrRefresh(ref data, owner);
                 data.SetOwner(owner);
                 data.Apply(component);
-            }
-        }
-
-        public override void InitializePreferences()
-        {
-            using (_PRF_InitializePreferences.Auto())
-            {
-                base.InitializePreferences();
-
-                _hideToggleColorOff = PREFS.REG(
-                    PKG.Prefs.Colors.Group,
-                    nameof(HideToggleColorOff),
-                    Colors.WhiteSmokeGray96
-                );
-
-                _hideToggleColorOn = PREFS.REG(
-                    PKG.Prefs.Colors.Group,
-                    nameof(HideToggleColorOn),
-                    Colors.WhiteSmokeGray96
-                );
-
-                _lockToggleColorOff = PREFS.REG(
-                    PKG.Prefs.Colors.Group,
-                    nameof(LockToggleColorOff),
-                    Colors.WhiteSmokeGray96
-                );
-
-                _lockToggleColorOn = PREFS.REG(
-                    PKG.Prefs.Colors.Group,
-                    nameof(LockToggleColorOn),
-                    Colors.WhiteSmokeGray96
-                );
-
-                _showToggleColorOff = PREFS.REG(
-                    PKG.Prefs.Colors.Group,
-                    nameof(ShowToggleColorOff),
-                    Colors.WhiteSmokeGray96
-                );
-
-                _showToggleColorOn = PREFS.REG(
-                    PKG.Prefs.Colors.Group,
-                    nameof(ShowToggleColorOn),
-                    Colors.WhiteSmokeGray96
-                );
-
-                _suspendToggleColorOff = PREFS.REG(
-                    PKG.Prefs.Colors.Group,
-                    nameof(SuspendToggleColorOff),
-                    Colors.WhiteSmokeGray96
-                );
-
-                _suspendToggleColorOn = PREFS.REG(
-                    PKG.Prefs.Colors.Group,
-                    nameof(SuspendToggleColorOn),
-                    Colors.WhiteSmokeGray96
-                );
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="data" /> to ensure it can be used.
-        /// </summary>
-        /// <param name="data">The optional component data to refresh.</param>
-        /// <param name="isElected">Whether the optional should default to elected.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="data" /> lives within.</param>
-        internal static void CreateOrRefresh(ref Optional data, bool isElected, Object owner)
-        {
-            using (_PRF_CreateOrRefresh.Auto())
-            {
-                if (data == null)
-                {
-                    TComponentData value = null;
-                    CreateOrRefresh(ref value, owner);
-
-                    data = new Optional(isElected, value);
-                }
-                else if (data.Value == null)
-                {
-                    TComponentData value = null;
-                    CreateOrRefresh(ref value, owner);
-
-                    data.Value = value;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="data" /> to ensure it can be used.
-        /// </summary>
-        /// <param name="data">The overridable component data to refresh.</param>
-        /// <param name="overriding">Whether the optional should default to overriding.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="data" /> lives within.</param>
-        internal static void CreateOrRefresh(ref Override data, bool overriding, Object owner)
-        {
-            using (_PRF_CreateOrRefresh.Auto())
-            {
-                if (data == null)
-                {
-                    TComponentData value = null;
-                    CreateOrRefresh(ref value, owner);
-
-                    data = new Override(overriding, value);
-                }
-                else if (data.Value == null)
-                {
-                    TComponentData value = null;
-                    CreateOrRefresh(ref value, owner);
-
-                    data.Value = value;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <see cref="data" /> to ensure it can be used.
-        /// </summary>
-        /// <param name="data">The component data to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="data" /> lives within.</param>
-        internal static void CreateOrRefresh(ref TComponentData data, Object owner)
-        {
-            using (_PRF_CreateOrRefresh.Auto())
-            {
-                if (data == default)
-                {
-                    data = CreateWithOwner(owner);
-                }
-                else if (owner != null)
-                {
-                    data.SetOwner(owner);
-                }
-
-                data.InitializeFields(owner);
             }
         }
 
@@ -678,6 +385,20 @@ namespace Appalachia.Core.Objects.Components
 
                 try
                 {
+                    ComponentDataTracker.RegisterComponentData(comp, this);
+                    
+                    if (Enabled)
+                    {
+                        if (comp is Behaviour b)
+                        {
+                            b.enabled = true;
+                        }
+                    }
+                    else
+                    {
+                        comp.Disable();
+                    }
+                    
                     OnApply(comp);
                 }
                 catch (ComponentInitializationException ex)
@@ -687,15 +408,6 @@ namespace Appalachia.Core.Objects.Components
                     );
 
                     throw;
-                }
-
-                if (ShouldEnable)
-                {
-                    comp.Enable(this as TComponentData);
-                }
-                else
-                {
-                    comp.Disable();
                 }
 
                 SubscribeResponsiveChildren();
@@ -733,6 +445,8 @@ namespace Appalachia.Core.Objects.Components
             {
                 var initializer = GetInitializer();
 
+                initializer.Do(this, nameof(_enabled), () => _enabled = true);
+
                 OnInitializeFields(initializer, owner);
             }
         }
@@ -753,6 +467,32 @@ namespace Appalachia.Core.Objects.Components
                 InitializeFields(_owner);
             }
         }
+
+        public bool SharesControlError
+        {
+            get => _sharesControlError;
+            set => _sharesControlError = value;
+        }
+
+        [ShowIf(nameof(SharesControlError))]
+        [GUIColor(1f, 0f, 0f)]
+        public string SharesControlWith
+        {
+            get => _sharesControlWith;
+            set => _sharesControlWith = value;
+        }
+
+        #endregion
+
+        #region IEnabler Members
+
+        public bool Enabled
+        {
+            get => _enabled;
+            set => _enabled = value;
+        }
+
+        public Color EnabledToggleColor => Enabled ? EnabledToggleColorOn.v : EnabledToggleColorOff.v;
 
         #endregion
 
@@ -796,7 +536,8 @@ namespace Appalachia.Core.Objects.Components
 
         public bool ShowAdvancedOptions
         {
-            get => _showAdvancedOptions || HideAllFields || ShowAllFields || SuspendFieldApplication || DisableAllFields;
+            get =>
+                _showAdvancedOptions || HideAllFields || ShowAllFields || SuspendFieldApplication || DisableAllFields;
             set => _showAdvancedOptions = value;
         }
 
@@ -804,32 +545,9 @@ namespace Appalachia.Core.Objects.Components
 
         #endregion
 
-        #region IRemotelyEnabled Members
-
-        public Func<bool> ShouldEnableFunction
-        {
-            get => _shouldEnableFunction;
-            set => _shouldEnableFunction = value;
-        }
-
-        public bool ShouldEnable => _shouldEnableFunction?.Invoke() ?? true;
-
-        public void BindEnabledStateTo(IRemotelyEnabledController controller)
-        {
-            using (_PRF_BindEnabledStateTo.Auto())
-            {
-                ShouldEnableFunction = () => controller.ShouldEnable;
-            }
-        }
-
-        #endregion
-
         #region Profiling
 
         private static readonly ProfilerMarker _PRF_Apply = new ProfilerMarker(_PRF_PFX + nameof(Apply));
-
-        private static readonly ProfilerMarker _PRF_BindEnabledStateTo =
-            new ProfilerMarker(_PRF_PFX + nameof(BindEnabledStateTo));
 
         private static readonly ProfilerMarker _PRF_CreateOrRefresh =
             new ProfilerMarker(_PRF_PFX + nameof(CreateOrRefresh));
@@ -857,5 +575,58 @@ namespace Appalachia.Core.Objects.Components
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeResponsiveChildren));
 
         #endregion
+
+        #region Fields and Autoproperties
+
+        [NonSerialized] private ReusableDelegateCollection<TComponent> _delegates;
+
+        [NonSerialized] private bool _showAllFields;
+
+        [SerializeField, HideInInspector]
+        private bool _hideAllFields;
+
+        [SerializeField, HideInInspector]
+        private bool _disableAllFields;
+
+        [SerializeField, HideInInspector]
+        private bool _suspendFieldApplication;
+
+        [SerializeField, HideInInspector]
+        private bool _showAdvancedOptions;
+
+        [NonSerialized] private bool _sharesControlError;
+        [NonSerialized] private string _sharesControlWith;
+
+        [SerializeField, HideInInspector]
+        private bool _enabled;
+
+        #endregion
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="data" /> to ensure it can be used.
+        /// </summary>
+        /// <param name="data">The optional component data to refresh.</param>
+        /// <param name="isElected">Whether the optional should default to elected.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="data" /> lives within.</param>
+        public static void CreateOrRefresh(ref Optional data, bool isElected, Object owner)
+        {
+            using (_PRF_CreateOrRefresh.Auto())
+            {
+                if (data == null)
+                {
+                    TComponentData value = null;
+                    CreateOrRefresh(ref value, owner);
+
+                    data = new Optional(isElected, value);
+                }
+                else if (data.Value == null)
+                {
+                    TComponentData value = null;
+                    CreateOrRefresh(ref value, owner);
+
+                    data.Value = value;
+                }
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 using Appalachia.Core.Objects.Components.Contracts;
+using Appalachia.Core.Objects.Components.Core;
 using Unity.Profiling;
 using UnityEngine;
 

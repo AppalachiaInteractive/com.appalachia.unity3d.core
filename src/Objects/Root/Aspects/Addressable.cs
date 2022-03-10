@@ -5,6 +5,45 @@ namespace Appalachia.Core.Objects.Root
 {
     public partial class AppalachiaObject
     {
+        protected virtual string GetAddressableName()
+        {
+            using (_PRF_GetAddressableName.Auto())
+            {
+                return Name;
+            }
+        }
+
+        protected virtual void ValidateAddressableInformation()
+        {
+            using (_PRF_ValidateAddressableInformation.Auto())
+            {
+                if (this.EnsureIsAddressable(out var guid))
+                {
+                    var targetInfo = this.GetAddressableTargetInfo();
+
+                    var correctName = GetAddressableName();
+
+                    if (targetInfo.Address != correctName)
+                    {
+                        targetInfo.MainAssetEntry.SetAddress(correctName);
+                    }
+                }
+                else
+                {
+                    this.AddToAddressableGroup();
+                }
+            }
+        }
+
+        #region Profiling
+
+        private static readonly ProfilerMarker _PRF_ValidateAddressableInformation =
+            new ProfilerMarker(_PRF_PFX + nameof(ValidateAddressableInformation));
+
+        private static readonly ProfilerMarker _PRF_GetAddressableName =
+            new ProfilerMarker(_PRF_PFX + nameof(GetAddressableName));
+
+        #endregion
     }
 
     public partial class AppalachiaRepository
@@ -25,35 +64,16 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
-        protected void ValidateAddressableInformation()
+        private static readonly ProfilerMarker _PRF_GetAddressableName =
+            new ProfilerMarker(_PRF_PFX + nameof(GetAddressableName));
+
+        protected override string GetAddressableName()
         {
-            using (_PRF_ValidateAddressableInformation.Auto())
+            using (_PRF_GetAddressableName.Auto())
             {
-                if (this.EnsureIsAddressable(out var guid))
-                {
-                    var targetInfo = this.GetAddressableTargetInfo();
-
-                    var correctName = typeof(T).Name;
-
-                    if (targetInfo.Address != correctName)
-                    {
-                        targetInfo.MainAssetEntry.SetAddress(correctName);
-                    }
-                }
-                else
-                {
-                    this.AddToAddressableGroup();
-                }
+                return typeof(T).Name;
             }
         }
-
-        #region Profiling
-
-        private static readonly ProfilerMarker _PRF_ValidateAddressableInformation =
-            new ProfilerMarker(_PRF_PFX7 + nameof(ValidateAddressableInformation));
-
-        #endregion
-
 #endif
     }
 

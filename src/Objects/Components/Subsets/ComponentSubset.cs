@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using Appalachia.Core.Objects.Components.Core;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Extensions;
 using Unity.Profiling;
@@ -99,11 +100,13 @@ namespace Appalachia.Core.Objects.Components.Subsets
             }
         }
 
-        protected virtual void EnableComponent(TComponentSubsetData data, Component c)
+        protected virtual void EnableComponent<TComponent,TComponentData>(TComponentSubsetData data, TComponent c, TComponentData d)
+        where TComponent : Component
+        where TComponentData : ComponentData<TComponent, TComponentData>, new()
         {
             using (_PRF_EnableComponent.Auto())
             {
-                if (c is Behaviour b)
+                if (d.Enabled && c is Behaviour b)
                 {
                     b.enabled = true;
                 }

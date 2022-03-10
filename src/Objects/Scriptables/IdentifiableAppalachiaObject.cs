@@ -14,8 +14,7 @@ namespace Appalachia.Core.Objects.Scriptables
 {
     [Serializable]
     public abstract partial class IdentifiableAppalachiaObject<T> : AppalachiaObject<T>,
-                                                                    IComparable<IdentifiableAppalachiaObject<
-                                                                        T>>,
+                                                                    IComparable<IdentifiableAppalachiaObject<T>>,
                                                                     IComparable
         where T : IdentifiableAppalachiaObject<T>
     {
@@ -25,12 +24,12 @@ namespace Appalachia.Core.Objects.Scriptables
         [PropertyOrder(-100)]
         [HorizontalGroup(GROUP_INTERNAL + "/" + "ID")]
         [SmartLabel]
-        [ShowIf(nameof(ShowIDProperties))]
+        [HideIf(nameof(HideIDProperties))]
         public int id;
 
         #endregion
 
-        protected virtual bool ShowIDProperties => true;
+        protected virtual bool HideIDProperties => false;
 
         #region IComparable
 
@@ -71,33 +70,25 @@ namespace Appalachia.Core.Objects.Scriptables
         }
 
         [DebuggerStepThrough]
-        public static bool operator <(
-            IdentifiableAppalachiaObject<T> left,
-            IdentifiableAppalachiaObject<T> right)
+        public static bool operator <(IdentifiableAppalachiaObject<T> left, IdentifiableAppalachiaObject<T> right)
         {
             return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) < 0;
         }
 
         [DebuggerStepThrough]
-        public static bool operator >(
-            IdentifiableAppalachiaObject<T> left,
-            IdentifiableAppalachiaObject<T> right)
+        public static bool operator >(IdentifiableAppalachiaObject<T> left, IdentifiableAppalachiaObject<T> right)
         {
             return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) > 0;
         }
 
         [DebuggerStepThrough]
-        public static bool operator <=(
-            IdentifiableAppalachiaObject<T> left,
-            IdentifiableAppalachiaObject<T> right)
+        public static bool operator <=(IdentifiableAppalachiaObject<T> left, IdentifiableAppalachiaObject<T> right)
         {
             return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) <= 0;
         }
 
         [DebuggerStepThrough]
-        public static bool operator >=(
-            IdentifiableAppalachiaObject<T> left,
-            IdentifiableAppalachiaObject<T> right)
+        public static bool operator >=(IdentifiableAppalachiaObject<T> left, IdentifiableAppalachiaObject<T> right)
         {
             return Comparer<IdentifiableAppalachiaObject<T>>.Default.Compare(left, right) >= 0;
         }

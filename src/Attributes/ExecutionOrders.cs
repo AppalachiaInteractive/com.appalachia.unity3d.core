@@ -8,6 +8,7 @@ namespace Appalachia.Core.Attributes
         public const int AreaManagers = -26500;
         public const int Service = -25000;
         public const int Widget = -24000;
+        public const int Subwidget = -23999;
         public const int Feature = -23000;
         public const int Buoyant = -04999;
         public const int DebugLogManager = +25001;

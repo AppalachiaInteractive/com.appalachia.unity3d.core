@@ -1,4 +1,6 @@
 using System;
+using Appalachia.Core.Objects.Components.Core;
+using Appalachia.Core.Objects.Initialization;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -72,13 +74,12 @@ namespace Appalachia.Core.Objects.Components.Subsets
         /// </summary>
         [LabelText("$" + nameof(data7Label))]
         [SerializeField]
-        [ShowIf(nameof(ShowData7))]
-        [HideIf(nameof(HideAllFields))]
+        [HideIf("@!ShowAllFields && (HideData7 || HideAllFields)")]
         public TComponentDataN data7;
 
         #endregion
 
-        protected virtual bool ShowData7 => true;
+        protected virtual bool HideData7 => false;
         private string data7Label => typeof(TComponentDataN).Name;
 
         /// <inheritdoc />
@@ -93,11 +94,11 @@ namespace Appalachia.Core.Objects.Components.Subsets
         }
 
         /// <inheritdoc />
-        protected override void CreateOrRefresh(Object owner)
+        protected override void OnInitializeFields(Initializer initializer, Object owner)
         {
             using (_PRF_CreateOrRefresh.Auto())
             {
-                base.CreateOrRefresh(owner);
+                base.OnInitializeFields(initializer, owner);
 
                 ComponentData<TComponentN, TComponentDataN>.CreateOrRefresh(ref data7, owner);
             }
@@ -108,10 +109,6 @@ namespace Appalachia.Core.Objects.Components.Subsets
         void IComponentData<TComponentSubset>.Apply(TComponentSubset comp)
         {
             OnApply(comp);
-        }
-
-        void IComponentData.InitializeFields(Object owner)
-        {
         }
 
         /// <inheritdoc />

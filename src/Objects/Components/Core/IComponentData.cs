@@ -1,10 +1,12 @@
 using Appalachia.Core.Objects.Root.Contracts;
 using UnityEngine;
 
-namespace Appalachia.Core.Objects.Components
+namespace Appalachia.Core.Objects.Components.Core
 {
-    public interface IComponentData : IOwned
+    public interface IComponentData : IOwned, IUnique
     {
+        bool SharesControlError { get; set; }
+        string SharesControlWith { get; set; }
         void InitializeFields(Object owner);
         void ResetData();
     }

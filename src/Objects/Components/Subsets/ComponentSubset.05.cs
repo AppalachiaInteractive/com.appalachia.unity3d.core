@@ -1,4 +1,5 @@
 using System;
+using Appalachia.Core.Objects.Components.Core;
 using UnityEngine;
 
 namespace Appalachia.Core.Objects.Components.Subsets
@@ -77,7 +78,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
             {
                 base.Enable(data);
 
-                EnableComponent(data, component5);
+                EnableComponent(data, component5, data.data5);
             }
         }
 

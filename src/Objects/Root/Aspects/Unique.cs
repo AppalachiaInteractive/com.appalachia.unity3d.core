@@ -2,6 +2,7 @@ using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Standards;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Appalachia.Core.Objects.Root
 {
@@ -12,9 +13,10 @@ namespace Appalachia.Core.Objects.Root
         /// <summary>
         ///     A persistent unique identifier for this instance.
         /// </summary>
+        [FormerlySerializedAs("_objectId")]
         [HideInInspector]
         [SerializeField]
-        private ObjectId _objectId;
+        private ObjectID _objectID;
 
         #endregion
 
@@ -23,19 +25,22 @@ namespace Appalachia.Core.Objects.Root
         /// <summary>
         ///     A persistent unique identifier for this instance.
         /// </summary>
-        public ObjectId ObjectId
+        public ObjectID ObjectID
         {
             get
             {
-                if ((_objectId != null) && (_objectId != ObjectId.Empty))
+                if (_objectID == null)
                 {
-                    return _objectId;
+                    _objectID = ObjectID.NewObjectID();
+                    MarkAsModified();
+                }
+                else if (_objectID.IsEmpty)
+                {
+                    _objectID.EnsureNotEmpty();
+                    MarkAsModified();
                 }
 
-                _objectId = ObjectId.NewObjectId();
-                MarkAsModified();
-
-                return _objectId;
+                return _objectID;
             }
         }
 
@@ -61,9 +66,10 @@ namespace Appalachia.Core.Objects.Root
         /// <summary>
         ///     A persistent unique identifier for this instance.
         /// </summary>
+        [FormerlySerializedAs("_objectId")]
         [HideInInspector]
         [SerializeField]
-        private ObjectId _objectId;
+        private ObjectID _objectID;
 
         #endregion
 
@@ -72,19 +78,22 @@ namespace Appalachia.Core.Objects.Root
         /// <summary>
         ///     A persistent unique identifier for this instance.
         /// </summary>
-        public ObjectId ObjectId
+        public ObjectID ObjectID
         {
             get
             {
-                if ((_objectId != null) && (_objectId != ObjectId.Empty))
+                if (_objectID == null)
                 {
-                    return _objectId;
+                    _objectID = ObjectID.NewObjectID();
+                    this.MarkAsModified();
+                }
+                else if (_objectID.IsEmpty)
+                {
+                    _objectID.EnsureNotEmpty();
+                    this.MarkAsModified();
                 }
 
-                _objectId = ObjectId.NewObjectId();
-                this.MarkAsModified();
-
-                return _objectId;
+                return _objectID;
             }
         }
 
@@ -99,20 +108,17 @@ namespace Appalachia.Core.Objects.Root
     {
     }
 
-    public partial class AppalachiaSimpleBase
-    {
-    }
-
-    public partial class AppalachiaBase : IUnique
+    public partial class AppalachiaSimpleBase : IUnique
     {
         #region Fields and Autoproperties
 
         /// <summary>
         ///     A persistent unique identifier for this instance.
         /// </summary>
+        [FormerlySerializedAs("_objectId")]
         [HideInInspector]
         [SerializeField]
-        private ObjectId _objectId;
+        protected ObjectID _objectID;
 
         #endregion
 
@@ -121,23 +127,49 @@ namespace Appalachia.Core.Objects.Root
         /// <summary>
         ///     A persistent unique identifier for this instance.
         /// </summary>
-        public ObjectId ObjectId
+        public virtual ObjectID ObjectID
         {
             get
             {
-                if ((_objectId != null) && (_objectId != ObjectId.Empty))
+                if (_objectID == null)
                 {
-                    return _objectId;
+                    _objectID = ObjectID.NewObjectID();
+                }
+                else if (_objectID.IsEmpty)
+                {
+                    _objectID.EnsureNotEmpty();
                 }
 
-                _objectId = ObjectId.NewObjectId();
-                MarkAsModified();
-
-                return _objectId;
+                return _objectID;
             }
         }
 
         #endregion
+    }
+
+    public partial class AppalachiaBase
+    {
+        /// <summary>
+        ///     A persistent unique identifier for this instance.
+        /// </summary>
+        public override ObjectID ObjectID
+        {
+            get
+            {
+                if (_objectID == null)
+                {
+                    _objectID = ObjectID.NewObjectID();
+                    MarkAsModified();
+                }
+                else if (_objectID.IsEmpty)
+                {
+                    _objectID.EnsureNotEmpty();
+                    MarkAsModified();
+                }
+
+                return _objectID;
+            }
+        }
     }
 
     public partial class AppalachiaBase<T>
@@ -163,28 +195,32 @@ namespace Appalachia.Core.Objects.Root
         /// <summary>
         ///     A persistent unique identifier for this instance.
         /// </summary>
+        [FormerlySerializedAs("_objectId")]
         [HideInInspector]
         [SerializeField]
-        private ObjectId _objectId;
+        private ObjectID _objectID;
 
         #endregion
 
         /// <summary>
         ///     A persistent unique identifier for this instance.
         /// </summary>
-        public ObjectId ObjectId
+        public ObjectID ObjectID
         {
             get
             {
-                if ((_objectId != null) && (_objectId != ObjectId.Empty))
+                if (_objectID == null)
                 {
-                    return _objectId;
+                    _objectID = ObjectID.NewObjectID();
+                    MarkAsModified();
+                }
+                else if (_objectID.IsEmpty)
+                {
+                    _objectID.EnsureNotEmpty();
+                    MarkAsModified();
                 }
 
-                _objectId = ObjectId.NewObjectId();
-                MarkAsModified();
-
-                return _objectId;
+                return _objectID;
             }
         }
     }

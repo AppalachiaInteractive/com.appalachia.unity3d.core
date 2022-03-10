@@ -108,7 +108,7 @@ namespace Appalachia.Core.Objects.Models
 
         [HideInInspector]
         [SerializeField]
-        private ObjectId _objectId;
+        private ObjectID _objectId;
 
         [SerializeField, HideInInspector]
         private T _initial;
@@ -415,13 +415,13 @@ namespace Appalachia.Core.Objects.Models
 
         #region IUnique Members
 
-        public ObjectId ObjectId
+        public ObjectID ObjectID
         {
             get
             {
-                if ((_objectId == null) || (_objectId == ObjectId.Empty))
+                if ((_objectId == null) || (_objectId == ObjectID.Empty))
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectId = ObjectID.NewObjectID();
                     OnChanged();
                 }
 
@@ -445,14 +445,10 @@ namespace Appalachia.Core.Objects.Models
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeToChanges));
 
         private static readonly ProfilerMarker _PRF_OnChanged = new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
-
         private static readonly ProfilerMarker _PRF_op_Implicit = new ProfilerMarker(_PRF_PFX + "op_Implicit");
-
         private static readonly ProfilerMarker _PRF_Get = new ProfilerMarker(_PRF_PFX + nameof(Get));
         private static readonly ProfilerMarker _PRF_Equals = new ProfilerMarker(_PRF_PFX + nameof(Equals));
-
         private static readonly ProfilerMarker _PRF_GetHashCode = new ProfilerMarker(_PRF_PFX + nameof(GetHashCode));
-
         private static readonly ProfilerMarker _PRF_eq = new ProfilerMarker(_PRF_PFX + "eq");
 
         private static readonly ProfilerMarker _PRF_neq = new ProfilerMarker(_PRF_PFX + "neq");

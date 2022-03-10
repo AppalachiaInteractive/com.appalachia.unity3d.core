@@ -1,22 +1,19 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Appalachia.Core.Collections;
-using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Appalachia.Core.Objects.Components.Sets
 {
     [Serializable]
     [FoldoutGroup("Components", false)]
     [DebuggerDisplay("{Name} (ComponentSet)")]
-    public abstract partial class ComponentSet<TComponentSet, TComponentSetData> : AppalachiaSimpleBase,
+    public abstract partial class ComponentSet<TComponentSet, TComponentSetData> : AppalachiaBase<TComponentSet>,
         IComponentSet<TComponentSet, TComponentSetData>
         where TComponentSet : ComponentSet<TComponentSet, TComponentSetData>, new()
         where TComponentSetData : ComponentSetData<TComponentSet, TComponentSetData>, new()
@@ -34,15 +31,9 @@ namespace Appalachia.Core.Objects.Components.Sets
         [ReadOnly]
         private GameObject gameObject;
 
-        [FormerlySerializedAs("_initialer")]
-        [SerializeField, HideInInspector]
-        private Initializer _initializer;
-
         [PropertyOrder(-300)]
         [SerializeField]
         public bool isSortingDisabled;
-
-        private string _name1;
 
         #endregion
 
@@ -51,19 +42,6 @@ namespace Appalachia.Core.Objects.Components.Sets
         protected abstract bool IsUI { get; }
 
         public override string Name => GameObject.name;
-
-        protected Initializer initializer
-        {
-            get
-            {
-                if (_initializer == null)
-                {
-                    _initializer = new Initializer();
-                }
-
-                return _initializer;
-            }
-        }
 
         protected string GameObjectNamePostfix
         {
@@ -134,7 +112,6 @@ namespace Appalachia.Core.Objects.Components.Sets
         /// <summary>
         ///     Adds the required components to the set.  The <see cref="GameObject" /> will have been created at this point.
         /// </summary>
-        /// <param name="data">The component set data.</param>
         protected abstract void OnGetOrAddComponents();
 
         protected virtual string GetComponentSetNamePrefixFormat()
@@ -240,37 +217,7 @@ namespace Appalachia.Core.Objects.Components.Sets
 
         #endregion
 
-        #region Nested type: List
-
-        [Serializable]
-        public sealed class List : AppaList<TComponentSet>
-        {
-            public List()
-            {
-            }
-
-            public List(int capacity, float capacityIncreaseMultiplier = 2, bool noTracking = false) : base(
-                capacity,
-                capacityIncreaseMultiplier,
-                noTracking
-            )
-            {
-            }
-
-            public List(AppaList<TComponentSet> list) : base(list)
-            {
-            }
-
-            public List(TComponentSet[] values) : base(values)
-            {
-            }
-        }
-
-        #endregion
-
         #region Profiling
-
-        protected static readonly string _PRF_PFX = typeof(TComponentSet).Name + ".";
 
         protected static readonly ProfilerMarker _PRF_DestroySafely =
             new ProfilerMarker(_PRF_PFX + nameof(DestroySafely));

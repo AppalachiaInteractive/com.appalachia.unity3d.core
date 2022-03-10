@@ -1,3 +1,4 @@
+using Appalachia.Core.Objects.Components.Contracts;
 using UnityEngine;
 
 namespace Appalachia.Core.Objects.Components.Sets
@@ -10,7 +11,7 @@ namespace Appalachia.Core.Objects.Components.Sets
 
     public interface IComponentSet<TComponentSet, TComponentSetData> : IComponentSet
         where TComponentSet : IComponentSet<TComponentSet, TComponentSetData>, new()
-        where TComponentSetData : IComponentSetData<TComponentSet, TComponentSetData>
+        where TComponentSetData : IComponentSetData<TComponentSet, TComponentSetData>, new()
     {
         void GetOrAddComponents(GameObject parent, string name);
     }

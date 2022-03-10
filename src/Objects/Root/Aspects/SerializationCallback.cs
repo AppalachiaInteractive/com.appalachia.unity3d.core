@@ -19,9 +19,9 @@ namespace Appalachia.Core.Objects.Root
             {
                 using var scope = APPASERIALIZE.OnBeforeSerialize();
 
-                if (_objectId == null)
+                if (_objectID == null)
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectID = ObjectID.NewObjectID();
                 }
             }
         }
@@ -32,9 +32,9 @@ namespace Appalachia.Core.Objects.Root
             {
                 using var scope = APPASERIALIZE.OnAfterDeserialize();
 
-                if (_objectId == null)
+                if (_objectID == null)
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectID = ObjectID.NewObjectID();
                 }
             }
         }
@@ -74,9 +74,9 @@ namespace Appalachia.Core.Objects.Root
             {
                 using var scope = APPASERIALIZE.OnBeforeSerialize();
 
-                if (_objectId == null)
+                if (_objectID == null)
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectID = ObjectID.NewObjectID();
                 }
             }
         }
@@ -87,9 +87,9 @@ namespace Appalachia.Core.Objects.Root
             {
                 using var scope = APPASERIALIZE.OnAfterDeserialize();
 
-                if (_objectId == null)
+                if (_objectID == null)
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectID = ObjectID.NewObjectID();
                 }
             }
         }
@@ -129,9 +129,9 @@ namespace Appalachia.Core.Objects.Root
             {
                 using var scope = APPASERIALIZE.OnBeforeSerialize();
 
-                if (_objectId == null)
+                if (_objectID == null)
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectID = ObjectID.NewObjectID();
                 }
             }
         }
@@ -146,15 +146,15 @@ namespace Appalachia.Core.Objects.Root
                 {
                     return;
                 }
-                
+
                 if (_owner == null)
                 {
                     //Context.Log.Warn($"The {GetType().FormatForLogging()} has no owner!", this);
                 }
-                
-                if (_objectId == null)
+
+                if (_objectID == null)
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectID = ObjectID.NewObjectID();
                 }
 
                 if (_hasBeenInitialized)
@@ -206,9 +206,9 @@ namespace Appalachia.Core.Objects.Root
             {
                 using var scope = APPASERIALIZE.OnBeforeSerialize();
 
-                if (_objectId == null)
+                if (_objectID == null)
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectID = ObjectID.NewObjectID();
                 }
             }
         }
@@ -219,9 +219,9 @@ namespace Appalachia.Core.Objects.Root
             {
                 using var scope = APPASERIALIZE.OnAfterDeserialize();
 
-                if (_objectId == null)
+                if (_objectID == null)
                 {
-                    _objectId = ObjectId.NewObjectId();
+                    _objectID = ObjectID.NewObjectID();
                 }
             }
         }

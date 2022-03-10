@@ -10,10 +10,7 @@ namespace Appalachia.Core.Objects.Components.Sets
 
         private class SiblingIndexCalculator
         {
-            public static int GetDesiredSiblingIndex(
-                ComponentSetSorting order,
-                int currentIndex,
-                int siblingCount)
+            public static int GetDesiredSiblingIndex(ComponentSetSorting order, int currentIndex, int siblingCount)
             {
                 using (_PRF_GetDesiredSiblingIndex.Auto())
                 {

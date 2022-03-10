@@ -11,20 +11,20 @@ namespace Appalachia.Core.Objects.Root
     {
         #region Fields and Autoproperties
 
-        private bool? _showButtons;
+        private bool? _hideButtons;
 
         #endregion
 
-        private bool ShowButtons
+        private bool HideButtons
         {
             get
             {
-                if (!_showButtons.HasValue)
+                if (!_hideButtons.HasValue)
                 {
-                    _showButtons = !GetType().InheritsFrom(typeof(SingletonAppalachiaBehaviour<>));
+                    _hideButtons = GetType().InheritsFrom(typeof(SingletonAppalachiaBehaviour<>));
                 }
 
-                return _showButtons.Value;
+                return _hideButtons.Value;
             }
         }
 
@@ -54,7 +54,7 @@ namespace Appalachia.Core.Objects.Root
 
         [ButtonGroup(GROUP_BUTTONS)]
         [PropertyOrder(-1000)]
-        [ShowIf(nameof(ShowButtons))]
+        [HideIf(nameof(HideButtons))]
         private void SelectAllInScene()
         {
             var type = GetType();
@@ -66,7 +66,7 @@ namespace Appalachia.Core.Objects.Root
 
         [ButtonGroup(GROUP_BUTTONS)]
         [PropertyOrder(-1000)]
-        [ShowIf(nameof(ShowButtons))]
+        [HideIf(nameof(HideButtons))]
         private void SelectObjectsInScene()
         {
             var type = GetType();

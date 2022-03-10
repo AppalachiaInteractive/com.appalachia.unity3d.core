@@ -29,7 +29,7 @@ namespace Appalachia.Core.Objects.Scriptables
         [Button]
         [PropertyOrder(-99)]
         [HorizontalGroup(GROUP_INTERNAL + "/" + APPASTR.ID)]
-        [ShowIf(nameof(ShowIDProperties))]
+        [HideIf(nameof(HideIDProperties))]
         [LabelText("Check")]
         public void CheckForBadIDs()
         {
@@ -75,7 +75,7 @@ namespace Appalachia.Core.Objects.Scriptables
         [Button]
         [PropertyOrder(-99)]
         [HorizontalGroup(GROUP_INTERNAL + "/" + APPASTR.ID)]
-        [ShowIf(nameof(ShowIDProperties))]
+        [HideIf(nameof(HideIDProperties))]
         public void NewID()
         {
             using (_PRF_NewID.Auto())
@@ -111,7 +111,7 @@ namespace Appalachia.Core.Objects.Scriptables
         [PropertyOrder(-100)]
         [EnableIf(nameof(badID))]
         [HorizontalGroup(GROUP_INTERNAL + "/" + "ID")]
-        [ShowIf(nameof(ShowIDProperties))]
+        [HideIf(nameof(HideIDProperties))]
         [LabelText("Update")]
         public void UpdateAllIDs()
         {

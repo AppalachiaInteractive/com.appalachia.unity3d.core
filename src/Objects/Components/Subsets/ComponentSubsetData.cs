@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using Appalachia.Core.Objects.Components.Contracts;
+using Appalachia.Core.Objects.Components.Core;
 using Appalachia.Core.Objects.Components.Exceptions;
 using Appalachia.Core.Objects.Components.Extensions;
 using Appalachia.Core.Objects.Initialization;
@@ -11,6 +12,7 @@ using Appalachia.Utility.Colors;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events.Collections;
 using Appalachia.Utility.Extensions;
+using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -28,10 +30,9 @@ namespace Appalachia.Core.Objects.Components.Subsets
     [DebuggerDisplay("{Name} (ComponentSubsetData)")]
     public abstract class ComponentSubsetData<TComponentSubset, TComponentSubsetData> :
         AppalachiaBase<TComponentSubsetData>,
-        IComponentData<TComponentSubset, TComponentSubsetData>,
+        IComponentSubsetData<TComponentSubset, TComponentSubsetData>,
         IInspectorVisibility,
-        IFieldLockable,
-        IRemotelyEnabled
+        IFieldLockable
         where TComponentSubset : ComponentSubset<TComponentSubset, TComponentSubsetData>, new()
         where TComponentSubsetData : ComponentSubsetData<TComponentSubset, TComponentSubsetData>, new()
     {
@@ -238,7 +239,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
 
         #region Fields and Autoproperties
 
-        private ReusableDelegateCollection<TComponentSubset> _delegates;
+        [NonSerialized] private ReusableDelegateCollection<TComponentSubset> _delegates;
 
         [NonSerialized] private bool _showAllFields;
 
@@ -251,12 +252,15 @@ namespace Appalachia.Core.Objects.Components.Subsets
         [SerializeField, HideInInspector]
         private bool _suspendFieldApplication;
 
-        private Func<bool> _shouldEnable;
+        [NonSerialized] private Func<bool> _shouldEnable;
 
-        private Func<bool> _shouldEnableFunction;
+        [NonSerialized] private Func<bool> _shouldEnableFunction;
 
         [SerializeField, HideInInspector]
         private bool _showAdvancedOptions;
+
+        [NonSerialized] private bool _sharesControlError;
+        [NonSerialized] private string _sharesControlWith;
 
         #endregion
 
@@ -278,7 +282,129 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     subsetData.SetOwner(owner);
                 }
 
-                subsetData.CreateOrRefresh(owner);
+                subsetData.InitializeFields(owner);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="subsetData" /> to ensure it is ready to use.
+        /// </summary>
+        /// <param name="subsetData">The configuration data subset.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subsetData" /> lives within.</param>
+        public static void CreateOrRefresh(ref Optional subsetData, Object owner)
+        {
+            using (_PRF_CreateOrRefresh.Auto())
+            {
+                if (subsetData == null)
+                {
+                    subsetData = new(false, default);
+                }
+
+                var data = subsetData.Value;
+                CreateOrRefresh(ref data, owner);
+                subsetData.Value = data;
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="subsetData" /> to ensure it is ready to use.
+        /// </summary>
+        /// <param name="subsetData">The configuration data subset.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subsetData" /> lives within.</param>
+        public static void CreateOrRefresh(ref Override subsetData, Object owner)
+        {
+            using (_PRF_CreateOrRefresh.Auto())
+            {
+                if (subsetData == null)
+                {
+                    subsetData = new(false, default);
+                }
+
+                var data = subsetData.Value;
+                CreateOrRefresh(ref data, owner);
+                subsetData.Value = data;
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="subsetData" /> and <paramref name="subset" /> to ensure they are ready to use.
+        /// </summary>
+        /// <param name="subsetData">The configuration data subset.</param>
+        /// <param name="subset">The subset.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subsetData" /> lives within.</param>
+        public static void CreateOrRefresh(ref Optional subsetData, ref TComponentSubset subset, Object owner)
+        {
+            using (_PRF_CreateOrRefresh.Auto())
+            {
+                if (subsetData == null)
+                {
+                    subsetData = new(false, default);
+                }
+
+                var data = subsetData.Value;
+                CreateOrRefresh(ref data, owner);
+                subsetData.Value = data;
+                CreateOrRefresh(ref subset, owner);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="subsetData" /> and <paramref name="subset" /> to ensure they are ready to use.
+        /// </summary>
+        /// <param name="subsetData">The configuration data subset.</param>
+        /// <param name="subset">The subset.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subsetData" /> lives within.</param>
+        public static void CreateOrRefresh(ref Override subsetData, ref TComponentSubset subset, Object owner)
+        {
+            using (_PRF_CreateOrRefresh.Auto())
+            {
+                if (subsetData == null)
+                {
+                    subsetData = new(false, default);
+                }
+
+                var data = subsetData.Value;
+                CreateOrRefresh(ref data, owner);
+                subsetData.Value = data;
+                CreateOrRefresh(ref subset, owner);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="subsetData" /> and <paramref name="subset" /> to ensure they are ready to use.
+        /// </summary>
+        /// <param name="subsetData">The configuration data subset.</param>
+        /// <param name="subset">The subset.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subsetData" /> lives within.</param>
+        public static void CreateOrRefresh(
+            ref TComponentSubsetData subsetData,
+            ref TComponentSubset subset,
+            Object owner)
+        {
+            using (_PRF_CreateOrRefresh.Auto())
+            {
+                CreateOrRefresh(ref subsetData, owner);
+                CreateOrRefresh(ref subset,     owner);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <see cref="UnityEngine.Component" /> to ensure they are ready to use.
+        /// </summary>
+        /// <param name="subset">The subset.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subset" /> lives within.</param>
+        public static void CreateOrRefresh(ref TComponentSubset subset, Object owner)
+        {
+            using (_PRF_CreateOrRefresh.Auto())
+            {
+                if (subset == null)
+                {
+                    subset = ComponentSubset<TComponentSubset, TComponentSubsetData>.CreateWithOwner(owner);
+                }
+                else
+                {
+                    subset.SetOwner(owner);
+                }
             }
         }
 
@@ -312,7 +438,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     subsetParent,
                     subsetObjectName
                 );
-                data.UpdateComponentSubset(subset, before, after);
+                data.Apply(subset, before, after);
             }
         }
 
@@ -343,7 +469,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     subsetParent,
                     subsetObjectName
                 );
-                data.UpdateComponentSubset(subset);
+                data.Apply(subset);
             }
         }
 
@@ -378,7 +504,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     subsetParent,
                     subsetObjectName
                 );
-                data.UpdateComponentSubset(subset, before, after);
+                data.Apply(subset, before, after);
             }
         }
 
@@ -409,7 +535,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     subsetParent,
                     subsetObjectName
                 );
-                data.UpdateComponentSubset(subset);
+                data.Apply(subset);
             }
         }
 
@@ -507,7 +633,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     data,
                     subsetObject
                 );
-                data.UpdateComponentSubset(subset, before, after);
+                data.Apply(subset, before, after);
             }
         }
 
@@ -535,7 +661,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     data,
                     subsetObject
                 );
-                data.UpdateComponentSubset(subset);
+                data.Apply(subset);
             }
         }
 
@@ -567,7 +693,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     data,
                     subsetObject
                 );
-                data.UpdateComponentSubset(subset, before, after);
+                data.Apply(subset, before, after);
             }
         }
 
@@ -595,7 +721,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
                     data,
                     subsetObject
                 );
-                data.UpdateComponentSubset(subset);
+                data.Apply(subset);
             }
         }
 
@@ -799,13 +925,18 @@ namespace Appalachia.Core.Objects.Components.Subsets
             }
         }
 
+        protected abstract void OnApply(TComponentSubset subset);
+
+        //protected abstract void OnInitializeFields(Initializer initializer, Object owner);
+
         /// <summary>
         ///     Creates or refreshes this data subset to ensure it is ready to use.
         /// </summary>
+        /// <param name="initializer"></param>
         /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this subset lives within.</param>
-        protected abstract void CreateOrRefresh(Object owner);
 
-        protected abstract void OnApply(TComponentSubset subset);
+        // ReSharper disable once UnusedParameter.Global
+        protected abstract void OnInitializeFields(Initializer initializer, Object owner);
 
         /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
@@ -814,78 +945,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
 
             using (_PRF_Initialize.Auto())
             {
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="subsetData" /> and <paramref name="subset" /> to ensure they are ready to use.
-        /// </summary>
-        /// <param name="subsetData">The configuration data subset.</param>
-        /// <param name="subset">The subset.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subsetData" /> lives within.</param>
-        private static void CreateOrRefresh(ref Optional subsetData, ref TComponentSubset subset, Object owner)
-        {
-            using (_PRF_CreateOrRefresh.Auto())
-            {
-                var data = subsetData.Value;
-                CreateOrRefresh(ref data, owner);
-                subsetData.Value = data;
-                CreateOrRefresh(ref subset, owner);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="subsetData" /> and <paramref name="subset" /> to ensure they are ready to use.
-        /// </summary>
-        /// <param name="subsetData">The configuration data subset.</param>
-        /// <param name="subset">The subset.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subsetData" /> lives within.</param>
-        private static void CreateOrRefresh(ref Override subsetData, ref TComponentSubset subset, Object owner)
-        {
-            using (_PRF_CreateOrRefresh.Auto())
-            {
-                var data = subsetData.Value;
-                CreateOrRefresh(ref data, owner);
-                subsetData.Value = data;
-                CreateOrRefresh(ref subset, owner);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="subsetData" /> and <paramref name="subset" /> to ensure they are ready to use.
-        /// </summary>
-        /// <param name="subsetData">The configuration data subset.</param>
-        /// <param name="subset">The subset.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subsetData" /> lives within.</param>
-        private static void CreateOrRefresh(
-            ref TComponentSubsetData subsetData,
-            ref TComponentSubset subset,
-            Object owner)
-        {
-            using (_PRF_CreateOrRefresh.Auto())
-            {
-                CreateOrRefresh(ref subsetData, owner);
-                CreateOrRefresh(ref subset,     owner);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <see cref="UnityEngine.Component" /> to ensure they are ready to use.
-        /// </summary>
-        /// <param name="subset">The subset.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="subset" /> lives within.</param>
-        private static void CreateOrRefresh(ref TComponentSubset subset, Object owner)
-        {
-            using (_PRF_CreateOrRefresh.Auto())
-            {
-                if (subset == null)
-                {
-                    subset = ComponentSubset<TComponentSubset, TComponentSubsetData>.CreateWithOwner(owner);
-                }
-                else
-                {
-                    subset.SetOwner(owner);
-                }
+                InitializeFields(_owner);
             }
         }
 
@@ -941,6 +1001,7 @@ namespace Appalachia.Core.Objects.Components.Subsets
 
                 try
                 {
+                    ComponentDataTracker.RegisterComponentData(subset, this);
                     OnApply(subset);
                 }
                 catch (ComponentInitializationException ex)
@@ -994,6 +1055,20 @@ namespace Appalachia.Core.Objects.Components.Subsets
 
         #region IComponentData<TComponentSubset,TComponentSubsetData> Members
 
+        public bool SharesControlError
+        {
+            get => _sharesControlError;
+            set => _sharesControlError = value;
+        }
+
+        [ShowIf(nameof(SharesControlError))]
+        [GUIColor(1f, 0f, 0f)]
+        public string SharesControlWith
+        {
+            get => _sharesControlWith;
+            set => _sharesControlWith = value;
+        }
+
         void IComponentData<TComponentSubset>.Apply(TComponentSubset comp)
         {
             using (_PRF_UpdateComponent.Auto())
@@ -1002,14 +1077,22 @@ namespace Appalachia.Core.Objects.Components.Subsets
             }
         }
 
-        void IComponentData.InitializeFields(Object owner)
+        public void InitializeFields(Object owner)
         {
+            using (_PRF_InitializeFields.Auto())
+            {
+                var initializer = GetInitializer();
+
+                OnInitializeFields(initializer, owner);
+            }
         }
 
+        [ButtonGroup(GROUP_BUTTONS)]
         public virtual void ResetData()
         {
             using (_PRF_ResetData.Auto())
             {
+                InitializeFields(_owner);
             }
         }
 
@@ -1039,7 +1122,8 @@ namespace Appalachia.Core.Objects.Components.Subsets
 
         public bool ShowAdvancedOptions
         {
-            get => _showAdvancedOptions || HideAllFields || ShowAllFields || SuspendFieldApplication || DisableAllFields;
+            get =>
+                _showAdvancedOptions || HideAllFields || ShowAllFields || SuspendFieldApplication || DisableAllFields;
             set => _showAdvancedOptions = value;
         }
 
@@ -1091,7 +1175,10 @@ namespace Appalachia.Core.Objects.Components.Subsets
             new ProfilerMarker(_PRF_PFX + nameof(BindEnabledStateTo));
 
         protected static readonly ProfilerMarker _PRF_CreateOrRefresh =
-            new ProfilerMarker(_PRF_PFX + nameof(CreateOrRefresh));
+            new ProfilerMarker(_PRF_PFX + nameof(OnInitializeFields));
+
+        private static readonly ProfilerMarker _PRF_InitializeFields =
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeFields));
 
         protected static readonly ProfilerMarker _PRF_OnApply = new ProfilerMarker(_PRF_PFX + nameof(OnApply));
 
