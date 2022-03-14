@@ -748,7 +748,7 @@ namespace Appalachia.Core.Collections.Native
             ///     set. This is used for automated testing purposes only.
             /// </summary>
             /// <param name="allowReadOrWriteAccess">
-            ///     If both read and write access should be allowed for the set
+            ///     If both read and write access should be allowed for the control
             /// </param>
             [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
             public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)
@@ -1010,7 +1010,7 @@ namespace Appalachia.Core.Collections.Native
         ///     set. This is used for automated testing purposes only.
         /// </summary>
         /// <param name="allowReadOrWriteAccess">
-        ///     If both read and write access should be allowed for the set
+        ///     If both read and write access should be allowed for the control
         /// </param>
         [Conditional("ENABLE_UNITY_COLLECTIONS_CHECKS")]
         public void TestUseOnlySetAllowReadAndWriteAccess(bool allowReadOrWriteAccess)

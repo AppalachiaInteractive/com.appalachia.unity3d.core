@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Appalachia.Core.Objects.Components.Contracts;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Core.Preferences;
 using Appalachia.Utility.Colors;
