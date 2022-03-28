@@ -157,7 +157,8 @@ namespace Appalachia.Core.Objects.Root
                             "Singleton {0} is not present in the {1}",
                             typeof(T).FormatForLogging(),
                             typeof(AppalachiaRepository).FormatForLogging()
-                        )
+                        ),
+                        repositoryInstance
                     );
                 }
             }
@@ -342,8 +343,10 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        protected static readonly string _PRF_PFX2 = typeof(T).Name + ".";
+
         private static readonly ProfilerMarker _PRF_RegisterDependency =
-            new(_PRF_PFX + nameof(RegisterDependency));
+            new(_PRF_PFX2 + nameof(RegisterDependency));
 
         #endregion
     }

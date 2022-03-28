@@ -8,7 +8,7 @@ namespace Appalachia.Core.Objects.Root.Contracts
         Color ToggleColor { get; }
         object Value { get; }
 
-        public Type ValueType { get; }
+        Type ValueType { get; }
         bool Overriding { get; set; }
         bool Frozen { get; set; }
         bool Disabled { get; set; }

@@ -37,7 +37,7 @@ namespace Appalachia.Core.ControlModel.Extensions
         public static void Apply<TComponentGroup, TComponentGroupConfig>(
             this AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>.Override config,
             TComponentGroup group)
-            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>, new()
+            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>
             where TComponentGroupConfig : AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>, new()
         {
             using (_PRF_Apply.Auto())
@@ -95,7 +95,7 @@ namespace Appalachia.Core.ControlModel.Extensions
             TComponentGroup group,
             Action<TComponentGroupConfig, TComponentGroup> before,
             Action<TComponentGroupConfig, TComponentGroup> after)
-            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>, new()
+            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>
             where TComponentGroupConfig : AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>, new()
         {
             using (_PRF_Apply.Auto())
@@ -145,7 +145,7 @@ namespace Appalachia.Core.ControlModel.Extensions
         public static void Apply<TComponentGroup, TComponentGroupConfig>(
             this AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>.Optional config,
             TComponentGroup group)
-            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>, new()
+            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>
             where TComponentGroupConfig : AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>, new()
         {
             using (_PRF_Apply.Auto())
@@ -203,7 +203,7 @@ namespace Appalachia.Core.ControlModel.Extensions
             TComponentGroup group,
             Action<TComponentGroupConfig, TComponentGroup> before,
             Action<TComponentGroupConfig, TComponentGroup> after)
-            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>, new()
+            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>
             where TComponentGroupConfig : AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>, new()
         {
             using (_PRF_Apply.Auto())
@@ -237,7 +237,7 @@ namespace Appalachia.Core.ControlModel.Extensions
         private static void ApplyInternal<TComponentGroup, TComponentGroupConfig>(
             AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>.Optional config,
             TComponentGroup group)
-            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>, new()
+            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>
             where TComponentGroupConfig : AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>, new()
         {
             using (_PRF_ApplyInternal.Auto())
@@ -262,7 +262,7 @@ namespace Appalachia.Core.ControlModel.Extensions
         private static void ApplyInternal<TComponentGroup, TComponentGroupConfig>(
             AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>.Override config,
             TComponentGroup group)
-            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>, new()
+            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>
             where TComponentGroupConfig : AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>, new()
         {
             using (_PRF_ApplyInternal.Auto())
@@ -291,7 +291,7 @@ namespace Appalachia.Core.ControlModel.Extensions
             AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>.Overridable<TO> config,
             TComponentGroup group,
             Func<Action> delegateCreator)
-            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>, new()
+            where TComponentGroup : AppaComponentGroup<TComponentGroup, TComponentGroupConfig>
             where TComponentGroupConfig : AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>, new()
             where TO : AppaComponentGroupConfig<TComponentGroup, TComponentGroupConfig>.Overridable<TO>, new()
         {

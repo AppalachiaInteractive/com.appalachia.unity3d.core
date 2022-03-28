@@ -1,4 +1,6 @@
-﻿using Appalachia.Core.Objects.Root.Contracts;
+﻿using System;
+using Appalachia.Core.Objects.Models.Selectable;
+using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Events.Extensions;
 using Unity.Profiling;
 using UnityEngine;
@@ -43,9 +45,22 @@ namespace Appalachia.Core.Objects.Root
 
         private bool _isSelected;
 
+        private PointerEventData _hoverData;
+
         #endregion
 
         #region Event Functions
+
+        private void Update()
+        {
+            using (_PRF_Update.Auto())
+            {
+                if (_isHovered)
+                {
+                    _HoverContinue.RaiseEvent(_hoverData);
+                }
+            }
+        }
 
         /// <inheritdoc />
         protected override void OnCanvasGroupChanged()
@@ -92,6 +107,19 @@ namespace Appalachia.Core.Objects.Root
 
         public new bool IsPressed => _isPressed;
         public bool IsSelected => _isSelected;
+
+        public SelectableState State =>
+            !IsInteractable
+                ? SelectableState.Disabled
+                : IsDragging
+                    ? SelectableState.Dragging
+                    : IsPressed
+                        ? SelectableState.Pressed
+                        : IsSelected
+                            ? SelectableState.Selected
+                            : IsHovered
+                                ? SelectableState.Hovering
+                                : SelectableState.Normal;
 
         public RectTransform rectTransform
         {
@@ -140,7 +168,20 @@ namespace Appalachia.Core.Objects.Root
 
                 _isPressed = true;
 
-                _Pressed.RaiseEvent(eventData);
+                switch (eventData.button)
+                {
+                    case PointerEventData.InputButton.Left:
+                        _PressBegin.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Right:
+                        _ContextMenuBegin.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Middle:
+                        _AlternatePressBegin.RaiseEvent(eventData);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
@@ -179,7 +220,20 @@ namespace Appalachia.Core.Objects.Root
 
                 _isPressed = false;
 
-                _Released.RaiseEvent(eventData);
+                switch (eventData.button)
+                {
+                    case PointerEventData.InputButton.Left:
+                        _PressEnd.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Right:
+                        _ContextMenuEnd.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Middle:
+                        _AlternatePressEnd.RaiseEvent(eventData);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
@@ -201,7 +255,20 @@ namespace Appalachia.Core.Objects.Root
             {
                 _isDragging = true;
 
-                _DragBegin.RaiseEvent(eventData);
+                switch (eventData.button)
+                {
+                    case PointerEventData.InputButton.Left:
+                        _PressDragBegin.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Right:
+                        _ContextMenuDragBegin.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Middle:
+                        _AlternatePressDragBegin.RaiseEvent(eventData);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
@@ -211,7 +278,20 @@ namespace Appalachia.Core.Objects.Root
             {
                 _isDragging = true;
 
-                _Drag.RaiseEvent(eventData);
+                switch (eventData.button)
+                {
+                    case PointerEventData.InputButton.Left:
+                        _PressDragContinue.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Right:
+                        _ContextMenuDragContinue.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Middle:
+                        _AlternatePressDragContinue.RaiseEvent(eventData);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
@@ -219,9 +299,22 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnEndDrag.Auto())
             {
-                _isDragging = true;
+                _isDragging = false;
 
-                _DragEnd.RaiseEvent(eventData);
+                switch (eventData.button)
+                {
+                    case PointerEventData.InputButton.Left:
+                        _PressDragEnd.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Right:
+                        _ContextMenuDragEnd.RaiseEvent(eventData);
+                        break;
+                    case PointerEventData.InputButton.Middle:
+                        _AlternatePressDragEnd.RaiseEvent(eventData);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 
@@ -231,11 +324,37 @@ namespace Appalachia.Core.Objects.Root
             {
                 if (eventData.clickCount == 2)
                 {
-                    _DoubleClicked.RaiseEvent(eventData);
+                    switch (eventData.button)
+                    {
+                        case PointerEventData.InputButton.Left:
+                            _DoublePress.RaiseEvent(eventData);
+                            break;
+                        case PointerEventData.InputButton.Right:
+                            _DoubleContextMenu.RaiseEvent(eventData);
+                            break;
+                        case PointerEventData.InputButton.Middle:
+                            _DoubleAlternatePress.RaiseEvent(eventData);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
                 else
                 {
-                    _Clicked.RaiseEvent(eventData);
+                    switch (eventData.button)
+                    {
+                        case PointerEventData.InputButton.Left:
+                            _Press.RaiseEvent(eventData);
+                            break;
+                        case PointerEventData.InputButton.Right:
+                            _ContextMenu.RaiseEvent(eventData);
+                            break;
+                        case PointerEventData.InputButton.Middle:
+                            _AlternatePress.RaiseEvent(eventData);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
             }
         }
@@ -262,17 +381,14 @@ namespace Appalachia.Core.Objects.Root
 
         protected static readonly string _PRF_PFX = typeof(T).Name + ".";
 
-        protected static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+        protected static readonly ProfilerMarker _PRF_Initialize = new ProfilerMarker(_PRF_PFX + nameof(Initialize));
 
-        protected static readonly ProfilerMarker _PRF_OnBeginDrag =
-            new ProfilerMarker(_PRF_PFX + "OnBeginDrag");
+        protected static readonly ProfilerMarker _PRF_OnBeginDrag = new ProfilerMarker(_PRF_PFX + "OnBeginDrag");
 
         protected static readonly ProfilerMarker _PRF_OnCanvasGroupChanged =
             new ProfilerMarker(_PRF_PFX + nameof(OnCanvasGroupChanged));
 
-        protected static readonly ProfilerMarker _PRF_OnDeselect =
-            new ProfilerMarker(_PRF_PFX + nameof(OnDeselect));
+        protected static readonly ProfilerMarker _PRF_OnDeselect = new ProfilerMarker(_PRF_PFX + nameof(OnDeselect));
 
         protected static readonly ProfilerMarker _PRF_OnDrag = new ProfilerMarker(_PRF_PFX + "OnDrag");
 
@@ -281,8 +397,7 @@ namespace Appalachia.Core.Objects.Root
         private static readonly ProfilerMarker _PRF_OnInitializePotentialDrag =
             new ProfilerMarker(_PRF_PFX + nameof(OnInitializePotentialDrag));
 
-        protected static readonly ProfilerMarker _PRF_OnPointerClick =
-            new ProfilerMarker(_PRF_PFX + "OnPointerClick");
+        protected static readonly ProfilerMarker _PRF_OnPointerClick = new ProfilerMarker(_PRF_PFX + "OnPointerClick");
 
         protected static readonly ProfilerMarker _PRF_OnPointerDown =
             new ProfilerMarker(_PRF_PFX + nameof(OnPointerDown));
@@ -293,13 +408,12 @@ namespace Appalachia.Core.Objects.Root
         protected static readonly ProfilerMarker _PRF_OnPointerExit =
             new ProfilerMarker(_PRF_PFX + nameof(OnPointerExit));
 
-        protected static readonly ProfilerMarker _PRF_OnPointerUp =
-            new ProfilerMarker(_PRF_PFX + nameof(OnPointerUp));
+        protected static readonly ProfilerMarker _PRF_OnPointerUp = new ProfilerMarker(_PRF_PFX + nameof(OnPointerUp));
 
-        protected static readonly ProfilerMarker _PRF_OnSelect =
-            new ProfilerMarker(_PRF_PFX + nameof(OnSelect));
+        protected static readonly ProfilerMarker _PRF_OnSelect = new ProfilerMarker(_PRF_PFX + nameof(OnSelect));
 
         private static readonly ProfilerMarker _PRF_OnSubmit = new ProfilerMarker(_PRF_PFX + "OnSubmit");
+        private static readonly ProfilerMarker _PRF_Update = new ProfilerMarker(_PRF_PFX + nameof(Update));
 
         protected static readonly ProfilerMarker _PRF_UpdateInteractable =
             new ProfilerMarker(_PRF_PFX + nameof(UpdateInteractable));

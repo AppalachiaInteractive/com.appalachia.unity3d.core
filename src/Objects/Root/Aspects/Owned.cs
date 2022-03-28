@@ -1,6 +1,7 @@
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Events.Contracts;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Appalachia.Core.Objects.Root
 {
@@ -41,7 +42,7 @@ namespace Appalachia.Core.Objects.Root
         #region Fields and Autoproperties
 
         [SerializeField, HideInInspector]
-        protected internal Object _owner;
+        private Object _owner;
 
         #endregion
 
@@ -49,10 +50,23 @@ namespace Appalachia.Core.Objects.Root
 
         public Object Owner => _owner;
         public bool HasOwner => _owner != null;
+        [FormerlySerializedAs("allowsMultipleOwners")] [SerializeField, HideInInspector] private bool _sharesOwnership;
+
+        public bool SharesOwnership
+        {
+            get => _sharesOwnership;
+            set => _sharesOwnership = value;
+        }
 
         public void SetOwner(Object owner)
         {
+            if (_owner == owner)
+            {
+                return;
+            }
+            
             _owner = owner;
+            MarkAsModified();
 
             if (owner is IChangePublisher publisher)
             {

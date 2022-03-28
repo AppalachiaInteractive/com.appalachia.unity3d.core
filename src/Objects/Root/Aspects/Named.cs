@@ -27,7 +27,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 if (_niceName.IsNullOrWhiteSpace())
                 {
-                    _niceName = APPASTR.NicifyVariableName(Name);
+                    _niceName = Name.Nicify();
                     MarkAsModified();
                 }
 
@@ -73,7 +73,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 if (_niceName.IsNullOrWhiteSpace())
                 {
-                    _niceName = APPASTR.NicifyVariableName(Name);
+                    _niceName =Name.Nicify();
                 }
 
                 return _niceName;
@@ -116,7 +116,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 if (_niceName.IsNullOrWhiteSpace())
                 {
-                    _niceName = APPASTR.NicifyVariableName(Name);
+                    _niceName = Name.Nicify();
                 }
 
                 return _niceName;
@@ -170,7 +170,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 if (_niceName.IsNullOrWhiteSpace())
                 {
-                    _niceName = APPASTR.NicifyVariableName(Name);
+                    _niceName = Name.Nicify();
                 }
 
                 return _niceName;
@@ -230,7 +230,7 @@ namespace Appalachia.Core.Objects.Root
             {
                 if (_niceName.IsNullOrWhiteSpace())
                 {
-                    _niceName = APPASTR.NicifyVariableName(Name);
+                    _niceName = Name.Nicify();
                     MarkAsModified();
                 }
 

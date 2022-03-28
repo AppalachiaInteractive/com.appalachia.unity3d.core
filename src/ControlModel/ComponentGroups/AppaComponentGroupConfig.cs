@@ -27,7 +27,7 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
     [Serializable]
     public abstract partial class AppaComponentGroupConfig<TGroup, TConfig> : AppalachiaBase<TConfig>,
                                                                               IAppaComponentGroupConfig<TGroup, TConfig>
-        where TGroup : AppaComponentGroup<TGroup, TConfig>, new()
+        where TGroup : AppaComponentGroup<TGroup, TConfig>
         where TConfig : AppaComponentGroupConfig<TGroup, TConfig>, new()
     {
         #region Constants and Static Readonly
@@ -57,135 +57,6 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         protected virtual string NamePostfix => typeof(TGroup).Name;
 
         /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void Apply(
-            ref Override config,
-            Object owner,
-            TGroup @group,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_Apply.Auto())
-            {
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        public static void Apply(ref Override config, Object owner, TGroup @group)
-        {
-            using (_PRF_Apply.Auto())
-            {
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void Apply(
-            ref Optional config,
-            Object owner,
-            TGroup @group,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_Apply.Auto())
-            {
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        public static void Apply(ref Optional config, Object owner, TGroup @group)
-        {
-            using (_PRF_Apply.Auto())
-            {
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void Apply(
-            ref TConfig config,
-            Object owner,
-            TGroup @group,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_Apply.Auto())
-            {
-                Refresh(ref config, owner);
-                config.SetOwner(owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        public static void Apply(ref TConfig config, Object owner, TGroup @group)
-        {
-            using (_PRF_Apply.Auto())
-            {
-                Refresh(ref config, owner);
-                config.SetOwner(owner);
-                config.Apply(group);
-            }
-        }
-
-        /// <summary>
         ///     Creates or refreshes the <see cref="config" /> to ensure they are ready to use.
         /// </summary>
         /// <param name="config">The config group.</param>
@@ -197,13 +68,16 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
                 if (config == null)
                 {
                     config = CreateWithOwner(owner);
+                    owner.MarkAsModified();
                 }
-                else if (owner != null)
+
+                if (owner != null)
                 {
                     config.SetOwner(owner);
                 }
 
-                config.InitializeFields(owner);
+                config.InitializeFields();
+                config.SubscribeResponsiveConfigs();
             }
         }
 
@@ -219,11 +93,10 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
                 if (config == null)
                 {
                     config = new(false, default);
+                    owner.MarkAsModified();
                 }
 
-                var value = config.Value;
-                Refresh(ref value, owner);
-                config.Value = value;
+                Refresh(ref config.value, owner);
             }
         }
 
@@ -239,11 +112,10 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
                 if (config == null)
                 {
                     config = new(false, default);
+                    owner.MarkAsModified();
                 }
 
-                var value = config.Value;
-                Refresh(ref value, owner);
-                config.Value = value;
+                Refresh(ref config.value, owner);
             }
         }
 
@@ -265,9 +137,7 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
                     config = new(false, default);
                 }
 
-                var value = config.Value;
-                Refresh(ref value, owner);
-                config.Value = value;
+                Refresh(ref config.value, owner);
             }
         }
 
@@ -289,9 +159,7 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
                     config = new(false, default);
                 }
 
-                var value = config.Value;
-                Refresh(ref value, owner);
-                config.Value = value;
+                Refresh(ref config.value, owner);
             }
         }
 
@@ -308,317 +176,6 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
             {
                 AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, root);
                 Refresh(ref config, owner);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="namePrefix">The name of the group.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref Override config,
-            Object owner,
-            ref TGroup group,
-            GameObject parent,
-            string namePrefix,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
-                Refresh(ref config, owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="namePrefix">The name of the group.</param>
-        public static void RefreshAndApply(
-            ref Override config,
-            Object owner,
-            ref TGroup group,
-            GameObject parent,
-            string namePrefix)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="namePrefix">The name of the group.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref Optional config,
-            Object owner,
-            ref TGroup group,
-            GameObject parent,
-            string namePrefix,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="namePrefix">The name of the group.</param>
-        public static void RefreshAndApply(
-            ref Optional config,
-            Object owner,
-            ref TGroup group,
-            GameObject parent,
-            string namePrefix)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="namePrefix">The name of the group.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref TConfig config,
-            Object owner,
-            ref TGroup group,
-            GameObject parent,
-            string namePrefix,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
-                Refresh(ref config, owner);
-                config.SetOwner(owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="namePrefix">The name of the group.</param>
-        public static void RefreshAndApply(
-            ref TConfig config,
-            Object owner,
-            ref TGroup group,
-            GameObject parent,
-            string namePrefix)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
-                Refresh(ref config, owner);
-                config.SetOwner(owner);
-                config.Apply(group);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref Override config,
-            Object owner,
-            ref TGroup group,
-            GameObject groupObject,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
-        public static void RefreshAndApply(ref Override config, Object owner, ref TGroup group, GameObject groupObject)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref Optional config,
-            Object owner,
-            ref TGroup group,
-            GameObject groupObject,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
-        public static void RefreshAndApply(ref Optional config, Object owner, ref TGroup group, GameObject groupObject)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
-                Refresh(ref config, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(group);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref TConfig config,
-            Object owner,
-            ref TGroup group,
-            GameObject groupObject,
-            Action<TConfig, TGroup> before,
-            Action<TConfig, TGroup> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
-                Refresh(ref config, owner);
-                config.SetOwner(owner);
-                config.Apply(group, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="group" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component group config to component groups.</remarks>
-        /// <param name="config">The component group config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
-        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
-        public static void RefreshAndApply(ref TConfig config, Object owner, ref TGroup group, GameObject groupObject)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
-                Refresh(ref config, owner);
-                config.SetOwner(owner);
-                config.Apply(group);
             }
         }
 
@@ -645,7 +202,7 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         /// <param name="group">The group.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        internal void Apply(TGroup group, Action<TConfig, TGroup> before, Action<TConfig, TGroup> after)
+        public void Apply(TGroup group, Action<TConfig, TGroup> before, Action<TConfig, TGroup> after)
         {
             using (_PRF_Apply.Auto())
             {
@@ -674,7 +231,7 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         /// <param name="group">The group to update.</param>
         /// <param name="subscribe">Should the group be subscribed for subsequent updates?</param>
         /// <exception cref="NotSupportedException">Thrown whenever <paramref name="group" /> is null.</exception>
-        internal void Apply(TGroup group, bool subscribe = true)
+        public void Apply(TGroup group, bool subscribe = true)
         {
             using (_PRF_Apply.Auto())
             {
@@ -705,19 +262,85 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
 
         protected abstract void CollectConfigs(List<IAppaComponentConfig> configs);
 
-        protected abstract void OnApply(TGroup group);
-
         //protected abstract void OnInitializeFields(Initializer initializer, Object owner);
 
         /// <summary>
         ///     Creates or refreshes this config group to ensure it is ready to use.
         /// </summary>
         /// <param name="initializer"></param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this group lives within.</param>
 
         // ReSharper disable once UnusedParameter.Global
-        protected abstract void OnInitializeFields(Initializer initializer, Object owner);
+        protected abstract void OnInitializeFields(Initializer initializer);
 
+        protected virtual void AfterApplying(TGroup group)
+        {
+            using (_PRF_AfterApplying.Auto())
+            {
+                Changed.Unsuspend();
+                UnsuspendResponsiveConfigs();
+            }
+        }
+
+        protected virtual void BeforeApplying(TGroup group)
+        {
+            using (_PRF_BeforeApplying.Auto())
+            {
+                group.Config = this as TConfig;
+                Changed.Suspend();
+                SuspendResponsiveConfigs();
+                group.Refresh();
+            }
+        }
+
+        protected virtual void OnApply(TGroup group)
+        {
+            using (_PRF_OnApply.Auto())
+            {
+            }
+        }
+
+        protected virtual void SubscribeResponsiveConfigs()
+        {
+            using (_PRF_SubscribeResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+        protected virtual void SuspendResponsiveConfigs()
+        {
+            using (_PRF_SuspendResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+        protected virtual void UnsuspendResponsiveConfigs()
+        {
+            using (_PRF_UnsuspendResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+
+        public override void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                base.UnsuspendChanges();
+            
+                UnsuspendResponsiveConfigs();
+            }
+        }
+
+        public override void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                base.SuspendChanges();
+            
+                SuspendResponsiveConfigs();
+            }
+        }
+        
         /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
@@ -725,17 +348,322 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
 
             using (_PRF_Initialize.Auto())
             {
-                InitializeFields(_owner);
+                InitializeFields();
+                SubscribeResponsiveConfigs();
             }
         }
 
-        private void InitializeFields(Object owner)
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="namePrefix">The name of the group.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Override config,
+            Object owner,
+            ref TGroup group,
+            GameObject parent,
+            string namePrefix,
+            Action<TConfig, TGroup> before,
+            Action<TConfig, TGroup> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
+                Refresh(ref config, owner);
+                config.Apply(group, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="namePrefix">The name of the group.</param>
+        private static void RefreshAndApply(
+            ref Override config,
+            Object owner,
+            ref TGroup group,
+            GameObject parent,
+            string namePrefix)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
+                Refresh(ref config, owner);
+                config.Apply(group);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="namePrefix">The name of the group.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Optional config,
+            Object owner,
+            ref TGroup group,
+            GameObject parent,
+            string namePrefix,
+            Action<TConfig, TGroup> before,
+            Action<TConfig, TGroup> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
+                Refresh(ref config, owner);
+                config.Apply(group, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="namePrefix">The name of the group.</param>
+        private static void RefreshAndApply(
+            ref Optional config,
+            Object owner,
+            ref TGroup group,
+            GameObject parent,
+            string namePrefix)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
+                Refresh(ref config, owner);
+                config.Apply(group);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="namePrefix">The name of the group.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref TConfig config,
+            Object owner,
+            ref TGroup group,
+            GameObject parent,
+            string namePrefix,
+            Action<TConfig, TGroup> before,
+            Action<TConfig, TGroup> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
+                Refresh(ref config, owner);
+                config.SetOwner(owner);
+                config.Apply(group, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="namePrefix">The name of the group.</param>
+        private static void RefreshAndApply(
+            ref TConfig config,
+            Object owner,
+            ref TGroup group,
+            GameObject parent,
+            string namePrefix)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, parent, namePrefix);
+                Refresh(ref config, owner);
+                config.Apply(group);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Override config,
+            Object owner,
+            ref TGroup group,
+            GameObject groupObject,
+            Action<TConfig, TGroup> before,
+            Action<TConfig, TGroup> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
+                Refresh(ref config, owner);
+                config.Apply(group, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
+        private static void RefreshAndApply(ref Override config, Object owner, ref TGroup group, GameObject groupObject)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
+                Refresh(ref config, owner);
+                config.Apply(group);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Optional config,
+            Object owner,
+            ref TGroup group,
+            GameObject groupObject,
+            Action<TConfig, TGroup> before,
+            Action<TConfig, TGroup> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
+                Refresh(ref config, owner);
+                config.Apply(group, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
+        private static void RefreshAndApply(ref Optional config, Object owner, ref TGroup group, GameObject groupObject)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
+                Refresh(ref config, owner);
+                config.Apply(group);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref TConfig config,
+            Object owner,
+            ref TGroup group,
+            GameObject groupObject,
+            Action<TConfig, TGroup> before,
+            Action<TConfig, TGroup> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
+                Refresh(ref config, owner);
+                config.SetOwner(owner);
+                config.Apply(group, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="group" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component group config to component groups.</remarks>
+        /// <param name="config">The component group config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="group">The component group to apply the <paramref name="config" /> to.</param>
+        /// <param name="groupObject">The <see cref="GameObject" /> that the group should be a child of.</param>
+        private static void RefreshAndApply(ref TConfig config, Object owner, ref TGroup group, GameObject groupObject)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaComponentGroup<TGroup, TConfig>.Refresh(ref group, groupObject);
+                Refresh(ref config, owner);
+                config.Apply(group);
+            }
+        }
+
+        private void InitializeFields()
         {
             using (_PRF_InitializeFields.Auto())
             {
                 var initializer = GetInitializer();
 
-                OnInitializeFields(initializer, owner);
+                initializer.Do(this, nameof(_enabled), () => _enabled = true);
+
+                OnInitializeFields(initializer);
             }
         }
 
@@ -781,16 +709,28 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         {
             using (_PRF_OnApplyInternal.Auto())
             {
+                if (!HasInitializationStarted)
+                {
+                    InitializeSynchronous();
+                }
+
                 if (!HasBeenInitialized)
                 {
                     return;
+                }
+
+                if (Owner == null)
+                {
+                    Context.Log.Error($"{GetType().FormatForLogging()} owner cannot be null");
                 }
 
                 try
                 {
                     group.Config = this as TConfig;
                     AppaConfigTracker.Store(group, this);
+                    BeforeApplying(group);
                     OnApply(group);
+                    AfterApplying(group);
                 }
                 catch (AppaInitializationException ex)
                 {
@@ -853,11 +793,13 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
             set => _sharesControlWith = value;
         }
 
-        void IAppaComponentConfig<TGroup>.Apply(TGroup comp)
+        void IAppaComponentConfig<TGroup>.Apply(TGroup group)
         {
             using (_PRF_UpdateComponent.Auto())
             {
-                OnApply(comp);
+                BeforeApplying(group);
+                OnApply(group);
+                AfterApplying(group);
             }
         }
 
@@ -866,7 +808,8 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         {
             using (_PRF_ResetConfig.Auto())
             {
-                InitializeFields(_owner);
+                InitializeFields();
+                SubscribeResponsiveConfigs();
             }
         }
 
@@ -891,7 +834,13 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
 
         #region Profiling
 
+        private static readonly ProfilerMarker _PRF_AfterApplying =
+            new ProfilerMarker(_PRF_PFX + nameof(AfterApplying));
+
         private static readonly ProfilerMarker _PRF_Apply = new ProfilerMarker(_PRF_PFX + nameof(Apply));
+
+        private static readonly ProfilerMarker _PRF_BeforeApplying =
+            new ProfilerMarker(_PRF_PFX + nameof(BeforeApplying));
 
         protected static readonly ProfilerMarker _PRF_CollectConfigs =
             new ProfilerMarker(_PRF_PFX + nameof(CollectConfigs));
@@ -914,6 +863,15 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
 
         private static readonly ProfilerMarker _PRF_SubscribeAndApply =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeAndApply));
+
+        protected static readonly ProfilerMarker _PRF_SubscribeResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(SubscribeResponsiveConfigs));
+
+        protected static readonly ProfilerMarker _PRF_SuspendResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(SuspendResponsiveConfigs));
+
+        protected static readonly ProfilerMarker _PRF_UnsuspendResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(UnsuspendResponsiveConfigs));
 
         private static readonly ProfilerMarker _PRF_UpdateComponent =
             new ProfilerMarker(_PRF_PFX + nameof(IAppaComponentConfig<TGroup>.Apply));

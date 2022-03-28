@@ -14,10 +14,12 @@ namespace Appalachia.Core.Objects.Root
                 {
                     return;
                 }
+                
+                target.Owner.MarkAsModified();
 
                 if (Modifications.CanModifyAssets())
                 {
-                    UnityEditor.EditorUtility.SetDirty(target.Owner);
+                    target.Owner.MarkAsModified();
                 }
 #endif
             }

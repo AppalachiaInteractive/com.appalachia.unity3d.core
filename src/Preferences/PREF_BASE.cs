@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Appalachia.CI.Constants;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Strings;
 
 namespace Appalachia.Core.Preferences
 {
@@ -37,7 +38,7 @@ namespace Appalachia.Core.Preferences
             {
                 if (_niceLabel.IsNullOrWhiteSpace())
                 {
-                    _niceLabel = APPASTR.NicifyVariableName(_label);
+                    _niceLabel = _label.Nicify();
                 }
 
                 return _niceLabel;

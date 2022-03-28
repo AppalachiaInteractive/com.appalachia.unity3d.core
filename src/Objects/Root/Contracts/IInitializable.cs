@@ -6,12 +6,12 @@ namespace Appalachia.Core.Objects.Root.Contracts
 {
     public interface IInitializable : INamed
     {
-        public event InitializationCompleteHandler InitializationComplete;
-        public bool FullyInitialized { get; }
+        event InitializationCompleteHandler InitializationComplete;
+        bool FullyInitialized { get; }
 
-        public bool HasInitializationStarted { get; }
+        bool HasInitializationStarted { get; }
 
-        public bool HasInvokedInitializationCompleted { get; }
+        bool HasInvokedInitializationCompleted { get; }
 
         InitializationState initializationState { get; }
 

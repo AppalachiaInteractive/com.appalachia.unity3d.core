@@ -11,6 +11,7 @@ using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events;
 using Appalachia.Utility.Events.Contracts;
 using Appalachia.Utility.Events.Extensions;
+using Appalachia.Utility.Reflection.Extensions;
 using Appalachia.Utility.Standards;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -34,11 +35,11 @@ namespace Appalachia.Core.Objects.Models
         protected Overridable(bool overriding, T value)
         {
             //this.isOverridingAllowed = isOverridingAllowed;
-            _overriding = overriding;
-            _value = value;
+            this.overriding = overriding;
+            this.value = value;
             _initial = value;
 
-            if (_value is IChangePublisher irc)
+            if (this.value is IChangePublisher irc)
             {
                 irc.SubscribeToChanges(OnChanged);
             }
@@ -88,12 +89,7 @@ namespace Appalachia.Core.Objects.Models
 
         #region Fields and Autoproperties
 
-        public AppaEvent.Data Changed;
-
-        [NonSerialized] private bool _disabled;
-
-        [NonSerialized] private bool _frozen;
-
+        [FormerlySerializedAs("_overriding")]
         [FormerlySerializedAs("_overrideEnabled")]
         [FormerlySerializedAs("overrideEnabled")]
         [HideLabel]
@@ -104,17 +100,12 @@ namespace Appalachia.Core.Objects.Models
         [PropertyTooltip("Override")]
         [SerializeField]
         [GUIColor(nameof(_overridingColor))]
-        private bool _overriding;
+        public bool overriding;
 
-        [HideInInspector]
-        [SerializeField]
-        private ObjectID _objectId;
+        public AppaEvent.Data Changed;
 
-        [SerializeField, HideInInspector]
-        private T _initial;
-
+        [FormerlySerializedAs("_value")]
         [EnableIf(nameof(Overriding))]
-        [FormerlySerializedAs("value")]
         [HorizontalGroup("A", .98f)]
         [HideLabel]
         [InlineProperty]
@@ -122,7 +113,19 @@ namespace Appalachia.Core.Objects.Models
         [OnValueChanged(nameof(OnChanged))]
         [PropertyOrder(0)]
         [SerializeField]
-        private T _value;
+        [DelayedProperty]
+        public T value;
+
+        [NonSerialized] private bool _disabled;
+
+        [NonSerialized] private bool _frozen;
+
+        [HideInInspector]
+        [SerializeField]
+        private ObjectID _objectId;
+
+        [SerializeField, HideInInspector]
+        private T _initial;
 
         #endregion
 
@@ -134,7 +137,7 @@ namespace Appalachia.Core.Objects.Models
 
         public T Value
         {
-            get => _value;
+            get => value;
             set
             {
                 if (_frozen)
@@ -142,25 +145,25 @@ namespace Appalachia.Core.Objects.Models
                     return;
                 }
 
-                if (!Equals(_value, value))
+                if (!Equals(this.value, value))
                 {
                     if (value is IChangePublisher ircNew)
                     {
                         ircNew.SubscribeToChanges(OnChanged);
                     }
 
-                    if (_value is IChangePublisher ircOld)
+                    if (this.value is IChangePublisher ircOld)
                     {
                         ircOld.UnsubscribeFromChanges(OnChanged);
                     }
 
-                    _value = value;
+                    this.value = value;
                     OnChanged();
                 }
             }
         }
 
-        private Color _overridingColor => _overriding ? overrideEnabledColor : overrideDisabledColor;
+        private Color _overridingColor => overriding ? overrideEnabledColor : overrideDisabledColor;
 
         private string ValueDebuggerDisplay
         {
@@ -258,17 +261,50 @@ namespace Appalachia.Core.Objects.Models
             }
         }
 
-        public void OverrideValue(T value)
+        public void OverrideValue(T value, bool suppressOnChanged = false)
         {
+            if (_PRF_OverrideValue.Handle == IntPtr.Zero)
+            {
+                _PRF_OverrideValue = new ProfilerMarker(GetType().GetReadableName() + "." + nameof(OverrideValue));
+            }
+
             using (_PRF_OverrideValue.Auto())
             {
-                Overriding = true;
-                Value = value;
+                if (suppressOnChanged)
+                {
+                    overriding = true;
+                    this.value = value;
+                }
+                else
+                {
+                    Overriding = true;
+                    Value = value;
+                }
+            }
+        }
+
+        public void OverrideValueQuiet(T value)
+        {
+            if (_PRF_OverrideValueQuiet.Handle == IntPtr.Zero)
+            {
+                _PRF_OverrideValueQuiet =
+                    new ProfilerMarker(GetType().GetReadableName() + "." + nameof(OverrideValueQuiet));
+            }
+
+            using (_PRF_OverrideValueQuiet.Auto())
+            {
+                overriding = true;
+                this.value = value;
             }
         }
 
         private void OnChanged()
         {
+            if (_PRF_OnChanged.Handle == IntPtr.Zero)
+            {
+                _PRF_OnChanged = new ProfilerMarker(GetType().GetReadableName() + "." + nameof(OnChanged));
+            }
+
             using (_PRF_OnChanged.Auto())
             {
                 Changed.RaiseEvent();
@@ -280,6 +316,32 @@ namespace Appalachia.Core.Objects.Models
         void IChangePublisher.OnChanged()
         {
             OnChanged();
+        }
+
+        public void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                if (value is IChangePublisher p)
+                {
+                    p.SuspendChanges();
+                }
+                
+                Changed.Suspend();
+            }
+        }
+
+        public void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                Changed.Unsuspend();
+
+                if (value is IChangePublisher p)
+                {
+                    p.UnsuspendChanges();
+                }
+            }
         }
 
         public void SubscribeToChanges(AppaEvent.Handler handler)
@@ -351,7 +413,7 @@ namespace Appalachia.Core.Objects.Models
                     return false;
                 }
 
-                return _overriding;
+                return overriding;
             }
             set
             {
@@ -360,22 +422,22 @@ namespace Appalachia.Core.Objects.Models
                     return;
                 }
 
-                if (_overriding != value)
+                if (overriding != value)
                 {
-                    _overriding = value;
+                    overriding = value;
                     OnChanged();
                 }
             }
         }
 
-        object IOverridable.Value => _value;
+        object IOverridable.Value => value;
         public Color ToggleColor => _overridingColor;
 
         #endregion
 
         #region IRemotelyEnabledController Members
 
-        public bool ShouldEnable => _overriding;
+        public bool ShouldEnable => overriding;
 
         public void BindValueEnabledState()
         {
@@ -405,7 +467,7 @@ namespace Appalachia.Core.Objects.Models
                 }
             );
 
-            if ((_value != null) && _value is IChangePublisher irc)
+            if ((value != null) && value is IChangePublisher irc)
             {
                 irc.SubscribeToChanges(OnChanged);
             }
@@ -435,8 +497,11 @@ namespace Appalachia.Core.Objects.Models
 
         private const string _PRF_PFX = nameof(Overridable<T, TO>) + ".";
 
-        private static readonly ProfilerMarker _PRF_OverrideValue =
-            new ProfilerMarker(_PRF_PFX + nameof(OverrideValue));
+        private static readonly ProfilerMarker _PRF_SuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(SuspendChanges));
+
+        private static readonly ProfilerMarker _PRF_UnsuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(UnsuspendChanges));
 
         private static readonly ProfilerMarker _PRF_UnsubscribeFromChanges =
             new ProfilerMarker(_PRF_PFX + nameof(UnsubscribeFromChanges));
@@ -444,7 +509,6 @@ namespace Appalachia.Core.Objects.Models
         private static readonly ProfilerMarker _PRF_SubscribeToChanges =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeToChanges));
 
-        private static readonly ProfilerMarker _PRF_OnChanged = new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
         private static readonly ProfilerMarker _PRF_op_Implicit = new ProfilerMarker(_PRF_PFX + "op_Implicit");
         private static readonly ProfilerMarker _PRF_Get = new ProfilerMarker(_PRF_PFX + nameof(Get));
         private static readonly ProfilerMarker _PRF_Equals = new ProfilerMarker(_PRF_PFX + nameof(Equals));
@@ -452,6 +516,11 @@ namespace Appalachia.Core.Objects.Models
         private static readonly ProfilerMarker _PRF_eq = new ProfilerMarker(_PRF_PFX + "eq");
 
         private static readonly ProfilerMarker _PRF_neq = new ProfilerMarker(_PRF_PFX + "neq");
+
+        private ProfilerMarker _PRF_OnChanged;
+
+        private ProfilerMarker _PRF_OverrideValue;
+        private ProfilerMarker _PRF_OverrideValueQuiet;
 
         #endregion
     }

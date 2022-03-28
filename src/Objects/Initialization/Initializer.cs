@@ -35,6 +35,7 @@ namespace Appalachia.Core.Objects.Initialization
         private List<string> _tags;
 
         [NonSerialized] private object _object;
+        [SerializeField, HideInInspector] private UnityEngine.Object _unityObject;
 
         [HideInInspector, SerializeField]
         private string _resetToken;
@@ -89,15 +90,7 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            return GetInternal(
-                obj,
-                target,
-                tag,
-                target == null,
-                TagState.Serialized,
-                false,
-                getComponentStrategy
-            );
+            return GetInternal(obj, target, tag, target == null, TagState.Serialized, false, getComponentStrategy);
         }
 
         public TC Get<TC>(
@@ -144,15 +137,7 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            return GetInternal(
-                obj,
-                target,
-                tag,
-                target == null,
-                TagState.Serialized,
-                false,
-                getComponentStrategy
-            );
+            return GetInternal(obj, target, tag, target == null, TagState.Serialized, false, getComponentStrategy);
         }
 
         public TC Get<TC>(
@@ -162,15 +147,7 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            return GetInternal(
-                obj,
-                target,
-                typeof(TC).Name,
-                force,
-                TagState.Serialized,
-                false,
-                getComponentStrategy
-            );
+            return GetInternal(obj, target, typeof(TC).Name, force, TagState.Serialized, false, getComponentStrategy);
         }
 
         public TC Get<TC>(
@@ -220,15 +197,7 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            return GetInternal(
-                obj,
-                target,
-                tag,
-                target == null,
-                TagState.Serialized,
-                false,
-                getComponentStrategy
-            );
+            return GetInternal(obj, target, tag, target == null, TagState.Serialized, false, getComponentStrategy);
         }
 
         public TC Get<TC>(
@@ -278,15 +247,7 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            return GetInternal(
-                obj,
-                target,
-                tag,
-                target == null,
-                TagState.Serialized,
-                true,
-                getComponentStrategy
-            );
+            return GetInternal(obj, target, tag, target == null, TagState.Serialized, true, getComponentStrategy);
         }
 
         public TC GetOrCreate<TC>(
@@ -306,8 +267,7 @@ namespace Appalachia.Core.Objects.Initialization
             string tag,
             bool force,
             TagState tagState,
-            GetComponentStrategy getComponentStrategy =
-                GetComponentStrategy.CurrentObject)
+            GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
             return GetInternal(obj, target, tag, force, tagState, true, getComponentStrategy);
@@ -337,15 +297,7 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
-            return GetInternal(
-                obj,
-                target,
-                tag,
-                target == null,
-                TagState.Serialized,
-                true,
-                getComponentStrategy
-            );
+            return GetInternal(obj, target, tag, target == null, TagState.Serialized, true, getComponentStrategy);
         }
 
         public TC GetOrCreate<TC>(
@@ -365,8 +317,7 @@ namespace Appalachia.Core.Objects.Initialization
             string tag,
             bool force,
             TagState tagState,
-            GetComponentStrategy getComponentStrategy =
-                GetComponentStrategy.CurrentObject)
+            GetComponentStrategy getComponentStrategy = GetComponentStrategy.CurrentObject)
             where TC : Component
         {
             return GetInternal(obj, target, tag, force, tagState, true, getComponentStrategy);
@@ -383,10 +334,15 @@ namespace Appalachia.Core.Objects.Initialization
                     return;
                 }
 
-                GetLoggingObjects(out var loggingName, out var loggingContext);
+                GetLoggingObjects(out var loggingName, out var loggingContext, out var owner);
 
                 AppaLog.Context.Initialize.Warn(
-                    ZString.Format("Initializer was reset for [{0}].", loggingName),
+                    ZString.Format(
+                        "Initializer was reset for token {1} of {0}, owned by {2}",
+                        loggingName.FormatNameForLogging(),
+                        token.FormatConstantForLogging(),
+                        owner.FormatNameForLogging()
+                    ),
                     loggingContext
                 );
                 _resetToken = token;
@@ -481,15 +437,7 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy)
             where TC : Component
         {
-            return GetInternal(
-                obj.gameObject,
-                target,
-                tag,
-                force,
-                tagState,
-                allowCreate,
-                getComponentStrategy
-            );
+            return GetInternal(obj.gameObject, target, tag, force, tagState, allowCreate, getComponentStrategy);
         }
 
         private TC GetInternal<TC>(
@@ -502,23 +450,29 @@ namespace Appalachia.Core.Objects.Initialization
             GetComponentStrategy getComponentStrategy)
             where TC : Component
         {
-            return GetInternal(
-                obj.gameObject,
-                target,
-                tag,
-                force,
-                tagState,
-                allowCreate,
-                getComponentStrategy
-            );
+            return GetInternal(obj.gameObject, target, tag, force, tagState, allowCreate, getComponentStrategy);
         }
 
-        private void GetLoggingObjects(out string loggingName, out Object loggingContext)
+        private void GetLoggingObjects(
+            out string loggingName,
+            out Object loggingContext,
+            out string additionalReference)
         {
             using (_PRF_GetLoggingObjects.Auto())
             {
                 loggingName = _object is Object uobj1 ? uobj1.name : _object.GetType().Name;
                 loggingContext = _object is Object uobj2 ? uobj2 : null;
+
+                additionalReference = null;
+
+                if (_object is IOwned o && (o.Owner != null))
+                {
+                    additionalReference = o.Owner.name;
+                }
+                else if (_object is UnityEngine.Object uo)
+                {
+                    additionalReference = uo.name;
+                }
             }
         }
 
@@ -526,12 +480,13 @@ namespace Appalachia.Core.Objects.Initialization
         {
             using (_PRF_HandleCaughtInitializationException.Auto())
             {
-                GetLoggingObjects(out var loggingName, out var loggingContext);
+                GetLoggingObjects(out var loggingName, out var loggingContext, out var owner);
                 AppaLog.Context.Initialize.Error(
                     ZString.Format(
-                        "Failed to initialize for tag [{1}] of [{0}]",
+                        "Failed to initialize for tag {1} of {0}, owned by {2}",
                         loggingName.FormatNameForLogging(),
-                        tag.FormatNameForLogging()
+                        tag.FormatConstantForLogging(),
+                        owner.FormatNameForLogging()
                     ),
                     loggingContext,
                     ex
@@ -586,11 +541,7 @@ namespace Appalachia.Core.Objects.Initialization
             }
         }
 
-        private InitializationScope InitializeScopeInternal(
-            object obj,
-            string tag,
-            bool force,
-            TagState tagState)
+        private InitializationScope InitializeScopeInternal(object obj, string tag, bool force, TagState tagState)
         {
             using (_PRF_InitializeScopeInternal.Auto())
             {
@@ -603,24 +554,26 @@ namespace Appalachia.Core.Objects.Initialization
                         return new InitializationScope(this, tag, tagState, false);
                     }
 
-                    GetLoggingObjects(out var loggingName, out var loggingContext);
+                    GetLoggingObjects(out var loggingName, out var loggingContext, out var owner);
                     AppaLog.Context.Initialize.Debug(
                         ZString.Format(
-                            "Will initialize tag [{1}] of [{0}].",
+                            "Will initialize tag {1} of {0}, owned by {2}",
                             loggingName.FormatNameForLogging(),
-                            tag.FormatNameForLogging()
+                            tag.FormatConstantForLogging(),
+                            owner.FormatNameForLogging()
                         ),
                         loggingContext
                     );
                 }
                 else
                 {
-                    GetLoggingObjects(out var loggingName, out var loggingContext);
+                    GetLoggingObjects(out var loggingName, out var loggingContext, out var owner);
                     AppaLog.Context.Initialize.Debug(
                         ZString.Format(
-                            "Initialization was forced for tag [{1}] of [{0}].",
+                            "Initialization was forced for tag {1} of {0}, owned by {2}",
                             loggingName.FormatNameForLogging(),
-                            tag.FormatNameForLogging()
+                            tag.FormatConstantForLogging(),
+                            owner.FormatNameForLogging()
                         ),
                         loggingContext
                     );
@@ -634,7 +587,21 @@ namespace Appalachia.Core.Objects.Initialization
         {
             using (_PRF_InternalHasPreviouslyInitialized.Auto())
             {
+                if (_unityObject != null && _object == null)
+                {
+                    _object = _unityObject;
+                }
+                
                 _object = obj;
+                
+                if (obj is UnityEngine.Object uo)
+                {
+                    _unityObject = uo;
+                }
+                else
+                {
+                    _unityObject = null;
+                }
 
                 if (!force)
                 {
@@ -643,24 +610,26 @@ namespace Appalachia.Core.Objects.Initialization
                         return true;
                     }
 
-                    GetLoggingObjects(out var loggingName, out var loggingContext);
+                    GetLoggingObjects(out var loggingName, out var loggingContext, out var owner);
                     AppaLog.Context.Initialize.Debug(
                         ZString.Format(
-                            "Will initialize tag [{1}] of [{0}].",
+                            "Will initialize tag {1} of {0}, owned by {2}",
                             loggingName.FormatNameForLogging(),
-                            tag.FormatNameForLogging()
+                            tag.FormatConstantForLogging(),
+                            owner.FormatNameForLogging()
                         ),
                         loggingContext
                     );
                 }
                 else
                 {
-                    GetLoggingObjects(out var loggingName, out var loggingContext);
+                    GetLoggingObjects(out var loggingName, out var loggingContext, out var owner);
                     AppaLog.Context.Initialize.Debug(
                         ZString.Format(
-                            "Initialization was forced for tag [{1}] of [{0}].",
+                            "Initialization was forced for tag {1} of {0}, owned by {2}",
                             loggingName.FormatNameForLogging(),
-                            tag.FormatNameForLogging()
+                            tag.FormatConstantForLogging(),
+                            owner.FormatNameForLogging()
                         ),
                         loggingContext
                     );
@@ -699,6 +668,7 @@ namespace Appalachia.Core.Objects.Initialization
                     {
                         _tagsHash.Add(tag);
                         _tags.Add(tag);
+                        MarkAsModified();
                     }
                 }
                 else
@@ -738,11 +708,7 @@ namespace Appalachia.Core.Objects.Initialization
 
         public struct InitializationScope : IDisposable
         {
-            public InitializationScope(
-                Initializer initializer,
-                string tag,
-                TagState state,
-                bool shouldInitialize)
+            public InitializationScope(Initializer initializer, string tag, TagState state, bool shouldInitialize)
             {
                 _initializer = initializer;
                 _tag = tag;
@@ -797,8 +763,7 @@ namespace Appalachia.Core.Objects.Initialization
 
             #region Profiling
 
-            private static readonly ProfilerMarker _PRF_Dispose =
-                new ProfilerMarker(_PRF_PFX + nameof(Dispose));
+            private static readonly ProfilerMarker _PRF_Dispose = new ProfilerMarker(_PRF_PFX + nameof(Dispose));
 
             #endregion
         }

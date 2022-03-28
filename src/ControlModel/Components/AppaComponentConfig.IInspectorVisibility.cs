@@ -10,7 +10,7 @@ namespace Appalachia.Core.ControlModel.Components
 
         [NonSerialized] private bool _showAllFields;
 
-        [SerializeField, HideInInspector]
+        [NonSerialized]
         private bool _hideAllFields;
 
         #endregion

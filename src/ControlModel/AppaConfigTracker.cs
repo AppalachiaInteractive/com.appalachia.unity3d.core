@@ -199,7 +199,12 @@ namespace Appalachia.Core.ControlModel
                     return;
                 }
 
-                AppaLog.Error(
+                if (d.SharesOwnership)
+                {
+                    return;
+                }
+
+                AppaLog.Warn(
                     ZString.Format(
                         "The {0} on {1} has more than one {2} controlling it, owned by {3} and {4}. This can lead to unexpected behaviour.",
                         c.GetType().FormatForLogging(),

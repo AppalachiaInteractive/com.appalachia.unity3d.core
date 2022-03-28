@@ -222,7 +222,7 @@ namespace Appalachia.Core.Objects.Dependencies
 
                 if (instance == null)
                 {
-                    var go = new GameObject(dependency.Owner.Name);
+                    var go = new GameObject(dependency.Owner.Name.Nicify());
                     instance = go.AddComponent(dependency.Owner);
                 }
 

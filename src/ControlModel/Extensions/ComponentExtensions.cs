@@ -47,9 +47,12 @@ namespace Appalachia.Core.ControlModel.Extensions
         {
             using (_PRF_Enable.Auto())
             {
-                if (config.ShouldEnable)
+                if (component is Behaviour b)
                 {
-                    component.Enable(config);
+                    if (config.ShouldEnable)
+                    {
+                        b.enabled = true;
+                    }
                 }
             }
         }

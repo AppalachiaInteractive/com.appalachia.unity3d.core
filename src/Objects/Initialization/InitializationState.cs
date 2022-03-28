@@ -75,7 +75,7 @@ namespace Appalachia.Core.Objects.Initialization
                         target.GetType().FormatForLogging(),
                         target.Name.FormatNameForLogging()
                     ),
-                    target,
+                    target as UnityEngine.Object,
                     ex
                 );
 
@@ -111,7 +111,7 @@ namespace Appalachia.Core.Objects.Initialization
                             nameof(InitializeSynchronous).FormatMethodForLogging(),
                             target.Name.FormatNameForLogging()
                         ),
-                        target,
+                        target as UnityEngine.Object,
                         ex
                     );
 
@@ -149,7 +149,7 @@ namespace Appalachia.Core.Objects.Initialization
                             nameof(OnFinishInitialization).FormatMethodForLogging(),
                             target.Name.FormatNameForLogging()
                         ),
-                        target,
+                        target as UnityEngine.Object,
                         ex
                     );
 
@@ -179,7 +179,7 @@ namespace Appalachia.Core.Objects.Initialization
                             nameof(PrepareInitializationTask).FormatMethodForLogging(),
                             target.Name.FormatNameForLogging()
                         ),
-                        target,
+                        target as UnityEngine.Object,
                         ex
                     );
 

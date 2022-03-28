@@ -52,15 +52,28 @@ namespace Appalachia.Core.Objects.Root
 
         internal async AppaTask<ISingleton> Find(Type t)
         {
+            if (t.IsAbstract)
+            {
+                var errorMessage = ZString.Format(
+                    "The type {0} is abstract, and cannot be found in the {1}!",
+                    t,
+                    nameof(AppalachiaRepository).FormatForLogging()
+                );
+
+                var context = AssetDatabaseManager.GetMonoScriptFromType(t);
+                Context.Log.Error(errorMessage, context);
+                
+                throw new NotSupportedException(errorMessage);
+            }
+
             _singletons ??= new AppalachiaRepositorySingletonReferenceList();
 
             if (!_singletonLookup.ContainsKey(t))
             {
                 if (t.InheritsFrom(typeof(AppalachiaObject)))
                 {
-                    
                 }
-                
+
                 Context.Log.Error(
                     ZString.Format(
                         "Could not find type {0} in the {1}!",
@@ -133,11 +146,7 @@ namespace Appalachia.Core.Objects.Root
             catch (Exception ex)
             {
                 Context.Log.Error(
-                    ZString.Format(
-                        "Failed to load singleton of type {0}: {1}",
-                        t.FormatForLogging(),
-                        ex.Message
-                    ),
+                    ZString.Format("Failed to load singleton of type {0}: {1}", t.FormatForLogging(), ex.Message),
                     null,
                     ex
                 );

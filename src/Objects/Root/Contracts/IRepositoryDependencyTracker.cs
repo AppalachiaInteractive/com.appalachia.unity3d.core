@@ -5,7 +5,7 @@ namespace Appalachia.Core.Objects.Root.Contracts
     public interface IRepositoryDependencyTracker<T>
         where T : IRepositoryDependencyTracker<T>
     {
-        public AppalachiaRepositoryDependencyTracker DependencyTracker { get; }
-        public bool DependenciesAreReady { get; }
+        AppalachiaRepositoryDependencyTracker DependencyTracker { get; }
+        bool DependenciesAreReady { get; }
     }
 }

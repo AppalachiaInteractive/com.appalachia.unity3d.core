@@ -4,6 +4,7 @@ using Appalachia.Core.ControlModel.ComponentGroups.Contracts;
 using Appalachia.Core.ControlModel.Components;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Extensions;
+using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -17,9 +18,11 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
     /// <typeparam name="TGroup">The group.</typeparam>
     /// <typeparam name="TConfig">Config for the group.</typeparam>
     [Serializable]
+    [DisallowMultipleComponent]
+    [ExecuteInEditMode]
     public abstract class AppaComponentGroup<TGroup, TConfig> : AppalachiaBehaviour<TGroup>,
                                                                 IAppaComponentGroup<TGroup, TConfig>
-        where TGroup : AppaComponentGroup<TGroup, TConfig>, new()
+        where TGroup : AppaComponentGroup<TGroup, TConfig>
         where TConfig : AppaComponentGroupConfig<TGroup, TConfig>, new()
     {
         #region Fields and Autoproperties
@@ -73,8 +76,8 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         {
             using (_PRF_Refresh.Auto())
             {
-                GameObject root = null;
-                var fullName = $"{namePrefix} {NamePostfix}";
+                var root = group == null ? null : group.gameObject;
+                var fullName = AppaControlNamer.GetStyledName(namePrefix, NamePostfix);
                 parent.GetOrAddChild(ref root, fullName, false);
 
                 Refresh(ref group, root);
@@ -83,6 +86,8 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         }
 
         protected abstract void CollectComponents(List<Component> components);
+
+        protected abstract void OnRefresh();
 
         protected virtual void DestroyComponent(Component c)
         {
@@ -99,7 +104,7 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         {
             using (_PRF_DisableComponent.Auto())
             {
-                if (c is Behaviour b)
+                if (c is Behaviour b && (b != null))
                 {
                     b.enabled = false;
                 }
@@ -115,13 +120,13 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         {
             using (_PRF_EnableComponent.Auto())
             {
-                if (d.IsElected && d.Value.Enabled && c is Behaviour b)
+                if (d.IsElected && d.Value.Enabled && c is Behaviour b && (b != null))
                 {
                     b.enabled = true;
                 }
             }
         }
-        
+
         protected virtual void EnableComponent<TComponent, TComponentConfig>(
             TConfig config,
             TComponent c,
@@ -131,7 +136,7 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
         {
             using (_PRF_EnableComponent.Auto())
             {
-                if (d.Enabled && c is Behaviour b)
+                if (d.Enabled && c is Behaviour b && (b != null))
                 {
                     b.enabled = true;
                 }
@@ -163,10 +168,18 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
 
         #region IAppaComponentGroup<TGroup,TConfig> Members
 
+        [ButtonGroup(nameof(Refresh))]
+
         /// <summary>
         ///     Populates the group by adding the required components.
         /// </summary>
-        public abstract void Refresh();
+        public void Refresh()
+        {
+            using (_PRF_Refresh.Auto())
+            {
+                OnRefresh();
+            }
+        }
 
         public IReadOnlyList<Component> Components
         {
@@ -185,6 +198,7 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
             }
         }
 
+        [ButtonGroup(nameof(Refresh))]
         public void ApplyConfig()
         {
             using (_PRF_ApplyConfig.Auto())
@@ -241,6 +255,8 @@ namespace Appalachia.Core.ControlModel.ComponentGroups
 
         private static readonly ProfilerMarker _PRF_GetOrAddComponent =
             new ProfilerMarker(_PRF_PFX + nameof(GetOrAddComponent));
+
+        protected static readonly ProfilerMarker _PRF_OnRefresh = new ProfilerMarker(_PRF_PFX + nameof(OnRefresh));
 
         protected static readonly ProfilerMarker _PRF_Refresh = new ProfilerMarker(_PRF_PFX + nameof(Refresh));
 

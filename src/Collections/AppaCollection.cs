@@ -5,7 +5,6 @@ using Sirenix.OdinInspector;
 namespace Appalachia.Core.Collections
 {
     [Serializable]
-    [HideLabel]
     [Searchable(FuzzySearch = true, Recursive = true)]
     public abstract class AppaCollection
     {

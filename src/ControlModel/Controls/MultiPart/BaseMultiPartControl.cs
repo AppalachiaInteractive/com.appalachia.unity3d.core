@@ -21,13 +21,11 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
     /// <typeparam name="TGroupConfigList">A list of the multi-part component data.</typeparam>
     [Serializable]
     [SmartLabelChildren]
-    public abstract class BaseMultiPartControl<TControl, TConfig, TGroup, TGroupList, TGroupConfig,
-                                               TGroupConfigList> : AppaControl<TControl, TConfig>,
-                                                                   IMultiPartControl<TGroup, TGroupList, TGroupConfig,
-                                                                       TGroupConfigList>
-        where TControl : BaseMultiPartControl<TControl, TConfig, TGroup, TGroupList, TGroupConfig,
-            TGroupConfigList>
-        where TConfig: BaseMultiPartControlConfig<TControl, TConfig, TGroup, TGroupList, TGroupConfig,
+    public abstract class BaseMultiPartControl<TControl, TConfig, TGroup, TGroupList, TGroupConfig, TGroupConfigList> :
+        AppaControl<TControl, TConfig>,
+        IMultiPartControl<TGroup, TGroupList, TGroupConfig, TGroupConfigList>
+        where TControl : BaseMultiPartControl<TControl, TConfig, TGroup, TGroupList, TGroupConfig, TGroupConfigList>
+        where TConfig : BaseMultiPartControlConfig<TControl, TConfig, TGroup, TGroupList, TGroupConfig,
             TGroupConfigList>, new()
         where TGroup : AppaComponentGroup<TGroup, TGroupConfig>, new()
         where TGroupList : AppaList<TGroup>, new()
@@ -36,12 +34,14 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
     {
         #region Fields and Autoproperties
 
+        [FoldoutGroup(GROUP_COMP)]
+        [FormerlySerializedAs("_groupList")]
         [FormerlySerializedAs("_subsetList")]
         [FormerlySerializedAs("_componentList")]
         [PropertyOrder(-230)]
         [SerializeField]
         [ReadOnly]
-        private TGroupList _groupList;
+        private TGroupList _groups;
 
         #endregion
 
@@ -54,12 +54,12 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
             {
                 CleanComponentList();
 
-                for (var i = 0; i < _groupList.Count; i++)
+                for (var i = 0; i < _groups.Count; i++)
                 {
-                    _groupList[i].DestroySafely(true);
+                    _groups[i].DestroySafely(true);
                 }
 
-                _groupList.Clear();
+                _groups.Clear();
             }
         }
 
@@ -72,9 +72,9 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
 
                 CleanComponentList();
 
-                for (var i = 0; i < _groupList.Count; i++)
+                for (var i = 0; i < _groups.Count; i++)
                 {
-                    _groupList[i].Disable();
+                    _groups[i].Disable();
                 }
             }
         }
@@ -88,10 +88,31 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
 
                 CleanComponentList();
 
-                for (var i = 0; i < _groupList.Count; i++)
+                for (var i = 0; i < _groups.Count; i++)
                 {
                     var groupConfig = config.ConfigList[i];
-                    _groupList[i].Enable(groupConfig);
+                    _groups[i].Enable(groupConfig);
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void OnRefresh()
+        {
+            using (_PRF_OnRefresh.Auto())
+            {
+                _groups ??= new TGroupList();
+
+                //base.OnRefresh();
+
+                var parent = GetMultiPartParent();
+
+                for (var i = 0; i < _groups.Count; i++)
+                {
+                    var group = _groups[i];
+                    var prefix = AppaControlNamer.GetElementPrefix(i);
+
+                    AppaComponentGroup<TGroup, TGroupConfig>.Refresh(ref group, parent, prefix);
                 }
             }
         }
@@ -100,13 +121,13 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
         {
             using (_PRF_CleanComponentList.Auto())
             {
-                for (var i = _groupList.Count - 1; i >= 0; i--)
+                for (var i = _groups.Count - 1; i >= 0; i--)
                 {
-                    var group = _groupList[i];
+                    var group = _groups[i];
 
                     if (group == null)
                     {
-                        _groupList.RemoveAt(i);
+                        _groups.RemoveAt(i);
                     }
                 }
             }
@@ -114,18 +135,7 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
 
         #region IMultiPartControl<TGroup,TGroupList,TGroupConfig,TGroupConfigList> Members
 
-        /// <inheritdoc />
-        public override void Refresh()
-        {
-            using (_PRF_Refresh.Auto())
-            {
-                _groupList ??= new TGroupList();
-
-                base.Refresh();
-            }
-        }
-
-        public TGroupList GroupList => _groupList;
+        public TGroupList GroupList => _groups;
 
         #endregion
 

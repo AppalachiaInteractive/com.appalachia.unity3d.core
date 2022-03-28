@@ -2,6 +2,7 @@ using System;
 using Appalachia.Core.Attributes.Editing;
 using Appalachia.Core.Collections;
 using Appalachia.Core.ControlModel.ComponentGroups;
+using Appalachia.Core.Objects.Initialization;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -18,7 +19,6 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
     /// </summary>
     /// <typeparam name="TControl">The control.</typeparam>
     /// <typeparam name="TConfig">Configuration for the control.</typeparam>
-    
     /// <typeparam name="TGroup">The primary multi-part component.</typeparam>
     /// <typeparam name="TGroupList">A list of the multi-part component.</typeparam>
     /// <typeparam name="TGroupConfig">Data to configure the multi-part components.</typeparam>
@@ -29,9 +29,8 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
                                                      TGroupConfig, TGroupConfigList> :
         AppaControlConfig<TControl, TConfig>,
         IMultiPartControlConfig<TGroup, TGroupList, TGroupConfig, TGroupConfigList>
-        where TControl : BaseMultiPartControl<TControl, TConfig, TGroup, TGroupList, TGroupConfig,
-            TGroupConfigList>
-        where TConfig: BaseMultiPartControlConfig<TControl, TConfig, TGroup, TGroupList, TGroupConfig,
+        where TControl : BaseMultiPartControl<TControl, TConfig, TGroup, TGroupList, TGroupConfig, TGroupConfigList>
+        where TConfig : BaseMultiPartControlConfig<TControl, TConfig, TGroup, TGroupList, TGroupConfig,
             TGroupConfigList>, new()
         where TGroup : AppaComponentGroup<TGroup, TGroupConfig>, new()
         where TGroupList : AppaList<TGroup>, new()
@@ -41,10 +40,11 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
         #region Fields and Autoproperties
 
         [FormerlySerializedAs("_configs")]
+        [FormerlySerializedAs("_configList")]
         [FormerlySerializedAs("_componentGroupConfigList")]
         [FormerlySerializedAs("_componentDataList")]
         [SerializeField, OnValueChanged(nameof(OnChanged))]
-        private TGroupConfigList _configList;
+        public TGroupConfigList configs;
 
         #endregion
 
@@ -53,41 +53,94 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
         {
             using (_PRF_OnApply.Auto())
             {
+                base.OnApply(control);
+
                 SyncComponentList(control);
 
-                for (var i = 0; i < _configList.Count; i++)
+                for (var i = 0; i < configs.Count; i++)
                 {
-                    var groupConfig = _configList[i];
+                    var groupConfig = configs[i];
                     var group = control.GroupList[i];
 
-                    var prefix = $"Part {i + 1}";
-                    var parent = control.GetMultiPartParent();
-
-                    AppaComponentGroupConfig<TGroup, TGroupConfig>.RefreshAndApply(
-                        ref groupConfig,
-                        Owner,
-                        ref group,
-                        parent,
-                        prefix
-                    );
+                    groupConfig.Apply(group);
                 }
             }
         }
 
-        /// <inheritdoc />
-        protected override void Refresh(Object owner)
+        protected override void OnInitializeFields(Initializer initializer)
         {
-            using (_PRF_Refresh.Auto())
+            using (_PRF_OnInitializeFields.Auto())
             {
-                base.Refresh(owner);
+                InitializeElements();
+            }
+        }
 
-                _configList ??= new TGroupConfigList();
+        protected override void OnRefresh(UnityEngine.Object owner)
+        {
+            using (_PRF_OnRefresh.Auto())
+            {
+                //base.OnRefresh(owner);
 
-                _configList.Added += (element, _) => { RefreshElement(ref element); };
+                InitializeElements();
+            }
+        }
 
-                for (var index = 0; index < _configList.Count; index++)
+        protected override void SubscribeResponsiveConfigs()
+        {
+            using (_PRF_SubscribeResponsiveConfigs.Auto())
+            {
+                base.SubscribeResponsiveConfigs();
+
+                for (var index = 0; index < configs.Count; index++)
                 {
-                    var groupConfig = _configList[index];
+                    var groupConfig = configs[index];
+
+                    RefreshElement(ref groupConfig);
+
+                    groupConfig.SubscribeToChanges(OnChanged);
+                }
+            }
+        }
+        protected override void UnsuspendResponsiveConfigs()
+        {
+            using (_PRF_UnsuspendResponsiveConfigs.Auto())
+            {
+                base.UnsuspendResponsiveConfigs();
+
+                for (var index = 0; index < configs.Count; index++)
+                {
+                    var groupConfig = configs[index];
+
+                    groupConfig.UnsuspendChanges();
+                }
+            }
+        }
+        protected override void SuspendResponsiveConfigs()
+        {
+            using (_PRF_SuspendResponsiveConfigs.Auto())
+            {
+                base.SuspendResponsiveConfigs();
+
+                for (var index = 0; index < configs.Count; index++)
+                {
+                    var groupConfig = configs[index];
+
+                    groupConfig.SuspendChanges();
+                }
+            }
+        }
+
+        private void InitializeElements()
+        {
+            using (_PRF_InitializeElements.Auto())
+            {
+                configs ??= new TGroupConfigList();
+
+                configs.Added += (element, _) => { RefreshElement(ref element); };
+
+                for (var index = 0; index < configs.Count; index++)
+                {
+                    var groupConfig = configs[index];
 
                     RefreshElement(ref groupConfig);
                 }
@@ -110,6 +163,23 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
             {
                 var requiredChildCount = ConfigList.Count;
 
+                for (var i = 0; i < control.GroupList.Count; i++)
+                {
+                    var current = control.GroupList[i];
+                    
+                    for (var j = control.GroupList.Count - 1; j >= 0; j--)
+                    {
+                        if (i == j) continue;
+
+                        var comparingWith = control.GroupList[j];
+
+                        if (current == comparingWith)
+                        {
+                            control.GroupList.RemoveAt(j);
+                        }
+                    }
+                }
+
                 var childCount = control.GroupList.Count;
 
                 var difference = requiredChildCount - childCount;
@@ -120,19 +190,12 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
                     {
                         for (var i = 0; i < difference; i++)
                         {
-                            var prefix = $"Part {i + 1}";
+                            var prefix = AppaControlNamer.GetElementPrefix(i);
                             var parent = control.GetMultiPartParent();
 
                             TGroup group = null;
-                            TGroupConfig config = null;
 
-                            AppaComponentGroupConfig<TGroup, TGroupConfig>.RefreshAndApply(
-                                ref config,
-                                Owner,
-                                ref group,
-                                parent,
-                                prefix
-                            );
+                            AppaComponentGroup<TGroup, TGroupConfig>.Refresh(ref group, parent, prefix);
 
                             control.GroupList.Add(group);
                         }
@@ -149,19 +212,15 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
 
                 for (var i = 0; i < control.GroupList.Count; i++)
                 {
-                    var prefix = $"Part {i + 1}";
+                    var prefix = AppaControlNamer.GetElementPrefix(i);
                     var parent = control.GetMultiPartParent();
 
                     var group = control.GroupList[i];
                     var config = ConfigList[i];
 
-                    AppaComponentGroupConfig<TGroup, TGroupConfig>.RefreshAndApply(
-                        ref config,
-                        Owner,
-                        ref group,
-                        parent,
-                        prefix
-                    );
+                    AppaComponentGroup<TGroup, TGroupConfig>.Refresh(ref group, parent, prefix);
+
+                    AppaComponentGroupConfig<TGroup, TGroupConfig>.Refresh(ref config, Owner);
                 }
             }
         }
@@ -170,13 +229,16 @@ namespace Appalachia.Core.ControlModel.Controls.MultiPart
 
         public TGroupConfigList ConfigList
         {
-            get => _configList;
-            protected set => _configList = value;
+            get => configs;
+            protected set => configs = value;
         }
 
         #endregion
 
         #region Profiling
+
+        private static readonly ProfilerMarker _PRF_InitializeElements =
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeElements));
 
         private static readonly ProfilerMarker _PRF_RefreshElement =
             new ProfilerMarker(_PRF_PFX + nameof(RefreshElement));

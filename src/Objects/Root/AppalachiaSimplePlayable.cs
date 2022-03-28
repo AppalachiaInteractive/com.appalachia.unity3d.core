@@ -11,7 +11,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnBehaviourPause.Auto())
             {
-                Context.Log.Debug(nameof(OnBehaviourPause), this);
+                Context.Log.Debug(nameof(OnBehaviourPause));
 
                 if (!ShouldRun(PlayableEvent.OnBehaviourPause))
                 {
@@ -27,7 +27,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnBehaviourPlay.Auto())
             {
-                Context.Log.Debug(nameof(OnBehaviourPlay), this);
+                Context.Log.Debug(nameof(OnBehaviourPlay));
 
                 if (!ShouldRun(PlayableEvent.OnBehaviourPlay))
                 {
@@ -43,7 +43,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnPlayableCreate.Auto())
             {
-                Context.Log.Debug(nameof(OnPlayableCreate), this);
+                Context.Log.Debug(nameof(OnPlayableCreate));
                 ExecuteInitialization(playable).Forget();
             }
         }
@@ -53,7 +53,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnPlayableDestroy.Auto())
             {
-                Context.Log.Debug(nameof(OnPlayableDestroy), this);
+                Context.Log.Debug(nameof(OnPlayableDestroy));
                 WhenDestroyed(playable);
             }
         }

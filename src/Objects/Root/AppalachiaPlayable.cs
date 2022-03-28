@@ -22,7 +22,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnGraphStart.Auto())
             {
-                Context.Log.Debug(nameof(OnGraphStart), this);
+                Context.Log.Debug(nameof(OnGraphStart), null);
 
                 if (!ShouldRun(PlayableEvent.OnGraphStart))
                 {
@@ -38,7 +38,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_OnGraphStop.Auto())
             {
-                Context.Log.Debug(nameof(OnGraphStop), this);
+                Context.Log.Debug(nameof(OnGraphStop), null);
 
                 if (!ShouldRun(PlayableEvent.OnGraphStop))
                 {
@@ -59,7 +59,7 @@ namespace Appalachia.Core.Objects.Root
                     return;
                 }
 
-                Context.Log.Debug(nameof(ProcessFrame), this);
+                Context.Log.Debug(nameof(ProcessFrame), null);
 
                 Update(playable, info, playerData);
             }

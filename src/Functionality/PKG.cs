@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 using Appalachia.Utility.Constants;
 
-[assembly: AssemblyTitle("Appalachia.Core.ControlModel")]
+[assembly: AssemblyTitle("Appalachia.Core.Functionality")]
 [assembly: AssemblyDescription("Common functionality for Unity3D applications.")]
 [assembly: AssemblyCompany("Appalachia Interactive")]
 [assembly: AssemblyProduct("Keepers Of Creation")]
@@ -33,13 +33,13 @@ namespace Appalachia.Core.Functionality
         public const string NeutralResourcesLanguage = "en";
         public const string AssemblyVersion = "0.2.0.0";
         public const string AssemblyFileVersion = "0.2.0.0";
-        public const int Priority = -454000;
-        public const string Name = "ControlModel";
+        public const int Priority = -448000;
+        public const string Name = "Functionality";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";
         public const string Version = "0.2.0";
         public const int VersionInt = 2000;
-        public const string BuildDate = "2022-03-10T15:58:16.0067340Z";
+        public const string BuildDate = "2022-03-14T01:01:22.5995621Z";
         
         public static partial class Prefs
         {

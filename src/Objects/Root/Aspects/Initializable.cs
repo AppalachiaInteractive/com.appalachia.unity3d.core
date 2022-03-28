@@ -38,7 +38,6 @@ namespace Appalachia.Core.Objects.Root
             Brand.Groups.ChildColor
         )]
         [HideLabel, InlineProperty, LabelWidth(0)]
-        [FormerlySerializedAs("_initializationData")]
         [SerializeField]
         [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
@@ -55,7 +54,10 @@ namespace Appalachia.Core.Objects.Root
                 {
                     if (_initializationState == null)
                     {
-                        _initializer ??= new Initializer();
+                        if (_initializer == null)
+                        {
+                            _initializer = new Initializer();
+                        }
 
                         _initializationState = new InitializationState(
                             async () => { await Initialize(_initializer); }
@@ -116,7 +118,12 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_GetInitializer.Auto())
             {
-                return _initializer ??= new Initializer();
+                if (_initializer == null)
+                {
+                    _initializer = new Initializer();
+                }
+
+                return _initializer;
             }
         }
 
@@ -243,7 +250,6 @@ namespace Appalachia.Core.Objects.Root
             Brand.Groups.ChildColor
         )]
         [HideLabel, InlineProperty]
-        [FormerlySerializedAs("_initializationData")]
         [SerializeField]
         [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
@@ -260,7 +266,11 @@ namespace Appalachia.Core.Objects.Root
                 {
                     if (_initializationState == null)
                     {
-                        _initializer ??= new Initializer();
+                        if (_initializer == null)
+                        {
+                            _initializer = new Initializer();
+                            this.MarkAsModified();
+                        }
 
                         _initializationState =
                             new InitializationState(async () => { await Initialize(_initializer); });
@@ -276,29 +286,31 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_GetInitializer.Auto())
             {
-                return _initializer ??= new Initializer();
+                if (_initializer == null)
+                {
+                    _initializer = new Initializer();
+                }
+
+                return _initializer;
             }
         }
 
         protected internal async AppaTask ExecuteInitialization()
         {
-            using (_PRF_ExecuteInitialization.Auto())
+            if (initializationState.hasInitializationStarted)
             {
-                if (initializationState.hasInitializationStarted)
-                {
-                    return;
-                }
-
-                BeforeInitialization();
-
-                InitializePreferences();
-
-                await initializationState.Initialize(InitializationComplete, this);
-
-                AfterInitialization();
-
-                initializationState.hasInitializationFinished = true;
+                return;
             }
+
+            BeforeInitialization();
+
+            InitializePreferences();
+
+            await initializationState.Initialize(InitializationComplete, this);
+
+            AfterInitialization();
+
+            initializationState.hasInitializationFinished = true;
         }
 
         /// <summary>
@@ -467,7 +479,10 @@ namespace Appalachia.Core.Objects.Root
                 {
                     if (_initializationState == null)
                     {
-                        _initializer ??= new Initializer();
+                        if (_initializer == null)
+                        {
+                            _initializer = new Initializer();
+                        }
 
                         _initializationState =
                             new InitializationState(async () => await Initialize(_initializer));
@@ -482,23 +497,20 @@ namespace Appalachia.Core.Objects.Root
 
         protected internal async AppaTask ExecuteInitialization()
         {
-            using (_PRF_ExecuteInitialization.Auto())
+            if (initializationState.hasInitializationFinished)
             {
-                if (initializationState.hasInitializationFinished)
-                {
-                    return;
-                }
-
-                BeforeInitialization();
-
-                InitializePreferences();
-
-                await initializationState.Initialize(InitializationComplete, this);
-
-                AfterInitialization();
-
-                initializationState.hasInitializationFinished = true;
+                return;
             }
+
+            BeforeInitialization();
+
+            InitializePreferences();
+
+            await initializationState.Initialize(InitializationComplete, this);
+
+            AfterInitialization();
+
+            initializationState.hasInitializationFinished = true;
         }
 
         /// <summary>
@@ -529,7 +541,13 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_GetInitializer.Auto())
             {
-                return _initializer ??= new Initializer();
+                if (_initializer == null)
+                {
+                    _initializer = new Initializer();
+                    MarkAsModified();
+                }
+
+                return _initializer;
             }
         }
 
@@ -561,7 +579,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializationExceptionHandler.Auto())
             {
-                Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), this, ex);
+                Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), null, ex);
             }
         }
 
@@ -652,7 +670,6 @@ namespace Appalachia.Core.Objects.Root
             Brand.Groups.ChildColor
         )]
         [HideLabel, InlineProperty, LabelWidth(0)]
-        [FormerlySerializedAs("_initializationData")]
         [SerializeField]
         [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
@@ -669,7 +686,10 @@ namespace Appalachia.Core.Objects.Root
                 {
                     if (_initializationState == null)
                     {
-                        _initializer ??= new Initializer();
+                        if (_initializer == null)
+                        {
+                            _initializer = new Initializer();
+                        }
 
                         _initializationState =
                             new InitializationState(async () => await Initialize(_initializer));
@@ -684,23 +704,20 @@ namespace Appalachia.Core.Objects.Root
 
         protected internal async AppaTask ExecuteInitialization()
         {
-            using (_PRF_ExecuteInitialization.Auto())
+            if (initializationState.hasInitializationFinished)
             {
-                if (initializationState.hasInitializationFinished)
-                {
-                    return;
-                }
-
-                BeforeInitialization();
-
-                InitializePreferences();
-
-                await initializationState.Initialize(InitializationComplete, this);
-
-                AfterInitialization();
-
-                initializationState.hasInitializationFinished = true;
+                return;
             }
+
+            BeforeInitialization();
+
+            InitializePreferences();
+
+            await initializationState.Initialize(InitializationComplete, this);
+
+            AfterInitialization();
+
+            initializationState.hasInitializationFinished = true;
         }
 
         /// <summary>
@@ -728,7 +745,12 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_GetInitializer.Auto())
             {
-                return _initializer ??= new Initializer();
+                if (_initializer == null)
+                {
+                    _initializer = new Initializer();
+                }
+
+                return _initializer;
             }
         }
 
@@ -760,7 +782,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_InitializationExceptionHandler.Auto())
             {
-                Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), this, ex);
+                Context.Log.Error(ZString.Format("Initialization error: {0}", ex.Message), null, ex);
             }
         }
 
@@ -852,7 +874,6 @@ namespace Appalachia.Core.Objects.Root
             Brand.Groups.ChildColor
         )]
         [HideLabel, InlineProperty, LabelWidth(0)]
-        [FormerlySerializedAs("_initializationData")]
         [SerializeField]
         [ShowIf(nameof(ShowMetadata))]
         private Initializer _initializer;
@@ -869,7 +890,11 @@ namespace Appalachia.Core.Objects.Root
                 {
                     if (_initializationState == null)
                     {
-                        _initializer ??= new Initializer();
+                        if (_initializer == null)
+                        {
+                            _initializer = new Initializer();
+                            this.MarkAsModified();
+                        }
 
                         _initializationState =
                             new InitializationState(async () => { await Initialize(_initializer); });
@@ -883,21 +908,18 @@ namespace Appalachia.Core.Objects.Root
 
         protected internal async AppaTask ExecuteInitialization()
         {
-            using (_PRF_ExecuteInitialization.Auto())
+            if (initializationState.hasInitializationStarted)
             {
-                if (initializationState.hasInitializationStarted)
-                {
-                    return;
-                }
-
-                BeforeInitialization();
-
-                await initializationState.Initialize(InitializationComplete, this);
-
-                AfterInitialization();
-
-                initializationState.hasInitializationFinished = true;
+                return;
             }
+
+            BeforeInitialization();
+
+            await initializationState.Initialize(InitializationComplete, this);
+
+            AfterInitialization();
+
+            initializationState.hasInitializationFinished = true;
         }
 
         /// <summary>
@@ -930,7 +952,12 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_GetInitializer.Auto())
             {
-                return _initializer ??= new Initializer();
+                if (_initializer == null)
+                {
+                    _initializer = new Initializer();
+                }
+
+                return _initializer;
             }
         }
 

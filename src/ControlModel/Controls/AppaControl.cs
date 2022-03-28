@@ -1,7 +1,9 @@
 using System;
 using Appalachia.Core.ControlModel.Controls.Contracts;
 using Appalachia.Core.ControlModel.Controls.Model;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Async;
 using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -11,6 +13,8 @@ namespace Appalachia.Core.ControlModel.Controls
 {
     [Serializable]
     [FoldoutGroup("Components", false)]
+    [DisallowMultipleComponent]
+    [ExecuteInEditMode]
     public abstract partial class AppaControl<TControl, TConfig> : AppalachiaBehaviour<TControl>,
                                                                    IAppaControl<TControl, TConfig>
         where TControl : AppaControl<TControl, TConfig>
@@ -22,17 +26,16 @@ namespace Appalachia.Core.ControlModel.Controls
         protected const int ORDER_OBJECTS = ORDER_ELEMENTS + 20;
 
         protected const int ORDER_ROOT = -250;
+        protected const string GROUP_COMP = "Components";
+        protected const string GROUP_STATE = "State";
 
         #endregion
 
         #region Fields and Autoproperties
 
-        [PropertyOrder(ORDER_ROOT - 50)]
-        [SerializeField]
-        public bool isSortingDisabled;
-
         [SerializeField] private TConfig _config;
 
+        [FoldoutGroup(GROUP_COMP)]
         [SerializeField, HideInInspector]
         private string _namePrefix;
 
@@ -40,9 +43,9 @@ namespace Appalachia.Core.ControlModel.Controls
 
         public static string NamePostfix => typeof(TControl).Name;
 
-        public abstract ControlSorting DesiredComponentOrder { get; }
-
         public virtual bool IsUI => false;
+
+        public virtual ControlSorting DesiredComponentOrder => ControlSorting.Anywhere;
 
         public string NamePrefix
         {
@@ -50,7 +53,13 @@ namespace Appalachia.Core.ControlModel.Controls
             set => _namePrefix = value;
         }
 
-        public abstract void DestroySafely();
+        public virtual void DestroySafely()
+        {
+            using (_PRF_DestroySafely.Auto())
+            {
+                gameObject.DestroySafely(false);
+            }
+        }
 
         public virtual void Disable()
         {
@@ -93,48 +102,40 @@ namespace Appalachia.Core.ControlModel.Controls
         {
             using (_PRF_Refresh.Auto())
             {
-                GameObject root = null;
-                var fullName = $"{namePrefix} {NamePostfix}";
+                var root = control == null ? null : control.gameObject;
+                var fullName = AppaControlNamer.GetStyledName(namePrefix, NamePostfix);
                 parent.GetOrAddChild(ref root, fullName, false);
 
                 Refresh(ref control, root);
             }
         }
 
-        private int GetDesiredSiblingIndex(int currentIndex, int siblingCount)
+        protected abstract void OnRefresh();
+
+        /// <inheritdoc />
+        protected override async AppaTask Initialize(Initializer initializer)
         {
-            if (isSortingDisabled)
+            await base.Initialize(initializer);
+
+            using (_PRF_Initialize.Auto())
             {
-                return currentIndex;
-            }
-
-            return SiblingIndexCalculator.GetDesiredSiblingIndex(DesiredComponentOrder, currentIndex, siblingCount);
-        }
-
-        private void ValidateSiblingSort()
-        {
-            using (_PRF_ValidateSiblingSort.Auto())
-            {
-                var siblingCount = gameObject.transform.parent.childCount - 1;
-
-                if (siblingCount == 0)
-                {
-                    return;
-                }
-
-                var currentIndex = gameObject.transform.GetSiblingIndex();
-
-                var targetIndex = GetDesiredSiblingIndex(currentIndex, siblingCount);
-
-                if (currentIndex != targetIndex)
-                {
-                    gameObject.transform.SetSiblingIndex(targetIndex);
-                }
+                Refresh();
             }
         }
 
+        protected override void OnChanged()
+        {
+            using (_PRF_OnChanged.Auto())
+            {
+                base.OnChanged();
+
+                Config?.Apply(this as TControl);
+            }
+        }
+        
         #region IAppaControl<TControl,TConfig> Members
 
+        [ButtonGroup(nameof(IAppaControl))]
         public void ApplyConfig()
         {
             using (_PRF_ApplyConfig.Auto())
@@ -146,11 +147,11 @@ namespace Appalachia.Core.ControlModel.Controls
         /// <summary>
         ///     Adds the required component groups to the control.
         /// </summary>
-        public virtual void Refresh()
+        public void Refresh()
         {
             using (_PRF_Refresh.Auto())
             {
-                ValidateSiblingSort();
+                OnRefresh();
             }
         }
 
@@ -188,10 +189,9 @@ namespace Appalachia.Core.ControlModel.Controls
         protected static readonly ProfilerMarker _PRF_OnGetOrAddComponents =
             new ProfilerMarker(_PRF_PFX + nameof(Refresh));
 
-        protected static readonly ProfilerMarker _PRF_Refresh = new ProfilerMarker(_PRF_PFX + nameof(Refresh));
+        protected static readonly ProfilerMarker _PRF_OnRefresh = new ProfilerMarker(_PRF_PFX + nameof(OnRefresh));
 
-        private static readonly ProfilerMarker _PRF_ValidateSiblingSort =
-            new ProfilerMarker(_PRF_PFX + nameof(ValidateSiblingSort));
+        protected static readonly ProfilerMarker _PRF_Refresh = new ProfilerMarker(_PRF_PFX + nameof(Refresh));
 
         #endregion
     }

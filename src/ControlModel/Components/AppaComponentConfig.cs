@@ -8,6 +8,7 @@ using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Events.Collections;
+using Appalachia.Utility.Extensions;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -49,129 +50,6 @@ namespace Appalachia.Core.ControlModel.Components
         #endregion
 
         /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The optional component config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void Apply(
-            Optional config,
-            Object owner,
-            TComponent component,
-            Action<Optional, TComponent> before,
-            Action<Optional, TComponent> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                config.Value.SetOwner(owner);
-                config.Apply(component, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The overridable component config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void Apply(
-            Override config,
-            Object owner,
-            TComponent component,
-            Action<Override, TComponent> before,
-            Action<Override, TComponent> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                config.Value.SetOwner(owner);
-                config.Apply(component, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The component config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void Apply(
-            TConfig config,
-            Object owner,
-            TComponent component,
-            Action<TConfig, TComponent> before,
-            Action<TConfig, TComponent> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                config.SetOwner(owner);
-                config.Apply(component, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The optional component config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        public static void Apply(Optional config, Object owner, TComponent component)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                config.Value.SetOwner(owner);
-                config.Apply(component);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The overridable component config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        public static void Apply(Override config, Object owner, TComponent component)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                config.Value.SetOwner(owner);
-                config.Apply(component);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The component config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        public static void Apply(TConfig config, Object owner, TComponent component)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                config.SetOwner(owner);
-                config.Apply(component);
-            }
-        }
-
-        /// <summary>
         ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used.
         /// </summary>
         /// <param name="config">The overridable component config to refresh.</param>
@@ -183,18 +61,11 @@ namespace Appalachia.Core.ControlModel.Components
             {
                 if (config == null)
                 {
-                    TConfig value = null;
-                    Refresh(ref value, owner);
-
-                    config = new Override(overriding, value);
+                    config = new(overriding, default);
+                    owner.MarkAsModified();
                 }
-                else if (config.Value == null)
-                {
-                    TConfig value = null;
-                    Refresh(ref value, owner);
 
-                    config.Value = value;
-                }
+                Refresh(ref config.value, owner);
             }
         }
 
@@ -210,13 +81,16 @@ namespace Appalachia.Core.ControlModel.Components
                 if (config == default)
                 {
                     config = CreateWithOwner(owner);
+                    owner.MarkAsModified();
                 }
-                else if (owner != null)
+
+                if (owner != null)
                 {
                     config.SetOwner(owner);
                 }
 
-                config.InitializeFields(owner);
+                config.InitializeFields();
+                config.SubscribeResponsiveConfigs();
             }
         }
 
@@ -232,153 +106,11 @@ namespace Appalachia.Core.ControlModel.Components
             {
                 if (config == null)
                 {
-                    TConfig value = null;
-                    Refresh(ref value, owner);
-
-                    config = new Optional(isElected, value);
+                    config = new(isElected, default);
+                    owner.MarkAsModified();
                 }
-                else if (config.Value == null)
-                {
-                    TConfig value = null;
-                    Refresh(ref value, owner);
 
-                    config.Value = value;
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The optional component config to refresh.</param>
-        /// <param name="isElected">Whether the optional should default to elected.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref Optional config,
-            bool isElected,
-            Object owner,
-            TComponent component,
-            Action<Optional, TComponent> before,
-            Action<Optional, TComponent> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, isElected, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(component, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The overridable component config to refresh.</param>
-        /// <param name="overriding">Whether the optional should default to overriding.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref Override config,
-            bool overriding,
-            Object owner,
-            TComponent component,
-            Action<Override, TComponent> before,
-            Action<Override, TComponent> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, overriding, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(component, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The component config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        public static void RefreshAndApply(
-            ref TConfig config,
-            Object owner,
-            TComponent component,
-            Action<TConfig, TComponent> before,
-            Action<TConfig, TComponent> after)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, owner);
-                config.SetOwner(owner);
-                config.Apply(component, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The optional component config to refresh.</param>
-        /// <param name="isElected">Whether the optional should default to elected.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        public static void RefreshAndApply(ref Optional config, bool isElected, Object owner, TComponent component)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, isElected, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(component);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The overridable component config to refresh.</param>
-        /// <param name="overriding">Whether the optional should default to overriding.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        public static void RefreshAndApply(ref Override config, bool overriding, Object owner, TComponent component)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, overriding, owner);
-                config.Value.SetOwner(owner);
-                config.Apply(component);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="component" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component config to components.</remarks>
-        /// <param name="config">The component config to refresh.</param>
-        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
-        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
-        public static void RefreshAndApply(ref TConfig config, Object owner, TComponent component)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, owner);
-                config.SetOwner(owner);
-                config.Apply(component);
+                Refresh(ref config.value, owner);
             }
         }
 
@@ -405,7 +137,7 @@ namespace Appalachia.Core.ControlModel.Components
         /// <param name="component">The component.</param>
         /// <param name="before">A function to execute prior to updating.</param>
         /// <param name="after">A function to execute after finishing the update.</param>
-        internal void Apply(TComponent component, Action<TConfig, TComponent> before, Action<TConfig, TComponent> after)
+        public void Apply(TComponent component, Action<TConfig, TComponent> before, Action<TConfig, TComponent> after)
         {
             using (_PRF_Apply.Auto())
             {
@@ -434,7 +166,7 @@ namespace Appalachia.Core.ControlModel.Components
         /// <param name="component">The component to update.</param>
         /// <param name="subscribe">Should the component be subscribed for subsequent updates?</param>
         /// <exception cref="NotSupportedException">Thrown whenever <paramref name="component" /> is null.</exception>
-        internal void Apply(TComponent component, bool subscribe = true)
+        public void Apply(TComponent component, bool subscribe = true)
         {
             using (_PRF_Apply.Auto())
             {
@@ -463,14 +195,76 @@ namespace Appalachia.Core.ControlModel.Components
             }
         }
 
-        protected abstract void OnApply(TComponent target);
-
-        protected abstract void OnInitializeFields(Initializer initializer, Object owner);
-
-        protected virtual void SubscribeResponsiveChildren()
+        protected virtual void AfterApplying(TComponent component)
         {
-            using (_PRF_SubscribeResponsiveChildren.Auto())
+            using (_PRF_AfterApplying.Auto())
             {
+                Changed.Unsuspend();
+                UnsuspendResponsiveConfigs();
+            }
+        }
+
+        protected virtual void BeforeApplying(TComponent component)
+        {
+            using (_PRF_BeforeApplying.Auto())
+            {
+                SuspendResponsiveConfigs();
+                Changed.Suspend();
+            }
+        }
+
+        protected virtual void OnApply(TComponent component)
+        {
+            using (_PRF_OnApply.Auto())
+            {
+            }
+        }
+
+        protected virtual void OnInitializeFields(Initializer initializer)
+        {
+            using (_PRF_OnInitializeFields.Auto())
+            {
+            }
+        }
+
+        protected virtual void SubscribeResponsiveConfigs()
+        {
+            using (_PRF_SubscribeResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+        protected virtual void SuspendResponsiveConfigs()
+        {
+            using (_PRF_SuspendResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+        protected virtual void UnsuspendResponsiveConfigs()
+        {
+            using (_PRF_UnsuspendResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+        public override void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                base.UnsuspendChanges();
+            
+                UnsuspendResponsiveConfigs();
+            }
+        }
+
+        public override void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                base.SuspendChanges();
+            
+                SuspendResponsiveConfigs();
             }
         }
 
@@ -481,11 +275,142 @@ namespace Appalachia.Core.ControlModel.Components
 
             using (_PRF_Initialize.Auto())
             {
-                InitializeFields(_owner);
+                InitializeFields();
+                SubscribeResponsiveConfigs();
             }
         }
 
-        private void InitializeFields(Object owner)
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="component" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component config to components.</remarks>
+        /// <param name="config">The optional component config to refresh.</param>
+        /// <param name="isElected">Whether the optional should default to elected.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Optional config,
+            bool isElected,
+            Object owner,
+            TComponent component,
+            Action<Optional, TComponent> before,
+            Action<Optional, TComponent> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                Refresh(ref config, isElected, owner);
+                config.Apply(component, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="component" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component config to components.</remarks>
+        /// <param name="config">The overridable component config to refresh.</param>
+        /// <param name="overriding">Whether the optional should default to overriding.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Override config,
+            bool overriding,
+            Object owner,
+            TComponent component,
+            Action<Override, TComponent> before,
+            Action<Override, TComponent> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                Refresh(ref config, overriding, owner);
+                config.Apply(component, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="component" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component config to components.</remarks>
+        /// <param name="config">The component config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref TConfig config,
+            Object owner,
+            TComponent component,
+            Action<TConfig, TComponent> before,
+            Action<TConfig, TComponent> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                Refresh(ref config, owner);
+                config.SetOwner(owner);
+                config.Apply(component, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="component" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component config to components.</remarks>
+        /// <param name="config">The optional component config to refresh.</param>
+        /// <param name="isElected">Whether the optional should default to elected.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
+        private static void RefreshAndApply(ref Optional config, bool isElected, Object owner, TComponent component)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                Refresh(ref config, isElected, owner);
+                config.Apply(component);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="component" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component config to components.</remarks>
+        /// <param name="config">The overridable component config to refresh.</param>
+        /// <param name="overriding">Whether the optional should default to overriding.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
+        private static void RefreshAndApply(ref Override config, bool overriding, Object owner, TComponent component)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                Refresh(ref config, overriding, owner);
+                config.Apply(component);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="component" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component config to components.</remarks>
+        /// <param name="config">The component config to refresh.</param>
+        /// <param name="owner">The serializable <see cref="UnityEngine.Object" /> that this <paramref name="config" /> lives within.</param>
+        /// <param name="component">The component to apply the <paramref name="config" /> to.</param>
+        private static void RefreshAndApply(ref TConfig config, Object owner, TComponent component)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                Refresh(ref config, owner);
+                config.Apply(component);
+            }
+        }
+
+        private void InitializeFields()
         {
             using (_PRF_InitializeFields.Auto())
             {
@@ -493,7 +418,7 @@ namespace Appalachia.Core.ControlModel.Components
 
                 initializer.Do(this, nameof(_enabled), () => _enabled = true);
 
-                OnInitializeFields(initializer, owner);
+                OnInitializeFields(initializer);
             }
         }
 
@@ -547,6 +472,16 @@ namespace Appalachia.Core.ControlModel.Components
                     InitializeSynchronous();
                 }
 
+                if (!HasBeenInitialized)
+                {
+                    return;
+                }
+
+                if (Owner == null)
+                {
+                    Context.Log.Error($"{GetType().FormatForLogging()} owner cannot be null");
+                }
+
                 try
                 {
                     AppaConfigTracker.Store(comp, this);
@@ -565,7 +500,9 @@ namespace Appalachia.Core.ControlModel.Components
 
                     if (!SuspendFieldApplication)
                     {
+                        BeforeApplying(comp);
                         OnApply(comp);
+                        AfterApplying(comp);
                     }
                 }
                 catch (AppaInitializationException ex)
@@ -577,7 +514,7 @@ namespace Appalachia.Core.ControlModel.Components
                     throw;
                 }
 
-                SubscribeResponsiveChildren();
+                SubscribeResponsiveConfigs();
             }
         }
 
@@ -619,7 +556,8 @@ namespace Appalachia.Core.ControlModel.Components
         {
             using (_PRF_ResetConfig.Auto())
             {
-                InitializeFields(_owner);
+                InitializeFields();
+                SubscribeResponsiveConfigs();
             }
         }
 
@@ -641,7 +579,13 @@ namespace Appalachia.Core.ControlModel.Components
 
         #region Profiling
 
+        private static readonly ProfilerMarker _PRF_AfterApplying =
+            new ProfilerMarker(_PRF_PFX + nameof(AfterApplying));
+
         private static readonly ProfilerMarker _PRF_Apply = new ProfilerMarker(_PRF_PFX + nameof(Apply));
+
+        private static readonly ProfilerMarker _PRF_BeforeApplying =
+            new ProfilerMarker(_PRF_PFX + nameof(BeforeApplying));
 
         private static readonly ProfilerMarker _PRF_InitializeFields =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeFields));
@@ -664,8 +608,14 @@ namespace Appalachia.Core.ControlModel.Components
         private static readonly ProfilerMarker _PRF_SubscribeAndApply =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeAndApply));
 
-        protected static readonly ProfilerMarker _PRF_SubscribeResponsiveChildren =
-            new ProfilerMarker(_PRF_PFX + nameof(SubscribeResponsiveChildren));
+        protected static readonly ProfilerMarker _PRF_SubscribeResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(SubscribeResponsiveConfigs));
+
+        protected static readonly ProfilerMarker _PRF_SuspendResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(SuspendResponsiveConfigs));
+
+        protected static readonly ProfilerMarker _PRF_UnsuspendResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(UnsuspendResponsiveConfigs));
 
         #endregion
     }

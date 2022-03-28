@@ -3,10 +3,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Appalachia.Utility.Pooling.Arrays;
 using Appalachia.Core.Comparisons;
 using Appalachia.Utility.Constants;
 using Appalachia.Utility.Extensions.Debugging;
+using Appalachia.Utility.Pooling.Arrays;
 using Appalachia.Utility.Strings;
 using Unity.Profiling;
 using UnityEngine;
@@ -19,7 +19,8 @@ namespace Appalachia.Core.Collections
     public abstract class AppaList<T> : AppaCollection,
                                         IReadOnlyList<T>,
                                         ISerializationCallbackReceiver,
-                                        IList<T>
+                                        IList<T>,
+                                        IList
     {
         public delegate void CollectionEventHandler(T element, int index);
 
@@ -867,6 +868,53 @@ namespace Appalachia.Core.Collections
             }
         }
 
+        #region IList Members
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            _values.CopyTo(array, index);
+        }
+
+        bool ICollection.IsSynchronized => _values.IsSynchronized;
+
+        object ICollection.SyncRoot => _values.SyncRoot;
+
+        int IList.Add(object value)
+        {
+            Add((T)value);
+            return _count;
+        }
+
+        bool IList.Contains(object value)
+        {
+            return Contains((T)value);
+        }
+
+        int IList.IndexOf(object value)
+        {
+            return IndexOf((T)value);
+        }
+
+        void IList.Insert(int index, object value)
+        {
+            Insert(index, (T)value);
+        }
+
+        void IList.Remove(object value)
+        {
+            Remove((T)value);
+        }
+
+        bool IList.IsFixedSize => false;
+
+        object IList.this[int index]
+        {
+            get => this[index];
+            set => this[index] = (T)value;
+        }
+
+        #endregion
+
         #region IList<T> Members
 
         public bool IsReadOnly => false;
@@ -1149,18 +1197,15 @@ namespace Appalachia.Core.Collections
         private static readonly ProfilerMarker _PRF_EnsureCount = new(_PRF_PFX + nameof(EnsureCount));
         private static readonly ProfilerMarker _PRF_GetIndex = new(_PRF_PFX + nameof(GetIndex));
 
-        private static readonly ProfilerMarker _PRF_GrabListThreadSafe =
-            new(_PRF_PFX + nameof(GrabListThreadSafe));
+        private static readonly ProfilerMarker _PRF_GrabListThreadSafe = new(_PRF_PFX + nameof(GrabListThreadSafe));
 
-        private static readonly ProfilerMarker _PRF_IncreaseCapacity =
-            new(_PRF_PFX + nameof(IncreaseCapacity));
+        private static readonly ProfilerMarker _PRF_IncreaseCapacity = new(_PRF_PFX + nameof(IncreaseCapacity));
 
         private static readonly ProfilerMarker _PRF_IndexOf = new(_PRF_PFX + nameof(IndexOf));
         private static readonly ProfilerMarker _PRF_Insert = new(_PRF_PFX + nameof(Insert));
         private static readonly ProfilerMarker _PRF_AppaList = new(_PRF_PFX + nameof(AppaList<T>));
 
-        private static readonly ProfilerMarker _PRF_OnAfterDeserialize =
-            new(_PRF_PFX + nameof(OnAfterDeserialize));
+        private static readonly ProfilerMarker _PRF_OnAfterDeserialize = new(_PRF_PFX + nameof(OnAfterDeserialize));
 
         private static readonly ProfilerMarker _PRF_Remove = new(_PRF_PFX + nameof(Remove));
         private static readonly ProfilerMarker _PRF_RemoveAt = new(_PRF_PFX + nameof(RemoveAt));

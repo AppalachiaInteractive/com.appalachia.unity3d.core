@@ -1,3 +1,5 @@
+using Appalachia.Core.Objects.Models;
+using Appalachia.Core.Objects.Models.Selectable;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -18,31 +20,33 @@ namespace Appalachia.Core.Objects.Root.Contracts
                                    ISelectHandler,
                                    IDeselectHandler
     {
-        public bool interactable { get; }
-        public bool IsDragging { get; }
+        bool interactable { get; }
+        bool IsDragging { get; }
 
-        public bool IsHovered { get; }
+        bool IsHovered { get; }
 
-        public bool IsInteractable { get; }
+        bool IsInteractable { get; }
 
-        public bool IsPressed { get; }
-        public bool IsSelected { get; }
+        bool IsPressed { get; }
+        bool IsSelected { get; }
+        
+        SelectableState State { get; }
 
-        public RectTransform rectTransform { get; }
+        RectTransform rectTransform { get; }
 
-        public AnimationTriggers animationTriggers { get; set; }
+        AnimationTriggers animationTriggers { get; set; }
 
-        public ColorBlock colors { get; set; }
+        ColorBlock colors { get; set; }
 
-        public Graphic targetGraphic { get; set; }
+        Graphic targetGraphic { get; set; }
 
-        public Navigation navigation { get; set; }
+        Navigation navigation { get; set; }
 
-        public SpriteState spriteState { get; set; }
+        SpriteState spriteState { get; set; }
 
-        public Selectable.Transition transition { get; set; }
+        Selectable.Transition transition { get; set; }
 
-        public Selectable FindSelectable(Vector3 dir);
+        Selectable FindSelectable(Vector3 dir);
 
         Selectable FindSelectableOnDown();
 

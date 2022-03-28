@@ -1,7 +1,9 @@
 using System;
+using Appalachia.CI.Constants;
 using Appalachia.Core.Objects.Availability;
 using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Extensions;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 // ReSharper disable StaticMemberInGenericType
@@ -325,6 +327,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_SetInstance.Auto())
             {
+                i.name = typeof(T).Name.Nicify();
                 var original = ___instance;
                 var current = i;
 

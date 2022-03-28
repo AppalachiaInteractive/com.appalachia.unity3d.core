@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.CI.Constants;
 using Appalachia.Core.Objects.Initialization;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Constants;
@@ -230,7 +231,7 @@ namespace Appalachia.Core.Objects.Root
                             return;
                         }
 
-                        var go = new GameObject(typeof(T).GetSimpleReadableName());
+                        var go = new GameObject(typeof(T).Name.Nicify());
                         var newInstance = go.AddComponent<T>();
 
                         SetInstance(newInstance);

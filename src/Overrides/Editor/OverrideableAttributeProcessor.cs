@@ -41,6 +41,13 @@ namespace Appalachia.Core.Overrides
             {
                 _overridableFieldNames ??= new HashSet<string> { VALUE_FIELD_NAME };
 
+                var isOverridable = parentProperty.Info.TypeOfValue.IsOverridable();
+
+                if (!isOverridable)
+                {
+                    return;
+                }
+                
                 if (_overridableFieldNames.Contains(member.Name))
                 {
                     var parentFieldInfo = parentProperty.Info.GetMemberInfo();
@@ -53,26 +60,6 @@ namespace Appalachia.Core.Overrides
                     }
 
                     AddAttributeToChild(member, parentAttributes, attributes);
-                }
-                else
-                {
-                    if (member.MemberType is not (MemberTypes.Field or MemberTypes.Property))
-                    {
-                        return;
-                    }
-
-                    var isOverridable = member.ReflectedType.IsOverridable();
-
-                    if (isOverridable)
-                    {
-                        foreach (var childProperty in parentProperty.Children)
-                        {
-                            if (childProperty.Name == member.Name)
-                            {
-                                Console.WriteLine(childProperty);
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -88,11 +75,6 @@ namespace Appalachia.Core.Overrides
                 }
 
                 var isOverridable = property.Info.TypeOfValue.IsOverridable();
-
-                if (property.Name == "alpha")
-                {
-                    Console.WriteLine(property);
-                }
 
                 if (isOverridable)
                 {

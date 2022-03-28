@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Core.Objects.Collections;
 using Appalachia.Core.Objects.Models;
@@ -12,6 +13,7 @@ using Appalachia.Core.Objects.Root.Contracts;
 using Appalachia.Utility.Execution;
 using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 using UnityEngine;
@@ -134,16 +136,18 @@ namespace Appalachia.Core.Objects.Root
                         }
 
                         Context.Log.Error("Duplicate types! (Instance 1)", objectAtPath);
-                        Context.Log.Error("Duplicate types! (Instance 2)", existingInstance.AssetReference);
+                        Context.Log.Error("Duplicate types! (Instance 2)", existingInstance.editorAsset);
 
                         continue;
                     }
 
-                    if (objectAtPath.name != typeAtPath.Name)
+                    var targetName = typeAtPath.Name.Nicify();
+                    
+                    if (objectAtPath.name != targetName)
                     {
-                        objectAtPath.name = typeAtPath.Name;
+                        objectAtPath.name = targetName;
 
-                        AssetDatabaseManager.UpdateAssetName(path.RelativePath, typeAtPath.Name);
+                        AssetDatabaseManager.UpdateAssetName(path.RelativePath, targetName);
                         /*
                          var directory = AppaPath.GetDirectoryName(path.relativePath);
                         var extension = path.extension;

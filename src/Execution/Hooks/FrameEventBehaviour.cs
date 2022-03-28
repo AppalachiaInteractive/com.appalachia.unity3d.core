@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Appalachia.Core.Execution.Hooks
 {
     [ExecuteAlways]
-    public abstract class FrameEventBehaviour<T> : SingletonAppalachiaBehaviour<FrameEventBehaviour<T>>
+    public abstract class FrameEventBehaviour<T> : SingletonAppalachiaBehaviour<T>
         where T : FrameEventBehaviour<T>
     {
         #region Static Fields and Autoproperties

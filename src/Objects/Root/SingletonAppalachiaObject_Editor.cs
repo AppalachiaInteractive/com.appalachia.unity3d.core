@@ -2,6 +2,7 @@
 
 #region
 
+using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.Utility.Async;
 using Appalachia.Utility.Strings;
@@ -23,7 +24,7 @@ namespace Appalachia.Core.Objects.Root
         {
             using (_PRF_CreateAndSaveSingleton.Auto())
             {
-                return await CreateAndSaveSingleton(ZString.Format("{0}.asset", typeof(T).Name));
+                return await CreateAndSaveSingleton(ZString.Format("{0}.asset", typeof(T).Name.Nicify()));
             }
         }
 

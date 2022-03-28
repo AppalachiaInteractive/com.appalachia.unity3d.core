@@ -1,6 +1,7 @@
 #region
 
 using System;
+using Appalachia.CI.Constants;
 using Appalachia.Core.Attributes;
 using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Strings;
@@ -68,7 +69,7 @@ namespace Appalachia.Core.Overrides
             {
                 _initial = initial;
                 _assignment = assignment;
-                Name = ZString.Format("{0}<{1}>", nameof(Restorable), typeof(T).Name);
+                Name = ZString.Format("{0}<{1}>", nameof(Restorable), typeof(T).Name.Nicify());
 
                 _assignment(newValue);
             }

@@ -1,6 +1,8 @@
+using System;
 using Appalachia.Utility.Events;
 using Appalachia.Utility.Events.Contracts;
 using Appalachia.Utility.Events.Extensions;
+using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -16,10 +18,31 @@ namespace Appalachia.Core.Objects.Root
 
         public virtual void OnChanged()
         {
+            if (_PRF_OnChanged.Handle == IntPtr.Zero)
+            {
+                _PRF_OnChanged = new ProfilerMarker(GetType().GetReadableName() + "." + nameof(OnChanged));
+            }
+
             using (_PRF_OnChanged.Auto())
             {
                 Changed.RaiseEvent();
                 MarkAsModified();
+            }
+        }
+
+        public void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                Changed.Suspend();
+            }
+        }
+
+        public void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                Changed.Unsuspend();
             }
         }
 
@@ -50,14 +73,19 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
-        private static readonly ProfilerMarker _PRF_UnsubscribeFromChanges =
+        protected ProfilerMarker _PRF_OnChanged;
+
+        protected static readonly ProfilerMarker _PRF_SuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(SuspendChanges));
+
+        protected static readonly ProfilerMarker _PRF_UnsuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(UnsuspendChanges));
+
+        protected static readonly ProfilerMarker _PRF_UnsubscribeFromChanges =
             new ProfilerMarker(_PRF_PFX + nameof(UnsubscribeFromChanges));
 
-        private static readonly ProfilerMarker _PRF_SubscribeToChanges =
+        protected static readonly ProfilerMarker _PRF_SubscribeToChanges =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeToChanges));
-
-        protected static readonly ProfilerMarker _PRF_OnChanged =
-            new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
 
         #endregion
     }
@@ -82,8 +110,29 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
+        public void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                Changed.Suspend();
+            }
+        }
+
+        public void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                Changed.Unsuspend();
+            }
+        }
+
         protected virtual void OnChanged()
         {
+            if (_PRF_OnChanged.Handle == IntPtr.Zero)
+            {
+                _PRF_OnChanged = new ProfilerMarker(GetType().GetReadableName() + "." + nameof(OnChanged));
+            }
+
             using (_PRF_OnChanged.Auto())
             {
                 Changed.RaiseEvent();
@@ -117,14 +166,19 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        protected ProfilerMarker _PRF_OnChanged;
+
+        private static readonly ProfilerMarker _PRF_SuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(SuspendChanges));
+
+        private static readonly ProfilerMarker _PRF_UnsuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(UnsuspendChanges));
+
         private static readonly ProfilerMarker _PRF_UnsubscribeFromChanges =
             new ProfilerMarker(_PRF_PFX + nameof(UnsubscribeFromChanges));
 
         private static readonly ProfilerMarker _PRF_SubscribeToChanges =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeToChanges));
-
-        protected static readonly ProfilerMarker _PRF_OnChanged =
-            new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
 
         #endregion
     }
@@ -145,8 +199,29 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
+        public virtual void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                Changed.Suspend();
+            }
+        }
+
+        public virtual void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                Changed.Unsuspend();
+            }
+        }
+
         protected virtual void OnChanged()
         {
+            if (_PRF_OnChanged.Handle == IntPtr.Zero)
+            {
+                _PRF_OnChanged = new ProfilerMarker(GetType().GetReadableName() + "." + nameof(OnChanged));
+            }
+
             using (_PRF_OnChanged.Auto())
             {
                 Changed.RaiseEvent();
@@ -180,14 +255,19 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        protected ProfilerMarker _PRF_OnChanged;
+
+        protected static readonly ProfilerMarker _PRF_SuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(SuspendChanges));
+
+        protected static readonly ProfilerMarker _PRF_UnsuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(UnsuspendChanges));
+
         private static readonly ProfilerMarker _PRF_UnsubscribeFromChanges =
             new ProfilerMarker(_PRF_PFX + nameof(UnsubscribeFromChanges));
 
         private static readonly ProfilerMarker _PRF_SubscribeToChanges =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeToChanges));
-
-        protected static readonly ProfilerMarker _PRF_OnChanged =
-            new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
 
         #endregion
     }
@@ -208,8 +288,29 @@ namespace Appalachia.Core.Objects.Root
 
         #endregion
 
+        public void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                Changed.Suspend();
+            }
+        }
+
+        public void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                Changed.Unsuspend();
+            }
+        }
+
         protected virtual void OnChanged()
         {
+            if (_PRF_OnChanged.Handle == IntPtr.Zero)
+            {
+                _PRF_OnChanged = new ProfilerMarker(GetType().GetReadableName() + "." + nameof(OnChanged));
+            }
+
             using (_PRF_OnChanged.Auto())
             {
                 Changed.RaiseEvent();
@@ -243,14 +344,19 @@ namespace Appalachia.Core.Objects.Root
 
         #region Profiling
 
+        protected ProfilerMarker _PRF_OnChanged = new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
+
+        private static readonly ProfilerMarker _PRF_SuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(SuspendChanges));
+
+        private static readonly ProfilerMarker _PRF_UnsuspendChanges =
+            new ProfilerMarker(_PRF_PFX + nameof(UnsuspendChanges));
+
         private static readonly ProfilerMarker _PRF_UnsubscribeFromChanges =
             new ProfilerMarker(_PRF_PFX + nameof(UnsubscribeFromChanges));
 
         private static readonly ProfilerMarker _PRF_SubscribeToChanges =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeToChanges));
-
-        protected static readonly ProfilerMarker _PRF_OnChanged =
-            new ProfilerMarker(_PRF_PFX + nameof(OnChanged));
 
         #endregion
     }
@@ -270,6 +376,22 @@ namespace Appalachia.Core.Objects.Root
         [HideInInspector] public AppaEvent.Data Changed;
 
         #endregion
+
+        public void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                Changed.Suspend();
+            }
+        }
+
+        public void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                Changed.Unsuspend();
+            }
+        }
 
         protected virtual void OnChanged()
         {
@@ -308,14 +430,19 @@ namespace Appalachia.Core.Objects.Root
 
         protected static readonly string _PRF_PFX8 = typeof(T).Name + ".";
 
-        protected static readonly ProfilerMarker _PRF_OnChanged =
-            new ProfilerMarker(_PRF_PFX8 + nameof(OnChanged));
+        protected static readonly ProfilerMarker _PRF_OnChanged = new ProfilerMarker(_PRF_PFX8 + nameof(OnChanged));
 
         private static readonly ProfilerMarker _PRF_SubscribeToChanges =
             new ProfilerMarker(_PRF_PFX8 + nameof(SubscribeToChanges));
 
+        private static readonly ProfilerMarker _PRF_SuspendChanges =
+            new ProfilerMarker(_PRF_PFX8 + nameof(SuspendChanges));
+
         private static readonly ProfilerMarker _PRF_UnsubscribeFromChanges =
             new ProfilerMarker(_PRF_PFX8 + nameof(UnsubscribeFromChanges));
+
+        private static readonly ProfilerMarker _PRF_UnsuspendChanges =
+            new ProfilerMarker(_PRF_PFX8 + nameof(UnsuspendChanges));
 
         #endregion
     }

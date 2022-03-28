@@ -24,6 +24,14 @@ namespace Appalachia.Core.ControlModel.Controls
         where TControl : AppaControl<TControl, TConfig>
         where TConfig : AppaControlConfig<TControl, TConfig>, IAppaControlConfig<TControl, TConfig>, new()
     {
+        #region Constants and Static Readonly
+
+        protected const int ORDER_ROOT = -250;
+
+        private const string UPDATE_FAILURE_LOG_FORMAT = "Failed to apply configuration to the {0}: {1}";
+
+        #endregion
+
         protected AppaControlConfig()
         {
         }
@@ -32,16 +40,8 @@ namespace Appalachia.Core.ControlModel.Controls
         {
         }
 
-        #region Constants and Static Readonly
-
-        private const string UPDATE_FAILURE_LOG_FORMAT = "Failed to update the {0}: {1}";
-
-        #endregion
-
         #region Fields and Autoproperties
 
-        protected const int ORDER_ROOT = -250;
-        
         [NonSerialized] private bool _sharesControlError;
         [NonSerialized] private string _sharesControlWith;
 
@@ -55,7 +55,16 @@ namespace Appalachia.Core.ControlModel.Controls
         {
             using (_PRF_Refresh.Auto())
             {
-                config ??= new();
+                if (config == null)
+                {
+                    config = CreateWithOwner(owner);
+                    owner.MarkAsModified();
+                }
+
+                if (owner != null)
+                {
+                    config.SetOwner(owner);
+                }
 
                 config.Refresh(owner);
             }
@@ -65,10 +74,13 @@ namespace Appalachia.Core.ControlModel.Controls
         {
             using (_PRF_Refresh.Auto())
             {
-                config ??= new(isElected, new());
-                config.Value ??= new();
+                if (config is null)
+                {
+                    config = new(isElected, new());
+                    owner.MarkAsModified();
+                }
 
-                config.Value.Refresh(owner);
+                Refresh(ref config.value, owner);
             }
         }
 
@@ -76,338 +88,13 @@ namespace Appalachia.Core.ControlModel.Controls
         {
             using (_PRF_Refresh.Auto())
             {
-                config ??= new(overriding, new());
-                config.Value ??= new();
+                if (config is null)
+                {
+                    config = new(overriding, new());
+                    owner.MarkAsModified();
+                }
 
-                config.Value.Refresh(owner);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The optional component control config to refresh.</param>
-        /// <param name="isElected">Whether the optional should default to elected.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
-        /// <param name="gameObjectNamePostfix">The name of the control.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref Optional config,
-            bool isElected,
-            ref TControl control,
-            GameObject parent,
-            string gameObjectNamePostfix,
-            Action<Optional, TControl> before,
-            Action<Optional, TControl> after,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, isElected, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, parent, gameObjectNamePostfix);
-                config.Apply(control, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The overridable component control config to refresh.</param>
-        /// <param name="overriding">Whether the optional should default to overriding.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
-        /// <param name="gameObjectNamePostfix">The name of the control.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref Override config,
-            bool overriding,
-            ref TControl control,
-            GameObject parent,
-            string gameObjectNamePostfix,
-            Action<Override, TControl> before,
-            Action<Override, TControl> after,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, overriding, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, parent, gameObjectNamePostfix);
-                config.Apply(control, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The component control config to refresh.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
-        /// <param name="gameObjectNamePostfix">The name of the control.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref TConfig config,
-            ref TControl control,
-            GameObject parent,
-            string gameObjectNamePostfix,
-            Action<TConfig, TControl> before,
-            Action<TConfig, TControl> after,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, parent, gameObjectNamePostfix);
-                config.Apply(control, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The optional component control config to refresh.</param>
-        /// <param name="isElected">Whether the optional should default to elected.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
-        /// <param name="gameObjectNamePostfix">The name of the control.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref Optional config,
-            bool isElected,
-            ref TControl control,
-            GameObject parent,
-            string gameObjectNamePostfix,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, isElected, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, parent, gameObjectNamePostfix);
-                config.Apply(control);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The overridable component control config to refresh.</param>
-        /// <param name="overriding">Whether the optional should default to overriding.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
-        /// <param name="gameObjectNamePostfix">The name of the control.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref Override config,
-            bool overriding,
-            ref TControl control,
-            GameObject parent,
-            string gameObjectNamePostfix,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, overriding, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, parent, gameObjectNamePostfix);
-                config.Apply(control);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The component control config to refresh.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
-        /// <param name="gameObjectNamePostfix">The name of the control.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref TConfig config,
-            ref TControl control,
-            GameObject parent,
-            string gameObjectNamePostfix,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, parent, gameObjectNamePostfix);
-                config.Apply(control);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The optional component control config to refresh.</param>
-        /// <param name="isElected">Whether the optional should default to elected.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref Optional config,
-            bool isElected,
-            ref TControl control,
-            GameObject controlRoot,
-            Action<Optional, TControl> before,
-            Action<Optional, TControl> after,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, isElected, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
-                config.Apply(control, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The overridable component control config to refresh.</param>
-        /// <param name="overriding">Whether the optional should default to overriding.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref Override config,
-            bool overriding,
-            ref TControl control,
-            GameObject controlRoot,
-            Action<Override, TControl> before,
-            Action<Override, TControl> after,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, overriding, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
-                config.Apply(control, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The component control config to refresh.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
-        /// <param name="before">A function to execute prior to updating.</param>
-        /// <param name="after">A function to execute after finishing the update.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref TConfig config,
-            ref TControl control,
-            GameObject controlRoot,
-            Action<TConfig, TControl> before,
-            Action<TConfig, TControl> after,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
-                config.Apply(control, before, after);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The optional component control config to refresh.</param>
-        /// <param name="isElected">Whether the optional should default to elected.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref Optional config,
-            bool isElected,
-            ref TControl control,
-            GameObject controlRoot,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, isElected, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
-                config.Apply(control);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The overridable component control config to refresh.</param>
-        /// <param name="overriding">Whether the optional should default to overriding.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref Override config,
-            bool overriding,
-            ref TControl control,
-            GameObject controlRoot,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, overriding, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
-                config.Apply(control);
-            }
-        }
-
-        /// <summary>
-        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
-        ///     then applies it to the <paramref name="control" />.
-        /// </summary>
-        /// <remarks>The primary API for applying component control config to component controls.</remarks>
-        /// <param name="config">The component control config to refresh.</param>
-        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
-        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
-        /// <param name="owner"></param>
-        public static void RefreshAndApply(
-            ref TConfig config,
-            ref TControl control,
-            GameObject controlRoot,
-            Object owner)
-        {
-            using (_PRF_RefreshAndApply.Auto())
-            {
-                Refresh(ref config, owner);
-                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
-                config.Apply(control);
+                Refresh(ref config.value, owner);
             }
         }
 
@@ -492,26 +179,80 @@ namespace Appalachia.Core.ControlModel.Controls
             }
         }
 
-        protected virtual void OnApply(TControl control)
+        protected abstract void OnRefresh(Object owner);
+
+        protected virtual void AfterApplying(TControl control)
         {
-            using (_PRF_OnApply.Auto())
+            using (_PRF_AfterApplying.Auto())
             {
+                Changed.Unsuspend();
+                UnsuspendResponsiveConfigs();
+            }
+        }
+
+        protected virtual void BeforeApplying(TControl control)
+        {
+            using (_PRF_BeforeApplying.Auto())
+            {
+                control.Config = this as TConfig;
+                SuspendResponsiveConfigs();
+                Changed.Suspend();
                 control.Refresh();
             }
         }
 
-        protected abstract void OnInitializeFields(Initializer initializer, Object owner);
-
-        [ButtonGroup(GROUP_BUTTONS)]
-        protected virtual void Refresh(Object owner)
+        protected virtual void OnApply(TControl control)
         {
-            using (_PRF_Refresh.Auto())
+            using (_PRF_OnApply.Auto())
             {
-                if ((_owner == null) || (_owner != owner))
-                {
-                    _owner = owner;
-                    MarkAsModified();
-                }
+            }
+        }
+
+        protected virtual void OnInitializeFields(Initializer initializer)
+        {
+            using (_PRF_OnInitializeFields.Auto())
+            {
+            }
+        }
+
+        protected virtual void SubscribeResponsiveConfigs()
+        {
+            using (_PRF_SubscribeResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+        protected virtual void SuspendResponsiveConfigs()
+        {
+            using (_PRF_SuspendResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+        protected virtual void UnsuspendResponsiveConfigs()
+        {
+            using (_PRF_UnsuspendResponsiveConfigs.Auto())
+            {
+            }
+        }
+
+        public override void UnsuspendChanges()
+        {
+            using (_PRF_UnsuspendChanges.Auto())
+            {
+                base.UnsuspendChanges();
+            
+                UnsuspendResponsiveConfigs();
+            }
+        }
+
+        public override void SuspendChanges()
+        {
+            using (_PRF_SuspendChanges.Auto())
+            {
+                base.SuspendChanges();
+            
+                SuspendResponsiveConfigs();
             }
         }
 
@@ -522,19 +263,361 @@ namespace Appalachia.Core.ControlModel.Controls
 
             using (_PRF_Initialize.Auto())
             {
-                InitializeFields(_owner);
+                InitializeFields();
+                SubscribeResponsiveConfigs();
             }
         }
 
-        private void InitializeFields(Object owner)
+        [ButtonGroup(GROUP_BUTTONS)]
+        protected void Refresh(Object owner)
+        {
+            using (_PRF_Refresh.Auto())
+            {
+                SetOwner(owner);
+
+                InitializeFields();
+                SubscribeResponsiveConfigs();
+                OnRefresh(owner);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The optional component control config to refresh.</param>
+        /// <param name="isElected">Whether the optional should default to elected.</param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="owner"></param>
+        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
+        /// <param name="namePrefix">The name of the control.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Optional config,
+            bool isElected,
+            ref TControl control,
+            Object owner,
+            GameObject parent,
+            string namePrefix,
+            Action<Optional, TControl> before,
+            Action<Optional, TControl> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, parent, namePrefix);
+                Refresh(ref config, isElected, owner);
+                config.Apply(control, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The overridable component control config to refresh.</param>
+        /// <param name="overriding">Whether the optional should default to overriding.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
+        /// <param name="namePrefix">The name of the control.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Override config,
+            bool overriding,
+            Object owner,
+            ref TControl control,
+            GameObject parent,
+            string namePrefix,
+            Action<Override, TControl> before,
+            Action<Override, TControl> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, parent, namePrefix);
+                Refresh(ref config, overriding, owner);
+                config.Apply(control, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The component control config to refresh.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
+        /// <param name="namePrefix">The name of the control.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref TConfig config,
+            Object owner,
+            ref TControl control,
+            GameObject parent,
+            string namePrefix,
+            Action<TConfig, TControl> before,
+            Action<TConfig, TControl> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, parent, namePrefix);
+                Refresh(ref config, owner);
+                config.Apply(control, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The optional component control config to refresh.</param>
+        /// <param name="isElected">Whether the optional should default to elected.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
+        /// <param name="namePrefix">The name of the control.</param>
+        private static void RefreshAndApply(
+            ref Optional config,
+            bool isElected,
+            Object owner,
+            ref TControl control,
+            GameObject parent,
+            string namePrefix)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, parent, namePrefix);
+                Refresh(ref config, isElected, owner);
+                config.Apply(control);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The overridable component control config to refresh.</param>
+        /// <param name="overriding">Whether the optional should default to overriding.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
+        /// <param name="namePrefix">The name of the control.</param>
+        private static void RefreshAndApply(
+            ref Override config,
+            bool overriding,
+            Object owner,
+            ref TControl control,
+            GameObject parent,
+            string namePrefix)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, parent, namePrefix);
+                Refresh(ref config, overriding, owner);
+                config.Apply(control);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The component control config to refresh.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="parent">The <see cref="GameObject" /> that the control should be a child of.</param>
+        /// <param name="namePrefix">The name of the control.</param>
+        private static void RefreshAndApply(
+            ref TConfig config,
+            Object owner,
+            ref TControl control,
+            GameObject parent,
+            string namePrefix)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, parent, namePrefix);
+                Refresh(ref config, owner);
+                config.Apply(control);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The optional component control config to refresh.</param>
+        /// <param name="isElected">Whether the optional should default to elected.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Optional config,
+            bool isElected,
+            Object owner,
+            ref TControl control,
+            GameObject controlRoot,
+            Action<Optional, TControl> before,
+            Action<Optional, TControl> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
+                Refresh(ref config, isElected, owner);
+                config.Apply(control, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The overridable component control config to refresh.</param>
+        /// <param name="overriding">Whether the optional should default to overriding.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref Override config,
+            bool overriding,
+            Object owner,
+            ref TControl control,
+            GameObject controlRoot,
+            Action<Override, TControl> before,
+            Action<Override, TControl> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
+                Refresh(ref config, overriding, owner);
+                config.Apply(control, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The component control config to refresh.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
+        /// <param name="before">A function to execute prior to updating.</param>
+        /// <param name="after">A function to execute after finishing the update.</param>
+        private static void RefreshAndApply(
+            ref TConfig config,
+            Object owner,
+            ref TControl control,
+            GameObject controlRoot,
+            Action<TConfig, TControl> before,
+            Action<TConfig, TControl> after)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
+                Refresh(ref config, owner);
+                config.Apply(control, before, after);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The optional component control config to refresh.</param>
+        /// <param name="isElected">Whether the optional should default to elected.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
+        private static void RefreshAndApply(
+            ref Optional config,
+            bool isElected,
+            Object owner,
+            ref TControl control,
+            GameObject controlRoot)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
+                Refresh(ref config, isElected, owner);
+                config.Apply(control);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The overridable component control config to refresh.</param>
+        /// <param name="overriding">Whether the optional should default to overriding.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
+        private static void RefreshAndApply(
+            ref Override config,
+            bool overriding,
+            Object owner,
+            ref TControl control,
+            GameObject controlRoot)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
+                Refresh(ref config, overriding, owner);
+                config.Apply(control);
+            }
+        }
+
+        /// <summary>
+        ///     Creates or refreshes the <paramref name="config" /> to ensure it can be used, and
+        ///     then applies it to the <paramref name="control" />.
+        /// </summary>
+        /// <remarks>The primary API for applying component control config to component controls.</remarks>
+        /// <param name="config">The component control config to refresh.</param>
+        /// <param name="owner"></param>
+        /// <param name="control">The component control to apply the <paramref name="config" /> to.</param>
+        /// <param name="controlRoot">The <see cref="GameObject" /> that the control should be rooted on.</param>
+        private static void RefreshAndApply(
+            ref TConfig config,
+            Object owner,
+            ref TControl control,
+            GameObject controlRoot)
+        {
+            using (_PRF_RefreshAndApply.Auto())
+            {
+                AppaControl<TControl, TConfig>.Refresh(ref control, controlRoot);
+                Refresh(ref config, owner);
+                config.Apply(control);
+            }
+        }
+
+        private void InitializeFields()
         {
             using (_PRF_InitializeFields.Auto())
             {
-                _owner = owner;
-
                 var initializer = GetInitializer();
 
-                OnInitializeFields(initializer, owner);
+                initializer.Do(this, nameof(_enabled), () => _enabled = true);
+
+                OnInitializeFields(initializer);
             }
         }
 
@@ -583,9 +666,19 @@ namespace Appalachia.Core.ControlModel.Controls
         {
             using (_PRF_OnApplyInternal.Auto())
             {
-                if (!FullyInitialized)
+                if (!HasInitializationStarted)
+                {
+                    InitializeSynchronous();
+                }
+
+                if (!HasBeenInitialized)
                 {
                     return;
+                }
+
+                if (Owner == null)
+                {
+                    Context.Log.Error($"{GetType().FormatForLogging()} owner cannot be null", control);
                 }
 
                 try
@@ -593,12 +686,19 @@ namespace Appalachia.Core.ControlModel.Controls
                     control.Config = this as TConfig;
 
                     AppaConfigTracker.Store(control, this);
+                    BeforeApplying(control);
                     OnApply(control);
+                    AfterApplying(control);
                 }
                 catch (AppaInitializationException controlEx)
                 {
                     Context.Log.Error(
-                        string.Format(UPDATE_FAILURE_LOG_FORMAT, typeof(TControl).FormatForLogging(), controlEx.Message)
+                        string.Format(
+                            UPDATE_FAILURE_LOG_FORMAT,
+                            typeof(TControl).FormatForLogging(),
+                            controlEx.Message
+                        ),
+                        control
                     );
 
                     throw;
@@ -669,7 +769,7 @@ namespace Appalachia.Core.ControlModel.Controls
         {
             using (_PRF_ResetConfig.Auto())
             {
-                InitializeFields(_owner);
+                InitializeFields();
             }
         }
 
@@ -677,10 +777,13 @@ namespace Appalachia.Core.ControlModel.Controls
 
         #region Profiling
 
+        private static readonly ProfilerMarker _PRF_AfterApplying =
+            new ProfilerMarker(_PRF_PFX + nameof(AfterApplying));
+
         private static readonly ProfilerMarker _PRF_Apply = new ProfilerMarker(_PRF_PFX + nameof(Apply));
 
-        protected static readonly ProfilerMarker _PRF_Refresh =
-            new ProfilerMarker(_PRF_PFX + nameof(Refresh));
+        protected static readonly ProfilerMarker _PRF_BeforeApplying =
+            new ProfilerMarker(_PRF_PFX + nameof(BeforeApplying));
 
         private static readonly ProfilerMarker _PRF_InitializeFields =
             new ProfilerMarker(_PRF_PFX + nameof(InitializeFields));
@@ -693,6 +796,10 @@ namespace Appalachia.Core.ControlModel.Controls
         protected static readonly ProfilerMarker _PRF_OnInitializeFields =
             new ProfilerMarker(_PRF_PFX + nameof(OnInitializeFields));
 
+        protected static readonly ProfilerMarker _PRF_OnRefresh = new ProfilerMarker(_PRF_PFX + nameof(OnRefresh));
+
+        protected static readonly ProfilerMarker _PRF_Refresh = new ProfilerMarker(_PRF_PFX + nameof(Refresh));
+
         private static readonly ProfilerMarker _PRF_RefreshAndApply =
             new ProfilerMarker(_PRF_PFX + nameof(RefreshAndApply));
 
@@ -700,6 +807,15 @@ namespace Appalachia.Core.ControlModel.Controls
 
         private static readonly ProfilerMarker _PRF_SubscribeAndApply =
             new ProfilerMarker(_PRF_PFX + nameof(SubscribeAndApply));
+
+        protected static readonly ProfilerMarker _PRF_SubscribeResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(SubscribeResponsiveConfigs));
+
+        protected static readonly ProfilerMarker _PRF_SuspendResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(SuspendResponsiveConfigs));
+
+        protected static readonly ProfilerMarker _PRF_UnsuspendResponsiveConfigs =
+            new ProfilerMarker(_PRF_PFX + nameof(UnsuspendResponsiveConfigs));
 
         #endregion
     }
